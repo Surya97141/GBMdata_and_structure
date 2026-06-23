@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interpolation Search – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
+.explanation{margin-bottom:32px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.formula-box{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;margin-bottom:24px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#1a1a2e;line-height:1.8}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.controls label{font-size:14px;font-weight:500}
+.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
+.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:200px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Interpolation Search
+  </nav>
+
+  <div class="hero">
+    <div class="category-tag">Searching</div>
+    <h1>Interpolation Search</h1>
+    <p class="tagline">Estimate where the target should be — like a smart dictionary reader.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Interpolation search improves on binary search for uniformly distributed sorted data. Instead of always probing the midpoint, it estimates the likely position of the target using a linear interpolation formula based on the values at the current bounds.</p>
+    <p>The analogy is a dictionary. If you are looking for "Zebra," you would not open to the middle — you would open near the very end, because you know Z is at the back. Interpolation search does exactly this mathematically: it computes where the target is proportionally expected to be within the current value range.</p>
+    <p>For uniformly distributed data, interpolation search achieves O(log log n) — dramatically faster than O(log n) binary search. However, for skewed distributions, it degrades to O(n) in the worst case. It works only on sorted arrays with numeric keys.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="label">Time (Uniform)</div><div class="value">O(log log n)</div></div>
+    <div class="fact-card"><div class="label">Time (Worst)</div><div class="value">O(n)</div></div>
+    <div class="fact-card"><div class="label">Sorted Required</div><div class="value">Yes (numeric)</div></div>
+  </div>
+
+  <div class="formula-box">
+    pos = lo + floor( (target - arr[lo]) / (arr[hi] - arr[lo]) × (hi - lo) )
+  </div>
+
+  <div class="sim-section">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Target:</label>
+      <input type="number" id="targetInput" value="63">
+      <button class="btn btn-primary" onclick="startSearch()">Search</button>
+      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+    </div>
+    <canvas id="cvs" width="820" height="220"></canvas>
+    <div class="log">
+      <h3>Step Log</h3>
+      <div id="logEntries"></div>
+    </div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const ARR=[3,7,12,18,25,31,42,56,63,78,85,92,97];
+const ACCENT='#e84393',GREEN='#27a060',GRAY='#d0cec8';
+const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
+const n=ARR.length;
+let state=ARR.map(()=>'default'),running=false;
+
+function drawArray(lo,hi,pos,formulaStr){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  const cellW=58,cellH=52;
+  const startX=(cvs.width-n*cellW)/2,startY=18;
+  ARR.forEach((v,i)=>{
+    const x=startX+i*cellW,y=startY;
+    const s=state[i];
+    let fill='#fff';
+    if(s==='found')fill=GREEN;
+    else if(s==='pos')fill=ACCENT;
+    else if(i<lo||i>hi)fill=GRAY;
+    ctx.fillStyle=fill;ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle=(fill===GREEN||fill===ACCENT)?'#fff':(fill===GRAY?'#aaa':'#1a1a2e');
+    ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(v,x+cellW/2,y+cellH/2);
+    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
+    ctx.fillText(i,x+cellW/2,y+cellH+9);
+  });
+  const py=startY+cellH+22;
+  if(lo>=0){const lx=startX+lo*cellW+cellW/2;ctx.fillStyle='#3b82f6';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('L',lx,py);}
+  if(hi>=0&&hi<n){const hx=startX+hi*cellW+cellW/2;ctx.fillStyle='#f59e0b';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('R',hx,py);}
+  if(pos>=0&&pos<n){const px=startX+pos*cellW+cellW/2;ctx.fillStyle=ACCENT;ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('P',px,py);}
+  if(formulaStr){ctx.fillStyle='#5a5a72';ctx.font='11px JetBrains Mono';ctx.textAlign='center';ctx.fillText(formulaStr,cvs.width/2,startY+cellH+46);}
+}
+
+function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSearch(){
+  if(running)return;running=true;
+  state=ARR.map(()=>'default');
+  const target=parseInt(document.getElementById('targetInput').value);
+  log(`Interpolation search for target = ${target}`);
+  let lo=0,hi=n-1,step=0;
+  while(lo<=hi&&target>=ARR[lo]&&target<=ARR[hi]){
+    step++;
+    if(ARR[hi]===ARR[lo]){break;}
+    const pos=lo+Math.floor((target-ARR[lo])/(ARR[hi]-ARR[lo])*(hi-lo));
+    const formula=`pos = ${lo} + (${target}-${ARR[lo]})/(${ARR[hi]}-${ARR[lo]}) × (${hi}-${lo}) = ${pos}`;
+    state[pos]='pos';
+    drawArray(lo,hi,pos,formula);
+    log(`Step ${step}: ${formula}`);
+    await sleep(900);
+    if(ARR[pos]===target){state[pos]='found';drawArray(-1,-1,-1,'');log(`✓ Found ${target} at index ${pos}!`);running=false;return;}
+    else if(ARR[pos]<target){log(`arr[${pos}]=${ARR[pos]} < ${target}: search right`);state[pos]='default';lo=pos+1;}
+    else{log(`arr[${pos}]=${ARR[pos]} > ${target}: search left`);state[pos]='default';hi=pos-1;}
+  }
+  drawArray(-1,-1,-1,'');log(`✗ ${target} not found.`);running=false;
+}
+
+function resetSearch(){
+  running=false;state=ARR.map(()=>'default');drawArray(0,n-1,-1,'');
+  document.getElementById('logEntries').innerHTML='';
+}
+drawArray(0,n-1,-1,'');
+</script>
+</body>
+</html>

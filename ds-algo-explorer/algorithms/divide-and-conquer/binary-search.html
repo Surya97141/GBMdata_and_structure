@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Search (D&C) – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.controls label{font-size:14px;font-weight:500}
+.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+.two-col{display:grid;grid-template-columns:1fr 280px;gap:16px}
+canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
+.tree-panel{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:12px;overflow-y:auto;max-height:260px}
+.tree-panel h3{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.tree-node{font-family:'JetBrains Mono',monospace;font-size:11px;color:#2e2e42;padding:2px 0 2px 0;border-left:2px solid #27a060;padding-left:8px;margin:3px 0}
+.log{margin-top:16px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:160px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Binary Search (D&amp;C)
+  </nav>
+  <div class="hero">
+    <div class="category-tag">Divide &amp; Conquer</div>
+    <h1>Binary Search</h1>
+    <p class="tagline">A classic D&C algorithm — recursively halve the problem space.</p>
+  </div>
+  <div class="explanation">
+    <p>Binary search is a textbook divide-and-conquer algorithm. The D&C pattern is explicit: divide the array into two halves at the midpoint, conquer by recursing into only the relevant half, and combine trivially (no merge step needed — the result is returned directly from the subproblem).</p>
+    <p>The recursive call tree is unbalanced in general — each level only recurses into one branch. This produces a call tree of depth O(log n) with one active node per level. Each node represents the subproblem: "is the target in this subarray?" The base cases are a single element or an empty range.</p>
+    <p>Understanding binary search as D&C builds intuition for more complex divide-and-conquer algorithms. The pattern — choose a split point, determine which subproblem the answer lies in, recurse only there — appears in range trees, segment trees, and competitive programming divide-and-conquer optimizations.</p>
+  </div>
+  <div class="facts">
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(log n)</div></div>
+    <div class="fact-card"><div class="label">Recursion Depth</div><div class="value">O(log n)</div></div>
+    <div class="fact-card"><div class="label">Subproblems/Level</div><div class="value">1 (active)</div></div>
+  </div>
+  <div class="sim-section">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Target:</label>
+      <input type="number" id="targetInput" value="42">
+      <button class="btn btn-primary" onclick="startSearch()">Search</button>
+      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+    </div>
+    <div class="two-col">
+      <div>
+        <canvas id="cvs" width="520" height="200"></canvas>
+      </div>
+      <div class="tree-panel">
+        <h3>Recursion Tree</h3>
+        <div id="treeNodes"></div>
+      </div>
+    </div>
+    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const ARR=[3,7,12,18,25,31,42,56,63,78];
+const ACCENT='#27a060',GREEN='#27a060',GRAY='#d0cec8';
+const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
+let state=ARR.map(()=>'default'),running=false,lo=0,hi=ARR.length-1,mid=-1;
+
+function drawArray(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  const n=ARR.length,cellW=50,cellH=54;
+  const startX=4,startY=20;
+  ARR.forEach((v,i)=>{
+    const x=startX+i*cellW,y=startY;
+    const s=state[i];
+    ctx.fillStyle=s==='default'?'#fff':s==='mid'?ACCENT:s==='found'?'#bbf7d0':GRAY;
+    ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle=(s==='mid')?'#fff':(s==='eliminated'?'#aaa':'#1a1a2e');
+    ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(v,x+cellW/2,y+cellH/2);
+    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
+    ctx.fillText(i,x+cellW/2,y+cellH+9);
+  });
+  const py=startY+cellH+26;
+  if(lo>=0&&lo<ARR.length){ctx.fillStyle='#3b82f6';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('L',startX+lo*cellW+cellW/2,py);}
+  if(hi>=0&&hi<ARR.length){ctx.fillStyle='#f59e0b';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('R',startX+hi*cellW+cellW/2,py);}
+  if(mid>=0&&mid<ARR.length){ctx.fillStyle=ACCENT;ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('M',startX+mid*cellW+cellW/2,py);}
+}
+
+function addTreeNode(depth,loI,hiI,midI,result){
+  const d=document.getElementById('treeNodes');
+  const e=document.createElement('div');e.className='tree-node';
+  e.style.marginLeft=(depth*14)+'px';
+  e.style.borderColor=result==='found'?'#27a060':result==='elim'?'#d0cec8':'#27a060';
+  e.textContent=`bs([${loI}..${hiI}]) mid=${midI} ${result==='found'?'✓ FOUND':result==='elim'?'✗':'→'}`;
+  d.appendChild(e);d.scrollTop=d.scrollHeight;
+}
+
+function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function bsRecurse(loI,hiI,target,depth){
+  if(loI>hiI){addTreeNode(depth,loI,hiI,-1,'elim');log(`[${loI}..${hiI}] empty — target not in this range`);return false;}
+  const midI=Math.floor((loI+hiI)/2);
+  for(let i=0;i<ARR.length;i++){
+    if(i<loI||i>hiI)state[i]='eliminated';
+    else if(i===midI)state[i]='mid';
+    else state[i]='default';
+  }
+  lo=loI;hi=hiI;mid=midI;drawArray();
+  log(`D&C call(depth=${depth}): subarray [${loI}..${hiI}], mid=${midI} → arr[${midI}]=${ARR[midI]}`);
+  await sleep(800);
+  if(ARR[midI]===target){
+    state[midI]='found';drawArray();
+    addTreeNode(depth,loI,hiI,midI,'found');
+    log(`✓ Found ${target} at index ${midI}!`);return true;
+  }
+  addTreeNode(depth,loI,hiI,midI,ARR[midI]<target?'right':'left');
+  if(ARR[midI]<target){log(`arr[${midI}]=${ARR[midI]} < ${target}: recurse right half`);return await bsRecurse(midI+1,hiI,target,depth+1);}
+  else{log(`arr[${midI}]=${ARR[midI]} > ${target}: recurse left half`);return await bsRecurse(loI,midI-1,target,depth+1);}
+}
+
+async function startSearch(){
+  if(running)return;running=true;
+  state=ARR.map(()=>'default');lo=0;hi=ARR.length-1;mid=-1;
+  document.getElementById('treeNodes').innerHTML='';
+  document.getElementById('logEntries').innerHTML='';
+  const target=parseInt(document.getElementById('targetInput').value);
+  log(`Binary Search (D&C) for target = ${target}`);
+  const found=await bsRecurse(0,ARR.length-1,target,0);
+  if(!found){for(let i=0;i<ARR.length;i++)state[i]='eliminated';drawArray();log(`✗ ${target} not found.`);}
+  running=false;
+}
+
+function resetSearch(){
+  running=false;state=ARR.map(()=>'default');lo=0;hi=ARR.length-1;mid=-1;
+  document.getElementById('treeNodes').innerHTML='';
+  document.getElementById('logEntries').innerHTML='';drawArray();
+}
+drawArray();
+</script>
+</body>
+</html>

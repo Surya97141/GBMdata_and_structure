@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fenwick Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
+.hero{padding:2rem 0 1.5rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
+.tagline{color:var(--m);font-size:1rem;}
+.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;}
+.flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.4rem;}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;}.fsub{font-size:.8rem;color:var(--m);margin-top:.2rem;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.sim-hdr{padding:.8rem 1.4rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block;}
+.sim-body{padding:1.4rem;}
+canvas{display:block;width:100%;border-radius:10px;background:var(--bg);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;}
+.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
+input[type=number]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:75px;}
+input:focus{border-color:var(--a);}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.8rem 1.2rem;max-height:220px;overflow-y:auto;line-height:1.9;}
+.le{border-bottom:1px solid var(--b);padding:1px 0;}.le:last-child{border:none;}
+.li{color:var(--m);}.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}
+.log-empty{color:var(--m);font-style:italic;}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.85rem;font-weight:600;margin:1.5rem 0;}
+.back:hover{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    <span>Fenwick Tree</span>
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Tree</span>
+    <h1>Fenwick Tree</h1>
+    <p class="tagline">Also called a Binary Indexed Tree — compact prefix-sum structure using bit tricks.</p>
+  </div>
+
+  <div class="explain">
+    <p>Think of a team responsibility chart. Employee 1 handles only their own work. Employee 2 handles work for employees 1-2. Employee 4 handles 1-4, employee 8 handles 1-8. To find the total for positions 1-6, you only need to look at employees 6 and 4 (not all six). This is exactly how a Fenwick Tree works.</p>
+    <p>Each index i in the BIT array stores the sum for a specific range determined by the lowest set bit (LSB) of i. The range is [i - LSB(i) + 1, i]. For a prefix sum query, you jump from i to i - LSB(i) and add values. For a point update, you jump from i to i + LSB(i) and update values.</p>
+    <p>Fenwick Trees use O(n) space and support O(log n) point updates and prefix queries with extremely small constant factors. They are the go-to structure for order statistics and frequency tables in competitive programming.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="flabel">Update / Query</div><div class="fval">O(log n)</div><div class="fsub">Bit manipulation jumps</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div><div class="fsub">Just one extra array</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">Prefix Sums</div><div class="fsub">Rank queries, inversions count</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation — BIT over 8 elements</div>
+    <div class="sim-body">
+      <canvas id="cv" height="420"></canvas>
+      <div class="controls">
+        <strong style="font-size:.8rem;color:var(--m);">Array:</strong>
+        <input type="number" id="a0" value="2" style="width:50px;"/>
+        <input type="number" id="a1" value="1" style="width:50px;"/>
+        <input type="number" id="a2" value="3" style="width:50px;"/>
+        <input type="number" id="a3" value="2" style="width:50px;"/>
+        <input type="number" id="a4" value="4" style="width:50px;"/>
+        <input type="number" id="a5" value="5" style="width:50px;"/>
+        <input type="number" id="a6" value="2" style="width:50px;"/>
+        <input type="number" id="a7" value="3" style="width:50px;"/>
+        <button class="btn btn-p" onclick="buildBIT()">Build</button>
+      </div>
+      <div class="controls" style="margin-top:.5rem;">
+        <strong style="font-size:.8rem;color:var(--m);">Update:</strong>
+        <span style="font-size:.8rem;color:var(--m);">Index (1-8)</span>
+        <input type="number" id="uIdx" placeholder="idx" min="1" max="8" style="width:60px;"/>
+        <span style="font-size:.8rem;color:var(--m);">Delta</span>
+        <input type="number" id="uDelta" placeholder="Δ" style="width:60px;"/>
+        <button class="btn btn-o" onclick="doUpdate()">Point Update</button>
+        <span style="color:var(--m);font-size:.8rem;">|</span>
+        <strong style="font-size:.8rem;color:var(--m);">Prefix Sum:</strong>
+        <span style="font-size:.8rem;color:var(--m);">Index (1-8)</span>
+        <input type="number" id="qIdx" placeholder="idx" min="1" max="8" style="width:60px;"/>
+        <button class="btn btn-o" onclick="doQuery()">Query</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr"><span>Operation Log</span><button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem;" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><span class="log-empty">Build the BIT and run operations…</span></div>
+  </div>
+
+  <a class="back" href="../index.html">&#8592; Back to Data Structures</a>
+</div>
+
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+cv.width=cv.offsetWidth||900;
+
+const N=8;
+let arr=new Array(N).fill(0);
+let bit=new Array(N+1).fill(0);
+let updateHL=new Set();  // BIT indices highlighted after update
+let queryHL=new Set();   // BIT indices highlighted after query
+let mode='none'; // 'update' or 'query'
+
+function lsb(i){ return i&(-i); }
+
+function bitUpdate(i, delta){
+  const touched=[];
+  while(i<=N){ bit[i]+=delta; touched.push(i); i+=lsb(i); }
+  return touched;
+}
+
+function bitQuery(i){
+  let s=0; const touched=[];
+  while(i>0){ s+=bit[i]; touched.push(i); i-=lsb(i); }
+  return {sum:s, touched};
+}
+
+function buildBIT(){
+  for(let i=0;i<N;i++) arr[i]=parseInt(document.getElementById('a'+i).value)||0;
+  bit=new Array(N+1).fill(0);
+  for(let i=0;i<N;i++) bitUpdate(i+1, arr[i]);
+  updateHL.clear(); queryHL.clear(); mode='none';
+  addLog(`BIT built. Total sum (prefix 8) = ${bitQuery(N).sum}`,'ld');
+  drawViz();
+}
+
+function doUpdate(){
+  const idx=parseInt(document.getElementById('uIdx').value);
+  const delta=parseInt(document.getElementById('uDelta').value);
+  if(isNaN(idx)||isNaN(delta)||idx<1||idx>N){ addLog('Invalid index or delta.','lw'); return; }
+  queryHL.clear(); mode='update';
+  const touched=bitUpdate(idx,delta);
+  arr[idx-1]+=delta;
+  document.getElementById('a'+(idx-1)).value=arr[idx-1];
+  updateHL=new Set(touched);
+  addLog(`Update idx ${idx} by Δ${delta}. BIT cells updated: [${touched.join(', ')}]`,'ld');
+  drawViz();
+}
+
+function doQuery(){
+  const idx=parseInt(document.getElementById('qIdx').value);
+  if(isNaN(idx)||idx<1||idx>N){ addLog('Invalid index.','lw'); return; }
+  updateHL.clear(); mode='query';
+  const {sum,touched}=bitQuery(idx);
+  queryHL=new Set(touched);
+  addLog(`Prefix sum(1..${idx}) = ${sum}. BIT cells read: [${touched.join(', ')}]`,'ld');
+  drawViz();
+}
+
+function clearLog(){ document.getElementById('log').innerHTML='<span class="log-empty">Build the BIT and run operations…</span>'; }
+
+function addLog(msg,cls='ls'){
+  const log=document.getElementById('log');
+  if(log.querySelector('.log-empty')) log.innerHTML='';
+  const d=document.createElement('div');
+  d.className=`le ${cls}`; d.textContent='> '+msg;
+  log.prepend(d);
+}
+
+function responsibilityRange(i){ return [i-lsb(i)+1, i]; }
+
+function drawViz(){
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+
+  const cellW=Math.min(55, (W-30)/N);
+  const cellH=38;
+  const startX=15;
+
+  // ---- Row 1: Original array ----
+  const ay=40;
+  ctx.fillStyle='#1a1a2e'; ctx.font="bold 12px 'Inter',sans-serif"; ctx.textAlign='left';
+  ctx.fillText('Original Array (arr):', startX, ay-12);
+  for(let i=0;i<N;i++){
+    const x=startX+i*cellW;
+    ctx.fillStyle='#fff'; ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.roundRect(x,ay,cellW-4,cellH,5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font="bold 13px 'JetBrains Mono',monospace"; ctx.textAlign='center';
+    ctx.fillText(arr[i],x+(cellW-4)/2,ay+cellH/2);
+    ctx.fillStyle='#5a5a72'; ctx.font="9px 'Inter',sans-serif";
+    ctx.fillText(i+1, x+(cellW-4)/2, ay+cellH+10);
+  }
+
+  // ---- Row 2: BIT array ----
+  const by=140;
+  ctx.fillStyle='#1a1a2e'; ctx.font="bold 12px 'Inter',sans-serif"; ctx.textAlign='left';
+  ctx.fillText('BIT Array (1-indexed):', startX, by-12);
+
+  for(let i=1;i<=N;i++){
+    const x=startX+(i-1)*cellW;
+    const isUHL=updateHL.has(i);
+    const isQHL=queryHL.has(i);
+    let fill='#fff', stroke='#c0bdb5', lw=1.5;
+    if(isUHL){ fill='#fff8e1'; stroke='#d4a017'; lw=2.5; }
+    if(isQHL){ fill='#d4f0e4'; stroke='#27a060'; lw=2.5; }
+
+    ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=lw;
+    ctx.beginPath(); ctx.roundRect(x,by,cellW-4,cellH,5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font="bold 13px 'JetBrains Mono',monospace"; ctx.textAlign='center';
+    ctx.fillText(bit[i],x+(cellW-4)/2,by+cellH/2-4);
+    const [rs,re]=responsibilityRange(i);
+    ctx.fillStyle='#5a5a72'; ctx.font="9px 'Inter',sans-serif";
+    ctx.fillText(`[${rs}..${re}]`,x+(cellW-4)/2,by+cellH/2+9);
+    ctx.fillText(i, x+(cellW-4)/2, by+cellH+10);
+  }
+
+  // ---- Responsibility bars ----
+  const barY=220;
+  ctx.fillStyle='#1a1a2e'; ctx.font="bold 12px 'Inter',sans-serif"; ctx.textAlign='left';
+  ctx.fillText('Responsibility Ranges:', startX, barY-12);
+
+  for(let i=1;i<=N;i++){
+    const [rs,re]=responsibilityRange(i);
+    const barX=startX+(rs-1)*cellW;
+    const barW=(re-rs+1)*cellW-4;
+    const barH=18;
+    const rowY=barY + (i-1)*24;
+    const isHL=updateHL.has(i)||queryHL.has(i);
+    ctx.fillStyle=isHL?'#27a060':'#e8f5ee';
+    ctx.strokeStyle=isHL?'#1a7a48':'#27a060';
+    ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.roundRect(barX,rowY,barW,barH,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=isHL?'#fff':'#27a060';
+    ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign='center';
+    ctx.fillText(`BIT[${i}] covers [${rs}..${re}]`, barX+barW/2, rowY+barH/2);
+  }
+
+  // Legend
+  const ly=H-18;
+  ctx.fillStyle='#5a5a72'; ctx.font="11px 'Inter',sans-serif"; ctx.textAlign='left';
+  ctx.fillStyle='#d4a017'; ctx.fillRect(startX,ly-8,10,10);
+  ctx.fillStyle='#5a5a72'; ctx.fillText('Updated cells', startX+14, ly);
+  ctx.fillStyle='#27a060'; ctx.fillRect(startX+130,ly-8,10,10);
+  ctx.fillStyle='#5a5a72'; ctx.fillText('Queried cells', startX+144, ly);
+  ctx.fillText('LSB trick: cell i covers 2^(lowest set bit of i) elements.', startX+280, ly);
+}
+
+buildBIT();
+window.addEventListener('resize',()=>{ cv.width=cv.offsetWidth; drawViz(); });
+</script>
+</body>
+</html>

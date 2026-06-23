@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Van Emde Boas Tree — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:920px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+canvas{display:block;background:#f7f6f2;border-radius:10px;border:1px solid #e2e0da;margin-bottom:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;align-items:center}
+.ctrl-group{display:flex;gap:6px;align-items:center;font-size:13px;color:#5a5a72}
+input[type=number]{width:64px;height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;outline:none;padding:0 4px;background:#f7f6f2}
+input[type=number]:focus{border-color:#c0392b;background:#fff}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.info-cell{background:#f7f6f2;border:1px solid #e2e0da;border-radius:8px;padding:10px;text-align:center}
+.info-cell .label{font-size:11px;color:#5a5a72;text-transform:uppercase;letter-spacing:.06em}
+.info-cell .val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#c0392b;font-weight:600;margin-top:4px}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:12px;max-height:160px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.log-box p.warn{color:#ffd180}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Van Emde Boas Tree
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Van Emde Boas Tree</h1>
+  <p class="tagline">O(log log U) operations on integers by recursively dividing the universe.</p>
+  <div class="prose">
+    <p>A <strong>Van Emde Boas (vEB) Tree</strong> achieves O(log log U) time for insert, delete, successor, and predecessor on a universe of size U — dramatically faster than O(log n) for large U. The key idea: split the universe into √U clusters, each of size √U, and maintain a recursive vEB tree on the cluster indices (the "summary") plus one vEB tree per cluster.</p>
+    <p>For U=16 (4-bit integers), we have √16=4 clusters of size 4. An element x maps to cluster ⌊x/4⌋ at position x mod 4. Insert into both the appropriate sub-tree and the summary. Successor searches within the cluster first; if not found, uses the summary to find the next non-empty cluster, then queries its minimum. This two-level recursion drives the log log complexity.</p>
+    <p>Real-world analogy: finding the next available parking spot in a city. Instead of checking every spot, you check which block has any free spot (summary), then zoom into that block — two levels of lookup instead of exhaustive scan.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Insert / Delete</div><div class="fact-value">O(log log U)</div></div>
+    <div class="fact"><div class="fact-label">Successor</div><div class="fact-value">O(log log U)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">IP Routing · Integer Sets</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">vEB Tree — U=16 (4 clusters × 4 positions)</div>
+    <div class="info-grid">
+      <div class="info-cell"><div class="label">Min</div><div class="val" id="dispMin">—</div></div>
+      <div class="info-cell"><div class="label">Max</div><div class="val" id="dispMax">—</div></div>
+      <div class="info-cell"><div class="label">Size</div><div class="val" id="dispSize">0</div></div>
+    </div>
+    <canvas id="cv" width="820" height="260"></canvas>
+    <div class="controls">
+      <div class="ctrl-group">
+        Value (0–15):
+        <input type="number" id="valIn" min="0" max="15" value="7"/>
+      </div>
+      <button onclick="doInsert()">Insert</button>
+      <button onclick="doDelete()">Delete</button>
+      <button onclick="doSuccessor()">Successor</button>
+      <button class="secondary" onclick="resetVEB()">Reset</button>
+    </div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+// Simplified vEB-like structure over U=16
+const U=16,SQRT=4;
+let elements=new Set();
+let lastHighlight=-1;
+
+function resetVEB(){elements=new Set();[3,7,11,14].forEach(v=>elements.add(v));lastHighlight=-1;updateDisplay();log('Reset. Default elements: {3,7,11,14}');}
+
+function getCluster(x){return Math.floor(x/SQRT);}
+function getPos(x){return x%SQRT;}
+function clusterMin(c){for(let i=0;i<SQRT;i++){const v=c*SQRT+i;if(elements.has(v))return v;}return -1;}
+function clusterMax(c){for(let i=SQRT-1;i>=0;i--){const v=c*SQRT+i;if(elements.has(v))return v;}return -1;}
+
+function doInsert(){
+  const v=parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)||v<0||v>=U){log('Value must be 0–15','warn');return;}
+  if(elements.has(v)){log(`${v} already present`,'warn');return;}
+  elements.add(v);
+  lastHighlight=v;
+  log(`Insert ${v}: cluster=${getCluster(v)}, pos=${getPos(v)}. Update min/max.`);
+  updateDisplay();
+}
+function doDelete(){
+  const v=parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)||!elements.has(v)){log(`${v} not present, cannot delete`,'warn');return;}
+  elements.delete(v);lastHighlight=-1;
+  log(`Delete ${v}: removed from cluster ${getCluster(v)}, pos ${getPos(v)}.`);
+  updateDisplay();
+}
+function doSuccessor(){
+  const v=parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)){log('Enter a value','warn');return;}
+  let succ=-1;
+  // within cluster
+  const c=getCluster(v),p=getPos(v);
+  for(let i=p+1;i<SQRT;i++){const x=c*SQRT+i;if(elements.has(x)){succ=x;break;}}
+  if(succ===-1){
+    // check next clusters
+    for(let nc=c+1;nc<SQRT;nc++){const m=clusterMin(nc);if(m!==-1){succ=m;break;}}
+  }
+  log(`Successor(${v}): check cluster ${c} pos ${p+1}..${SQRT-1}, then next clusters.`);
+  if(succ===-1)log(`No successor found (${v} is max or not in structure).`);
+  else{log(`Successor = ${succ} (cluster=${getCluster(succ)}, pos=${getPos(succ)})`);lastHighlight=succ;}
+  updateDisplay();
+}
+
+function updateDisplay(){
+  const arr=[...elements].sort((a,b)=>a-b);
+  document.getElementById('dispMin').textContent=arr.length?arr[0]:'—';
+  document.getElementById('dispMax').textContent=arr.length?arr[arr.length-1]:'—';
+  document.getElementById('dispSize').textContent=arr.length;
+  draw();
+}
+
+const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
+const CW=820,CH=260;
+const CLUST_W=180,CLUST_H=100,GAP=20;
+
+function draw(){
+  ctx.clearRect(0,0,CW,CH);
+  const totalW=SQRT*CLUST_W+(SQRT-1)*GAP;
+  const startX=(CW-totalW)/2;
+  const startY=60;
+
+  // Draw summary row label
+  ctx.fillStyle='#5a5a72';ctx.font='12px Inter,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Summary (which clusters are non-empty)',CW/2,28);
+
+  for(let c=0;c<SQRT;c++){
+    const cx2=startX+c*(CLUST_W+GAP);
+    const cy=startY;
+    const hasAny=[...elements].some(v=>getCluster(v)===c);
+    // summary indicator
+    ctx.beginPath();ctx.roundRect(cx2,8,CLUST_W,22,4);
+    ctx.fillStyle=hasAny?'#c0392b':'#e2e0da';ctx.fill();
+    ctx.fillStyle=hasAny?'#fff':'#5a5a72';ctx.font='bold 11px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`Cluster ${c}${hasAny?' ●':''}`,cx2+CLUST_W/2,19);
+
+    // cluster box
+    ctx.beginPath();ctx.roundRect(cx2,cy,CLUST_W,CLUST_H,8);
+    ctx.fillStyle='#f7f6f2';ctx.fill();ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#5a5a72';ctx.font='11px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillText(`Cluster ${c} [${c*SQRT}..${c*SQRT+SQRT-1}]`,cx2+CLUST_W/2,cy+16);
+
+    // cells inside cluster
+    const cellW=(CLUST_W-20)/SQRT;
+    for(let p=0;p<SQRT;p++){
+      const val=c*SQRT+p;
+      const px=cx2+10+p*cellW;const py=cy+28;const ph=CLUST_H-38;
+      const has=elements.has(val);
+      const isHL=val===lastHighlight;
+      ctx.beginPath();ctx.roundRect(px,py,cellW-4,ph,5);
+      ctx.fillStyle=isHL?'#fff0ee':has?'#c0392b22':'#fff';ctx.fill();
+      ctx.strokeStyle=isHL?'#c0392b':has?'#c0392b':'#e2e0da';ctx.lineWidth=isHL?2:1;ctx.stroke();
+      ctx.fillStyle=has?'#c0392b':'#aaa';ctx.font=`bold 13px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(has?val:'·',px+cellW/2-2,py+ph/2);
+      ctx.fillStyle='#5a5a72';ctx.font='9px Inter';ctx.textBaseline='bottom';
+      ctx.fillText(`p${p}`,px+cellW/2-2,cy+CLUST_H-2);
+    }
+    ctx.textBaseline='alphabetic';
+  }
+  // arrow from summary to clusters
+  for(let c=0;c<SQRT;c++){
+    const cx2=startX+c*(CLUST_W+GAP)+CLUST_W/2;
+    ctx.beginPath();ctx.strokeStyle='#5a5a72';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.moveTo(cx2,30);ctx.lineTo(cx2,startY);ctx.stroke();ctx.setLineDash([]);
+  }
+}
+function log(msg,type=''){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(type)p.classList.add(type);b.appendChild(p);b.scrollTop=b.scrollHeight;}
+resetVEB();
+</script>
+</body>
+</html>

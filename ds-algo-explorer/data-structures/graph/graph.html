@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Graph — DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f7f6f2; color: #1a1a2e; font-family: 'Inter', sans-serif; min-height: 100vh; }
+  a { color: #7b4fd4; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .breadcrumb { padding: 18px 40px; font-size: 13px; color: #5a5a72; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .breadcrumb span { color: #c0bdb5; }
+
+  .hero { background: #ffffff; border-bottom: 1px solid #e2e0da; padding: 48px 40px 36px; }
+  .tag { display: inline-block; background: #ede8f9; color: #7b4fd4; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.6rem; line-height: 1.15; margin-bottom: 10px; }
+  .hero p { color: #5a5a72; font-size: 1.05rem; max-width: 640px; }
+
+  .content { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.35rem; margin-bottom: 12px; color: #1a1a2e; }
+  .prose p { color: #3a3a52; line-height: 1.75; margin-bottom: 14px; font-size: .97rem; }
+
+  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 28px 0; }
+  .fact-card { background: #fff; border: 1px solid #e2e0da; border-radius: 10px; padding: 18px; }
+  .fact-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: #5a5a72; margin-bottom: 8px; }
+  .fact-card .value { font-family: 'JetBrains Mono', monospace; font-size: .95rem; color: #7b4fd4; font-weight: 600; }
+  .fact-card .sub { font-size: .8rem; color: #5a5a72; margin-top: 4px; }
+
+  .sim-box { background: #fff; border: 1px solid #e2e0da; border-radius: 12px; overflow: hidden; margin: 32px 0; }
+  .sim-header { padding: 16px 20px 12px; border-bottom: 1px solid #e2e0da; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .sim-title { font-weight: 600; font-size: .97rem; color: #1a1a2e; margin-right: auto; }
+  .btn { padding: 7px 14px; border-radius: 7px; border: 1.5px solid #7b4fd4; background: #fff; color: #7b4fd4; font-family: 'Inter', sans-serif; font-size: .84rem; font-weight: 600; cursor: pointer; transition: background .15s, color .15s; }
+  .btn:hover { background: #7b4fd4; color: #fff; }
+  .btn.active { background: #7b4fd4; color: #fff; }
+  .btn.danger { border-color: #d44; color: #d44; }
+  .btn.danger:hover { background: #d44; color: #fff; }
+
+  canvas { display: block; width: 100%; background: #faf9f7; cursor: crosshair; }
+  #modeLabel { font-size: .82rem; color: #5a5a72; padding: 0 4px; font-family: 'JetBrains Mono', monospace; }
+
+  .log-box { background: #1a1a2e; border-radius: 0 0 12px 12px; min-height: 90px; max-height: 140px; overflow-y: auto; padding: 14px 18px; }
+  .log-line { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #a8a4c8; margin-bottom: 4px; }
+  .log-line .ts { color: #5a5a72; margin-right: 8px; }
+  .log-line .hi { color: #b993ff; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: #7b4fd4; font-size: .9rem; font-weight: 500; margin-top: 20px; }
+  .back-link:hover { text-decoration: underline; }
+
+  .info-strip { background: #ede8f9; border-left: 3px solid #7b4fd4; border-radius: 0 8px 8px 0; padding: 10px 16px; margin-bottom: 18px; font-size: .87rem; color: #3a2060; }
+</style>
+</head>
+<body>
+
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>/</span>
+  <a href="../index.html">Data Structures</a><span>/</span>
+  <strong>Graph</strong>
+</nav>
+
+<header class="hero">
+  <div style="max-width:860px;margin:0 auto;">
+    <div class="tag">Graph</div>
+    <h1>Graph</h1>
+    <p>A non-linear data structure of vertices connected by edges — the backbone of networks, maps, and social graphs.</p>
+  </div>
+</header>
+
+<main class="content">
+  <section class="prose" style="margin-bottom:28px;">
+    <div class="section-title">What is a Graph?</div>
+    <p>A graph is a collection of <strong>vertices</strong> (nodes) and <strong>edges</strong> (connections). Think of a road map: cities are vertices and roads are edges. Unlike trees, graphs have no root and can have cycles — roads can loop back to where you started.</p>
+    <p>Graphs can be <strong>directed</strong> (one-way streets) or <strong>undirected</strong> (two-way roads). They can be <strong>weighted</strong> (edge has a cost, like distance) or unweighted. Directed acyclic graphs (DAGs) underpin build systems, spreadsheets, and scheduling.</p>
+    <p>Real-world uses: Google Maps (shortest path), Facebook friends (undirected social graph), Git commits (DAG), airline routes, dependency resolution in package managers.</p>
+  </section>
+
+  <div class="facts-grid">
+    <div class="fact-card"><div class="label">Add Vertex</div><div class="value">O(1)</div><div class="sub">Amortized (adj list)</div></div>
+    <div class="fact-card"><div class="label">Add Edge</div><div class="value">O(1)</div><div class="sub">Adjacency list</div></div>
+    <div class="fact-card"><div class="label">BFS / DFS</div><div class="value">O(V + E)</div><div class="sub">Visit all vertices + edges</div></div>
+    <div class="fact-card"><div class="label">Space</div><div class="value">O(V + E)</div><div class="sub">Adjacency list representation</div></div>
+    <div class="fact-card"><div class="label">Use Cases</div><div class="value" style="font-size:.78rem;line-height:1.5;">Maps, social networks,<br>scheduling, web crawling</div><div class="sub"></div></div>
+  </div>
+
+  <div class="sim-box">
+    <div class="sim-header">
+      <span class="sim-title">Interactive Graph Builder</span>
+      <button class="btn" id="btnAddNode">+ Node</button>
+      <button class="btn" id="btnAddEdge">Edge Mode</button>
+      <button class="btn" id="btnToggleDir">Directed</button>
+      <button class="btn" id="btnToggleWt">Weighted</button>
+      <button class="btn danger" id="btnClear">Clear</button>
+      <span id="modeLabel">Mode: add-node</span>
+    </div>
+    <canvas id="gc" height="320"></canvas>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <div class="info-strip">Hover a node to highlight its neighbours. In <strong>Edge Mode</strong>: click the source node, then the target node. Toggle <strong>Directed</strong> or <strong>Weighted</strong> at any time.</div>
+
+  <a class="back-link" href="../index.html">&#8592; Back to Data Structures</a>
+</main>
+
+<script>
+const canvas = document.getElementById('gc');
+const ctx = canvas.getContext('2d');
+const logBox = document.getElementById('logBox');
+const modeLabel = document.getElementById('modeLabel');
+
+// State
+let nodes = [], edges = [], nodeCounter = 0;
+let mode = 'add-node'; // 'add-node' | 'add-edge'
+let directed = false, weighted = false;
+let edgeSrc = null, hovered = null;
+const ACCENT = '#7b4fd4', R = 22;
+
+function resize() {
+  canvas.width = canvas.parentElement.clientWidth;
+}
+resize();
+window.addEventListener('resize', () => { resize(); draw(); });
+
+function log(msg, hi) {
+  const d = new Date();
+  const ts = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0') + ':' + d.getSeconds().toString().padStart(2,'0');
+  const line = document.createElement('div');
+  line.className = 'log-line';
+  line.innerHTML = `<span class="ts">${ts}</span>${hi ? `<span class="hi">${msg}</span>` : msg}`;
+  logBox.appendChild(line);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+function label(i) { return String.fromCharCode(65 + i % 26); }
+
+function addNode(x, y) {
+  const n = { x, y, id: nodeCounter++ };
+  nodes.push(n);
+  log(`Added node <span class="hi">${label(n.id)}</span>`);
+  draw();
+}
+
+function addEdge(a, b) {
+  if (a === b) return;
+  if (edges.find(e => e.a === a && e.b === b)) { log('Edge already exists'); return; }
+  if (!directed && edges.find(e => e.a === b && e.b === a)) { log('Edge already exists'); return; }
+  const w = weighted ? Math.floor(Math.random() * 9) + 1 : null;
+  edges.push({ a, b, w });
+  const arrow = directed ? '→' : '—';
+  const wt = weighted ? ` (weight ${w})` : '';
+  log(`Added edge <span class="hi">${label(a.id)}${arrow}${label(b.id)}${wt}</span>`);
+  draw();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw edges
+  edges.forEach(e => {
+    const { a, b, w } = e;
+    ctx.beginPath();
+    ctx.strokeStyle = '#b0a8d0';
+    ctx.lineWidth = 2;
+    if (hovered && (a === hovered || b === hovered)) { ctx.strokeStyle = ACCENT; ctx.lineWidth = 3; }
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+
+    if (directed) {
+      drawArrow(a.x, a.y, b.x, b.y, ctx.strokeStyle);
+    }
+    if (weighted && w !== null) {
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      ctx.fillStyle = '#7b4fd4';
+      ctx.font = '600 12px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(w, mx, my - 6);
+    }
+  });
+
+  // Edge mode first-click highlight
+  if (edgeSrc) {
+    ctx.beginPath();
+    ctx.arc(edgeSrc.x, edgeSrc.y, R + 5, 0, Math.PI * 2);
+    ctx.strokeStyle = ACCENT;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([5, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Draw nodes
+  nodes.forEach(n => {
+    const isHov = n === hovered;
+    const isSrc = n === edgeSrc;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, R, 0, Math.PI * 2);
+    ctx.fillStyle = isSrc ? ACCENT : isHov ? '#9c72e8' : '#fff';
+    ctx.fill();
+    ctx.strokeStyle = ACCENT;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.fillStyle = isSrc || isHov ? '#fff' : ACCENT;
+    ctx.font = '700 14px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label(n.id), n.x, n.y);
+  });
+}
+
+function drawArrow(x1, y1, x2, y2, color) {
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const ex = x2 - R * Math.cos(angle), ey = y2 - R * Math.sin(angle);
+  const hs = 10;
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex - hs * Math.cos(angle - 0.4), ey - hs * Math.sin(angle - 0.4));
+  ctx.lineTo(ex - hs * Math.cos(angle + 0.4), ey - hs * Math.sin(angle + 0.4));
+  ctx.closePath();
+  ctx.fillStyle = color || ACCENT;
+  ctx.fill();
+}
+
+function hitTest(x, y) {
+  return nodes.find(n => Math.hypot(n.x - x, n.y - y) <= R + 4) || null;
+}
+
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  const sx = (e.clientX - r.left) * (canvas.width / r.width);
+  const sy = (e.clientY - r.top) * (canvas.height / r.height);
+  hovered = hitTest(sx, sy);
+  draw();
+});
+
+canvas.addEventListener('mouseleave', () => { hovered = null; draw(); });
+
+canvas.addEventListener('click', e => {
+  const r = canvas.getBoundingClientRect();
+  const x = (e.clientX - r.left) * (canvas.width / r.width);
+  const y = (e.clientY - r.top) * (canvas.height / r.height);
+  const hit = hitTest(x, y);
+
+  if (mode === 'add-node') {
+    if (!hit) addNode(x, y);
+  } else if (mode === 'add-edge') {
+    if (!hit) { log('Click a node to start edge'); return; }
+    if (!edgeSrc) { edgeSrc = hit; log(`Source: <span class="hi">${label(hit.id)}</span> — now click target`); draw(); }
+    else { addEdge(edgeSrc, hit); edgeSrc = null; }
+  }
+});
+
+document.getElementById('btnAddNode').addEventListener('click', () => {
+  mode = 'add-node'; edgeSrc = null;
+  document.getElementById('btnAddEdge').classList.remove('active');
+  modeLabel.textContent = 'Mode: add-node';
+  draw();
+});
+
+document.getElementById('btnAddEdge').addEventListener('click', () => {
+  mode = 'add-edge'; edgeSrc = null;
+  document.getElementById('btnAddEdge').classList.add('active');
+  modeLabel.textContent = 'Mode: edge (click src → target)';
+  draw();
+});
+
+document.getElementById('btnToggleDir').addEventListener('click', function() {
+  directed = !directed;
+  this.classList.toggle('active', directed);
+  this.textContent = directed ? 'Directed ✓' : 'Directed';
+  log(`Graph is now <span class="hi">${directed ? 'directed' : 'undirected'}</span>`);
+  draw();
+});
+
+document.getElementById('btnToggleWt').addEventListener('click', function() {
+  weighted = !weighted;
+  this.classList.toggle('active', weighted);
+  this.textContent = weighted ? 'Weighted ✓' : 'Weighted';
+  log(`Weights <span class="hi">${weighted ? 'enabled' : 'disabled'}</span>`);
+  draw();
+});
+
+document.getElementById('btnClear').addEventListener('click', () => {
+  nodes = []; edges = []; nodeCounter = 0; edgeSrc = null;
+  log('Graph cleared'); draw();
+});
+
+// Seed a starter graph
+function seed() {
+  const cx = canvas.width / 2, cy = 160;
+  const positions = [[cx, cy-90],[cx+100,cy+40],[cx-100,cy+40],[cx+50,cy+130],[cx-50,cy+130]];
+  positions.forEach(([x,y]) => { nodes.push({ x, y, id: nodeCounter++ }); });
+  [[0,1],[0,2],[1,3],[2,4],[1,4]].forEach(([a,b]) => edges.push({ a: nodes[a], b: nodes[b], w: null }));
+  log('Starter graph loaded — explore or clear and build your own');
+  draw();
+}
+seed();
+</script>
+</body>
+</html>

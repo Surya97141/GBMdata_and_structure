@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Search – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:860px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation{margin-bottom:32px}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.controls label{font-size:14px;font-weight:500}
+.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
+.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Linear Search
+  </nav>
+
+  <div class="hero">
+    <div class="category-tag">Searching</div>
+    <h1>Linear Search</h1>
+    <p class="tagline">The simplest search — check every element until you find it.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Linear search, also called sequential search, scans each element of a collection one by one from the beginning until the target is found or the list ends. It places no requirement on the data — the array does not need to be sorted — making it the most general-purpose search algorithm available.</p>
+    <p>Think of it like rummaging through an unsorted drawer looking for a specific pen. You pick up each item, check it, put it aside if it is wrong, and stop the moment you find what you need. In the worst case you inspect every item; in the best case the pen is right on top.</p>
+    <p>Because of its O(n) worst-case cost, linear search is rarely the right tool for large sorted datasets, but it shines for small lists, unsorted data, or when a single pass is all that is needed (e.g., finding the maximum value).</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n)</div></div>
+    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(1)</div></div>
+    <div class="fact-card"><div class="label">Sorted Required</div><div class="value">No</div></div>
+  </div>
+
+  <div class="sim-section">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Target:</label>
+      <input type="number" id="targetInput" value="42">
+      <button class="btn btn-primary" onclick="startSearch()">Search</button>
+      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+    </div>
+    <canvas id="cvs" width="780" height="160"></canvas>
+    <div class="log">
+      <h3>Step Log</h3>
+      <div id="logEntries"></div>
+    </div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const ARR = [3,7,12,18,25,31,42,56,63,78];
+const ACCENT = '#e84393';
+const GREEN = '#27a060';
+const GRAY = '#d0cec8';
+const cvs = document.getElementById('cvs');
+const ctx = cvs.getContext('2d');
+let state = ARR.map(()=>'default');
+let running = false;
+
+function drawArray(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  const cw=cvs.width, ch=cvs.height;
+  const n=ARR.length, cellW=62, cellH=62;
+  const startX=(cw - n*cellW)/2, startY=(ch-cellH)/2;
+  ARR.forEach((v,i)=>{
+    const x=startX+i*cellW, y=startY;
+    const s=state[i];
+    ctx.fillStyle=s==='default'?'#fff':s==='checking'?ACCENT:s==='found'?GREEN:GRAY;
+    ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle=s==='default'?'#1a1a2e':'#fff';
+    ctx.font='bold 15px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(v,x+cellW/2,y+cellH/2);
+    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';
+    ctx.fillText(i,x+cellW/2,y+cellH+14);
+  });
+}
+
+function log(msg){
+  const d=document.getElementById('logEntries');
+  const e=document.createElement('div');e.className='log-entry';e.textContent=msg;
+  d.appendChild(e);d.scrollTop=d.scrollHeight;
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSearch(){
+  if(running)return;
+  running=true;
+  resetSearch(false);
+  const target=parseInt(document.getElementById('targetInput').value);
+  log(`Searching for target = ${target}`);
+  for(let i=0;i<ARR.length;i++){
+    state[i]='checking';drawArray();
+    log(`Step ${i+1}: Checking index ${i} → arr[${i}] = ${ARR[i]}`);
+    await sleep(600);
+    if(ARR[i]===target){
+      log(`✓ Found ${target} at index ${i}!`);
+      state[i]='found';drawArray();running=false;return;
+    } else {
+      state[i]='eliminated';
+    }
+  }
+  drawArray();log(`✗ ${target} not found in array.`);running=false;
+}
+
+function resetSearch(clearLog=true){
+  running=false;state=ARR.map(()=>'default');drawArray();
+  if(clearLog)document.getElementById('logEntries').innerHTML='';
+}
+
+drawArray();
+</script>
+</body>
+</html>

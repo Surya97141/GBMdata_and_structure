@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Adjacency Matrix — DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f7f6f2; color: #1a1a2e; font-family: 'Inter', sans-serif; min-height: 100vh; }
+  a { color: #7b4fd4; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .breadcrumb { padding: 18px 40px; font-size: 13px; color: #5a5a72; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .breadcrumb span { color: #c0bdb5; }
+
+  .hero { background: #fff; border-bottom: 1px solid #e2e0da; padding: 48px 40px 36px; }
+  .tag { display: inline-block; background: #ede8f9; color: #7b4fd4; font-size: 11px; font-weight: 600; letter-spacing:.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.4rem; line-height: 1.15; margin-bottom: 10px; }
+  .hero p { color: #5a5a72; font-size: 1.05rem; max-width: 640px; }
+
+  .content { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.35rem; margin-bottom: 12px; }
+  .prose p { color: #3a3a52; line-height: 1.75; margin-bottom: 14px; font-size: .97rem; }
+
+  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 28px 0; }
+  .fact-card { background: #fff; border: 1px solid #e2e0da; border-radius: 10px; padding: 18px; }
+  .fact-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.07em; color: #5a5a72; margin-bottom: 8px; }
+  .fact-card .value { font-family: 'JetBrains Mono', monospace; font-size: .95rem; color: #7b4fd4; font-weight: 600; }
+  .fact-card .sub { font-size: .8rem; color: #5a5a72; margin-top: 4px; }
+
+  .sim-box { background: #fff; border: 1px solid #e2e0da; border-radius: 12px; overflow: hidden; margin: 32px 0; }
+  .sim-header { padding: 14px 20px; border-bottom: 1px solid #e2e0da; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .sim-title { font-weight: 600; font-size: .97rem; margin-right: auto; }
+
+  .sim-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  @media (max-width: 620px) { .sim-body { grid-template-columns: 1fr; } }
+  .canvas-panel { border-right: 1px solid #e2e0da; padding: 12px; }
+  canvas { display: block; width: 100%; background: #faf9f7; cursor: pointer; border-radius: 8px; }
+  .matrix-panel { padding: 18px 16px; overflow-x: auto; }
+  .matrix-panel h3 { font-size: .85rem; font-weight: 600; color: #5a5a72; margin-bottom: 12px; letter-spacing:.05em; }
+
+  .matrix-wrap table { border-collapse: collapse; }
+  .matrix-wrap td, .matrix-wrap th { width: 36px; height: 36px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: .82rem; border: 1px solid #e2e0da; transition: background .2s, color .2s; cursor: pointer; user-select: none; }
+  .matrix-wrap th { background: #f0eef8; color: #7b4fd4; font-weight: 700; font-size: .8rem; cursor: default; }
+  .matrix-wrap td { color: #1a1a2e; }
+  .matrix-wrap td.one { background: #7b4fd4; color: #fff; font-weight: 700; }
+  .matrix-wrap td:hover { background: #ede8f9; }
+  .matrix-wrap td.one:hover { background: #5c38a8; }
+  .matrix-wrap td.hl-row, .matrix-wrap td.hl-col { background: #f3effe; }
+  .matrix-wrap td.one.hl-row, .matrix-wrap td.one.hl-col { background: #9d6fe8; }
+  .row-header { background: #f0eef8 !important; color: #7b4fd4 !important; font-weight: 700; cursor: default !important; }
+
+  .formula { margin-top: 14px; background: #faf9f7; border: 1px solid #e2e0da; border-radius: 8px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: .82rem; color: #5a5a72; }
+  .formula b { color: #7b4fd4; }
+
+  .log-box { background: #1a1a2e; min-height: 80px; max-height: 120px; overflow-y: auto; padding: 12px 18px; }
+  .log-line { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #a8a4c8; margin-bottom: 4px; }
+  .log-line .ts { color: #5a5a72; margin-right: 8px; }
+  .log-line .hi { color: #b993ff; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: #7b4fd4; font-size: .9rem; font-weight: 500; margin-top: 20px; }
+  .info-strip { background: #ede8f9; border-left: 3px solid #7b4fd4; border-radius: 0 8px 8px 0; padding: 10px 16px; margin-bottom: 20px; font-size: .87rem; color: #3a2060; }
+</style>
+</head>
+<body>
+
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>/</span>
+  <a href="../index.html">Data Structures</a><span>/</span>
+  <strong>Adjacency Matrix</strong>
+</nav>
+
+<header class="hero">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="tag">Graph Representation</div>
+    <h1>Adjacency Matrix</h1>
+    <p>A V×V grid where cell [i][j] = 1 if an edge exists from vertex i to vertex j — instant edge lookup, quadratic space.</p>
+  </div>
+</header>
+
+<main class="content">
+  <section class="prose" style="margin-bottom:28px;">
+    <div class="section-title">How it Works</div>
+    <p>An adjacency matrix is a 2-D array of size V×V. If there is an edge from vertex <strong>i</strong> to vertex <strong>j</strong>, we set <code>A[i][j] = 1</code>. For undirected graphs the matrix is symmetric. Edge lookup is O(1) — just check one cell — but storing the matrix always costs O(V²) space, even for sparse graphs.</p>
+    <p>Think of a social network with a yes/no friendship grid: row = person A, column = person B, cell = are they friends? Great for dense graphs and algorithms like Floyd-Warshall; wasteful for sparse ones like road networks.</p>
+  </section>
+
+  <div class="facts-grid">
+    <div class="fact-card"><div class="label">Edge lookup</div><div class="value">O(1)</div><div class="sub">Check A[i][j]</div></div>
+    <div class="fact-card"><div class="label">Add/Remove Edge</div><div class="value">O(1)</div><div class="sub">Set cell to 1 or 0</div></div>
+    <div class="fact-card"><div class="label">Space</div><div class="value">O(V²)</div><div class="sub">Always V×V cells</div></div>
+    <div class="fact-card"><div class="label">Find Neighbours</div><div class="value">O(V)</div><div class="sub">Scan entire row</div></div>
+  </div>
+
+  <div class="info-strip">Click an <strong>edge in the graph</strong> or a <strong>cell in the matrix</strong> to toggle it. Click a node to highlight its row and column.</div>
+
+  <div class="sim-box">
+    <div class="sim-header">
+      <span class="sim-title">Graph ↔ Adjacency Matrix (5 nodes)</span>
+      <button style="padding:7px 14px;border-radius:7px;border:1.5px solid #7b4fd4;background:#fff;color:#7b4fd4;font-weight:600;cursor:pointer;font-size:.84rem;" id="btnReset">Reset</button>
+    </div>
+    <div class="sim-body">
+      <div class="canvas-panel">
+        <canvas id="gc" height="240"></canvas>
+      </div>
+      <div class="matrix-panel">
+        <h3>ADJACENCY MATRIX  A[i][j]</h3>
+        <div class="matrix-wrap" id="matWrap"></div>
+        <div class="formula"><b>A[i][j]</b> = 1 if edge i → j exists<br><b>A[i][j]</b> = 0 otherwise</div>
+      </div>
+    </div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">&#8592; Back to Data Structures</a>
+</main>
+
+<script>
+const N = 5;
+const ACCENT = '#7b4fd4';
+const R = 20;
+let adj = Array.from({length:N}, () => new Array(N).fill(0));
+let selectedNode = null;
+
+const canvas = document.getElementById('gc');
+const ctx = canvas.getContext('2d');
+
+function resize() { canvas.width = canvas.parentElement.clientWidth; }
+resize();
+window.addEventListener('resize', () => { resize(); positionNodes(); drawGraph(); });
+
+let nodePos = [];
+function positionNodes() {
+  const cx = canvas.width / 2, cy = canvas.height / 2, rad = Math.min(canvas.width, canvas.height) * 0.36;
+  nodePos = Array.from({length:N}, (_, i) => {
+    const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+    return { x: cx + rad * Math.cos(a), y: cy + rad * Math.sin(a) };
+  });
+}
+positionNodes();
+
+function label(i) { return String.fromCharCode(65 + i); }
+
+// Initial edges
+[[0,1],[0,2],[1,3],[2,3],[3,4]].forEach(([a,b]) => { adj[a][b] = 1; adj[b][a] = 1; });
+
+function log(msg) {
+  const d = new Date();
+  const ts = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
+  const lb = document.getElementById('logBox');
+  const line = document.createElement('div'); line.className = 'log-line';
+  line.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  lb.appendChild(line); lb.scrollTop = lb.scrollHeight;
+}
+
+function drawGraph() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < N; i++) {
+    for (let j = i+1; j < N; j++) {
+      if (!adj[i][j]) continue;
+      ctx.beginPath();
+      const isSel = selectedNode !== null && (i === selectedNode || j === selectedNode);
+      ctx.strokeStyle = isSel ? ACCENT : '#b0a8d0';
+      ctx.lineWidth = isSel ? 2.5 : 1.8;
+      ctx.moveTo(nodePos[i].x, nodePos[i].y);
+      ctx.lineTo(nodePos[j].x, nodePos[j].y);
+      ctx.stroke();
+    }
+  }
+  nodePos.forEach((p, i) => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, R, 0, Math.PI*2);
+    const isSel = i === selectedNode;
+    ctx.fillStyle = isSel ? ACCENT : '#fff';
+    ctx.fill();
+    ctx.strokeStyle = ACCENT; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = isSel ? '#fff' : ACCENT;
+    ctx.font = '700 13px Inter,sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(label(i), p.x, p.y);
+  });
+}
+
+function buildMatrix() {
+  const wrap = document.getElementById('matWrap');
+  const table = document.createElement('table');
+  // header row
+  const headRow = document.createElement('tr');
+  headRow.appendChild(Object.assign(document.createElement('th'), {textContent:''}));
+  for (let j=0;j<N;j++) headRow.appendChild(Object.assign(document.createElement('th'), {textContent: label(j)}));
+  table.appendChild(headRow);
+
+  for (let i=0;i<N;i++) {
+    const tr = document.createElement('tr');
+    const rh = document.createElement('td'); rh.textContent = label(i); rh.className = 'row-header'; tr.appendChild(rh);
+    for (let j=0;j<N;j++) {
+      const td = document.createElement('td');
+      td.dataset.i = i; td.dataset.j = j;
+      td.textContent = adj[i][j];
+      if (adj[i][j]) td.classList.add('one');
+      if (i === j) { td.style.background = '#f5f3fa'; td.style.cursor = 'default'; td.style.color = '#ccc'; }
+      else td.addEventListener('click', () => toggleEdge(i, j, true));
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  wrap.innerHTML = '';
+  wrap.appendChild(table);
+  highlightMatrix();
+}
+
+function toggleEdge(i, j, fromMatrix) {
+  const was = adj[i][j];
+  adj[i][j] = was ? 0 : 1;
+  adj[j][i] = adj[i][j]; // undirected
+  const action = was ? 'removed' : 'added';
+  log(`Edge <span class="hi">${label(i)}↔${label(j)}</span> ${action} — matrix[${i}][${j}] = matrix[${j}][${i}] = <span class="hi">${adj[i][j]}</span>`);
+  buildMatrix();
+  drawGraph();
+}
+
+function highlightMatrix() {
+  if (selectedNode === null) return;
+  const tds = document.querySelectorAll('#matWrap td[data-i]');
+  tds.forEach(td => {
+    const i = +td.dataset.i, j = +td.dataset.j;
+    td.classList.toggle('hl-row', i === selectedNode);
+    td.classList.toggle('hl-col', j === selectedNode);
+  });
+}
+
+canvas.addEventListener('click', e => {
+  const r = canvas.getBoundingClientRect();
+  const x = (e.clientX - r.left) * (canvas.width / r.width);
+  const y = (e.clientY - r.top) * (canvas.height / r.height);
+
+  // Check node click
+  const ni = nodePos.findIndex(p => Math.hypot(p.x-x, p.y-y) <= R+4);
+  if (ni !== -1) {
+    selectedNode = (selectedNode === ni) ? null : ni;
+    log(`Selected node <span class="hi">${selectedNode !== null ? label(selectedNode) : 'none'}</span> — row/column highlighted`);
+    buildMatrix(); drawGraph(); return;
+  }
+
+  // Check edge click
+  for (let i=0;i<N;i++) {
+    for (let j=i+1;j<N;j++) {
+      const pi = nodePos[i], pj = nodePos[j];
+      const len = Math.hypot(pj.x-pi.x, pj.y-pi.y);
+      const t = ((x-pi.x)*(pj.x-pi.x)+(y-pi.y)*(pj.y-pi.y))/(len*len);
+      if (t<0||t>1) continue;
+      const dx = x-(pi.x+t*(pj.x-pi.x)), dy = y-(pi.y+t*(pj.y-pi.y));
+      if (Math.hypot(dx,dy) < 8) { toggleEdge(i,j,false); return; }
+    }
+  }
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  adj = Array.from({length:N}, () => new Array(N).fill(0));
+  [[0,1],[0,2],[1,3],[2,3],[3,4]].forEach(([a,b]) => { adj[a][b]=1; adj[b][a]=1; });
+  selectedNode = null;
+  log('Graph reset to default');
+  buildMatrix(); drawGraph();
+});
+
+buildMatrix();
+drawGraph();
+log('Starter graph loaded — click edges or matrix cells to toggle');
+</script>
+</body>
+</html>

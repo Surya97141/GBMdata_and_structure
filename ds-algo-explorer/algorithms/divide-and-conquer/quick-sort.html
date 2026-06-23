@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Sort – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.depth-bar{font-size:13px;color:#5a5a72;margin-left:8px}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
+.log{margin-top:16px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Quick Sort
+  </nav>
+  <div class="hero">
+    <div class="category-tag">Divide &amp; Conquer</div>
+    <h1>Quick Sort</h1>
+    <p class="tagline">Pick a pivot, partition around it, recurse on each half.</p>
+  </div>
+  <div class="explanation">
+    <p>Quick sort selects a pivot element and partitions the array into two groups: elements smaller than the pivot (left) and elements larger (right). It then recursively applies the same process to each partition. The pivot ends up in its final sorted position after each partition step.</p>
+    <p>The divide-and-conquer nature is clear: the pivot divides the problem into two independent sub-problems. Unlike merge sort, the heavy work happens during division (partitioning) rather than during combination, and no extra memory is needed — partitioning is done in-place.</p>
+    <p>Quick sort achieves O(n log n) average time with excellent cache performance, making it the fastest comparison sort in practice. The worst case O(n²) occurs when the pivot is always the smallest or largest element (already sorted input with naive pivot selection), avoided by randomized or median-of-three pivot strategies.</p>
+  </div>
+  <div class="facts">
+    <div class="fact-card"><div class="label">Time (Average)</div><div class="value">O(n log n)</div></div>
+    <div class="fact-card"><div class="label">Time (Worst)</div><div class="value">O(n²)</div></div>
+    <div class="fact-card"><div class="label">Space</div><div class="value">O(log n)</div></div>
+  </div>
+  <div class="sim-section">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startSort()">Sort</button>
+      <button class="btn btn-secondary" onclick="resetSort()">Shuffle &amp; Reset</button>
+      <span class="depth-bar" id="depthLabel">Recursion depth: 0</span>
+    </div>
+    <canvas id="cvs" width="840" height="260"></canvas>
+    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const ACCENT='#27a060',PIVOT='#e84393',COMPARE='#fbbf24',SORTED='#d1fae5',DEFAULT='#fff',LESS='#bbf7d0',GREATER='#fce7f3';
+let arr=[64,34,25,12,22,11,90,45];
+let running=false,maxDepth=0;
+let state=arr.map(()=>'default');
+let pivotIdx=-1,sortedSet=new Set();
+const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
+
+function drawBars(lo=-1,hi=-1,depth=0){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  const n=arr.length,w=cvs.width,h=cvs.height;
+  const barW=Math.floor((w-80)/n)-4,maxVal=Math.max(...arr);
+  // Depth indicator
+  ctx.fillStyle='#5a5a72';ctx.font='12px Inter';ctx.textAlign='left';
+  ctx.fillText(`Recursion depth: ${depth} / max: ${maxDepth}`,10,18);
+  // Range bracket
+  if(lo>=0&&hi>=0){
+    const lx=40+lo*(barW+4),rx=40+hi*(barW+4)+barW;
+    ctx.strokeStyle='#27a060';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(lx-2,24);ctx.lineTo(rx+2,24);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  arr.forEach((v,i)=>{
+    const bh=Math.round((v/maxVal)*(h-70));
+    const x=40+i*(barW+4),y=h-20-bh;
+    let fill=DEFAULT;
+    if(sortedSet.has(i))fill=ACCENT;
+    else if(state[i]==='pivot')fill=PIVOT;
+    else if(state[i]==='less')fill=LESS;
+    else if(state[i]==='greater')fill=GREATER;
+    else if(state[i]==='compare')fill=COMPARE;
+    ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,barW,bh,4);ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.08)';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=(fill===PIVOT||fill===ACCENT)?'#fff':'#1a1a2e';
+    ctx.font='bold 13px Inter';ctx.textAlign='center';
+    ctx.fillText(v,x+barW/2,y-4);
+    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
+    ctx.fillText(i,x+barW/2,h-4);
+  });
+}
+
+function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function partition(lo,hi,depth){
+  const pivotVal=arr[hi];
+  state[hi]='pivot';drawBars(lo,hi,depth);
+  log(`Depth ${depth}: Pivot=${pivotVal} at [${lo}..${hi}]`);
+  await sleep(500);
+  let i=lo-1;
+  for(let j=lo;j<hi;j++){
+    state[j]='compare';drawBars(lo,hi,depth);await sleep(300);
+    if(arr[j]<=pivotVal){
+      i++;[arr[i],arr[j]]=[arr[j],arr[i]];
+      state[j]='less';state[i]='less';
+    } else {state[j]='greater';}
+    drawBars(lo,hi,depth);await sleep(200);
+  }
+  [arr[i+1],arr[hi]]=[arr[hi],arr[i+1]];
+  for(let k=lo;k<=hi;k++)state[k]='default';
+  sortedSet.add(i+1);drawBars(lo,hi,depth);
+  log(`Pivot ${pivotVal} placed at index ${i+1}`);
+  await sleep(400);
+  return i+1;
+}
+
+async function quickSort(lo,hi,depth){
+  if(lo>=hi){if(lo===hi)sortedSet.add(lo);drawBars(lo,hi,depth);return;}
+  maxDepth=Math.max(maxDepth,depth);
+  document.getElementById('depthLabel').textContent=`Recursion depth: ${depth} / max: ${maxDepth}`;
+  const p=await partition(lo,hi,depth);
+  await quickSort(lo,p-1,depth+1);
+  await quickSort(p+1,hi,depth+1);
+}
+
+async function startSort(){
+  if(running)return;running=true;maxDepth=0;
+  state=arr.map(()=>'default');sortedSet=new Set();
+  document.getElementById('logEntries').innerHTML='';
+  log('Quick Sort started — D&C: each pivot divides into independent sub-problems');
+  await quickSort(0,arr.length-1,0);
+  for(let i=0;i<arr.length;i++)sortedSet.add(i);
+  drawBars();log('Sort complete!');running=false;
+}
+
+function resetSort(){
+  running=false;arr=[64,34,25,12,22,11,90,45].sort(()=>Math.random()-.5).map(Math.round);
+  state=arr.map(()=>'default');sortedSet=new Set();maxDepth=0;
+  document.getElementById('logEntries').innerHTML='';
+  document.getElementById('depthLabel').textContent='Recursion depth: 0';
+  drawBars();
+}
+drawBars();
+</script>
+</body>
+</html>

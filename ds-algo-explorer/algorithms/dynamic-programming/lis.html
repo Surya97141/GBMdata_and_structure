@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Longest Increasing Subsequence – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem}
+.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
+.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
+.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+label{font-size:14px;color:#5a5a72;font-weight:500}
+input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:240px}
+button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
+button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
+.arr-display{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.arr-cell{min-width:44px;padding:10px 6px;text-align:center;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;border:2px solid #e2e0da;background:#fff;transition:all .3s}
+.arr-cell.cur{border-color:#e8622a;background:#fdf0ea}
+.arr-cell.lis{border-color:#e8622a;background:#e8622a;color:#fff}
+.arr-cell .dp-val{font-size:10px;color:#5a5a72;font-weight:400;display:block}
+.arr-cell.cur .dp-val{color:#e8622a}
+.arr-cell.lis .dp-val{color:#fdebd7}
+.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
+.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto}
+.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    LIS
+  </div>
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Longest Increasing Subsequence</h1>
+    <p class="tagline">Find the longest subsequence of numbers in strictly increasing order.</p>
+  </div>
+  <div class="prose">
+    <p>Think of stock prices over time. You want to find the longest streak of days where each day's price was higher than the previous one you picked — but you can skip days in between. That's the LIS problem.</p>
+    <p>The O(n²) DP approach: <code>dp[i]</code> is the length of the longest increasing subsequence ending at index i. For each i, look back at all j&lt;i where <code>a[j] &lt; a[i]</code> and take the maximum <code>dp[j]+1</code>. The answer is the maximum value in dp[].</p>
+    <p>An O(n log n) solution using patience sorting exists too, but the DP version is more intuitive and easier to visualise. After computing dp[], backtracing parent pointers gives the actual subsequence.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-val">O(n²)</div><div class="fact-lbl">Time (DP)</div></div>
+    <div class="fact"><div class="fact-val">O(n log n)</div><div class="fact-lbl">Time (Optimal)</div></div>
+    <div class="fact"><div class="fact-val">O(n)</div><div class="fact-lbl">Space Complexity</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Array (comma-separated): <input type="text" id="arr" value="3,1,8,2,5,9,4,7"/></label>
+      <button id="solveBtn" onclick="solve()">Solve</button>
+      <button onclick="reset()">Reset</button>
+    </div>
+    <div class="arr-display" id="arrDisplay"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let running=false;
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
+function reset(){document.getElementById('arrDisplay').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('solveBtn').disabled=false;running=false;}
+function buildCells(a){
+  const wrap=document.getElementById('arrDisplay');wrap.innerHTML='';
+  a.forEach((v,i)=>{
+    const div=document.createElement('div');div.className='arr-cell';div.id=`ac${i}`;
+    div.innerHTML=`${v}<span class="dp-val">dp=?</span>`;wrap.appendChild(div);
+  });
+}
+function updateCell(i,dpVal,cls){
+  const el=document.getElementById(`ac${i}`);if(!el)return;
+  el.className='arr-cell '+(cls||'');
+  el.innerHTML=el.textContent.split('\n')[0].trim().split('<')[0]||el.firstChild?.textContent||'';
+  el.innerHTML=`${el.dataset.v}<span class="dp-val">dp=${dpVal}</span>`;
+}
+async function solve(){
+  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
+  document.getElementById('log').innerHTML='';
+  const raw=document.getElementById('arr').value.split(',').map(s=>parseInt(s.trim())).filter(x=>!isNaN(x));
+  const a=raw;const n=a.length;
+  buildCells(a);
+  // store values in data attribute
+  a.forEach((v,i)=>{const el=document.getElementById(`ac${i}`);if(el)el.dataset.v=v;});
+  const dp=new Array(n).fill(1);
+  const parent=new Array(n).fill(-1);
+  log(`<span class="hi">LIS on [${a.join(',')}]</span>`);
+  await sleep(300);
+  for(let i=0;i<n;i++){
+    const el=document.getElementById(`ac${i}`);if(el){el.className='arr-cell cur';el.innerHTML=`${a[i]}<span class="dp-val">dp=?</span>`;}
+    await sleep(100);
+    for(let j=0;j<i;j++){
+      if(a[j]<a[i]&&dp[j]+1>dp[i]){dp[i]=dp[j]+1;parent[i]=j;}
+    }
+    if(el){el.className='arr-cell';el.innerHTML=`${a[i]}<span class="dp-val">dp=${dp[i]}</span>`;}
+    log(`dp[${i}]=${dp[i]} (element ${a[i]}${parent[i]>=0?`, extends from ${a[parent[i]]} at idx ${parent[i]}`:`, starts new'})`);
+  }
+  // find LIS end
+  let maxLen=0,endIdx=0;
+  dp.forEach((v,i)=>{if(v>maxLen){maxLen=v;endIdx=i;}});
+  // backtrace
+  const lisIdx=[];let cur=endIdx;
+  while(cur>=0){lisIdx.push(cur);cur=parent[cur];}
+  lisIdx.reverse();
+  lisIdx.forEach(i=>{const el=document.getElementById(`ac${i}`);if(el){el.className='arr-cell lis';el.innerHTML=`${a[i]}<span class="dp-val">dp=${dp[i]}</span>`;}});
+  const res=document.getElementById('result');res.style.display='block';
+  res.innerHTML=`<b>LIS Length: ${maxLen}</b> &nbsp;|&nbsp; Subsequence: [${lisIdx.map(i=>a[i]).join(', ')}]`;
+  log(`✓ LIS = [${lisIdx.map(i=>a[i]).join(', ')}] (length ${maxLen})`);
+  running=false;
+}
+</script>
+</body>
+</html>

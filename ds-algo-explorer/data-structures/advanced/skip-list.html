@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Skip List — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:920px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+canvas{display:block;background:#f7f6f2;border-radius:10px;border:1px solid #e2e0da}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;align-items:center}
+input[type=number]{width:72px;height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;outline:none;padding:0 6px;background:#f7f6f2}
+input[type=number]:focus{border-color:#c0392b;background:#fff}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+button.secondary:hover{background:#f7f6f2}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:16px;max-height:180px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.log-box p.warn{color:#ffd180}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Skip List
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Skip List</h1>
+  <p class="tagline">A probabilistic multi-level linked list enabling O(log n) search without balancing.</p>
+  <div class="prose">
+    <p>A <strong>Skip List</strong> is a randomized data structure that augments a sorted linked list with multiple levels of "express lanes." Level 0 contains all elements, while higher levels contain random subsets — roughly half at each successive level. To search for a value, you start at the top-left and jump forward, dropping a level when you overshoot.</p>
+    <p>The beauty of skip lists is that they achieve O(log n) average-case search, insertion, and deletion without the complex rotations needed by balanced BSTs like AVL or Red-Black trees. The trade-off is that the performance bounds are probabilistic, not worst-case. Redis uses a skip list internally for its sorted sets.</p>
+    <p>Real-world analogy: think of express trains and local trains. When travelling, you take the express (top level) as far as possible before switching to the local (lower levels) near your destination.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Search / Insert</div><div class="fact-value">O(log n) avg.</div></div>
+    <div class="fact"><div class="fact-label">Space</div><div class="fact-value">O(n log n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Redis · Ordered Maps · DBs</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Skip List Visualization</div>
+    <canvas id="cv" width="820" height="300"></canvas>
+    <div class="controls">
+      <input type="number" id="val" min="1" max="99" value="42" placeholder="value"/>
+      <button onclick="doInsert()">Insert</button>
+      <button onclick="doSearch()">Search</button>
+      <button onclick="doDelete()">Delete</button>
+      <button class="secondary" onclick="resetSL()">Reset</button>
+    </div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+const MAX_LEVELS=4;
+const CW=820,CH=300;
+const LEVEL_H=60;
+const NODE_R=22;
+const LEFT_PAD=50;
+
+class SLNode{constructor(v,lvl){this.val=v;this.next=Array(lvl).fill(null);}}
+
+let head,size;
+function resetSL(){
+  head=new SLNode(-Infinity,MAX_LEVELS);
+  size=0;
+  document.getElementById('logBox').innerHTML='';
+  // insert default values
+  [10,20,30,50,70].forEach(v=>_insert(v));
+  draw([],[]);
+  log('Reset. Default values: 10, 20, 30, 50, 70');
+}
+
+function randomLevel(){
+  let lvl=1;
+  while(Math.random()<0.5&&lvl<MAX_LEVELS)lvl++;
+  return lvl;
+}
+
+function _insert(val){
+  const update=Array(MAX_LEVELS).fill(null);
+  let cur=head;
+  for(let i=MAX_LEVELS-1;i>=0;i--){
+    while(cur.next[i]&&cur.next[i].val<val)cur=cur.next[i];
+    update[i]=cur;
+  }
+  if(cur.next[0]&&cur.next[0].val===val)return false;
+  const lvl=randomLevel();
+  const node=new SLNode(val,lvl);
+  for(let i=0;i<lvl;i++){node.next[i]=update[i].next[i];update[i].next[i]=node;}
+  size++;
+  return lvl;
+}
+
+function doInsert(){
+  const v=parseInt(document.getElementById('val').value);
+  if(isNaN(v)||v<1||v>99){log('Value must be 1-99','warn');return;}
+  const lvl=_insert(v);
+  if(lvl===false){log(`${v} already exists in the list`,'warn');return;}
+  log(`Inserted ${v} at ${lvl} level(s) (random coin flips)`);
+  draw([],[]);
+}
+
+function doSearch(){
+  const v=parseInt(document.getElementById('val').value);
+  if(isNaN(v)||v<1||v>99){log('Value must be 1-99','warn');return;}
+  const visited=[],drops=[];
+  let cur=head;
+  let found=false;
+  for(let i=MAX_LEVELS-1;i>=0;i--){
+    const lvlNodes=[];
+    while(cur.next[i]&&cur.next[i].val<=v){
+      cur=cur.next[i];
+      lvlNodes.push(cur.val);
+      if(cur.val===v){found=true;break;}
+    }
+    if(lvlNodes.length)log(`Level ${i}: ${lvlNodes.join(' → ')}${found?'' :(cur.next[i]?` → ${cur.next[i].val}(too big),drop`:', drop')}`);
+    else log(`Level ${i}: skip (no progress), drop`);
+    drops.push(i);
+    if(found)break;
+  }
+  log(found?`Found ${v}!`:`${v} not in list`);
+  draw(found?[v]:[],[]);
+}
+
+function doDelete(){
+  const v=parseInt(document.getElementById('val').value);
+  if(isNaN(v)){log('Invalid','warn');return;}
+  const update=Array(MAX_LEVELS).fill(null);
+  let cur=head;
+  for(let i=MAX_LEVELS-1;i>=0;i--){while(cur.next[i]&&cur.next[i].val<v)cur=cur.next[i];update[i]=cur;}
+  const target=cur.next[0];
+  if(!target||target.val!==v){log(`${v} not found, cannot delete`,'warn');draw([],[]);return;}
+  for(let i=0;i<MAX_LEVELS;i++){if(update[i].next[i]!==target)break;update[i].next[i]=target.next[i];}
+  size--;
+  log(`Deleted ${v} from skip list`);
+  draw([],[]);
+}
+
+function getNodes(){
+  const nodes=[];let cur=head.next[0];
+  while(cur){nodes.push(cur);cur=cur.next[0];}
+  return nodes;
+}
+
+function nodeX(val,nodes){
+  const idx=nodes.findIndex(n=>n.val===val);
+  if(idx===-1)return -1;
+  return LEFT_PAD+60+(idx*(CW-LEFT_PAD-60)/Math.max(nodes.length-1,1));
+}
+
+function levelY(l){return CH-40-l*LEVEL_H;}
+
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+
+function draw(highlights,drops){
+  ctx.clearRect(0,0,CW,CH);
+  const nodes=getNodes();
+  // draw level labels
+  for(let l=0;l<MAX_LEVELS;l++){
+    const y=levelY(l);
+    ctx.fillStyle='#5a5a72';ctx.font='12px Inter, sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(`L${l}`,LEFT_PAD-8,y);
+    // draw level line
+    ctx.beginPath();ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.moveTo(LEFT_PAD,y);ctx.lineTo(CW-10,y);ctx.stroke();ctx.setLineDash([]);
+  }
+  // draw horizontal links
+  for(let l=0;l<MAX_LEVELS;l++){
+    const y=levelY(l);
+    let cur=head;
+    let prevX=LEFT_PAD;
+    while(cur.next[l]){
+      const nxt=cur.next[l];
+      const nx=nodeX(nxt.val,nodes);
+      ctx.beginPath();ctx.strokeStyle='#c0392b';ctx.lineWidth=2;
+      ctx.moveTo(prevX,y);ctx.lineTo(nx-NODE_R,y);ctx.stroke();
+      // arrowhead
+      ctx.beginPath();ctx.fillStyle='#c0392b';
+      ctx.moveTo(nx-NODE_R,y);ctx.lineTo(nx-NODE_R-8,y-5);ctx.lineTo(nx-NODE_R-8,y+5);ctx.closePath();ctx.fill();
+      prevX=nx+NODE_R;
+      cur=nxt;
+    }
+    // draw sentinel -∞
+    ctx.beginPath();ctx.arc(LEFT_PAD,y,16,0,Math.PI*2);ctx.fillStyle='#5a5a72';ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 10px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('-∞',LEFT_PAD,y);
+  }
+  // draw vertical drop lines per node
+  nodes.forEach(n=>{
+    let topL=0;
+    for(let l=MAX_LEVELS-1;l>=0;l--){if(n.next[l]!==undefined&&l>0&&n.next[l-1]!==undefined){topL=l;break;}}
+    // actually find the height of this node
+    let h=0;
+    let cur2=head;
+    for(let l=MAX_LEVELS-1;l>=0;l--){
+      let c2=head;while(c2.next[l]&&c2.next[l].val<n.val)c2=c2.next[l];
+      if(c2.next[l]&&c2.next[l].val===n.val)h=Math.max(h,l);
+    }
+    const nx=nodeX(n.val,nodes);
+    if(h>0){
+      ctx.beginPath();ctx.strokeStyle='#bbb';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+      ctx.moveTo(nx,levelY(0));ctx.lineTo(nx,levelY(h));ctx.stroke();ctx.setLineDash([]);
+    }
+    // draw node at each level it appears
+    for(let l=0;l<=h;l++){
+      const y=levelY(l);
+      const isH=highlights.includes(n.val);
+      ctx.beginPath();ctx.arc(nx,y,NODE_R,0,Math.PI*2);
+      ctx.fillStyle=isH?'#fff0ee':'#fff';ctx.fill();
+      ctx.strokeStyle=isH?'#c0392b':'#1a1a2e';ctx.lineWidth=isH?2.5:1.5;ctx.stroke();
+      ctx.fillStyle='#1a1a2e';ctx.font=`bold 13px JetBrains Mono, monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(n.val,nx,y);
+    }
+  });
+}
+
+function log(msg,type=''){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(type==='warn')p.classList.add('warn');b.appendChild(p);b.scrollTop=b.scrollHeight;}
+
+resetSL();
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ternary Search – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:860px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
+.explanation{margin-bottom:32px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.controls label{font-size:14px;font-weight:500}
+.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
+.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+.legend{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Ternary Search
+  </nav>
+
+  <div class="hero">
+    <div class="category-tag">Searching</div>
+    <h1>Ternary Search</h1>
+    <p class="tagline">Divide the search space into thirds — eliminate one-third per step.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Ternary search is a divide-and-conquer search algorithm that splits the sorted array into three parts using two midpoints, m1 and m2. By comparing the target with these two pivot values, one-third of the search space is eliminated in every iteration.</p>
+    <p>Imagine a bookshelf with books arranged by author's last name in three reading rooms. You first check the boundary between room 1 and room 2 and between room 2 and room 3. Depending on where the target author falls, you discard one entire room and continue in the remaining two-thirds — then do the same again, and so on.</p>
+    <p>Despite eliminating a third per step, ternary search is actually slightly slower than binary search in practice because it requires two comparisons per iteration vs one for binary search, and the constant factor matters. Its time complexity is O(log₃ n) = O(log n / log 3), which is asymptotically equivalent.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(log₃ n)</div></div>
+    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(1)</div></div>
+    <div class="fact-card"><div class="label">Sorted Required</div><div class="value">Yes</div></div>
+  </div>
+
+  <div class="sim-section">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Target:</label>
+      <input type="number" id="targetInput" value="56">
+      <button class="btn btn-primary" onclick="startSearch()">Search</button>
+      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#e84393"></div>M1 pivot</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div>M2 pivot</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#27a060"></div>Found</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d0cec8"></div>Eliminated</div>
+    </div>
+    <canvas id="cvs" width="780" height="200"></canvas>
+    <div class="log">
+      <h3>Step Log</h3>
+      <div id="logEntries"></div>
+    </div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const ARR=[3,7,12,18,25,31,42,56,63,78];
+const ACCENT='#e84393',PURPLE='#a855f7',GREEN='#27a060',GRAY='#d0cec8';
+const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
+let state=ARR.map(()=>'default'),running=false;
+
+function drawArray(lo,hi,m1,m2){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  const n=ARR.length,cellW=64,cellH=58;
+  const startX=(cvs.width-n*cellW)/2,startY=20;
+  ARR.forEach((v,i)=>{
+    const x=startX+i*cellW,y=startY;
+    let fill='#fff';
+    if(i===m1)fill=ACCENT;
+    else if(i===m2)fill=PURPLE;
+    else if(state[i]==='found')fill=GREEN;
+    else if(state[i]==='eliminated')fill=GRAY;
+    ctx.fillStyle=fill;ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
+    const dark=(fill==='#fff'||fill===GRAY);
+    ctx.fillStyle=dark?'#1a1a2e':'#fff';
+    if(fill===GRAY)ctx.fillStyle='#aaa';
+    ctx.font='bold 15px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(v,x+cellW/2,y+cellH/2);
+    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';
+    ctx.fillText(i,x+cellW/2,y+cellH+10);
+  });
+  const py=startY+cellH+26;
+  const labels={};
+  if(lo>=0&&lo<ARR.length)labels[lo]=(labels[lo]||'')+'L';
+  if(hi>=0&&hi<ARR.length)labels[hi]=(labels[hi]||'')+'R';
+  if(m1>=0&&m1<ARR.length)labels[m1]=(labels[m1]||'')+'M1';
+  if(m2>=0&&m2<ARR.length)labels[m2]=(labels[m2]||'')+'M2';
+  Object.entries(labels).forEach(([i,lbl])=>{
+    const x=startX+Number(i)*cellW+cellW/2;
+    ctx.fillStyle=lbl.includes('M1')?ACCENT:lbl.includes('M2')?PURPLE:'#3b82f6';
+    ctx.font='bold 11px Inter';ctx.textAlign='center';ctx.fillText(lbl,x,py);
+  });
+}
+
+function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSearch(){
+  if(running)return;running=true;
+  state=ARR.map(()=>'default');
+  const target=parseInt(document.getElementById('targetInput').value);
+  log(`Ternary search for target = ${target}`);
+  let lo=0,hi=ARR.length-1,step=0;
+  while(lo<=hi){
+    step++;
+    const m1=Math.floor(lo+(hi-lo)/3);
+    const m2=Math.floor(hi-(hi-lo)/3);
+    for(let i=0;i<ARR.length;i++){
+      if(i<lo||i>hi)state[i]='eliminated';
+      else state[i]='default';
+    }
+    drawArray(lo,hi,m1,m2);
+    log(`Step ${step}: lo=${lo} hi=${hi} m1=${m1}(${ARR[m1]}) m2=${m2}(${ARR[m2]})`);
+    await sleep(900);
+    if(ARR[m1]===target){state[m1]='found';drawArray(lo,hi,-1,-1);log(`✓ Found ${target} at index ${m1}!`);running=false;return;}
+    if(ARR[m2]===target){state[m2]='found';drawArray(lo,hi,-1,-1);log(`✓ Found ${target} at index ${m2}!`);running=false;return;}
+    if(target<ARR[m1]){log(`${target} < arr[m1]=${ARR[m1]}: search left third`);hi=m1-1;}
+    else if(target>ARR[m2]){log(`${target} > arr[m2]=${ARR[m2]}: search right third`);lo=m2+1;}
+    else{log(`arr[m1]=${ARR[m1]} < ${target} < arr[m2]=${ARR[m2]}: search middle third`);lo=m1+1;hi=m2-1;}
+  }
+  for(let i=0;i<ARR.length;i++)if(state[i]!=='found')state[i]='eliminated';
+  drawArray(-1,-1,-1,-1);log(`✗ ${target} not found.`);running=false;
+}
+
+function resetSearch(){
+  running=false;state=ARR.map(()=>'default');drawArray(0,ARR.length-1,-1,-1);
+  document.getElementById('logEntries').innerHTML='';
+}
+drawArray(0,ARR.length-1,-1,-1);
+</script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>KD-Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);cursor:crosshair;}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:80px;}
+.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
+.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
+.hint{font-size:.8rem;color:var(--m);margin-top:.5rem;}
+.nn-result{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--ink);margin-top:.5rem;min-height:1.2rem;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    KD-Tree
+  </nav>
+  <header class="hero">
+    <span class="tag">Tree</span>
+    <h1>KD-Tree</h1>
+    <p>A space-partitioning tree that organizes 2D (or higher-dimensional) points for blazing-fast nearest-neighbor and range searches.</p>
+  </header>
+  <section class="prose">
+    <p>A <strong>KD-Tree</strong> (K-Dimensional Tree) is a binary tree that recursively partitions a k-dimensional space. At each level, a splitting plane divides points along one axis, alternating axes as you go deeper. In 2D: level 0 splits by X (vertical line), level 1 splits by Y (horizontal line), level 2 by X again, and so on.</p>
+    <p>Imagine organizing city locations on a map. First you split the map into "left" and "right" halves using a vertical line through the median longitude. Each half is then split into "top" and "bottom" halves by a horizontal median latitude. Repeat recursively. Now to find the nearest restaurant to your current location, you only need to search a tiny region of the tree — not every city.</p>
+    <p>Nearest-neighbor search prunes entire subtrees when the splitting plane is farther from the query point than the current best distance. In practice this eliminates most of the tree, giving sub-linear search times on typical inputs. KD-Trees power location services, collision detection in games, and k-NN machine learning classifiers.</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Build</div><div class="fact-val">O(n log n)</div></div>
+    <div class="fact"><div class="fact-label">Nearest Neighbor</div><div class="fact-val">O(log n) avg</div></div>
+    <div class="fact"><div class="fact-label">Range Search</div><div class="fact-val">O(√n + k)</div></div>
+    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">GPS, ML k-NN, Ray tracing</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">2D KD-Tree — Scatter Plot + Partition Lines</div>
+    <canvas id="cv" height="380"></canvas>
+    <div class="hint">Click on the canvas to find nearest neighbor. Vertical lines = X-split (blue), Horizontal = Y-split (orange).</div>
+    <div class="nn-result" id="nnResult"></div>
+    <div class="controls">
+      <input id="xIn" type="number" placeholder="x (0-100)" min="0" max="100"/>
+      <input id="yIn" type="number" placeholder="y (0-100)" min="0" max="100"/>
+      <button class="btn btn-pri" onclick="doAddPoint()">Add Point</button>
+      <button class="btn btn-sec" onclick="doAddRandom()">Add Random</button>
+      <button class="btn btn-sec" onclick="doRebuild()">Rebuild Tree</button>
+      <button class="btn btn-dan" onclick="doClear()">Clear</button>
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+
+<script>
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+const PAD=30;
+
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=380; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); render();
+}
+window.addEventListener('resize',()=>{resize();});
+
+// Points in [0,100] coordinate space
+let points=[];
+let kdRoot=null;
+let queryPt=null;
+let nearestPt=null;
+let visitedPts=[];
+
+// ── KD-Tree ──────────────────────────────────────────────
+function buildKD(pts,depth){
+  if(!pts||pts.length===0) return null;
+  const axis=depth%2; // 0=x, 1=y
+  pts.sort((a,b)=>a[axis]-b[axis]);
+  const mid=Math.floor(pts.length/2);
+  return {
+    pt:pts[mid], axis,
+    left:buildKD(pts.slice(0,mid),depth+1),
+    right:buildKD(pts.slice(mid+1),depth+1)
+  };
+}
+
+function dist2(a,b){ return (a[0]-b[0])**2+(a[1]-b[1])**2; }
+
+function nnSearch(node,query,best){
+  if(!node) return best;
+  const d=dist2(node.pt,query);
+  if(!best||d<best.d) best={pt:node.pt,d};
+  visitedPts.push(node.pt);
+  const axis=node.axis;
+  const diff=query[axis]-node.pt[axis];
+  const near=diff<0?node.left:node.right;
+  const far=diff<0?node.right:node.left;
+  best=nnSearch(near,query,best);
+  if(diff*diff<best.d) best=nnSearch(far,query,best);
+  return best;
+}
+
+// ── Coordinate mapping ────────────────────────────────────
+function toCanvas(x,y){ return [PAD+(x/100)*(W-2*PAD), PAD+(y/100)*(H-2*PAD)]; }
+function fromCanvas(cx,cy){ return [(cx-PAD)/(W-2*PAD)*100, (cy-PAD)/(H-2*PAD)*100]; }
+
+// ── Draw partition lines recursively ─────────────────────
+function drawPartitions(node,xmin,xmax,ymin,ymax){
+  if(!node) return;
+  const [px,py]=toCanvas(node.pt[0],node.pt[1]);
+  if(node.axis===0){
+    // vertical split at node.pt[0]
+    const [tx]=toCanvas(node.pt[0],0); const [,ty1]=toCanvas(0,ymin); const [,ty2]=toCanvas(0,ymax);
+    ctx.beginPath(); ctx.moveTo(tx,ty1); ctx.lineTo(tx,ty2);
+    ctx.strokeStyle='rgba(41,128,185,0.45)'; ctx.lineWidth=1.5; ctx.stroke();
+    drawPartitions(node.left,xmin,node.pt[0],ymin,ymax);
+    drawPartitions(node.right,node.pt[0],xmax,ymin,ymax);
+  } else {
+    // horizontal split at node.pt[1]
+    const [tx1]=toCanvas(xmin,0); const [tx2]=toCanvas(xmax,0); const [,ty]=toCanvas(0,node.pt[1]);
+    ctx.beginPath(); ctx.moveTo(tx1,ty); ctx.lineTo(tx2,ty);
+    ctx.strokeStyle='rgba(230,126,34,0.45)'; ctx.lineWidth=1.5; ctx.stroke();
+    drawPartitions(node.left,xmin,xmax,ymin,node.pt[1]);
+    drawPartitions(node.right,xmin,xmax,node.pt[1],ymax);
+  }
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  // axes boundary
+  ctx.strokeStyle='#ddd'; ctx.lineWidth=1;
+  ctx.strokeRect(PAD,PAD,W-2*PAD,H-2*PAD);
+
+  if(kdRoot) drawPartitions(kdRoot,0,100,0,100);
+
+  // visited highlight
+  for(const p of visitedPts){
+    const [cx,cy]=toCanvas(p[0],p[1]);
+    ctx.beginPath(); ctx.arc(cx,cy,10,0,Math.PI*2);
+    ctx.fillStyle='rgba(240,165,0,.25)'; ctx.fill();
+  }
+
+  // points
+  for(const p of points){
+    const [cx,cy]=toCanvas(p[0],p[1]);
+    const isNearest=nearestPt&&p[0]===nearestPt[0]&&p[1]===nearestPt[1];
+    ctx.beginPath(); ctx.arc(cx,cy,isNearest?8:5,0,Math.PI*2);
+    ctx.fillStyle=isNearest?'#e74c3c':'#27a060'; ctx.fill();
+    if(isNearest){ ctx.strokeStyle='#c0392b'; ctx.lineWidth=2.5; ctx.stroke(); }
+  }
+
+  // query point
+  if(queryPt){
+    const [cx,cy]=toCanvas(queryPt[0],queryPt[1]);
+    ctx.beginPath(); ctx.moveTo(cx-8,cy); ctx.lineTo(cx+8,cy);
+    ctx.moveTo(cx,cy-8); ctx.lineTo(cx,cy+8);
+    ctx.strokeStyle='#8e44ad'; ctx.lineWidth=2; ctx.stroke();
+    // line to nearest
+    if(nearestPt){
+      const [nx,ny]=toCanvas(nearestPt[0],nearestPt[1]);
+      ctx.beginPath(); ctx.setLineDash([4,3]); ctx.moveTo(cx,cy); ctx.lineTo(nx,ny);
+      ctx.strokeStyle='rgba(231,76,60,.6)'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  // Legend
+  ctx.font="11px 'Inter',sans-serif"; ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillStyle='rgba(41,128,185,.8)'; ctx.fillRect(PAD,H-PAD+4,14,3); ctx.fillStyle='#5a5a72';
+  ctx.fillText('X-split',PAD+18,H-PAD+1);
+  ctx.fillStyle='rgba(230,126,34,.8)'; ctx.fillRect(PAD+80,H-PAD+4,14,3); ctx.fillStyle='#5a5a72';
+  ctx.fillText('Y-split',PAD+98,H-PAD+1);
+  ctx.fillStyle='#e74c3c'; ctx.beginPath(); ctx.arc(PAD+160,H-PAD+6,5,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#5a5a72';
+  ctx.fillText('Nearest',PAD+170,H-PAD+1);
+  ctx.fillStyle='rgba(240,165,0,.4)'; ctx.fillRect(PAD+238,H-PAD+2,12,12); ctx.fillStyle='#5a5a72';
+  ctx.fillText('Visited',PAD+254,H-PAD+1);
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+function addPoint(x,y){
+  x=Math.round(Math.min(100,Math.max(0,x)));
+  y=Math.round(Math.min(100,Math.max(0,y)));
+  points.push([x,y]);
+  kdRoot=buildKD([...points],0);
+  log(`Added point (${x}, ${y}). Total points: ${points.length}`);
+  queryPt=null; nearestPt=null; visitedPts=[];
+  render();
+}
+
+function doAddPoint(){
+  const x=parseFloat(document.getElementById('xIn').value);
+  const y=parseFloat(document.getElementById('yIn').value);
+  if(isNaN(x)||isNaN(y)){alert('Enter x and y values.');return;}
+  addPoint(x,y);
+}
+
+function doAddRandom(){
+  addPoint(Math.random()*100,Math.random()*100);
+}
+
+function doRebuild(){
+  kdRoot=buildKD([...points],0);
+  queryPt=null; nearestPt=null; visitedPts=[];
+  render(); log(`KD-Tree rebuilt with ${points.length} points.`);
+}
+
+function doClear(){
+  points=[]; kdRoot=null; queryPt=null; nearestPt=null; visitedPts=[];
+  render(); document.getElementById('nnResult').textContent='';
+  log('Cleared all points.');
+}
+
+canvas.addEventListener('click',function(e){
+  if(points.length===0){log('Add some points first.');return;}
+  const rect=canvas.getBoundingClientRect();
+  const cx=(e.clientX-rect.left)*(W/rect.width);
+  const cy=(e.clientY-rect.top)*(H/rect.height);
+  const [qx,qy]=fromCanvas(cx,cy);
+  queryPt=[qx,qy]; visitedPts=[];
+  const result=nnSearch(kdRoot,[qx,qy],null);
+  nearestPt=result?result.pt:null;
+  const dist=result?Math.sqrt(result.d).toFixed(2):'—';
+  document.getElementById('nnResult').textContent=
+    nearestPt?`Nearest to (${qx.toFixed(1)}, ${qy.toFixed(1)}): point (${nearestPt[0].toFixed(1)}, ${nearestPt[1].toFixed(1)}) — dist=${dist} — visited ${visitedPts.length}/${points.length} nodes`:'';
+  log(`NN query at (${qx.toFixed(1)},${qy.toFixed(1)}): nearest=(${nearestPt?nearestPt[0].toFixed(1):'?'},${nearestPt?nearestPt[1].toFixed(1):'?'}), dist=${dist}, visited ${visitedPts.length} node(s)`);
+  render();
+});
+
+// Seed
+[[15,70],[80,20],[50,90],[30,10],[65,55],[10,40],[90,75],[45,30],[20,60],[75,85]].forEach(([x,y])=>points.push([x,y]));
+kdRoot=buildKD([...points],0);
+resize();
+log(`Seeded with ${points.length} points. Click the canvas to find nearest neighbor.`);
+</script>
+</body>
+</html>

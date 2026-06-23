@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rope — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:920px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+canvas{display:block;background:#f7f6f2;border-radius:10px;border:1px solid #e2e0da;margin-bottom:12px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;align-items:center}
+.ctrl-group{display:flex;gap:6px;align-items:center;font-size:13px;color:#5a5a72}
+input[type=text]{height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:13px;padding:0 8px;outline:none;background:#f7f6f2;width:140px}
+input[type=text]:focus{border-color:#c0392b;background:#fff}
+input[type=number]{width:60px;height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;outline:none;padding:0 4px;background:#f7f6f2}
+input[type=number]:focus{border-color:#c0392b;background:#fff}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 15px;font-size:.86rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+.current-str{font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;border-radius:6px;padding:8px 12px;margin-bottom:10px;border:1px solid #e2e0da;word-break:break-all}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:12px;max-height:150px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.log-box p.warn{color:#ffd180}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Rope
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Rope</h1>
+  <p class="tagline">A binary tree for efficient string concatenation, splitting, and indexing at scale.</p>
+  <div class="prose">
+    <p>A <strong>Rope</strong> is a binary tree data structure designed for efficient manipulation of very long strings. Unlike a flat array-based string where inserting a character in the middle requires shifting O(n) bytes, a Rope can concatenate two strings in O(1) (just create a new root node) and split a string at any index in O(log n).</p>
+    <p>Internal nodes store the total length of all leaves in their left subtree (the "weight"), which enables O(log n) character indexing by walking down the tree. Leaf nodes hold the actual string fragments. Real-world text editors like VS Code's Monaco use a similar structure (called a "piece table") to handle large files efficiently.</p>
+    <p>Real-world analogy: Instead of one long paper scroll, imagine a filing system where documents are broken into labeled chunks stored in folders. To append a new section, you just add a new folder label — you do not re-copy everything.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Concat</div><div class="fact-value">O(1)</div></div>
+    <div class="fact"><div class="fact-label">Split / Index</div><div class="fact-value">O(log n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Text Editors · DNA · Diff</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Rope Tree Visualization</div>
+    <div class="current-str" id="currentStr">Current string: "Hello World"</div>
+    <canvas id="cv" width="840" height="260"></canvas>
+    <div class="controls">
+      <div class="ctrl-group">
+        Concat:
+        <input type="text" id="concatStr" value=" there" placeholder="append string"/>
+        <button onclick="doConcat()">Concat</button>
+      </div>
+      <div class="ctrl-group">
+        Split at index:
+        <input type="number" id="splitIdx" value="5" min="0"/>
+        <button onclick="doSplit()">Split</button>
+      </div>
+      <div class="ctrl-group">
+        Index:
+        <input type="number" id="indexI" value="0" min="0"/>
+        <button onclick="doIndex()">Index(i)</button>
+      </div>
+      <button class="secondary" onclick="resetRope()">Reset</button>
+    </div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+class RopeNode{
+  constructor(str=null,left=null,right=null){
+    this.str=str;this.left=left;this.right=right;
+    this.weight=str!==null?str.length:(left?ropeLen(left):0);
+  }
+}
+function ropeLen(n){if(!n)return 0;if(n.str!==null)return n.str.length;return ropeLen(n.left)+ropeLen(n.right);}
+function ropeStr(n){if(!n)return'';if(n.str!==null)return n.str;return ropeStr(n.left)+ropeStr(n.right);}
+function ropeConcat(a,b){if(!a)return b;if(!b)return a;return new RopeNode(null,a,b);}
+function ropeSplit(n,i){
+  if(!n)return[null,null];
+  if(n.str!==null){const l=n.str.slice(0,i),r=n.str.slice(i);return[l.length?new RopeNode(l):null,r.length?new RopeNode(r):null];}
+  const lLen=ropeLen(n.left);
+  if(i<lLen){const[ll,lr]=ropeSplit(n.left,i);return[ll,ropeConcat(lr,n.right)];}
+  if(i===lLen)return[n.left,n.right];
+  const[rl,rr]=ropeSplit(n.right,i-lLen);return[ropeConcat(n.left,rl),rr];
+}
+function ropeIndex(n,i){
+  if(!n)return'';
+  if(n.str!==null)return n.str[i]||'';
+  const lLen=ropeLen(n.left);
+  if(i<lLen)return ropeIndex(n.left,i);
+  return ropeIndex(n.right,i-lLen);
+}
+
+let rope=null;
+function fromString(s){
+  if(s.length<=6)return new RopeNode(s);
+  const m=Math.floor(s.length/2);
+  return ropeConcat(fromString(s.slice(0,m)),fromString(s.slice(m)));
+}
+
+function resetRope(){rope=fromString('Hello World');render();log('Reset: rope = "Hello World"');}
+
+function doConcat(){
+  const s=document.getElementById('concatStr').value;
+  if(!s){log('Empty string, nothing to concat','warn');return;}
+  rope=ropeConcat(rope,fromString(s));
+  log(`Concat "${s}": new root created, weight updated`);
+  render();
+}
+function doSplit(){
+  const i=parseInt(document.getElementById('splitIdx').value);
+  const total=ropeLen(rope);
+  if(isNaN(i)||i<0||i>total){log(`Split index must be 0–${total}`,'warn');return;}
+  const[l,r]=ropeSplit(rope,i);
+  const ls=ropeStr(l),rs=ropeStr(r);
+  rope=l;// keep left part
+  log(`Split at ${i}: left="${ls}" right="${rs}". Showing left half.`);
+  render();
+}
+function doIndex(){
+  const i=parseInt(document.getElementById('indexI').value);
+  const total=ropeLen(rope);
+  if(isNaN(i)||i<0||i>=total){log(`Index must be 0–${total-1}`,'warn');return;}
+  const ch=ropeIndex(rope,i);
+  log(`Index(${i}) = '${ch}'`);
+  render(i);
+}
+
+function log(msg,type=''){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(type)p.classList.add(type);b.appendChild(p);b.scrollTop=b.scrollHeight;}
+
+const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
+const CW=840,CH=260;
+const LEAF_W=70,LEAF_H=36,INT_W=56,INT_H=32;
+
+function layoutTree(node,x,y,spread){
+  if(!node)return null;
+  const info={node,x,y};
+  if(node.str!==null){info.leaf=true;return info;}
+  const lc=node.left?layoutTree(node.left,x-spread,y+70,spread*0.55):null;
+  const rc=node.right?layoutTree(node.right,x+spread,y+70,spread*0.55):null;
+  info.lc=lc;info.rc=rc;
+  return info;
+}
+
+function drawTree(info,highlightIdx=-1){
+  if(!info)return;
+  // draw edges
+  if(info.lc){ctx.beginPath();ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.moveTo(info.x,info.y+INT_H/2);ctx.lineTo(info.lc.x,info.lc.y-(!info.lc.leaf?INT_H/2:LEAF_H/2));ctx.stroke();}
+  if(info.rc){ctx.beginPath();ctx.strokeStyle='#3498db';ctx.lineWidth=1.5;ctx.moveTo(info.x,info.y+INT_H/2);ctx.lineTo(info.rc.x,info.rc.y-(!info.rc.leaf?INT_H/2:LEAF_H/2));ctx.stroke();}
+  drawTree(info.lc,highlightIdx);
+  drawTree(info.rc,highlightIdx);
+  // draw node
+  if(info.leaf){
+    const w=Math.max(LEAF_W,info.node.str.length*10);
+    const x=info.x-w/2,y=info.y-LEAF_H/2;
+    ctx.fillStyle='#fff';ctx.strokeStyle='#1a1a2e';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(x,y,w,LEAF_H,6);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#c0392b';ctx.font='bold 12px JetBrains Mono, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(`"${info.node.str}"`,info.x,info.y);
+  } else {
+    const wt=ropeLen(info.node.left||null);
+    const x=info.x-INT_W/2,y=info.y-INT_H/2;
+    ctx.fillStyle='#1a1a2e';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(x,y,INT_W,INT_H,6);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 12px JetBrains Mono, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(`w=${wt}`,info.x,info.y);
+  }
+}
+
+function render(highlightIdx=-1){
+  ctx.clearRect(0,0,CW,CH);
+  const str=ropeStr(rope);
+  document.getElementById('currentStr').textContent=`Current string: "${str}" (length ${str.length})`;
+  if(!rope){ctx.fillStyle='#5a5a72';ctx.font='14px Inter';ctx.textAlign='center';ctx.fillText('Empty rope',CW/2,CH/2);return;}
+  const layout=layoutTree(rope,CW/2,40,CW/4);
+  drawTree(layout,highlightIdx);
+}
+
+resetRope();
+</script>
+</body>
+</html>

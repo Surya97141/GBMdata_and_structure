@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Algorithms — DS/Algo Explorer</title>
+<link rel="stylesheet" href="../assets/style.css"/>
+<style>
+  .cat-section { margin: 2rem 0 3rem; }
+  .cat-header {
+    display: flex; align-items: center; gap: .8rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: .6rem; margin-bottom: 1.4rem;
+  }
+  .cat-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .cat-header h2 { font-size: 1.4rem; }
+  .algo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: .85rem;
+  }
+  .algo-card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.3rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow .18s, transform .18s, border-color .18s;
+  }
+  .algo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: var(--card-accent, var(--border)); }
+  .algo-card-name { font-weight: 700; font-size: .92rem; color: var(--ink); margin-bottom: .25rem; }
+  .algo-card-tag {
+    font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--surface); background: var(--card-accent, #888);
+    padding: .1rem .5rem; border-radius: 100px; display: inline-block; margin-bottom: .45rem;
+  }
+  .algo-card-desc { font-size: .78rem; color: var(--ink-muted); line-height: 1.5; }
+  .algo-card-complexity { font-family: var(--font-mono); font-size: .72rem; color: var(--ink-muted); margin-top: .4rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../index.html">Home</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">Algorithms</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-tag" style="background:#1a1a2e;">Algorithms</div>
+    <h1>Algorithms</h1>
+    <p class="hero-tagline">From O(n²) bubble sort to FFT — every algorithm with interactive step-through visualizations.</p>
+  </div>
+
+  <!-- SORTING -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#2a7ae8;"></div><h2>Sorting</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="sorting/bubble-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Bubble Sort</div><div class="algo-card-complexity">O(n²) avg</div></a>
+      <a class="algo-card" href="sorting/selection-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Selection Sort</div><div class="algo-card-complexity">O(n²)</div></a>
+      <a class="algo-card" href="sorting/insertion-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Insertion Sort</div><div class="algo-card-complexity">O(n²) worst, O(n) best</div></a>
+      <a class="algo-card" href="sorting/merge-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Merge Sort</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="sorting/quick-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Quick Sort</div><div class="algo-card-complexity">O(n log n) avg</div></a>
+      <a class="algo-card" href="sorting/heap-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Heap Sort</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="sorting/counting-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Counting Sort</div><div class="algo-card-complexity">O(n + k)</div></a>
+      <a class="algo-card" href="sorting/radix-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Radix Sort</div><div class="algo-card-complexity">O(nk)</div></a>
+      <a class="algo-card" href="sorting/bucket-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Bucket Sort</div><div class="algo-card-complexity">O(n + k) avg</div></a>
+      <a class="algo-card" href="sorting/shell-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Shell Sort</div><div class="algo-card-complexity">O(n log² n)</div></a>
+      <a class="algo-card" href="sorting/tim-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Tim Sort</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="sorting/cycle-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Cycle Sort</div><div class="algo-card-complexity">O(n²), min writes</div></a>
+      <a class="algo-card" href="sorting/patience-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Patience Sort</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="sorting/bitonic-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Bitonic Sort</div><div class="algo-card-complexity">O(log² n) parallel</div></a>
+      <a class="algo-card" href="sorting/comb-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Comb Sort</div><div class="algo-card-complexity">O(n log n) avg</div></a>
+      <a class="algo-card" href="sorting/pigeonhole-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Pigeonhole Sort</div><div class="algo-card-complexity">O(n + range)</div></a>
+      <a class="algo-card" href="sorting/strand-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Strand Sort</div><div class="algo-card-complexity">O(n²) worst</div></a>
+      <a class="algo-card" href="sorting/pancake-sort.html" style="--card-accent:#2a7ae8"><div class="algo-card-tag" style="background:#2a7ae8;">Sorting</div><div class="algo-card-name">Pancake Sort</div><div class="algo-card-complexity">O(n²) flips</div></a>
+    </div>
+  </div>
+
+  <!-- SEARCHING -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#e84393;"></div><h2>Searching</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="searching/linear-search.html" style="--card-accent:#e84393"><div class="algo-card-tag" style="background:#e84393;">Search</div><div class="algo-card-name">Linear Search</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="searching/binary-search.html" style="--card-accent:#e84393"><div class="algo-card-tag" style="background:#e84393;">Search</div><div class="algo-card-name">Binary Search</div><div class="algo-card-complexity">O(log n)</div></a>
+      <a class="algo-card" href="searching/ternary-search.html" style="--card-accent:#e84393"><div class="algo-card-tag" style="background:#e84393;">Search</div><div class="algo-card-name">Ternary Search</div><div class="algo-card-complexity">O(log₃ n)</div></a>
+      <a class="algo-card" href="searching/jump-search.html" style="--card-accent:#e84393"><div class="algo-card-tag" style="background:#e84393;">Search</div><div class="algo-card-name">Jump Search</div><div class="algo-card-complexity">O(√n)</div></a>
+      <a class="algo-card" href="searching/exponential-search.html" style="--card-accent:#e84393"><div class="algo-card-tag" style="background:#e84393;">Search</div><div class="algo-card-name">Exponential Search</div><div class="algo-card-complexity">O(log n)</div></a>
+      <a class="algo-card" href="searching/interpolation-search.html" style="--card-accent:#e84393"><div class="algo-card-tag" style="background:#e84393;">Search</div><div class="algo-card-name">Interpolation Search</div><div class="algo-card-complexity">O(log log n) avg</div></a>
+      <a class="algo-card" href="searching/fibonacci-search.html" style="--card-accent:#e84393"><div class="algo-card-tag" style="background:#e84393;">Search</div><div class="algo-card-name">Fibonacci Search</div><div class="algo-card-complexity">O(log n)</div></a>
+    </div>
+  </div>
+
+  <!-- GRAPH ALGORITHMS -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#7b4fd4;"></div><h2>Graph Algorithms</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="graph/bfs.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">BFS</div><div class="algo-card-complexity">O(V + E)</div></a>
+      <a class="algo-card" href="graph/dfs.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">DFS</div><div class="algo-card-complexity">O(V + E)</div></a>
+      <a class="algo-card" href="graph/dijkstra.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Dijkstra</div><div class="algo-card-complexity">O((V+E) log V)</div></a>
+      <a class="algo-card" href="graph/bellman-ford.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Bellman-Ford</div><div class="algo-card-complexity">O(VE)</div></a>
+      <a class="algo-card" href="graph/floyd-warshall.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Floyd-Warshall</div><div class="algo-card-complexity">O(V³)</div></a>
+      <a class="algo-card" href="graph/johnsons.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Johnson's</div><div class="algo-card-complexity">O(V² log V + VE)</div></a>
+      <a class="algo-card" href="graph/a-star.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">A*</div><div class="algo-card-complexity">O(E log V)</div></a>
+      <a class="algo-card" href="graph/kruskal.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Kruskal</div><div class="algo-card-complexity">O(E log E)</div></a>
+      <a class="algo-card" href="graph/prim.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Prim</div><div class="algo-card-complexity">O(E log V)</div></a>
+      <a class="algo-card" href="graph/boruvka.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Borůvka</div><div class="algo-card-complexity">O(E log V)</div></a>
+      <a class="algo-card" href="graph/topological-sort.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Topological Sort</div><div class="algo-card-complexity">O(V + E)</div></a>
+      <a class="algo-card" href="graph/tarjan-scc.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Tarjan SCC</div><div class="algo-card-complexity">O(V + E)</div></a>
+      <a class="algo-card" href="graph/kosaraju-scc.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Kosaraju SCC</div><div class="algo-card-complexity">O(V + E)</div></a>
+      <a class="algo-card" href="graph/ford-fulkerson.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Ford-Fulkerson</div><div class="algo-card-complexity">O(Ef)</div></a>
+      <a class="algo-card" href="graph/edmonds-karp.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Edmonds-Karp</div><div class="algo-card-complexity">O(VE²)</div></a>
+      <a class="algo-card" href="graph/hopcroft-karp.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Hopcroft-Karp</div><div class="algo-card-complexity">O(E√V)</div></a>
+      <a class="algo-card" href="graph/tsp.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">TSP</div><div class="algo-card-complexity">O(n² 2ⁿ) DP</div></a>
+      <a class="algo-card" href="graph/bridges-articulation.html" style="--card-accent:#7b4fd4"><div class="algo-card-tag" style="background:#7b4fd4;">Graph</div><div class="algo-card-name">Bridges &amp; Articulation</div><div class="algo-card-complexity">O(V + E)</div></a>
+    </div>
+  </div>
+
+  <!-- DP -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#e8622a;"></div><h2>Dynamic Programming</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="dynamic-programming/knapsack-01.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">0/1 Knapsack</div><div class="algo-card-complexity">O(nW)</div></a>
+      <a class="algo-card" href="dynamic-programming/knapsack-unbounded.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Unbounded Knapsack</div><div class="algo-card-complexity">O(nW)</div></a>
+      <a class="algo-card" href="dynamic-programming/lcs.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">LCS</div><div class="algo-card-complexity">O(mn)</div></a>
+      <a class="algo-card" href="dynamic-programming/lis.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">LIS</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="dynamic-programming/coin-change.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Coin Change</div><div class="algo-card-complexity">O(nk)</div></a>
+      <a class="algo-card" href="dynamic-programming/edit-distance.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Edit Distance</div><div class="algo-card-complexity">O(mn)</div></a>
+      <a class="algo-card" href="dynamic-programming/matrix-chain.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Matrix Chain</div><div class="algo-card-complexity">O(n³)</div></a>
+      <a class="algo-card" href="dynamic-programming/rod-cutting.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Rod Cutting</div><div class="algo-card-complexity">O(n²)</div></a>
+      <a class="algo-card" href="dynamic-programming/egg-drop.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Egg Drop</div><div class="algo-card-complexity">O(n² k)</div></a>
+      <a class="algo-card" href="dynamic-programming/subset-sum.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Subset Sum</div><div class="algo-card-complexity">O(nW)</div></a>
+      <a class="algo-card" href="dynamic-programming/word-break.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Word Break</div><div class="algo-card-complexity">O(n²)</div></a>
+      <a class="algo-card" href="dynamic-programming/palindrome-partition.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Palindrome Partition</div><div class="algo-card-complexity">O(n²)</div></a>
+      <a class="algo-card" href="dynamic-programming/catalan-dp.html" style="--card-accent:#e8622a"><div class="algo-card-tag" style="background:#e8622a;">DP</div><div class="algo-card-name">Catalan (DP)</div><div class="algo-card-complexity">O(n²)</div></a>
+    </div>
+  </div>
+
+  <!-- D&C -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#27a060;"></div><h2>Divide &amp; Conquer</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="divide-and-conquer/merge-sort.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">D&amp;C</div><div class="algo-card-name">Merge Sort</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="divide-and-conquer/quick-sort.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">D&amp;C</div><div class="algo-card-name">Quick Sort</div><div class="algo-card-complexity">O(n log n) avg</div></a>
+      <a class="algo-card" href="divide-and-conquer/binary-search.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">D&amp;C</div><div class="algo-card-name">Binary Search</div><div class="algo-card-complexity">O(log n)</div></a>
+      <a class="algo-card" href="divide-and-conquer/strassen.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">D&amp;C</div><div class="algo-card-name">Strassen</div><div class="algo-card-complexity">O(n^2.807)</div></a>
+      <a class="algo-card" href="divide-and-conquer/closest-pair.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">D&amp;C</div><div class="algo-card-name">Closest Pair</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="divide-and-conquer/karatsuba.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">D&amp;C</div><div class="algo-card-name">Karatsuba</div><div class="algo-card-complexity">O(n^1.585)</div></a>
+      <a class="algo-card" href="divide-and-conquer/fft.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">D&amp;C</div><div class="algo-card-name">FFT</div><div class="algo-card-complexity">O(n log n)</div></a>
+    </div>
+  </div>
+
+  <!-- GREEDY -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#d4a017;"></div><h2>Greedy</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="greedy/activity-selection.html" style="--card-accent:#d4a017"><div class="algo-card-tag" style="background:#d4a017;">Greedy</div><div class="algo-card-name">Activity Selection</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="greedy/huffman-coding.html" style="--card-accent:#d4a017"><div class="algo-card-tag" style="background:#d4a017;">Greedy</div><div class="algo-card-name">Huffman Coding</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="greedy/fractional-knapsack.html" style="--card-accent:#d4a017"><div class="algo-card-tag" style="background:#d4a017;">Greedy</div><div class="algo-card-name">Fractional Knapsack</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="greedy/job-sequencing.html" style="--card-accent:#d4a017"><div class="algo-card-tag" style="background:#d4a017;">Greedy</div><div class="algo-card-name">Job Sequencing</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="greedy/dijkstra-greedy.html" style="--card-accent:#d4a017"><div class="algo-card-tag" style="background:#d4a017;">Greedy</div><div class="algo-card-name">Dijkstra (Greedy)</div><div class="algo-card-complexity">O(V²)</div></a>
+      <a class="algo-card" href="greedy/prim-greedy.html" style="--card-accent:#d4a017"><div class="algo-card-tag" style="background:#d4a017;">Greedy</div><div class="algo-card-name">Prim (Greedy)</div><div class="algo-card-complexity">O(V²)</div></a>
+    </div>
+  </div>
+
+  <!-- BACKTRACKING -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#c0392b;"></div><h2>Backtracking</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="backtracking/n-queens.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">N-Queens</div></a>
+      <a class="algo-card" href="backtracking/sudoku-solver.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">Sudoku Solver</div></a>
+      <a class="algo-card" href="backtracking/rat-in-maze.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">Rat in a Maze</div></a>
+      <a class="algo-card" href="backtracking/hamiltonian-path.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">Hamiltonian Path</div></a>
+      <a class="algo-card" href="backtracking/graph-coloring.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">Graph Coloring</div></a>
+      <a class="algo-card" href="backtracking/subset-generation.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">Subset Generation</div></a>
+      <a class="algo-card" href="backtracking/permutation-generation.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">Permutation Generation</div></a>
+      <a class="algo-card" href="backtracking/word-search.html" style="--card-accent:#c0392b"><div class="algo-card-tag" style="background:#c0392b;">BT</div><div class="algo-card-name">Word Search</div></a>
+    </div>
+  </div>
+
+  <!-- STRING -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#2a9d8f;"></div><h2>String Algorithms</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="string/kmp.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">KMP</div><div class="algo-card-complexity">O(n + m)</div></a>
+      <a class="algo-card" href="string/rabin-karp.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">Rabin-Karp</div><div class="algo-card-complexity">O(n + m) avg</div></a>
+      <a class="algo-card" href="string/boyer-moore.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">Boyer-Moore</div><div class="algo-card-complexity">O(n/m) best</div></a>
+      <a class="algo-card" href="string/z-algorithm.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">Z-Algorithm</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="string/aho-corasick.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">Aho-Corasick</div><div class="algo-card-complexity">O(n + m + z)</div></a>
+      <a class="algo-card" href="string/manacher.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">Manacher</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="string/suffix-array-construction.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">Suffix Array</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="string/suffix-automaton.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">Suffix Automaton</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="string/lcp.html" style="--card-accent:#2a9d8f"><div class="algo-card-tag" style="background:#2a9d8f;">String</div><div class="algo-card-name">LCP Array</div><div class="algo-card-complexity">O(n)</div></a>
+    </div>
+  </div>
+
+  <!-- MATHEMATICAL -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#e76f51;"></div><h2>Mathematical</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="mathematical/sieve-eratosthenes.html" style="--card-accent:#e76f51"><div class="algo-card-tag" style="background:#e76f51;">Math</div><div class="algo-card-name">Sieve of Eratosthenes</div><div class="algo-card-complexity">O(n log log n)</div></a>
+      <a class="algo-card" href="mathematical/euclidean-gcd.html" style="--card-accent:#e76f51"><div class="algo-card-tag" style="background:#e76f51;">Math</div><div class="algo-card-name">Euclidean GCD</div><div class="algo-card-complexity">O(log min(a,b))</div></a>
+      <a class="algo-card" href="mathematical/modular-exponentiation.html" style="--card-accent:#e76f51"><div class="algo-card-tag" style="background:#e76f51;">Math</div><div class="algo-card-name">Modular Exponentiation</div><div class="algo-card-complexity">O(log n)</div></a>
+      <a class="algo-card" href="mathematical/miller-rabin.html" style="--card-accent:#e76f51"><div class="algo-card-tag" style="background:#e76f51;">Math</div><div class="algo-card-name">Miller-Rabin Primality</div><div class="algo-card-complexity">O(k log² n)</div></a>
+      <a class="algo-card" href="mathematical/pascal-triangle.html" style="--card-accent:#e76f51"><div class="algo-card-tag" style="background:#e76f51;">Math</div><div class="algo-card-name">Pascal's Triangle</div><div class="algo-card-complexity">O(n²)</div></a>
+    </div>
+  </div>
+
+  <!-- BIT MANIPULATION -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#264653;"></div><h2>Bit Manipulation</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="bit-manipulation/brian-kernighan.html" style="--card-accent:#264653"><div class="algo-card-tag" style="background:#264653;">Bits</div><div class="algo-card-name">Brian Kernighan</div><div class="algo-card-complexity">O(set bits)</div></a>
+      <a class="algo-card" href="bit-manipulation/power-of-two.html" style="--card-accent:#264653"><div class="algo-card-tag" style="background:#264653;">Bits</div><div class="algo-card-name">Power of Two</div><div class="algo-card-complexity">O(1)</div></a>
+      <a class="algo-card" href="bit-manipulation/xor-tricks.html" style="--card-accent:#264653"><div class="algo-card-tag" style="background:#264653;">Bits</div><div class="algo-card-name">XOR Tricks</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="bit-manipulation/bitmask-dp.html" style="--card-accent:#264653"><div class="algo-card-tag" style="background:#264653;">Bits</div><div class="algo-card-name">Bitmask DP</div><div class="algo-card-complexity">O(n² 2ⁿ)</div></a>
+    </div>
+  </div>
+
+  <!-- COMPUTATIONAL GEOMETRY -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#457b9d;"></div><h2>Computational Geometry</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="computational-geometry/convex-hull.html" style="--card-accent:#457b9d"><div class="algo-card-tag" style="background:#457b9d;">Geometry</div><div class="algo-card-name">Convex Hull</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="computational-geometry/line-intersection.html" style="--card-accent:#457b9d"><div class="algo-card-tag" style="background:#457b9d;">Geometry</div><div class="algo-card-name">Line Intersection</div><div class="algo-card-complexity">O(1)</div></a>
+      <a class="algo-card" href="computational-geometry/point-in-polygon.html" style="--card-accent:#457b9d"><div class="algo-card-tag" style="background:#457b9d;">Geometry</div><div class="algo-card-name">Point in Polygon</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="computational-geometry/sweep-line.html" style="--card-accent:#457b9d"><div class="algo-card-tag" style="background:#457b9d;">Geometry</div><div class="algo-card-name">Sweep Line</div><div class="algo-card-complexity">O(n log n)</div></a>
+    </div>
+  </div>
+
+  <!-- RANDOMIZED -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#6d6875;"></div><h2>Randomized</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="randomized/randomized-quicksort.html" style="--card-accent:#6d6875"><div class="algo-card-tag" style="background:#6d6875;">Rand</div><div class="algo-card-name">Randomized Quicksort</div><div class="algo-card-complexity">O(n log n) expected</div></a>
+      <a class="algo-card" href="randomized/monte-carlo.html" style="--card-accent:#6d6875"><div class="algo-card-tag" style="background:#6d6875;">Rand</div><div class="algo-card-name">Monte Carlo</div></a>
+      <a class="algo-card" href="randomized/las-vegas.html" style="--card-accent:#6d6875"><div class="algo-card-tag" style="background:#6d6875;">Rand</div><div class="algo-card-name">Las Vegas</div></a>
+      <a class="algo-card" href="randomized/reservoir-sampling.html" style="--card-accent:#6d6875"><div class="algo-card-tag" style="background:#6d6875;">Rand</div><div class="algo-card-name">Reservoir Sampling</div><div class="algo-card-complexity">O(n)</div></a>
+    </div>
+  </div>
+
+  <!-- TREE ALGORITHMS -->
+  <div class="cat-section">
+    <div class="cat-header"><div class="cat-dot" style="background:#27a060;"></div><h2>Tree Algorithms</h2></div>
+    <div class="algo-grid">
+      <a class="algo-card" href="tree-algorithms/tree-traversals.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">Tree Alg</div><div class="algo-card-name">Tree Traversals</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="tree-algorithms/level-order.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">Tree Alg</div><div class="algo-card-name">Level Order (BFS)</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="tree-algorithms/lca.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">Tree Alg</div><div class="algo-card-name">LCA</div><div class="algo-card-complexity">O(log n) query</div></a>
+      <a class="algo-card" href="tree-algorithms/binary-lifting.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">Tree Alg</div><div class="algo-card-name">Binary Lifting</div><div class="algo-card-complexity">O(n log n)</div></a>
+      <a class="algo-card" href="tree-algorithms/euler-tour.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">Tree Alg</div><div class="algo-card-name">Euler Tour</div><div class="algo-card-complexity">O(n)</div></a>
+      <a class="algo-card" href="tree-algorithms/heavy-light-decomposition.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">Tree Alg</div><div class="algo-card-name">Heavy-Light Decomp.</div><div class="algo-card-complexity">O(log² n)</div></a>
+      <a class="algo-card" href="tree-algorithms/centroid-decomposition.html" style="--card-accent:#27a060"><div class="algo-card-tag" style="background:#27a060;">Tree Alg</div><div class="algo-card-name">Centroid Decomp.</div><div class="algo-card-complexity">O(n log n)</div></a>
+    </div>
+  </div>
+
+  <a class="back-link" href="../index.html">Back to Home</a>
+</div>
+</body>
+</html>

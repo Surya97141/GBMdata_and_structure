@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hash Table — DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f7f6f2; color: #1a1a2e; font-family: 'Inter', sans-serif; min-height: 100vh; }
+  a { color: #d4a017; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .breadcrumb { padding: 18px 40px; font-size: 13px; color: #5a5a72; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .breadcrumb span { color: #c0bdb5; }
+  .hero { background: #fff; border-bottom: 1px solid #e2e0da; padding: 48px 40px 36px; }
+  .tag { display: inline-block; background: #fdf5de; color: #b8880e; font-size: 11px; font-weight: 600; letter-spacing:.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.6rem; line-height: 1.15; margin-bottom: 10px; }
+  .hero p { color: #5a5a72; font-size: 1.05rem; max-width: 640px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.35rem; margin-bottom: 12px; }
+  .prose p { color: #3a3a52; line-height: 1.75; margin-bottom: 14px; font-size: .97rem; }
+  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin: 28px 0; }
+  .fact-card { background: #fff; border: 1px solid #e2e0da; border-radius: 10px; padding: 18px; }
+  .fact-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.07em; color: #5a5a72; margin-bottom: 8px; }
+  .fact-card .value { font-family: 'JetBrains Mono', monospace; font-size: .95rem; color: #d4a017; font-weight: 600; }
+  .fact-card .sub { font-size: .8rem; color: #5a5a72; margin-top: 4px; }
+
+  .sim-box { background: #fff; border: 1px solid #e2e0da; border-radius: 12px; overflow: hidden; margin: 32px 0; }
+  .sim-header { padding: 14px 20px; border-bottom: 1px solid #e2e0da; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sim-title { font-weight: 600; font-size: .97rem; margin-right: auto; }
+  .ctrl-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 20px; border-bottom: 1px solid #e2e0da; background: #faf9f7; }
+  input[type=text] { padding: 7px 12px; border: 1.5px solid #e2e0da; border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: .88rem; color: #1a1a2e; background: #fff; width: 110px; }
+  input[type=text]:focus { outline: none; border-color: #d4a017; }
+  .btn { padding: 7px 14px; border-radius: 7px; border: 1.5px solid #d4a017; background: #fff; color: #d4a017; font-weight: 600; cursor: pointer; font-size: .84rem; font-family: 'Inter', sans-serif; transition: background .15s, color .15s; }
+  .btn:hover { background: #d4a017; color: #fff; }
+  .btn.danger { border-color: #c33; color: #c33; }
+  .btn.danger:hover { background: #c33; color: #fff; }
+
+  .ht-body { display: flex; gap: 0; }
+  .buckets { padding: 16px; flex: 1; min-width: 0; }
+  .bucket-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .bucket-idx { font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: #5a5a72; width: 24px; text-align: right; flex-shrink: 0; }
+  .bucket-cell { height: 36px; min-width: 36px; border: 2px solid #e2e0da; border-radius: 8px; background: #faf9f7; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: .78rem; position: relative; transition: border-color .25s, background .25s; }
+  .bucket-cell.filled { background: #fff8e6; border-color: #d4a017; }
+  .bucket-cell.active { background: #fdf0c0; border-color: #d4a017; box-shadow: 0 0 0 3px #fdf0c070; }
+  .bucket-cell .kv { padding: 0 8px; white-space: nowrap; color: #1a1a2e; }
+  .bucket-cell .kv .k { color: #b8880e; font-weight: 700; }
+  .chain-arrow { color: #d4a017; font-size: 1rem; }
+
+  .stats-panel { padding: 16px; border-left: 1px solid #e2e0da; min-width: 180px; flex-shrink: 0; }
+  .stat { margin-bottom: 14px; }
+  .stat .s-label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing:.06em; color: #5a5a72; margin-bottom: 4px; }
+  .stat .s-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #d4a017; }
+  .stat .s-sub { font-size: .75rem; color: #5a5a72; margin-top: 2px; }
+  .lf-bar { height: 8px; background: #e2e0da; border-radius: 4px; margin-top: 6px; }
+  .lf-fill { height: 8px; background: #d4a017; border-radius: 4px; transition: width .3s; }
+
+  .log-box { background: #1a1a2e; min-height: 90px; max-height: 140px; overflow-y: auto; padding: 12px 18px; }
+  .log-line { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #a8a4c8; margin-bottom: 4px; }
+  .log-line .ts { color: #5a5a72; margin-right: 8px; }
+  .log-line .hi { color: #ffd060; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: #d4a017; font-size: .9rem; font-weight: 500; margin-top: 20px; }
+  .info-strip { background: #fdf5de; border-left: 3px solid #d4a017; border-radius: 0 8px 8px 0; padding: 10px 16px; margin-bottom: 20px; font-size: .87rem; color: #6b4f00; }
+</style>
+</head>
+<body>
+
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>/</span>
+  <a href="../index.html">Data Structures</a><span>/</span>
+  <strong>Hash Table</strong>
+</nav>
+
+<header class="hero">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="tag">Hash</div>
+    <h1>Hash Table</h1>
+    <p>Key-value storage with O(1) average lookup — hash the key to a bucket, handle collisions with chaining.</p>
+  </div>
+</header>
+
+<main class="content">
+  <section class="prose" style="margin-bottom:28px;">
+    <div class="section-title">How it Works</div>
+    <p>A hash table maps keys to values using a <strong>hash function</strong>. The hash function converts a key into a bucket index. When two keys land in the same bucket (a <strong>collision</strong>), we use <strong>chaining</strong> — each bucket holds a linked list of entries. Lookup: hash the key, go to that bucket, scan the chain. Average O(1), worst case O(n) if all keys collide.</p>
+    <p>Think of a library with labelled shelves: the hash function decides which shelf a book goes on. If two books share a shelf, they form a chain. Python's <code>dict</code>, JavaScript's <code>Map</code>, Java's <code>HashMap</code> — all hash tables under the hood.</p>
+    <p>The <strong>load factor</strong> (n/m) measures how full the table is. Above ~0.75 the table is resized to keep operations fast.</p>
+  </section>
+
+  <div class="facts-grid">
+    <div class="fact-card"><div class="label">Insert / Lookup</div><div class="value">O(1) avg</div><div class="sub">O(n) worst case</div></div>
+    <div class="fact-card"><div class="label">Delete</div><div class="value">O(1) avg</div><div class="sub">With chaining</div></div>
+    <div class="fact-card"><div class="label">Space</div><div class="value">O(n)</div><div class="sub">n = number of entries</div></div>
+    <div class="fact-card"><div class="label">Hash fn here</div><div class="value" style="font-size:.78rem;">sum(charCode) % 8</div><div class="sub">Table size = 8</div></div>
+    <div class="fact-card"><div class="label">Use Cases</div><div class="value" style="font-size:.78rem;line-height:1.5;">Dictionaries, caches,<br>databases, compilers</div></div>
+  </div>
+
+  <div class="info-strip">Hash function: <strong>h(key) = sum of char codes % 8</strong>. Collisions resolved by chaining (linked list per bucket).</div>
+
+  <div class="sim-box">
+    <div class="sim-header">
+      <span class="sim-title">Hash Table — Chaining (size 8)</span>
+    </div>
+    <div class="ctrl-row">
+      <input type="text" id="keyIn" placeholder="key" maxlength="12" />
+      <input type="text" id="valIn" placeholder="value" maxlength="12" />
+      <button class="btn" id="btnInsert">Insert</button>
+      <button class="btn" id="btnSearch">Search</button>
+      <button class="btn danger" id="btnDelete">Delete</button>
+      <button class="btn" id="btnClear">Clear</button>
+    </div>
+    <div class="ht-body">
+      <div class="buckets" id="bucketsDiv"></div>
+      <div class="stats-panel">
+        <div class="stat"><div class="s-label">Entries (n)</div><div class="s-value" id="statN">0</div></div>
+        <div class="stat"><div class="s-label">Buckets (m)</div><div class="s-value">8</div></div>
+        <div class="stat">
+          <div class="s-label">Load Factor</div>
+          <div class="s-value" id="statLF">0.00</div>
+          <div class="s-sub">n / m</div>
+          <div class="lf-bar"><div class="lf-fill" id="lfFill" style="width:0%"></div></div>
+        </div>
+        <div class="stat"><div class="s-label">Collision?</div><div class="s-value" id="statColl" style="font-size:.9rem;">—</div></div>
+      </div>
+    </div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">&#8592; Back to Data Structures</a>
+</main>
+
+<script>
+const SIZE = 8;
+let table = Array.from({length:SIZE}, () => []);
+let activeRow = -1;
+
+function hashFn(key) {
+  let s = 0;
+  for(let i=0;i<key.length;i++) s += key.charCodeAt(i);
+  return s % SIZE;
+}
+
+function log(msg) {
+  const d=new Date();
+  const ts=`${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
+  const lb=document.getElementById('logBox');
+  const line=document.createElement('div'); line.className='log-line';
+  line.innerHTML=`<span class="ts">${ts}</span>${msg}`;
+  lb.appendChild(line); lb.scrollTop=lb.scrollHeight;
+}
+
+function updateStats() {
+  const n = table.reduce((s,b)=>s+b.length,0);
+  const lf = n/SIZE;
+  document.getElementById('statN').textContent=n;
+  document.getElementById('statLF').textContent=lf.toFixed(2);
+  document.getElementById('lfFill').style.width=Math.min(lf*100,100)+'%';
+  document.getElementById('lfFill').style.background = lf>0.75?'#c33':'#d4a017';
+}
+
+function renderTable(hlIdx=-1) {
+  const div=document.getElementById('bucketsDiv');
+  div.innerHTML='';
+  for(let i=0;i<SIZE;i++) {
+    const row=document.createElement('div'); row.className='bucket-row';
+    const idx=document.createElement('div'); idx.className='bucket-idx'; idx.textContent=i;
+    row.appendChild(idx);
+    const firstCell=document.createElement('div');
+    firstCell.className='bucket-cell'+(i===hlIdx?' active':(table[i].length>0?' filled':''));
+    if(table[i].length===0) { firstCell.innerHTML='<span style="color:#c0bdb5;font-size:.75rem;">empty</span>'; }
+    else {
+      table[i].forEach((entry,ci) => {
+        if(ci>0) { const arr=document.createElement('span'); arr.className='chain-arrow'; arr.textContent=' → '; firstCell.appendChild(arr); }
+        const kv=document.createElement('span'); kv.className='kv';
+        kv.innerHTML=`<span class="k">${entry.k}</span>:${entry.v}`;
+        firstCell.appendChild(kv);
+      });
+    }
+    row.appendChild(firstCell);
+    div.appendChild(row);
+  }
+  updateStats();
+}
+
+function animateHighlight(idx, cb) {
+  renderTable(idx);
+  setTimeout(() => { renderTable(); if(cb) cb(); }, 700);
+}
+
+document.getElementById('btnInsert').addEventListener('click', () => {
+  const k=document.getElementById('keyIn').value.trim();
+  const v=document.getElementById('valIn').value.trim();
+  if(!k) { log('Enter a key'); return; }
+  const h=hashFn(k);
+  const existing=table[h].findIndex(e=>e.k===k);
+  if(existing!==-1) {
+    table[h][existing].v=v||'true';
+    log(`hash('<span class="hi">${k}</span>') = ${h} — key exists, value updated to <span class="hi">${v||'true'}</span>`);
+  } else {
+    const isCollision=table[h].length>0;
+    table[h].push({k,v:v||'true'});
+    const cText=isCollision?` <span class="hi">⚡ COLLISION</span> — chained after ${table[h].length-1} existing`:'';
+    log(`hash('<span class="hi">${k}</span>') = <span class="hi">${h}</span> — inserted at bucket ${h}${cText}`);
+    document.getElementById('statColl').textContent=isCollision?'Yes ⚡':'No';
+    document.getElementById('statColl').style.color=isCollision?'#c33':'#4a9';
+  }
+  animateHighlight(h);
+});
+
+document.getElementById('btnSearch').addEventListener('click', () => {
+  const k=document.getElementById('keyIn').value.trim();
+  if(!k) { log('Enter a key to search'); return; }
+  const h=hashFn(k);
+  const found=table[h].find(e=>e.k===k);
+  animateHighlight(h, () => {
+    if(found) log(`hash('<span class="hi">${k}</span>') = ${h} — found: <span class="hi">${found.v}</span> at bucket ${h}`);
+    else log(`hash('<span class="hi">${k}</span>') = ${h} — key not found in bucket ${h}`);
+  });
+});
+
+document.getElementById('btnDelete').addEventListener('click', () => {
+  const k=document.getElementById('keyIn').value.trim();
+  if(!k) { log('Enter a key to delete'); return; }
+  const h=hashFn(k);
+  const idx=table[h].findIndex(e=>e.k===k);
+  if(idx!==-1) { table[h].splice(idx,1); log(`hash('<span class="hi">${k}</span>') = ${h} — deleted from bucket ${h}`); animateHighlight(h); }
+  else { log(`hash('<span class="hi">${k}</span>') = ${h} — key not found`); animateHighlight(h); }
+});
+
+document.getElementById('btnClear').addEventListener('click', () => {
+  table=Array.from({length:SIZE},()=>[]); renderTable(); log('Table cleared');
+  document.getElementById('statColl').textContent='—'; document.getElementById('statColl').style.color='';
+});
+
+// Seed data
+[['cat','meow'],['dog','woof'],['rat','squeak'],['bat','ultrasound'],['ant','colony']].forEach(([k,v]) => {
+  const h=hashFn(k); table[h].push({k,v});
+});
+renderTable();
+log('Starter data loaded — try inserting "tap" or "pat" to see collisions');
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Binary Search Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
+.hero{padding:2rem 0 1.5rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
+.tagline{color:var(--m);font-size:1rem;}
+.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;}
+.flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.4rem;}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;}.fsub{font-size:.8rem;color:var(--m);margin-top:.2rem;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.sim-hdr{padding:.8rem 1.4rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block;}
+.sim-body{padding:1.4rem;}
+canvas{display:block;width:100%;border-radius:10px;background:var(--bg);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;}
+.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
+.btn-w{background:#d4a017;color:#fff;}.btn-w:hover{filter:brightness(1.1);}
+input[type=number]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:80px;}
+input:focus{border-color:var(--a);}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
+.le{border-bottom:1px solid var(--b);padding:1px 0;}.le:last-child{border:none;}
+.li{color:var(--m);}.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}
+.log-empty{color:var(--m);font-style:italic;}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.85rem;font-weight:600;margin:1.5rem 0;}
+.back:hover{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    <span>Binary Search Tree</span>
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Tree</span>
+    <h1>Binary Search Tree</h1>
+    <p class="tagline">Every left child is smaller, every right child is larger — enabling O(log n) search.</p>
+  </div>
+
+  <div class="explain">
+    <p>A BST is like a sorted phone book organised as a tree. At every page (node) you either go left (earlier letters) or right (later letters) until you find the name you want. This halving of the search space is what gives the O(log n) average performance.</p>
+    <p>The BST property is strict: all values in a node's left subtree are less than the node's value, and all values in its right subtree are greater. This ordering is maintained on every insert and delete operation.</p>
+    <p>BSTs power database indexes, auto-complete engines, and ordered sets in standard libraries. However, without balancing the tree can degenerate into a linked list in the worst case — which is why AVL and Red-Black trees were invented.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="flabel">Search / Insert / Delete</div><div class="fval">O(log n)</div><div class="fsub">Average case (balanced)</div></div>
+    <div class="fact"><div class="flabel">Worst Case</div><div class="fval">O(n)</div><div class="fsub">Degenerate (sorted input)</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">Databases</div><div class="fsub">Ordered sets, range queries</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation — Insert, Search, Delete</div>
+    <div class="sim-body">
+      <canvas id="cv" height="340"></canvas>
+      <div class="controls">
+        <input type="number" id="valIn" placeholder="Value" min="1" max="999"/>
+        <button class="btn btn-p" onclick="doInsert()">Insert</button>
+        <button class="btn btn-o" onclick="doSearch()">Search</button>
+        <button class="btn btn-w" onclick="doDelete()">Delete</button>
+        <button class="btn btn-o" onclick="resetTree()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem;" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><span class="log-empty">Use Insert / Search / Delete to see steps…</span></div>
+  </div>
+
+  <a class="back" href="../index.html">&#8592; Back to Data Structures</a>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+cv.width = cv.offsetWidth || 900;
+
+let root = null;
+let highlightNodes = {};  // {val: 'path'|'found'|'deleted'}
+
+class Node {
+  constructor(v){ this.val=v; this.left=null; this.right=null; }
+}
+
+function insert(node, v, path){
+  if(!node){ path.push(v); return new Node(v); }
+  path.push(node.val);
+  if(v < node.val) node.left = insert(node.left, v, path);
+  else if(v > node.val) node.right = insert(node.right, v, path);
+  return node;
+}
+
+function searchPath(node, v, path){
+  if(!node) return false;
+  path.push(node.val);
+  if(v === node.val) return true;
+  if(v < node.val) return searchPath(node.left, v, path);
+  return searchPath(node.right, v, path);
+}
+
+function minNode(node){ while(node.left) node = node.left; return node; }
+
+function deleteNode(node, v, path){
+  if(!node) return null;
+  path.push(node.val);
+  if(v < node.val){ node.left = deleteNode(node.left, v, path); }
+  else if(v > node.val){ node.right = deleteNode(node.right, v, path); }
+  else{
+    if(!node.left) return node.right;
+    if(!node.right) return node.left;
+    const m = minNode(node.right);
+    node.val = m.val;
+    node.right = deleteNode(node.right, m.val, []);
+  }
+  return node;
+}
+
+function doInsert(){
+  const v = parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)) return;
+  const path = [];
+  root = insert(root, v, path);
+  highlightNodes = {};
+  path.slice(0,-1).forEach(p => highlightNodes[p]='path');
+  highlightNodes[v] = 'found';
+  addLog(`Inserted ${v}. Comparisons: ${path.length-1}`, 'ld');
+  drawTree();
+  document.getElementById('valIn').value='';
+}
+
+function doSearch(){
+  const v = parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)) return;
+  const path = [];
+  const found = searchPath(root, v, path);
+  highlightNodes = {};
+  path.slice(0,-1).forEach(p => highlightNodes[p]='path');
+  if(found){ highlightNodes[v]='found'; addLog(`Found ${v} after ${path.length} comparisons.`,'ld'); }
+  else { addLog(`Value ${v} not found. Checked: [${path.join(' → ')}]`,'lw'); }
+  drawTree();
+}
+
+function doDelete(){
+  const v = parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)) return;
+  const path = [];
+  root = deleteNode(root, v, path);
+  highlightNodes = {};
+  addLog(`Deleted ${v}. Path: [${path.join(' → ')}]`, 'lw');
+  drawTree();
+  document.getElementById('valIn').value='';
+}
+
+function resetTree(){
+  root=null; highlightNodes={};
+  drawTree(); addLog('Tree reset.','li');
+}
+
+function clearLog(){
+  document.getElementById('log').innerHTML='<span class="log-empty">Use Insert / Search / Delete to see steps…</span>';
+}
+
+function addLog(msg, cls='ls'){
+  const log=document.getElementById('log');
+  if(log.querySelector('.log-empty')) log.innerHTML='';
+  const d=document.createElement('div');
+  d.className=`le ${cls}`; d.textContent='> '+msg;
+  log.prepend(d);
+}
+
+function computePositions(node, depth, left, right, pos){
+  if(!node) return;
+  const x=(left+right)/2, y=50+depth*70;
+  pos.set(node,{x,y});
+  computePositions(node.left,depth+1,left,x,pos);
+  computePositions(node.right,depth+1,x,right,pos);
+}
+
+function drawTree(){
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(!root) return;
+  const pos=new Map();
+  computePositions(root,0,20,W-20,pos);
+  const R=22;
+
+  pos.forEach((p,node)=>{
+    ['left','right'].forEach(side=>{
+      if(node[side] && pos.has(node[side])){
+        const c=pos.get(node[side]);
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(c.x,c.y);
+        ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=2; ctx.stroke();
+      }
+    });
+  });
+
+  pos.forEach((p,node)=>{
+    const st = highlightNodes[node.val];
+    let fill='#fff', stroke='#c0bdb5', lw=1.5;
+    if(st==='path'){ fill='#d4f0e4'; stroke='#27a060'; lw=2; }
+    if(st==='found'){ fill='#27a060'; stroke='#1a7a48'; lw=2.5; }
+    ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2);
+    ctx.fillStyle=fill; ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth=lw; ctx.stroke();
+    ctx.fillStyle = st==='found' ? '#fff' : '#1a1a2e';
+    ctx.font="bold 13px 'JetBrains Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(node.val, p.x, p.y);
+  });
+}
+
+window.addEventListener('resize',()=>{ cv.width=cv.offsetWidth; drawTree(); });
+drawTree();
+</script>
+</body>
+</html>

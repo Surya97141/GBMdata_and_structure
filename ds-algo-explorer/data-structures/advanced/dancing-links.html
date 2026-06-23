@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dancing Links — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:920px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+.matrix-wrap{overflow-x:auto;margin-bottom:16px}
+table.dlx{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:14px}
+table.dlx th{background:#1a1a2e;color:#fff;padding:8px 14px;border:1px solid #333;font-size:12px;text-align:center}
+table.dlx td{padding:8px 14px;border:1px solid #e2e0da;text-align:center;transition:background .3s}
+table.dlx td.one{background:#c0392b;color:#fff;font-weight:700}
+table.dlx td.zero{background:#f7f6f2;color:#aaa}
+table.dlx td.covered{background:#888;color:#fff;opacity:.5}
+table.dlx tr.selected td.one{background:#2ecc71;color:#fff}
+table.dlx tr.try td.one{background:#f39c12;color:#fff}
+.controls{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+.status{font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:10px;padding:8px 12px;background:#f7f6f2;border-radius:6px;border:1px solid #e2e0da}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:12px;max-height:200px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.log-box p.step{color:#ffd180}
+.log-box p.solved{color:#a8e6cf;font-weight:700}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Dancing Links
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Dancing Links</h1>
+  <p class="tagline">Knuth's Algorithm X with circular doubly-linked lists for exact cover problems.</p>
+  <div class="prose">
+    <p><strong>Dancing Links</strong> is Donald Knuth's efficient implementation of Algorithm X for solving <em>exact cover</em> problems. An exact cover asks: given a universe of columns and a set of rows, select a subset of rows such that every column is covered exactly once. This directly models Sudoku, N-Queens, and pentomino tilings.</p>
+    <p>The "dancing" refers to the doubly-linked list manipulation used to cover and uncover columns during the depth-first search. When a column is covered, its nodes are unlinked from their rows and vice versa — but the links are preserved, so uncovering (backtracking) restores them in O(1) per node without any memory allocation.</p>
+    <p>Real-world analogy: imagine assigning tasks to teams. Dancing Links finds which teams to select so that every task is assigned to exactly one team — no task missed, none assigned twice.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Cover/Uncover</div><div class="fact-value">O(1) per node</div></div>
+    <div class="fact"><div class="fact-label">Algorithm X</div><div class="fact-value">Backtracking DFS</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Sudoku · N-Queens · Tiling</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Exact Cover Matrix (5 rows × 6 columns)</div>
+    <div class="status" id="status">Press "Solve" to run Algorithm X step-by-step.</div>
+    <div class="matrix-wrap">
+      <table class="dlx" id="dlxTable"></table>
+    </div>
+    <div class="controls">
+      <button onclick="startSolve()">Solve</button>
+      <button class="secondary" onclick="stepSolve()">Step</button>
+      <button class="secondary" onclick="resetDLX()">Reset</button>
+    </div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+// Exact cover matrix: 5 rows x 6 cols
+// Row 0: cols 0,3
+// Row 1: cols 0,1,3,5
+// Row 2: cols 1,2
+// Row 3: cols 2,4,5
+// Row 4: cols 1,3,4
+const ROWS=5,COLS=6;
+const MAT=[
+  [1,0,0,1,0,0],
+  [1,1,0,1,0,1],
+  [0,1,1,0,0,0],
+  [0,0,1,0,1,1],
+  [0,1,0,1,1,0]
+];
+const ROW_NAMES=['R0','R1','R2','R3','R4'];
+const COL_NAMES=['C0','C1','C2','C3','C4','C5'];
+
+let steps=[],stepIdx=0,solved=false,solution=[];
+
+function resetDLX(){
+  steps=[];stepIdx=0;solved=false;solution=[];
+  renderMatrix([],[],{});
+  document.getElementById('status').textContent='Press "Solve" to run Algorithm X step-by-step.';
+  document.getElementById('logBox').innerHTML='';
+}
+
+function renderMatrix(selected,trying,covered){
+  const tbl=document.getElementById('dlxTable');
+  let html='<tr><th></th>';
+  COL_NAMES.forEach((c,ci)=>{html+=`<th${covered[ci]?' style="opacity:.4"':''}>${covered[ci]?'✗':c}</th>`;});
+  html+='</tr>';
+  MAT.forEach((row,ri)=>{
+    const isSel=selected.includes(ri),isTry=trying.includes(ri);
+    html+=`<tr class="${isSel?'selected':isTry?'try':''}"><th>${ROW_NAMES[ri]}</th>`;
+    row.forEach((v,ci)=>{
+      let cls=v?'one':'zero';if(covered[ci])cls='covered';
+      if(v&&isSel)cls='one';
+      html+=`<td class="${cls}">${v}</td>`;
+    });
+    html+='</tr>';
+  });
+  tbl.innerHTML=html;
+}
+
+// Pre-generate solve steps for this specific matrix
+function generateSteps(){
+  const stps=[];
+  const sol=[];
+  const coveredCols=Array(COLS).fill(false);
+  function chooseCol(){for(let c=0;c<COLS;c++)if(!coveredCols[c])return c;return -1;}
+  function rowsForCol(c){return MAT.map((r,i)=>r[c]?i:-1).filter(i=>i!==-1);}
+  function colsForRow(r){return MAT[r].map((v,c)=>v?c:-1).filter(c=>c!==-1);}
+
+  function solve(){
+    const c=chooseCol();
+    if(c===-1){stps.push({type:'solved',sol:[...sol]});return true;}
+    const rows=rowsForCol(c).filter(r=>!sol.includes(r));
+    if(rows.length===0){stps.push({type:'backtrack',col:c});return false;}
+    for(const r of rows){
+      const cols=colsForRow(r);
+      stps.push({type:'try',row:r,col:c,cols});
+      sol.push(r);cols.forEach(cc=>coveredCols[cc]=true);
+      stps.push({type:'covered',sel:[...sol],covered:[...coveredCols.map((v,i)=>v?i:-1).filter(i=>i!==-1)]});
+      if(solve())return true;
+      sol.pop();cols.forEach(cc=>coveredCols[cc]=false);
+      stps.push({type:'uncover',row:r,cols});
+    }
+    return false;
+  }
+  solve();
+  return stps;
+}
+
+function startSolve(){
+  steps=generateSteps();stepIdx=0;solved=false;solution=[];
+  document.getElementById('logBox').innerHTML='';
+  log('Algorithm X started. Choose smallest column, try each row.');
+  stepSolve();
+}
+
+function stepSolve(){
+  if(steps.length===0){log('Press Solve first.');return;}
+  if(stepIdx>=steps.length){log('Already finished.');return;}
+  const s=steps[stepIdx++];
+  let selectedRows=[],tryingRows=[],coveredMap={};
+  if(s.type==='try'){
+    tryingRows=[s.row];
+    log(`Try ${ROW_NAMES[s.row]} (covers col ${s.col}). Covers: [${s.cols.map(c=>COL_NAMES[c]).join(',')}]`,'step');
+  }else if(s.type==='covered'){
+    selectedRows=[...s.sel];
+    s.covered.forEach(c=>{coveredMap[c]=true;});
+    log(`Covered cols [${s.covered.map(c=>COL_NAMES[c]).join(',')}]. Selected: [${s.sel.map(r=>ROW_NAMES[r]).join(',')}]`,'step');
+  }else if(s.type==='backtrack'){
+    log(`No rows for col ${COL_NAMES[s.col]}. Backtrack.`,'step');
+  }else if(s.type==='uncover'){
+    log(`Uncover ${ROW_NAMES[s.row]}. Restore cols [${s.cols.map(c=>COL_NAMES[c]).join(',')}].`,'step');
+  }else if(s.type==='solved'){
+    selectedRows=[...s.sol];
+    log(`SOLVED! Solution: [${s.sol.map(r=>ROW_NAMES[r]).join(', ')}]`,'solved');
+    document.getElementById('status').textContent=`Solution found: ${s.sol.map(r=>ROW_NAMES[r]).join(', ')}`;
+  }
+  renderMatrix(selectedRows,tryingRows,coveredMap);
+  if(s.type!=='solved')document.getElementById('status').textContent=`Step ${stepIdx}/${steps.length}: ${s.type}`;
+}
+
+function log(msg,type=''){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(type)p.classList.add(type);b.appendChild(p);b.scrollTop=b.scrollHeight;}
+
+resetDLX();
+</script>
+</body>
+</html>

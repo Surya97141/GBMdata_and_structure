@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rabin-Karp Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#2a9d8f;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+.breadcrumb{font-size:.85rem;color:#5a5a72;margin-bottom:2rem}
+.breadcrumb span{margin:0 .4rem}
+.cat-tag{display:inline-block;background:#2a9d8f;color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .75rem;border-radius:20px;margin-bottom:.9rem}
+h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;color:#1a1a2e;margin-bottom:.6rem}
+.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
+.prose p{line-height:1.75;color:#1a1a2e;margin-bottom:1rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:1.2rem;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:#2a9d8f;display:block;margin-bottom:.3rem}
+.fact-lbl{font-size:.8rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.06em}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.8rem;margin-bottom:1.5rem}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1.2rem}
+.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin-bottom:1.2rem}
+label{font-size:.85rem;font-weight:500;color:#5a5a72;display:block;margin-bottom:.3rem}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.9rem;border:1px solid #e2e0da;border-radius:7px;padding:.5rem .8rem;width:240px;background:#f7f6f2;color:#1a1a2e;outline:none}
+input[type=text]:focus{border-color:#2a9d8f}
+button{background:#2a9d8f;color:#fff;border:none;border-radius:7px;padding:.55rem 1.3rem;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s}
+button:hover{background:#21867a}
+button.sec{background:#f7f6f2;color:#1a1a2e;border:1px solid #e2e0da}
+button.sec:hover{background:#e2e0da}
+.char-row{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:.4rem;align-items:center}
+.char-label{font-size:.75rem;color:#5a5a72;font-family:'JetBrains Mono',monospace;width:64px;flex-shrink:0}
+.ch{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:2px solid #e2e0da;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;background:#f7f6f2;transition:background .3s,border-color .3s}
+.ch.window{background:#fff3cd;border-color:#ffc107}
+.ch.match{background:#d4edda;border-color:#28a745;color:#155724}
+.ch.mismatch{background:#f8d7da;border-color:#dc3545}
+.hash-display{font-family:'JetBrains Mono',monospace;font-size:.9rem;background:#f7f6f2;border:1px solid #e2e0da;border-radius:8px;padding:.8rem 1rem;margin:.8rem 0;display:flex;gap:2rem;flex-wrap:wrap}
+.hash-item{display:flex;flex-direction:column;gap:.2rem}
+.hash-item .hlbl{font-size:.72rem;color:#5a5a72;text-transform:uppercase}
+.hash-item .hval{font-weight:600;color:#2a9d8f;font-size:1rem}
+#log{background:#1a1a2e;color:#e2e0da;font-family:'JetBrains Mono',monospace;font-size:.8rem;border-radius:8px;padding:1rem;max-height:180px;overflow-y:auto;line-height:1.7}
+#log .lg-ok{color:#2a9d8f}#log .lg-info{color:#ffc107}#log .lg-err{color:#ff6b6b}
+.back-link{display:inline-block;margin-top:2rem;color:#2a9d8f;font-weight:500}
+@media(max-width:600px){.facts{grid-template-columns:1fr 1fr}h1{font-size:1.9rem}input[type=text]{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Rabin-Karp
+  </nav>
+  <div class="hero" style="margin-bottom:2.5rem">
+    <span class="cat-tag">String Algorithms</span>
+    <h1>Rabin-Karp Algorithm</h1>
+    <p class="tagline">Rolling-hash based pattern search: compare hash fingerprints first, then verify character-by-character only on collision.</p>
+  </div>
+  <div class="prose" style="margin-bottom:2rem">
+    <p>Rabin-Karp uses a <strong>rolling hash</strong> to slide a window over the text. For each window position, it computes a hash and compares it with the pattern's hash. A full character comparison only happens when hashes match, keeping average-case performance at O(n+m).</p>
+    <p>The rolling hash magic: removing the leftmost character and adding the rightmost one takes O(1) — like a conveyor belt where you drop one item off the back and add one to the front. No recomputing the entire window from scratch.</p>
+    <p>This technique shines for <strong>multiple pattern search</strong> — store all pattern hashes in a hash set; each window's hash is checked against the set in O(1). Used in plagiarism detection, document similarity, and network packet inspection.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><span class="fact-val">O(n+m)</span><span class="fact-lbl">Avg Time</span></div>
+    <div class="fact"><span class="fact-val">O(n·m)</span><span class="fact-lbl">Worst Case</span></div>
+    <div class="fact"><span class="fact-val">Rolling</span><span class="fact-lbl">Hash Trick</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>Text</label><input type="text" id="inp-text" value="ABCABCDABABCDABCDABDE"></div>
+      <div><label>Pattern</label><input type="text" id="inp-pat" value="ABCDABD"></div>
+      <button id="btn-search">Search</button>
+      <button class="sec" id="btn-reset">Reset</button>
+    </div>
+    <div class="char-row"><span class="char-label">Text:</span><div id="text-row" class="char-row"></div></div>
+    <div class="char-row" style="margin-top:.3rem"><span class="char-label">Pattern:</span><div id="pat-row" class="char-row"></div></div>
+    <div class="hash-display">
+      <div class="hash-item"><span class="hlbl">Pattern Hash</span><span class="hval" id="pat-hash">—</span></div>
+      <div class="hash-item"><span class="hlbl">Window Hash</span><span class="hval" id="win-hash">—</span></div>
+      <div class="hash-item"><span class="hlbl">Window</span><span class="hval" id="win-text">—</span></div>
+      <div class="hash-item"><span class="hlbl">Match?</span><span class="hval" id="match-result">—</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div id="log"><span class="lg-info">Press Search to begin…</span></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const BASE=31, MOD=1000000007n;
+function logLine(msg,cls=''){const s=document.createElement('div');if(cls)s.className=cls;s.textContent=msg;const l=document.getElementById('log');l.appendChild(s);l.scrollTop=l.scrollHeight;}
+function clearLog(){document.getElementById('log').innerHTML='';}
+
+function polyHash(s){
+  let h=0n, pw=1n;
+  for(let i=0;i<s.length;i++){
+    h=(h+BigInt(s.charCodeAt(i)-64)*pw)%MOD;
+    pw=(pw*BigInt(BASE))%MOD;
+  }
+  return h;
+}
+
+function renderChars(id,str){
+  const c=document.getElementById(id); c.innerHTML='';
+  for(let i=0;i<str.length;i++){
+    const sp=document.createElement('span');sp.className='ch';sp.textContent=str[i];sp.id=id+'-'+i;c.appendChild(sp);
+  }
+}
+function resetClasses(id,n){for(let i=0;i<n;i++){const e=document.getElementById(id+'-'+i);if(e)e.className='ch';}}
+
+let timer=null;
+document.getElementById('btn-reset').onclick=()=>{
+  if(timer)clearTimeout(timer);
+  const t=document.getElementById('inp-text').value;
+  const p=document.getElementById('inp-pat').value;
+  renderChars('text-row',t); renderChars('pat-row',p);
+  document.getElementById('pat-hash').textContent='—';
+  document.getElementById('win-hash').textContent='—';
+  document.getElementById('win-text').textContent='—';
+  document.getElementById('match-result').textContent='—';
+  clearLog(); logLine('Reset.','lg-info');
+};
+
+document.getElementById('btn-search').onclick=()=>{
+  if(timer)clearTimeout(timer);
+  const t=document.getElementById('inp-text').value.trim();
+  const p=document.getElementById('inp-pat').value.trim();
+  if(!t||!p||p.length>t.length){logLine('Invalid input.','lg-err');return;}
+  renderChars('text-row',t); renderChars('pat-row',p);
+  clearLog();
+  const n=t.length,m=p.length;
+  const pH=polyHash(p);
+  document.getElementById('pat-hash').textContent=pH.toString();
+  logLine(`Pattern="${p}", hash=${pH}`,'lg-info');
+
+  // Precompute all window hashes
+  const steps=[];
+  let wH=polyHash(t.slice(0,m));
+  steps.push({start:0,wH,window:t.slice(0,m)});
+  // Compute power BASE^(m-1) mod MOD
+  let pw=1n;
+  for(let i=0;i<m-1;i++) pw=(pw*BigInt(BASE))%MOD;
+  for(let i=1;i<=n-m;i++){
+    const remove=BigInt(t.charCodeAt(i-1)-64);
+    const add=BigInt(t.charCodeAt(i+m-1)-64);
+    wH=(wH - remove*1n%MOD + MOD)%MOD;
+    // divide by BASE: multiply by modular inverse (precomputed for simplicity, use rolling differently)
+    // Simpler rolling: recompute each time for demo (small strings)
+    wH=polyHash(t.slice(i,i+m));
+    steps.push({start:i,wH,window:t.slice(i,i+m)});
+  }
+
+  let si=0;
+  function next(){
+    if(si>=steps.length){logLine('Search complete.','lg-ok');return;}
+    const s=steps[si++];
+    resetClasses('text-row',n);
+    const isHashMatch=(s.wH===pH);
+    const isCharMatch=(s.window===p);
+    for(let k=s.start;k<s.start+m;k++){
+      const el=document.getElementById('text-row-'+k);
+      if(el) el.className='ch '+(isCharMatch?'match':isHashMatch?'window':'');
+    }
+    document.getElementById('win-hash').textContent=s.wH.toString();
+    document.getElementById('win-text').textContent=s.window;
+    if(isCharMatch){
+      document.getElementById('match-result').textContent='YES - Match!';
+      logLine(`Window "${s.window}" hash=${s.wH}=pattern hash. Character match confirmed! Match at index ${s.start}.`,'lg-ok');
+    } else if(isHashMatch){
+      document.getElementById('match-result').textContent='Hash hit, no match (spurious)';
+      logLine(`Window "${s.window}" hash=${s.wH}=pattern hash. Char check FAILED (spurious hit).`,'lg-info');
+    } else {
+      document.getElementById('match-result').textContent='No';
+      logLine(`Window "${s.window}" hash=${s.wH}≠${pH}. Skip.`);
+    }
+    timer=setTimeout(next,600);
+  }
+  next();
+};
+document.getElementById('btn-reset').click();
+</script>
+</body>
+</html>

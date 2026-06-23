@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dijkstra's Algorithm – Graph Algorithms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#7b4fd4;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:32px}
+.prose p{line-height:1.75;margin-bottom:16px;font-size:0.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#7b4fd4}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
+canvas{border:1px solid #e2e0da;border-radius:8px;display:block;margin:0 auto}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+select,button{font-family:'Inter',sans-serif;font-size:14px;padding:7px 16px;border-radius:7px;border:1px solid #e2e0da;cursor:pointer}
+button{background:#7b4fd4;color:#fff;border-color:#7b4fd4;font-weight:600}
+button:hover{background:#6a3fc0}
+button.secondary{background:#fff;color:#1a1a2e}button.secondary:hover{background:#f0eef9}
+.dist-table{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.dist-cell{background:#f7f6f2;border:1px solid #e2e0da;border-radius:6px;padding:6px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;text-align:center}
+.dist-cell.selected{background:#e8622a;color:#fff;border-color:#e8622a}
+.dist-cell.done{background:#27a060;color:#fff;border-color:#27a060}
+#log{height:180px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:12px;background:#f7f6f2;border-radius:7px;padding:10px}
+.le{padding:3px 0;border-bottom:1px solid #e2e0da}.les{color:#7b4fd4}.lei{color:#27a060;font-weight:600}.lew{color:#e8622a}
+.back-link{display:inline-block;margin-top:24px;color:#7b4fd4;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb"><a href="../../index.html">Home</a><span>›</span><a href="../index.html">Algorithms</a><span>›</span>Dijkstra's Algorithm</div>
+  <div class="tag">Graph</div>
+  <h1>Dijkstra's Algorithm</h1>
+  <p class="tagline">Greedily find the shortest path from a source to all nodes in a non-negative weighted graph.</p>
+  <div class="prose">
+    <p>Dijkstra's algorithm is the GPS of graph algorithms. It maintains a priority queue of nodes ordered by their current best-known distance from the source, always processing the closest unvisited node next.</p>
+    <p>Real-world analogy: spreading paint through pipes of varying widths. The paint always flows through the widest (shortest) available pipe first, guaranteeing the fastest route is found before longer ones. Works only with non-negative edge weights.</p>
+    <p>At each step, we "finalize" the node with the minimum tentative distance, then relax all its outgoing edges. A node is finalized when it is extracted from the priority queue — at that point, its distance is optimal and cannot be improved.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-value">O((V+E) log V)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-value">O(V)</div></div>
+    <div class="fact"><div class="fact-label">Requires</div><div class="fact-value">Priority Queue</div></div>
+  </div>
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label style="font-size:14px">Source:
+        <select id="srcSel"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </label>
+      <button onclick="runDijkstra()">Run Dijkstra</button>
+      <button class="secondary" onclick="stepDijkstra()">Step</button>
+      <button class="secondary" onclick="resetAll()">Reset</button>
+    </div>
+    <canvas id="c" width="700" height="340"></canvas>
+    <div style="margin-top:12px;font-size:13px;font-weight:600">Distance Table:</div>
+    <div class="dist-table" id="distTable"></div>
+  </div>
+  <div class="card"><h2>Step Log</h2><div id="log"></div></div>
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const DPR=window.devicePixelRatio||1;
+canvas.width=700*DPR;canvas.height=340*DPR;
+canvas.style.width='700px';canvas.style.height='340px';
+ctx.scale(DPR,DPR);
+
+const nodes=[{x:100,y:170},{x:260,y:60},{x:260,y:280},{x:430,y:60},{x:430,y:280},{x:600,y:170}];
+// [from, to, weight]
+const edges=[[0,1,7],[0,2,9],[1,3,6],[1,2,3],[2,4,5],[3,5,1],[4,5,2],[1,5,14],[3,4,11]];
+const adj=Array.from({length:6},()=>[]);
+edges.forEach(([a,b,w])=>{adj[a].push({to:b,w});});
+
+let dist=[],prev=[],done=[],current=-1,stepGen=null,running=false;
+
+function resetAll(){
+  dist=Array(6).fill(Infinity);prev=Array(6).fill(-1);done=Array(6).fill(false);
+  current=-1;stepGen=null;running=false;
+  document.getElementById('log').innerHTML='';
+  updateDistTable();draw();
+}
+
+function logStep(msg,type='step'){
+  const log=document.getElementById('log');
+  const el=document.createElement('div');
+  el.className='le l'+type[0];el.textContent=msg;
+  log.appendChild(el);log.scrollTop=log.scrollHeight;
+}
+
+function updateDistTable(){
+  const dt=document.getElementById('distTable');
+  dt.innerHTML=dist.map((d,i)=>`<div class="dist-cell${i===current?' selected':done[i]?' done':''}">${i}<br><b>${d===Infinity?'∞':d}</b></div>`).join('');
+}
+
+function drawArrow(x1,y1,x2,y2,col,w,lw){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len;
+  const sx=x1+ux*22,sy=y1+uy*22,ex=x2-ux*24,ey=y2-uy*24;
+  const mx=(sx+ex)/2-uy*12,my=(sy+ey)/2+ux*12;
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);
+  ctx.strokeStyle=col||'#c5c0d0';ctx.lineWidth=lw||1.5;ctx.stroke();
+  const angle=Math.atan2(ey-sy,ex-sx);
+  ctx.beginPath();ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-9*Math.cos(angle-0.4),ey-9*Math.sin(angle-0.4));
+  ctx.lineTo(ex-9*Math.cos(angle+0.4),ey-9*Math.sin(angle+0.4));
+  ctx.closePath();ctx.fillStyle=col||'#c5c0d0';ctx.fill();
+  ctx.fillStyle='#5a5a72';ctx.font="11px 'JetBrains Mono'";ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(w,mx,my);
+}
+
+function draw(){
+  ctx.clearRect(0,0,700,340);
+  edges.forEach(([a,b,w])=>drawArrow(nodes[a].x,nodes[a].y,nodes[b].x,nodes[b].y,null,w));
+  nodes.forEach((n,i)=>{
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    const c=i===current?'#e8622a':done[i]?'#27a060':'#ffffff';
+    ctx.fillStyle=c;ctx.fill();ctx.strokeStyle='#1a1a2e';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=(done[i]||i===current)?'#fff':'#1a1a2e';
+    ctx.font="bold 13px 'Inter'";ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i,n.x,n.y);
+    const dv=dist[i]===Infinity?'∞':dist[i];
+    ctx.fillStyle='#5a5a72';ctx.font="11px 'JetBrains Mono'";
+    ctx.fillText(dv,n.x,n.y+32);
+  });
+}
+
+function* dijkGen(src){
+  dist[src]=0;
+  const pq=[[0,src]];
+  logStep(`Source=${src}. d[${src}]=0, all others=∞.`,'step');
+  updateDistTable();draw();yield;
+  while(pq.length){
+    pq.sort((a,b)=>a[0]-b[0]);
+    const [d,u]=pq.shift();
+    if(done[u])continue;
+    done[u]=true;current=u;
+    logStep(`Pick node ${u} (dist=${d}). Finalized.`,'info');
+    updateDistTable();draw();yield;
+    for(const {to:v,w} of adj[u]){
+      const nd=d+w;
+      if(nd<dist[v]){
+        logStep(`  Relax ${u}→${v}: ${d}+${w}=${nd} < ${dist[v]===Infinity?'∞':dist[v]}, update d[${v}]=${nd}.`,'step');
+        dist[v]=nd;prev[v]=u;pq.push([nd,v]);
+        updateDistTable();draw();yield;
+      }
+    }
+    current=-1;
+  }
+  logStep('Dijkstra complete! All shortest paths found.','info');
+  draw();updateDistTable();
+}
+
+function stepDijkstra(){
+  if(!stepGen){const src=parseInt(document.getElementById('srcSel').value);resetAll();stepGen=dijkGen(src);}
+  const r=stepGen.next();if(r.done)stepGen=null;
+}
+
+async function runDijkstra(){
+  if(running)return;running=true;
+  const src=parseInt(document.getElementById('srcSel').value);
+  resetAll();stepGen=dijkGen(src);
+  while(true){const r=stepGen.next();draw();updateDistTable();if(r.done)break;await new Promise(r=>setTimeout(r,700));}
+  running=false;stepGen=null;
+}
+
+resetAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>B+ Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
+.hero{padding:2rem 0 1.5rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
+.tagline{color:var(--m);font-size:1rem;}
+.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;}
+.flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.4rem;}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;}.fsub{font-size:.8rem;color:var(--m);margin-top:.2rem;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.sim-hdr{padding:.8rem 1.4rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block;}
+.sim-body{padding:1.4rem;}
+canvas{display:block;width:100%;border-radius:10px;background:var(--bg);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;}
+.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
+input[type=number]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:80px;}
+input:focus{border-color:var(--a);}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
+.le{border-bottom:1px solid var(--b);padding:1px 0;}.le:last-child{border:none;}
+.li{color:var(--m);}.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}
+.log-empty{color:var(--m);font-style:italic;}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.85rem;font-weight:600;margin:1.5rem 0;}
+.back:hover{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    <span>B+ Tree</span>
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Tree</span>
+    <h1>B+ Tree</h1>
+    <p class="tagline">All data lives in linked leaf nodes; internal nodes are purely index guides.</p>
+  </div>
+
+  <div class="explain">
+    <p>A B+ Tree is like a library catalogue system. The card index (internal nodes) only stores guide keys to point you to the right bookshelf section; all the actual books (data) sit on the bottom shelf (leaf nodes), and every shelf is connected to the next by a chain — making it fast to scan through ranges.</p>
+    <p>Unlike a regular B-Tree, internal nodes in a B+ Tree do not store data — only routing keys. All actual values live in leaf nodes, and leaf nodes are linked in a sorted doubly-linked list. This means range queries can be answered by finding the start leaf and then simply walking the linked list.</p>
+    <p>B+ Trees are the most common index structure in relational databases (InnoDB, PostgreSQL, SQL Server). The linked leaf list makes ORDER BY and BETWEEN queries extremely efficient.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="flabel">Search</div><div class="fval">O(log n)</div><div class="fsub">Navigate to leaf via internal nodes</div></div>
+    <div class="fact"><div class="flabel">Range Query</div><div class="fval">O(log n + k)</div><div class="fsub">k = number of results</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">SQL indexes</div><div class="fsub">InnoDB, PostgreSQL, SQL Server</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation — B+ Tree (order 3)</div>
+    <div class="sim-body">
+      <canvas id="cv" height="420"></canvas>
+      <div class="controls">
+        <input type="number" id="valIn" placeholder="Insert" min="1" max="999"/>
+        <button class="btn btn-p" onclick="doInsert()">Insert</button>
+        <button class="btn btn-o" onclick="clearTree()">Clear</button>
+        <span style="color:var(--m);font-size:.8rem;">|</span>
+        <input type="number" id="rMin" placeholder="Min" min="1" max="999" style="width:64px;"/>
+        <input type="number" id="rMax" placeholder="Max" min="1" max="999" style="width:64px;"/>
+        <button class="btn btn-o" onclick="doRange()">Range Query</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr"><span>Operation Log</span><button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem;" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><span class="log-empty">Insert nodes or run a range query…</span></div>
+  </div>
+
+  <a class="back" href="../index.html">&#8592; Back to Data Structures</a>
+</div>
+
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+cv.width=cv.offsetWidth||900;
+
+const ORDER=3; // max keys per leaf = ORDER-1 = 2
+let root=null;
+let rangeHighlight=[];
+
+class BPNode {
+  constructor(isLeaf=true){
+    this.isLeaf=isLeaf; this.keys=[]; this.children=[]; this.next=null;
+  }
+}
+
+function findLeaf(node, v){
+  if(node.isLeaf) return node;
+  let i=0;
+  while(i<node.keys.length && v>=node.keys[i]) i++;
+  return findLeaf(node.children[i],v);
+}
+
+function insertInLeaf(leaf, v){
+  let i=0;
+  while(i<leaf.keys.length && leaf.keys[i]<v) i++;
+  if(leaf.keys[i]===v) return; // duplicate
+  leaf.keys.splice(i,0,v);
+}
+
+function splitLeaf(leaf){
+  const mid=Math.ceil(leaf.keys.length/2);
+  const newLeaf=new BPNode(true);
+  newLeaf.keys=leaf.keys.splice(mid);
+  newLeaf.next=leaf.next;
+  leaf.next=newLeaf;
+  addLog(`Split leaf. Left: [${leaf.keys}] Right: [${newLeaf.keys}]`, 'lw');
+  return {newLeaf, upKey:newLeaf.keys[0]};
+}
+
+function splitInternal(node){
+  const mid=Math.floor(node.keys.length/2);
+  const upKey=node.keys[mid];
+  const newNode=new BPNode(false);
+  newNode.keys=node.keys.splice(mid+1);
+  newNode.children=node.children.splice(mid+1);
+  node.keys.splice(mid,1);
+  addLog(`Split internal node. Promoted key: ${upKey}`, 'lw');
+  return {newNode, upKey};
+}
+
+function insertRec(node, v){
+  if(node.isLeaf){
+    insertInLeaf(node,v);
+    if(node.keys.length>=ORDER){
+      return splitLeaf(node);
+    }
+    return null;
+  }
+  let i=0;
+  while(i<node.keys.length && v>=node.keys[i]) i++;
+  const res=insertRec(node.children[i],v);
+  if(!res) return null;
+  const {newNode:newChild, upKey}=res;
+  node.keys.splice(i,0,upKey);
+  node.children.splice(i+1,0,newChild);
+  if(node.keys.length>=ORDER){
+    return splitInternal(node);
+  }
+  return null;
+}
+
+function insert(v){
+  if(!root){ root=new BPNode(true); root.keys.push(v); return; }
+  const res=insertRec(root,v);
+  if(res){
+    const newRoot=new BPNode(false);
+    newRoot.keys=[res.upKey];
+    newRoot.children=[root, res.newLeaf||res.newNode];
+    root=newRoot;
+  }
+}
+
+function doInsert(){
+  const v=parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)) return;
+  rangeHighlight=[];
+  insert(v);
+  addLog(`Inserted ${v}.`,'ld');
+  drawTree();
+  document.getElementById('valIn').value='';
+}
+
+function getLeaves(){
+  if(!root) return [];
+  let node=root;
+  while(!node.isLeaf) node=node.children[0];
+  const leaves=[];
+  while(node){ leaves.push(node); node=node.next; }
+  return leaves;
+}
+
+function doRange(){
+  const mn=parseInt(document.getElementById('rMin').value);
+  const mx=parseInt(document.getElementById('rMax').value);
+  if(isNaN(mn)||isNaN(mx)) return;
+  rangeHighlight=[];
+  const leaves=getLeaves();
+  const results=[];
+  for(const leaf of leaves){
+    for(const k of leaf.keys){
+      if(k>=mn && k<=mx){ results.push(k); rangeHighlight.push(k); }
+    }
+  }
+  addLog(`Range [${mn},${mx}] → [${results.join(', ')||'none'}]`,'ld');
+  drawTree();
+}
+
+function clearTree(){ root=null; rangeHighlight=[]; drawTree(); addLog('Tree cleared.','li'); }
+function clearLog(){ document.getElementById('log').innerHTML='<span class="log-empty">Insert nodes or run a range query…</span>'; }
+
+function addLog(msg,cls='ls'){
+  const log=document.getElementById('log');
+  if(log.querySelector('.log-empty')) log.innerHTML='';
+  const d=document.createElement('div');
+  d.className=`le ${cls}`; d.textContent='> '+msg;
+  log.prepend(d);
+}
+
+// Layout: BFS by level
+function assignPos(root){
+  const pos=new Map();
+  if(!root) return pos;
+  const W=cv.width;
+  const byLevel=[];
+  const q=[{node:root,d:0}];
+  while(q.length){
+    const {node,d}=q.shift();
+    if(!byLevel[d]) byLevel[d]=[];
+    byLevel[d].push(node);
+    if(!node.isLeaf) node.children.forEach(c=>q.push({node:c,d:d+1}));
+  }
+  byLevel.forEach((level,d)=>{
+    level.forEach((node,i)=>{
+      pos.set(node,{x:(i+0.5)*(W/level.length), y:50+d*90});
+    });
+  });
+  return pos;
+}
+
+function drawBPNode(node,x,y,isLeaf,highlight){
+  const kw=38,kh=34,pad=3;
+  const n=node.keys.length;
+  const totalW=n*kw+(n-1)*pad;
+  const sx=x-totalW/2;
+  const borderCol=isLeaf?'#27a060':'#5a5a72';
+  const fillCol=isLeaf?'#f0faf5':'#f4f4f8';
+
+  node.keys.forEach((k,i)=>{
+    const kx=sx+i*(kw+pad);
+    const inRange=rangeHighlight.includes(k);
+    ctx.fillStyle=inRange?'#27a060':fillCol;
+    ctx.strokeStyle=inRange?'#1a7a48':borderCol;
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.roundRect(kx,y-kh/2,kw,kh,5);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle=inRange?'#fff':'#1a1a2e';
+    ctx.font="bold 12px 'JetBrains Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(k,kx+kw/2,y);
+  });
+  return {sx,totalW};
+}
+
+function drawTree(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(!root){ ctx.fillStyle='#5a5a72'; ctx.font="14px 'Inter',sans-serif"; ctx.textAlign='center'; ctx.fillText('Tree is empty.',W/2,H/2); return; }
+  const pos=assignPos(root);
+
+  // edges
+  pos.forEach((p,node)=>{
+    if(!node.isLeaf){
+      node.children.forEach((c,i)=>{
+        if(pos.has(c)){
+          const cp=pos.get(c);
+          ctx.beginPath(); ctx.moveTo(p.x,p.y+17); ctx.lineTo(cp.x,cp.y-17);
+          ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=1.5; ctx.stroke();
+        }
+      });
+    }
+  });
+
+  // draw leaf links (next pointers)
+  const leaves=getLeaves();
+  for(let i=0;i<leaves.length-1;i++){
+    if(pos.has(leaves[i])&&pos.has(leaves[i+1])){
+      const a=pos.get(leaves[i]), b=pos.get(leaves[i+1]);
+      ctx.beginPath(); ctx.moveTo(a.x+40,a.y); ctx.lineTo(b.x-40,b.y);
+      ctx.strokeStyle='#27a060'; ctx.lineWidth=1; ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+    }
+  }
+
+  pos.forEach((p,node)=>{
+    drawBPNode(node,p.x,p.y,node.isLeaf,[]);
+  });
+
+  ctx.fillStyle='#5a5a72'; ctx.font="11px 'Inter',sans-serif"; ctx.textAlign='left';
+  ctx.fillText('Green border = leaf nodes (data). Grey = internal (index only). Dashed line = leaf chain.', 14, H-14);
+}
+
+window.addEventListener('resize',()=>{ cv.width=cv.offsetWidth; drawTree(); });
+drawTree();
+</script>
+</body>
+</html>

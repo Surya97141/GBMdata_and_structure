@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Suffix Array — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+.controls{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+input[type=text]{height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;padding:0 10px;outline:none;background:#f7f6f2;width:200px}
+input[type=text]:focus{border-color:#c0392b;background:#fff}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+.suffix-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:13px}
+.suffix-table th{background:#f7f6f2;color:#5a5a72;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border:1px solid #e2e0da;text-align:left}
+.suffix-table td{border:1px solid #e2e0da;padding:7px 10px;vertical-align:middle}
+.suffix-table tr.row-highlight td{background:#fff0ee}
+.lcp-bar{display:inline-block;height:14px;border-radius:3px;background:#c0392b;opacity:.25;vertical-align:middle;margin-right:4px}
+.suffix-chars span{display:inline-block;padding:0 2px;border-radius:3px}
+.suffix-chars span.lcp{background:#ffd5d0}
+.suffix-chars span.rest{color:#1a1a2e}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:16px;max-height:160px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+.section-label{font-size:12px;font-weight:600;color:#5a5a72;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Suffix Array
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Suffix Array</h1>
+  <p class="tagline">All suffixes of a string, sorted — enabling fast pattern matching and LCP queries.</p>
+  <div class="prose">
+    <p>A <strong>Suffix Array</strong> is a sorted array of all suffixes of a given string. For the string "banana", its suffixes are "banana", "anana", "nana", "ana", "na", "a" — and the suffix array gives their sorted order by index: [5, 3, 1, 0, 4, 2] (i.e., "a", "ana", "anana", "banana", "na", "nana").</p>
+    <p>The companion <strong>LCP Array</strong> stores the length of the longest common prefix between consecutive suffixes in sorted order. Together they support pattern matching in O(m + log n) time and are the backbone of DNA sequence alignment tools like BWA.</p>
+    <p>Real-world analogy: think of a phonebook that lists every possible "tail" of every name, sorted alphabetically. Want to find all entries containing "ana"? Binary search the sorted list in milliseconds.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Build</div><div class="fact-value">O(n log n)</div></div>
+    <div class="fact"><div class="fact-label">Pattern Search</div><div class="fact-value">O(m + log n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">DNA · Search · Compression</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Suffix Array Builder</div>
+    <div class="controls">
+      <input type="text" id="strInput" value="banana" maxlength="10" placeholder="Enter string (max 10 chars)"/>
+      <button onclick="buildSA()">Build</button>
+      <button class="secondary" onclick="document.getElementById('strInput').value='banana';buildSA()">Reset</button>
+    </div>
+    <div class="two-col" id="outputArea"></div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+function buildSA(){
+  const raw=document.getElementById('strInput').value.toLowerCase().replace(/[^a-z]/g,'').slice(0,10);
+  if(raw.length<2){log('Enter at least 2 characters');return;}
+  const s=raw+'$';
+  const n=s.length;
+  // build suffix array naively (n≤11 so O(n²logn) is fine)
+  const suffixes=Array.from({length:n},(_,i)=>i);
+  suffixes.sort((a,b)=>s.slice(a)<s.slice(b)?-1:s.slice(a)>s.slice(b)?1:0);
+  // remove sentinel
+  const sa=suffixes.filter(i=>i<n-1);
+  // build LCP array
+  const rank=Array(n).fill(0);
+  sa.forEach((v,i)=>rank[v]=i);
+  const lcp=Array(sa.length).fill(0);
+  let h=0;
+  for(let i=0;i<n-1;i++){
+    if(rank[i]>0){
+      const j=sa[rank[i]-1];
+      while(i+h<n&&j+h<n&&s[i+h]===s[j+h])h++;
+      lcp[rank[i]]=h;
+      if(h>0)h--;
+    }
+  }
+  renderOutput(raw,sa,lcp,s);
+  log(`Input: "${raw}"`);
+  sa.forEach((idx,rank2)=>{
+    log(`Rank ${rank2}: suffix[${idx}] = "${s.slice(idx,n-1)}", LCP with prev = ${lcp[rank2]}`);
+  });
+}
+
+function renderOutput(raw,sa,lcp,s){
+  const n=s.length;
+  const area=document.getElementById('outputArea');
+  // Suffix array table
+  let html1=`<div><div class="section-label">Sorted Suffixes</div>
+  <table class="suffix-table"><tr><th>Rank</th><th>Index</th><th>Suffix</th><th>LCP</th></tr>`;
+  sa.forEach((idx,rank2)=>{
+    const suf=s.slice(idx,n-1);
+    const l=lcp[rank2];
+    let chars='<span class="suffix-chars">';
+    for(let k=0;k<suf.length;k++){
+      if(k<l)chars+=`<span class="lcp">${suf[k]}</span>`;
+      else chars+=`<span class="rest">${suf[k]}</span>`;
+    }
+    chars+='</span>';
+    html1+=`<tr><td>${rank2}</td><td>${idx}</td><td>${chars}</td><td>${l>0?l:'—'}</td></tr>`;
+  });
+  html1+='</table></div>';
+
+  // LCP array visual
+  let html2=`<div><div class="section-label">LCP Array</div>
+  <table class="suffix-table"><tr><th>Rank</th><th>Suffix</th><th>LCP</th><th>Bar</th></tr>`;
+  sa.forEach((idx,rank2)=>{
+    const suf=s.slice(idx,n-1);
+    const l=lcp[rank2];
+    const barW=l*24;
+    html2+=`<tr><td>${rank2}</td><td>${suf}</td><td>${l}</td><td><div class="lcp-bar" style="width:${barW}px"></div>${l}</td></tr>`;
+  });
+  html2+='</table></div>';
+
+  area.innerHTML=html1+html2;
+}
+
+function log(msg){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;b.appendChild(p);b.scrollTop=b.scrollHeight;}
+
+buildSA();
+</script>
+</body>
+</html>

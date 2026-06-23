@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DS/Algo Explorer — Every structure. Every algorithm. One place.</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .landing-hero {
+    text-align: center;
+    padding: 5rem 1.5rem 3rem;
+  }
+  .landing-hero h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    line-height: 1.1;
+    max-width: 18ch;
+    margin: 0 auto 1.2rem;
+    color: var(--ink);
+  }
+  .landing-hero p {
+    font-size: 1.15rem;
+    margin: 0 auto 2.5rem;
+    max-width: 52ch;
+    text-align: center;
+  }
+  .hub-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 3rem 0 5rem;
+  }
+  @media (max-width: 700px) { .hub-grid { grid-template-columns: 1fr; } }
+  .hub-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow .2s, transform .2s;
+    display: block;
+  }
+  .hub-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+  .hub-card-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+  .hub-card h2 { font-size: 1.6rem; margin-bottom: .4rem; }
+  .hub-card p { font-size: .9rem; margin: 0 0 1.5rem; }
+  .pill-cloud { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .pill-sm {
+    display: inline-block;
+    padding: .18rem .65rem;
+    border-radius: 100px;
+    font-size: .72rem;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+    color: #fff;
+  }
+  .stat-row {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    margin: 0 0 3rem;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: var(--font-display); font-size: 2.8rem; color: var(--ink); display: block; }
+  .stat-label { font-size: .8rem; color: var(--ink-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    text-align: center;
+    font-size: .82rem;
+    color: var(--ink-muted);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="landing-hero">
+    <h1>Every structure. Every algorithm. One place.</h1>
+    <p>An interactive, visual reference for data structures and algorithms — with plain-English explanations, complexity facts, and live simulations.</p>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><span class="stat-num">40+</span><span class="stat-label">Data Structures</span></div>
+    <div class="stat"><span class="stat-num">120+</span><span class="stat-label">Algorithms</span></div>
+    <div class="stat"><span class="stat-num">160+</span><span class="stat-label">Interactive Pages</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Dependencies</span></div>
+  </div>
+
+  <div class="hub-grid">
+    <!-- Data Structures card -->
+    <a class="hub-card" href="data-structures/index.html">
+      <div class="hub-card-icon" style="background:#fff0ea;">🗂️</div>
+      <h2>Data Structures</h2>
+      <p>Linear, trees, graphs, hash structures, and advanced exotic containers.</p>
+      <div class="pill-cloud">
+        <span class="pill-sm" style="background:#e8622a;">Linear</span>
+        <span class="pill-sm" style="background:#27a060;">Trees</span>
+        <span class="pill-sm" style="background:#7b4fd4;">Graphs</span>
+        <span class="pill-sm" style="background:#d4a017;">Hash</span>
+        <span class="pill-sm" style="background:#c0392b;">Advanced</span>
+      </div>
+    </a>
+
+    <!-- Algorithms card -->
+    <a class="hub-card" href="algorithms/index.html">
+      <div class="hub-card-icon" style="background:#eaf3ff;">⚡</div>
+      <h2>Algorithms</h2>
+      <p>Sorting, searching, graph traversal, DP, backtracking, string processing, and more.</p>
+      <div class="pill-cloud">
+        <span class="pill-sm" style="background:#2a7ae8;">Sorting</span>
+        <span class="pill-sm" style="background:#e84393;">Searching</span>
+        <span class="pill-sm" style="background:#7b4fd4;">Graphs</span>
+        <span class="pill-sm" style="background:#e8622a;">DP</span>
+        <span class="pill-sm" style="background:#c0392b;">Backtracking</span>
+        <span class="pill-sm" style="background:#2a9d8f;">Strings</span>
+        <span class="pill-sm" style="background:#e76f51;">Math</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Quick-jump: Data Structures -->
+  <div class="section">
+    <div class="section-title">Data Structures — Quick Jump</div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Linear</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/array.html">Array</a>
+        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/linked-list.html">Linked List</a>
+        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/stack.html">Stack</a>
+        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/queue.html">Queue</a>
+        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/deque.html">Deque</a>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Trees</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/binary-tree.html">Binary Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/bst.html">BST</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/avl-tree.html">AVL Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/red-black-tree.html">Red-Black Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/heap.html">Heap</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/trie.html">Trie</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/segment-tree.html">Segment Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/fenwick-tree.html">Fenwick Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/b-tree.html">B-Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/b-plus-tree.html">B+ Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/kd-tree.html">KD-Tree</a>
+        <a class="pill" style="--accent:#27a060" href="data-structures/tree/treap.html">Treap</a>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Graphs</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/graph.html">Graph</a>
+        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/adjacency-matrix.html">Adjacency Matrix</a>
+        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/adjacency-list.html">Adjacency List</a>
+        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/incidence-matrix.html">Incidence Matrix</a>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Hash</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#d4a017" href="data-structures/hash/hash-table.html">Hash Table</a>
+        <a class="pill" style="--accent:#d4a017" href="data-structures/hash/hash-set.html">Hash Set</a>
+        <a class="pill" style="--accent:#d4a017" href="data-structures/hash/bloom-filter.html">Bloom Filter</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Advanced</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/disjoint-set.html">Disjoint Set</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/skip-list.html">Skip List</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/segment-tree.html">Segment Tree</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/suffix-array.html">Suffix Array</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/rope.html">Rope</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/sparse-table.html">Sparse Table</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/quad-tree.html">Quad Tree</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/r-tree.html">R-Tree</a>
+        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/van-emde-boas.html">Van Emde Boas</a>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Quick-jump: Algorithms -->
+  <div class="section">
+    <div class="section-title">Algorithms — Quick Jump</div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Sorting</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/bubble-sort.html">Bubble Sort</a>
+        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/merge-sort.html">Merge Sort</a>
+        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/quick-sort.html">Quick Sort</a>
+        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/heap-sort.html">Heap Sort</a>
+        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/counting-sort.html">Counting Sort</a>
+        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/radix-sort.html">Radix Sort</a>
+        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/tim-sort.html">Tim Sort</a>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Searching</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#e84393" href="algorithms/searching/binary-search.html">Binary Search</a>
+        <a class="pill" style="--accent:#e84393" href="algorithms/searching/linear-search.html">Linear Search</a>
+        <a class="pill" style="--accent:#e84393" href="algorithms/searching/jump-search.html">Jump Search</a>
+        <a class="pill" style="--accent:#e84393" href="algorithms/searching/interpolation-search.html">Interpolation Search</a>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Graph Algorithms</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/bfs.html">BFS</a>
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/dfs.html">DFS</a>
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/dijkstra.html">Dijkstra</a>
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/bellman-ford.html">Bellman-Ford</a>
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/floyd-warshall.html">Floyd-Warshall</a>
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/kruskal.html">Kruskal</a>
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/prim.html">Prim</a>
+        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/a-star.html">A*</a>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Dynamic Programming</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/knapsack-01.html">0/1 Knapsack</a>
+        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/lcs.html">LCS</a>
+        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/lis.html">LIS</a>
+        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/coin-change.html">Coin Change</a>
+        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/edit-distance.html">Edit Distance</a>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Backtracking &amp; More</div>
+      <div class="pill-cloud">
+        <a class="pill" style="--accent:#c0392b" href="algorithms/backtracking/n-queens.html">N-Queens</a>
+        <a class="pill" style="--accent:#c0392b" href="algorithms/backtracking/sudoku-solver.html">Sudoku Solver</a>
+        <a class="pill" style="--accent:#27a060" href="algorithms/greedy/huffman-coding.html">Huffman Coding</a>
+        <a class="pill" style="--accent:#2a9d8f" href="algorithms/string/kmp.html">KMP</a>
+        <a class="pill" style="--accent:#e76f51" href="algorithms/mathematical/sieve-eratosthenes.html">Sieve</a>
+        <a class="pill" style="--accent:#264653" href="algorithms/bit-manipulation/xor-tricks.html">XOR Tricks</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    DS/Algo Explorer &mdash; Visual, interactive, light-themed. No frameworks. No dependencies.
+  </div>
+</footer>
+</body>
+</html>

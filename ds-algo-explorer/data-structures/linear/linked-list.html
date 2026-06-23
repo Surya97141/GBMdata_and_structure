@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Linked List — DS/Algo Explorer</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;--r:14px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;min-height:100vh;}
+    .wrap{max-width:860px;margin:0 auto;padding:32px 20px 60px;}
+    .bc{font-size:.82rem;color:var(--muted);margin-bottom:28px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+    .bc a{color:var(--muted);text-decoration:none;}.bc a:hover{color:var(--accent);}
+    .bc .curr{color:var(--ink);font-weight:600;}
+    .hero{margin-bottom:28px;}
+    .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin-bottom:10px;}
+    h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--ink);line-height:1.15;margin-bottom:8px;}
+    .tagline{color:var(--muted);font-size:1.05rem;}
+    .explain{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px 28px;margin-bottom:22px;}
+    .explain p{color:var(--muted);margin-bottom:10px;font-size:.97rem;}.explain p:last-child{margin-bottom:0;}
+    .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+    .fact{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
+    .flabel{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:6px;}
+    .fval{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:4px;}
+    .fsub{font-size:.82rem;color:var(--muted);}
+    .sim-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px;}
+    .sim-hdr{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);display:inline-block;}
+    .sim-body{padding:20px;}
+    canvas{display:block;width:100%;max-width:700px;margin:0 auto 18px;border-radius:8px;background:#f9f8f5;border:1px solid var(--border);}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .controls input{font-family:'JetBrains Mono',monospace;font-size:.92rem;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);width:90px;outline:none;}
+    .controls input:focus{border-color:var(--accent);}
+    .btn{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;padding:8px 18px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s,transform .1s;}
+    .btn:active{transform:scale(.97);}
+    .btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover{opacity:.88;}
+    .btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border);}.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+    .log-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:28px;}
+    .log-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
+    .log-hdr button{font-size:.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;}
+    .log-hdr button:hover{border-color:var(--accent);color:var(--accent);}
+    .log-body{max-height:180px;overflow-y:auto;padding:12px 20px;display:flex;flex-direction:column;gap:5px;}
+    .log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:5px 10px;border-radius:6px;background:var(--bg);}
+    .log-entry.ok{border-left:3px solid #27ae60;}.log-entry.err{border-left:3px solid #e74c3c;}.log-entry.info{border-left:3px solid var(--accent);}
+    .log-empty{font-size:.82rem;color:var(--muted);font-style:italic;}
+    .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .15s;}
+    .back:hover{color:var(--accent);}
+    @media(max-width:600px){.facts{grid-template-columns:1fr 1fr;}.controls{gap:8px;}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span class="curr">Linked List</span></nav>
+
+  <div class="hero">
+    <span class="tag">Linear</span>
+    <h1>Linked List</h1>
+    <p class="tagline">Nodes chained by pointers — O(1) insert at head/tail, O(n) search, no wasted pre-allocated space.</p>
+  </div>
+
+  <div class="explain">
+    <p>Imagine a treasure hunt where each clue tells you only where the next clue is hidden. You cannot jump to clue #5 without following clues #1 through #4. That is a linked list: each node holds a value and a pointer (arrow) to the next node.</p>
+    <p>Unlike arrays, nodes do not need to be adjacent in memory. This makes insertion and deletion at the head or tail O(1) — you just rewire one or two pointers rather than shifting a whole row of elements. The price is O(n) search time and extra memory per node for the pointer.</p>
+    <p>Singly linked lists form the backbone of stacks, queues, and graph adjacency lists. Doubly linked lists power browser history and LRU caches where you need fast inserts and deletes from both ends.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact">
+      <div class="flabel">Time Complexity</div>
+      <div class="fval">O(1) insert</div>
+      <div class="fsub">O(n) search / delete by value</div>
+    </div>
+    <div class="fact">
+      <div class="flabel">Space Complexity</div>
+      <div class="fval">O(n)</div>
+      <div class="fsub">Extra pointer per node</div>
+    </div>
+    <div class="fact">
+      <div class="flabel">Use Cases</div>
+      <div class="fsub">Stacks, queues, adjacency lists, LRU cache, undo history</div>
+    </div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cv" width="700" height="220"></canvas>
+      <div class="controls">
+        <input id="valInput" type="text" placeholder="Value" maxlength="4"/>
+        <button class="btn btn-primary" onclick="addHead()">Add Head</button>
+        <button class="btn btn-primary" onclick="addTail()">Add Tail</button>
+        <button class="btn btn-secondary" onclick="removeHead()">Remove Head</button>
+        <button class="btn btn-secondary" onclick="searchVal()">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="log-empty">Ready. Use controls above to begin.</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+  const canvas = document.getElementById('cv');
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+  canvas.width = 700 * DPR; canvas.height = 220 * DPR;
+  canvas.style.width = '100%'; canvas.style.height = '220px';
+  ctx.scale(DPR, DPR);
+
+  const W = 700, H = 220;
+  const R = 30, HGAP = 68, CY = H / 2;
+  const COL_ACCENT = '#e8622a', COL_INK = '#1a1a2e', COL_MUTED = '#5a5a72';
+  const COL_BORDER = '#e2e0da', COL_HL = '#fff3ee', COL_FOUND = '#27ae60';
+
+  let list = ['42', '17', '85'];
+  let highlightIdx = -1;
+  let hlColor = COL_ACCENT;
+  let hlTimer = null;
+
+  function setHighlight(i, color, duration) {
+    highlightIdx = i;
+    hlColor = color || COL_ACCENT;
+    if (hlTimer) clearTimeout(hlTimer);
+    hlTimer = setTimeout(() => { highlightIdx = -1; draw(); }, duration || 800);
+  }
+
+  function nodeX(i) {
+    const total = list.length;
+    const startX = Math.max(R + 10, (W - total * (R * 2 + HGAP) + HGAP) / 2 + R);
+    return startX + i * (R * 2 + HGAP);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#f9f8f5';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = COL_INK;
+    ctx.font = '600 13px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Linked List  [length: ' + list.length + ']', 20, 28);
+
+    if (list.length === 0) {
+      ctx.fillStyle = COL_MUTED;
+      ctx.font = 'italic 14px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('List is empty', W / 2, H / 2);
+      return;
+    }
+
+    list.forEach((val, i) => {
+      const x = nodeX(i);
+      const isHL = i === highlightIdx;
+
+      // Arrow from previous node
+      if (i > 0) {
+        const prevX = nodeX(i - 1);
+        const ax = prevX + R, bx = x - R;
+        ctx.strokeStyle = isHL ? hlColor : COL_BORDER;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ax + 4, CY);
+        ctx.lineTo(bx - 6, CY);
+        ctx.stroke();
+        // arrowhead
+        ctx.fillStyle = isHL ? hlColor : COL_MUTED;
+        ctx.beginPath();
+        ctx.moveTo(bx - 6, CY - 5);
+        ctx.lineTo(bx, CY);
+        ctx.lineTo(bx - 6, CY + 5);
+        ctx.fill();
+      }
+
+      // Circle
+      ctx.beginPath();
+      ctx.arc(x, CY, R, 0, Math.PI * 2);
+      ctx.fillStyle = isHL ? COL_HL : '#fff';
+      ctx.fill();
+      ctx.strokeStyle = isHL ? hlColor : COL_BORDER;
+      ctx.lineWidth = isHL ? 2.5 : 1.5;
+      ctx.stroke();
+
+      // Value
+      ctx.fillStyle = isHL ? hlColor : COL_INK;
+      ctx.font = '600 15px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(val), x, CY + 6);
+
+      // Label head/tail
+      if (i === 0) {
+        ctx.fillStyle = COL_ACCENT;
+        ctx.font = '700 10px Inter, sans-serif';
+        ctx.fillText('HEAD', x, CY - R - 8);
+      }
+      if (i === list.length - 1) {
+        ctx.fillStyle = COL_MUTED;
+        ctx.font = '700 10px Inter, sans-serif';
+        ctx.fillText('TAIL', x, CY - R - 8);
+      }
+
+      // NULL pointer indicator on tail
+      if (i === list.length - 1) {
+        const nx = x + R + 4;
+        ctx.strokeStyle = COL_BORDER;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(nx, CY);
+        ctx.lineTo(nx + 22, CY);
+        ctx.stroke();
+        ctx.fillStyle = COL_MUTED;
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('null', nx + 24, CY + 4);
+      }
+    });
+  }
+
+  function addHead() {
+    const v = document.getElementById('valInput').value.trim();
+    if (!v) { logStep('Enter a value first.', 'err'); return; }
+    if (list.length >= 8) { logStep('Max 8 nodes for display.', 'err'); return; }
+    list.unshift(v);
+    setHighlight(0, COL_ACCENT);
+    logStep('addHead(' + v + ') → new HEAD = "' + v + '"', 'ok');
+    document.getElementById('valInput').value = '';
+    draw();
+  }
+
+  function addTail() {
+    const v = document.getElementById('valInput').value.trim();
+    if (!v) { logStep('Enter a value first.', 'err'); return; }
+    if (list.length >= 8) { logStep('Max 8 nodes for display.', 'err'); return; }
+    list.push(v);
+    setHighlight(list.length - 1, COL_ACCENT);
+    logStep('addTail(' + v + ') → new TAIL = "' + v + '"', 'ok');
+    document.getElementById('valInput').value = '';
+    draw();
+  }
+
+  function removeHead() {
+    if (list.length === 0) { logStep('Remove failed: list is empty.', 'err'); return; }
+    const v = list.shift();
+    logStep('removeHead() → removed "' + v + '"', 'info');
+    draw();
+  }
+
+  function searchVal() {
+    const v = document.getElementById('valInput').value.trim();
+    if (!v) { logStep('Enter a value to search.', 'err'); return; }
+    const idx = list.indexOf(v);
+    if (idx === -1) {
+      logStep('search("' + v + '") → not found in list.', 'err');
+    } else {
+      setHighlight(idx, COL_FOUND, 1200);
+      logStep('search("' + v + '") → found at index ' + idx, 'ok');
+      draw();
+    }
+  }
+
+  function logStep(msg, type) {
+    const log = document.getElementById('log');
+    const empty = log.querySelector('.log-empty');
+    if (empty) empty.remove();
+    const entry = document.createElement('div');
+    entry.className = 'log-entry ' + (type || 'info');
+    const ts = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    entry.textContent = ts + '  ' + msg;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function clearLog() {
+    document.getElementById('log').innerHTML = '<div class="log-empty">Log cleared.</div>';
+  }
+
+  document.getElementById('valInput').addEventListener('keydown', e => { if (e.key === 'Enter') addTail(); });
+  draw();
+</script>
+</body>
+</html>

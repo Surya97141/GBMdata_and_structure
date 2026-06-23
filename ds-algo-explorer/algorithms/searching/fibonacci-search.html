@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fibonacci Search – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
+.explanation{margin-bottom:32px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.controls label{font-size:14px;font-weight:500}
+.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
+.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:200px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Fibonacci Search
+  </nav>
+
+  <div class="hero">
+    <div class="category-tag">Searching</div>
+    <h1>Fibonacci Search</h1>
+    <p class="tagline">Use Fibonacci numbers to partition the array — no division required.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Fibonacci search uses Fibonacci numbers to determine split points instead of dividing by 2. It maintains three consecutive Fibonacci numbers (fibM2, fibM1, fibM) and uses fibM2 as the offset into the array. The range shrinks by a Fibonacci step at each iteration.</p>
+    <p>The key advantage over binary search is that Fibonacci search avoids division operations, using only addition and subtraction. This was historically significant on hardware where division is expensive. The split point is always a sum of previous Fibonacci numbers, producing comparisons that are slightly biased toward the beginning of the array — useful when elements near the start are more frequently searched.</p>
+    <p>Fibonacci search has the same O(log n) asymptotic complexity as binary search, but can outperform it on hardware where addition is significantly cheaper than division. It requires the array to be sorted and of known length (or approximated).</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(log n)</div></div>
+    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(1)</div></div>
+    <div class="fact-card"><div class="label">Sorted Required</div><div class="value">Yes</div></div>
+  </div>
+
+  <div class="sim-section">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Target:</label>
+      <input type="number" id="targetInput" value="42">
+      <button class="btn btn-primary" onclick="startSearch()">Search</button>
+      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+    </div>
+    <canvas id="cvs" width="820" height="210"></canvas>
+    <div class="log">
+      <h3>Step Log</h3>
+      <div id="logEntries"></div>
+    </div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const ARR=[3,7,12,18,25,31,42,56,63,78,85,92,97];
+const ACCENT='#e84393',GREEN='#27a060',GRAY='#d0cec8',ORANGE='#f59e0b';
+const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
+const n=ARR.length;
+let state=ARR.map(()=>'default'),running=false;
+
+function getFibs(n){
+  let a=0,b=1,fibs=[0,1];
+  while(b<n){let c=a+b;fibs.push(c);a=b;b=c;}
+  return fibs;
+}
+
+function drawArray(compareIdx,offset,fibM,fibM1,fibM2){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  const cellW=58,cellH=52;
+  const startX=(cvs.width-n*cellW)/2,startY=18;
+  ARR.forEach((v,i)=>{
+    const x=startX+i*cellW,y=startY;
+    const s=state[i];
+    let fill='#fff';
+    if(s==='found')fill=GREEN;
+    else if(i===compareIdx)fill=ACCENT;
+    else if(s==='eliminated')fill=GRAY;
+    ctx.fillStyle=fill;ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle=(fill===GREEN||fill===ACCENT)?'#fff':(fill===GRAY?'#aaa':'#1a1a2e');
+    ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(v,x+cellW/2,y+cellH/2);
+    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
+    ctx.fillText(i,x+cellW/2,y+cellH+9);
+  });
+  const py=startY+cellH+22;
+  if(compareIdx>=0){
+    const cx=startX+compareIdx*cellW+cellW/2;
+    ctx.fillStyle=ACCENT;ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('P',cx,py);
+  }
+  ctx.fillStyle='#5a5a72';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText(`Fib(M)=${fibM}  Fib(M-1)=${fibM1}  Fib(M-2)=${fibM2}  offset=${offset}`,cvs.width/2,startY+cellH+44);
+}
+
+function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSearch(){
+  if(running)return;running=true;
+  state=ARR.map(()=>'default');
+  const target=parseInt(document.getElementById('targetInput').value);
+  log(`Fibonacci search for target = ${target}, n = ${n}`);
+  // Initialize Fibonacci numbers
+  let fibM2=0,fibM1=1,fibM=1;
+  while(fibM<n){fibM2=fibM1;fibM1=fibM;fibM=fibM1+fibM2;}
+  log(`Initial Fibonacci: fibM=${fibM}, fibM1=${fibM1}, fibM2=${fibM2}`);
+  let offset=-1,step=0;
+  while(fibM>1){
+    step++;
+    const i=Math.min(offset+fibM2,n-1);
+    drawArray(i,offset,fibM,fibM1,fibM2);
+    log(`Step ${step}: Fib=${fibM}, compare index ${i} → arr[${i}]=${ARR[i]}`);
+    await sleep(800);
+    if(ARR[i]===target){state[i]='found';drawArray(i,offset,fibM,fibM1,fibM2);log(`✓ Found ${target} at index ${i}!`);running=false;return;}
+    else if(ARR[i]<target){
+      log(`${ARR[i]} < ${target}: move offset right, shrink by fibM2`);
+      for(let j=0;j<=i;j++)state[j]='eliminated';
+      fibM=fibM1;fibM1=fibM2;fibM2=fibM-fibM1;offset=i;
+    } else {
+      log(`${ARR[i]} > ${target}: shrink by fibM1`);
+      for(let j=i;j<n;j++)state[j]='eliminated';
+      fibM=fibM2;fibM1=fibM1-fibM2;fibM2=fibM-fibM1;
+    }
+  }
+  if(fibM1&&offset+1<n&&ARR[offset+1]===target){
+    const fi=offset+1;state[fi]='found';drawArray(fi,offset,fibM,fibM1,fibM2);
+    log(`✓ Found ${target} at index ${fi}!`);running=false;return;
+  }
+  drawArray(-1,offset,fibM,fibM1,fibM2);log(`✗ ${target} not found.`);running=false;
+}
+
+function resetSearch(){
+  running=false;state=ARR.map(()=>'default');drawArray(-1,-1,0,0,0);
+  document.getElementById('logEntries').innerHTML='';
+}
+drawArray(-1,-1,0,0,0);
+</script>
+</body>
+</html>

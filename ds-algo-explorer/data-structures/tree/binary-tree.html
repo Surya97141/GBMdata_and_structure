@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Binary Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
+.hero{padding:2rem 0 1.5rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
+.tagline{color:var(--m);font-size:1rem;}
+.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;}
+.flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.4rem;}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;}.fsub{font-size:.8rem;color:var(--m);margin-top:.2rem;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.sim-hdr{padding:.8rem 1.4rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block;}
+.sim-body{padding:1.4rem;}
+canvas{display:block;width:100%;border-radius:10px;background:var(--bg);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;}
+.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
+input[type=number],input[type=text]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:80px;}
+input:focus{border-color:var(--a);}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
+.le{border-bottom:1px solid var(--b);padding:1px 0;}.le:last-child{border:none;}
+.li{color:var(--m);}.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}
+.log-empty{color:var(--m);font-style:italic;}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.85rem;font-weight:600;margin:1.5rem 0;}
+.back:hover{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    <span>Binary Tree</span>
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Tree</span>
+    <h1>Binary Tree</h1>
+    <p class="tagline">A hierarchical structure where every node has at most two children.</p>
+  </div>
+
+  <div class="explain">
+    <p>A binary tree is like a company org chart — there is one boss (the root), and each person can manage at most two direct reports (left child and right child). The relationship flows strictly top-down, creating a layered hierarchy.</p>
+    <p>Every node stores a value and holds references to its left and right subtrees. Nodes with no children are called leaves. The depth of a node is how many edges separate it from the root, and the height of the tree is the maximum depth among all leaves.</p>
+    <p>Binary trees are the foundation for more specialised structures like BSTs, heaps, and expression trees. They are used in compilers to represent arithmetic expressions, in file systems for directory hierarchies, and in decision trees for machine learning.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time Complexity</div><div class="fval">O(n)</div><div class="fsub">Traversal (any order)</div></div>
+    <div class="fact"><div class="flabel">Space Complexity</div><div class="fval">O(n)</div><div class="fsub">Storing n nodes</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">Expressions</div><div class="fsub">Compilers, XML parsing, decision trees</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation — Insert Nodes</div>
+    <div class="sim-body">
+      <canvas id="cv" height="340"></canvas>
+      <div class="controls">
+        <input type="number" id="valIn" placeholder="Value" min="1" max="999"/>
+        <button class="btn btn-p" onclick="insertNode()">Insert</button>
+        <button class="btn btn-o" onclick="clearTree()">Clear</button>
+        <span id="levelOrder" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--m);margin-left:.5rem;"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem;" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><span class="log-empty">Insert nodes to see steps…</span></div>
+  </div>
+
+  <a class="back" href="../index.html">&#8592; Back to Data Structures</a>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+cv.width = cv.offsetWidth || 900;
+
+let root = null;
+let highlightPath = [];
+let animTimer = null;
+
+class Node {
+  constructor(val){ this.val = val; this.left = null; this.right = null; }
+}
+
+function insertBST(node, val, path){
+  if(!node){ path.push(null); return new Node(val); }
+  path.push(node);
+  if(val < node.val) node.left = insertBST(node.left, val, path);
+  else node.right = insertBST(node.right, val, path);
+  return node;
+}
+
+function insertNode(){
+  const v = parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)){ addLog('Please enter a valid number.','lw'); return; }
+  const path = [];
+  root = insertBST(root, v, path);
+  highlightPath = path.filter(Boolean);
+  addLog(`Inserted ${v}. Path length: ${highlightPath.length}`, 'ld');
+  updateLevelOrder();
+  animateInsert();
+  document.getElementById('valIn').value = '';
+}
+
+function clearTree(){
+  root = null; highlightPath = [];
+  updateLevelOrder();
+  drawTree();
+  addLog('Tree cleared.','li');
+}
+
+function clearLog(){
+  document.getElementById('log').innerHTML = '<span class="log-empty">Insert nodes to see steps…</span>';
+}
+
+function addLog(msg, cls='ls'){
+  const log = document.getElementById('log');
+  if(log.querySelector('.log-empty')) log.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = `le ${cls}`;
+  div.textContent = '> ' + msg;
+  log.prepend(div);
+}
+
+function updateLevelOrder(){
+  if(!root){ document.getElementById('levelOrder').textContent = ''; return; }
+  const q = [root], res = [];
+  while(q.length){ const n = q.shift(); res.push(n.val); if(n.left) q.push(n.left); if(n.right) q.push(n.right); }
+  document.getElementById('levelOrder').textContent = 'Level-order: [' + res.join(', ') + ']';
+}
+
+function computePositions(node, depth, left, right, positions){
+  if(!node) return;
+  const x = (left + right) / 2;
+  const y = 50 + depth * 70;
+  positions.set(node, {x, y});
+  computePositions(node.left, depth+1, left, x, positions);
+  computePositions(node.right, depth+1, x, right, positions);
+}
+
+function drawTree(){
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(!root) return;
+  const pos = new Map();
+  computePositions(root, 0, 20, W-20, pos);
+  const R = 20;
+
+  // Draw edges
+  pos.forEach((p, node) => {
+    if(node.left && pos.has(node.left)){
+      const c = pos.get(node.left);
+      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(c.x,c.y);
+      ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=2; ctx.stroke();
+    }
+    if(node.right && pos.has(node.right)){
+      const c = pos.get(node.right);
+      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(c.x,c.y);
+      ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=2; ctx.stroke();
+    }
+  });
+
+  // Draw nodes
+  pos.forEach((p, node) => {
+    const inPath = highlightPath.includes(node);
+    ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2);
+    ctx.fillStyle = inPath ? '#d4f0e4' : '#fff';
+    ctx.fill();
+    ctx.strokeStyle = inPath ? '#27a060' : '#c0bdb5';
+    ctx.lineWidth = inPath ? 2.5 : 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#1a1a2e';
+    ctx.font = "bold 13px 'JetBrains Mono', monospace";
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(node.val, p.x, p.y);
+  });
+}
+
+function animateInsert(){
+  let step = 0;
+  if(animTimer) clearInterval(animTimer);
+  animTimer = setInterval(()=>{
+    highlightPath = highlightPath.slice(0, step+1);
+    drawTree();
+    step++;
+    if(step > highlightPath.length){ clearInterval(animTimer); drawTree(); }
+  }, 300);
+}
+
+window.addEventListener('resize', ()=>{ cv.width = cv.offsetWidth; drawTree(); });
+drawTree();
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMP Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#2a9d8f;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+.breadcrumb{font-size:.85rem;color:#5a5a72;margin-bottom:2rem}
+.breadcrumb span{margin:0 .4rem}
+.hero{margin-bottom:2.5rem}
+.cat-tag{display:inline-block;background:#2a9d8f;color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .75rem;border-radius:20px;margin-bottom:.9rem}
+h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;color:#1a1a2e;margin-bottom:.6rem}
+.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
+.prose{margin-bottom:2rem}
+.prose p{line-height:1.75;color:#1a1a2e;margin-bottom:1rem;font-size:1rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:1.2rem;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:#2a9d8f;display:block;margin-bottom:.3rem}
+.fact-lbl{font-size:.8rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.06em}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.8rem;margin-bottom:1.5rem}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1.2rem;color:#1a1a2e}
+.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin-bottom:1.2rem}
+label{font-size:.85rem;font-weight:500;color:#5a5a72;display:block;margin-bottom:.3rem}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.9rem;border:1px solid #e2e0da;border-radius:7px;padding:.5rem .8rem;width:260px;background:#f7f6f2;color:#1a1a2e;outline:none}
+input[type=text]:focus{border-color:#2a9d8f}
+button{background:#2a9d8f;color:#fff;border:none;border-radius:7px;padding:.55rem 1.3rem;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s}
+button:hover{background:#21867a}
+button.sec{background:#f7f6f2;color:#1a1a2e;border:1px solid #e2e0da}
+button.sec:hover{background:#e2e0da}
+.char-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.5rem;align-items:center}
+.char-label{font-size:.75rem;color:#5a5a72;font-family:'JetBrains Mono',monospace;width:60px;flex-shrink:0}
+.ch{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:2px solid #e2e0da;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:600;background:#f7f6f2;transition:background .3s,border-color .3s}
+.ch.match{background:#d4edda;border-color:#28a745;color:#155724}
+.ch.mismatch{background:#f8d7da;border-color:#dc3545;color:#721c24}
+.ch.active{background:#fff3cd;border-color:#ffc107}
+.idx-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.8rem}
+.idx{display:inline-flex;align-items:center;justify-content:center;width:32px;font-size:.65rem;color:#5a5a72;font-family:'JetBrains Mono',monospace}
+.fail-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin-top:.8rem}
+.fail-table th,.fail-table td{border:1px solid #e2e0da;padding:.4rem .6rem;text-align:center}
+.fail-table th{background:#f7f6f2;color:#5a5a72;font-size:.75rem}
+.fail-table td.highlight{background:#2a9d8f22;color:#2a9d8f;font-weight:600}
+#log{background:#1a1a2e;color:#e2e0da;font-family:'JetBrains Mono',monospace;font-size:.8rem;border-radius:8px;padding:1rem;max-height:180px;overflow-y:auto;line-height:1.7}
+#log .lg-ok{color:#2a9d8f}
+#log .lg-info{color:#ffc107}
+#log .lg-err{color:#ff6b6b}
+.back-link{display:inline-block;margin-top:2rem;color:#2a9d8f;font-weight:500}
+@media(max-width:600px){.facts{grid-template-columns:1fr 1fr}.controls{flex-direction:column}input[type=text]{width:100%}h1{font-size:1.9rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    KMP String Search
+  </nav>
+
+  <div class="hero">
+    <span class="cat-tag">String Algorithms</span>
+    <h1>KMP Algorithm</h1>
+    <p class="tagline">Knuth-Morris-Pratt: linear-time pattern matching by reusing previously matched characters via a failure function.</p>
+  </div>
+
+  <div class="prose">
+    <p>The KMP algorithm solves pattern searching in O(n+m) time — far better than the naive O(n×m). Its insight: when a mismatch occurs after several matches, the matched portion already tells us how far back to reset the pattern pointer, so the text pointer never moves backward.</p>
+    <p>Think of a word-search with a stamp. Instead of lifting the stamp and repositioning from scratch each time it doesn't fit, KMP slides the stamp smartly by consulting a pre-computed table — the <strong>failure function</strong> (also called the "partial match" table). Each entry π[i] stores the length of the longest proper prefix of pattern[0..i] that is also a suffix.</p>
+    <p>Real-world analogy: reading a library catalogue. Once you've read "encyclop" and the next letter doesn't match, you don't restart from "e"; you know "encyclop" ends with certain sub-patterns and can jump mid-way. This is used in text editors, virus scanners, and network intrusion detection.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><span class="fact-val">O(n+m)</span><span class="fact-lbl">Time Complexity</span></div>
+    <div class="fact"><span class="fact-val">O(m)</span><span class="fact-lbl">Space (failure fn)</span></div>
+    <div class="fact"><span class="fact-val">1977</span><span class="fact-lbl">Knuth, Morris, Pratt</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>Text</label><input type="text" id="inp-text" value="ABABDABACDABABCABAB"></div>
+      <div><label>Pattern</label><input type="text" id="inp-pat" value="ABABCABAB"></div>
+      <button id="btn-search">Search</button>
+      <button class="sec" id="btn-reset">Reset</button>
+    </div>
+
+    <div id="idx-text" class="idx-row"></div>
+    <div class="char-row"><span class="char-label">Text:</span><div id="text-row" class="char-row" style="flex-wrap:wrap"></div></div>
+    <div class="char-row" style="margin-top:.5rem"><span class="char-label">Pattern:</span><div id="pat-row" class="char-row" style="flex-wrap:wrap"></div></div>
+
+    <h2 style="margin-top:1.4rem;font-size:1.1rem">Failure Function π[]</h2>
+    <div id="fail-wrap"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div id="log"><span class="lg-info">Press Search to begin…</span></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const logEl = document.getElementById('log');
+function logLine(msg, cls=''){
+  const s = document.createElement('div');
+  if(cls) s.className = cls;
+  s.textContent = msg;
+  logEl.appendChild(s);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+function clearLog(){ logEl.innerHTML=''; }
+
+function buildFailure(p){
+  const m = p.length, pi = new Array(m).fill(0);
+  let k=0;
+  for(let i=1;i<m;i++){
+    while(k>0 && p[k]!==p[i]) k=pi[k-1];
+    if(p[k]===p[i]) k++;
+    pi[i]=k;
+  }
+  return pi;
+}
+
+function renderChars(id, str, n){
+  const cont = document.getElementById(id);
+  cont.innerHTML='';
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span');
+    s.className='ch'; s.textContent=str[i]||'';
+    s.id=id+'-'+i;
+    cont.appendChild(s);
+  }
+}
+
+function renderIdxRow(id, n){
+  const cont = document.getElementById(id);
+  cont.innerHTML='';
+  // offset for label
+  const lbl=document.createElement('span');
+  lbl.style.width='64px'; lbl.style.display='inline-block'; lbl.style.flexShrink='0';
+  cont.appendChild(lbl);
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span'); s.className='idx'; s.textContent=i; cont.appendChild(s);
+  }
+}
+
+function renderFailTable(pat, pi){
+  const wrap = document.getElementById('fail-wrap');
+  wrap.innerHTML='';
+  const tbl = document.createElement('table'); tbl.className='fail-table';
+  const thead=document.createElement('thead'),tr1=document.createElement('tr');
+  ['i','Pattern[i]','π[i]'].forEach(h=>{const th=document.createElement('th');th.textContent=h;tr1.appendChild(th)});
+  thead.appendChild(tr1); tbl.appendChild(thead);
+  const tbody=document.createElement('tbody');
+  for(let i=0;i<pat.length;i++){
+    const tr=document.createElement('tr');
+    [i,pat[i],pi[i]].forEach((v,ci)=>{
+      const td=document.createElement('td'); td.textContent=v;
+      if(ci===2 && v>0) td.className='highlight';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+  tbl.appendChild(tbody); wrap.appendChild(tbl);
+}
+
+function setClass(id, idx, cls){
+  const el=document.getElementById(id+'-'+idx);
+  if(el){ el.className='ch '+cls; }
+}
+
+function resetClasses(id, n){
+  for(let i=0;i<n;i++) setClass(id,i,'');
+}
+
+let animTimer=null;
+document.getElementById('btn-reset').onclick=()=>{
+  if(animTimer) clearTimeout(animTimer);
+  const t=document.getElementById('inp-text').value;
+  const p=document.getElementById('inp-pat').value;
+  renderIdxRow('idx-text', t.length);
+  renderChars('text-row', t, t.length);
+  renderChars('pat-row', p, p.length);
+  const pi=buildFailure(p);
+  renderFailTable(p,pi);
+  clearLog(); logLine('Reset. Press Search to start.','lg-info');
+};
+
+document.getElementById('btn-search').onclick=()=>{
+  if(animTimer) clearTimeout(animTimer);
+  const t=document.getElementById('inp-text').value.trim();
+  const p=document.getElementById('inp-pat').value.trim();
+  if(!t||!p){logLine('Enter text and pattern.','lg-err');return;}
+  const n=t.length, m=p.length;
+  renderIdxRow('idx-text', n);
+  renderChars('text-row', t, n);
+  renderChars('pat-row', p, m);
+  const pi=buildFailure(p);
+  renderFailTable(p,pi);
+  clearLog();
+  logLine(`Text length=${n}, Pattern length=${m}`,'lg-info');
+  logLine(`Failure function computed.`,'lg-info');
+
+  // Collect steps
+  const steps=[];
+  let j=0;
+  for(let i=0;i<n;){
+    if(t[i]===p[j]){
+      steps.push({type:'match',i,j});
+      i++;j++;
+      if(j===m){
+        steps.push({type:'found',i:i-m,j});
+        j=pi[j-1];
+      }
+    } else {
+      if(j>0){
+        steps.push({type:'fallback',i,j,nj:pi[j-1]});
+        j=pi[j-1];
+      } else {
+        steps.push({type:'mismatch',i,j});
+        i++;
+      }
+    }
+  }
+
+  let si=0;
+  function nextStep(){
+    if(si>=steps.length){ logLine('Search complete.','lg-ok'); return; }
+    resetClasses('text-row',n);
+    resetClasses('pat-row',m);
+    const s=steps[si++];
+    if(s.type==='match'){
+      setClass('text-row',s.i,'match'); setClass('pat-row',s.j,'match');
+      logLine(`i=${s.i}, j=${s.j}: '${t[s.i]}'='${p[s.j]}' MATCH`,'lg-ok');
+    } else if(s.type==='mismatch'){
+      setClass('text-row',s.i,'mismatch'); setClass('pat-row',s.j,'mismatch');
+      logLine(`i=${s.i}, j=${s.j}: '${t[s.i]}'≠'${p[s.j]}' mismatch → advance i`);
+    } else if(s.type==='fallback'){
+      setClass('text-row',s.i,'mismatch'); setClass('pat-row',s.j,'mismatch');
+      logLine(`i=${s.i}, j=${s.j}: mismatch → use π[${s.j-1}]=${s.nj}, reset j`,'lg-info');
+    } else if(s.type==='found'){
+      for(let k=s.i;k<s.i+m;k++) setClass('text-row',k,'match');
+      logLine(`★ Match at index ${s.i}! Pattern found. i=${s.i+m-1}, j=${m}`,'lg-ok');
+    }
+    animTimer=setTimeout(nextStep,700);
+  }
+  nextStep();
+};
+
+// Init
+document.getElementById('btn-reset').click();
+</script>
+</body>
+</html>

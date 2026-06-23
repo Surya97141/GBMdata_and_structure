@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#2a9d8f;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+.breadcrumb{font-size:.85rem;color:#5a5a72;margin-bottom:2rem}.breadcrumb span{margin:0 .4rem}
+.cat-tag{display:inline-block;background:#2a9d8f;color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .75rem;border-radius:20px;margin-bottom:.9rem}
+h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:.6rem}
+.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
+.prose p{line-height:1.75;margin-bottom:1rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:1.2rem;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:#2a9d8f;display:block;margin-bottom:.3rem}
+.fact-lbl{font-size:.8rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.06em}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.8rem;margin-bottom:1.5rem}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1.2rem}
+.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin-bottom:1.2rem}
+label{font-size:.85rem;font-weight:500;color:#5a5a72;display:block;margin-bottom:.3rem}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.9rem;border:1px solid #e2e0da;border-radius:7px;padding:.5rem .8rem;width:300px;background:#f7f6f2;color:#1a1a2e;outline:none}
+input[type=text]:focus{border-color:#2a9d8f}
+button{background:#2a9d8f;color:#fff;border:none;border-radius:7px;padding:.55rem 1.3rem;font-size:.9rem;font-weight:600;cursor:pointer}
+button:hover{background:#21867a}
+button.sec{background:#f7f6f2;color:#1a1a2e;border:1px solid #e2e0da}button.sec:hover{background:#e2e0da}
+.z-grid{display:flex;flex-wrap:wrap;gap:3px;margin:.6rem 0}
+.zch{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.zch .cc{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #e2e0da;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;background:#f7f6f2;transition:background .3s,border-color .3s}
+.zch .cv{width:30px;height:22px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#2a9d8f;font-weight:600}
+.zch .cc.zbox{background:#d4edda;border-color:#28a745}
+.zch .cc.current{background:#fff3cd;border-color:#ffc107}
+.zch .cc.mismatch{background:#f8d7da;border-color:#dc3545}
+.box-info{background:#f7f6f2;border:1px solid #e2e0da;border-radius:8px;padding:.8rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:.6rem 0;color:#1a1a2e}
+.box-info span{color:#2a9d8f;font-weight:600}
+#log{background:#1a1a2e;color:#e2e0da;font-family:'JetBrains Mono',monospace;font-size:.8rem;border-radius:8px;padding:1rem;max-height:180px;overflow-y:auto;line-height:1.7}
+#log .lg-ok{color:#2a9d8f}#log .lg-info{color:#ffc107}
+.back-link{display:inline-block;margin-top:2rem;color:#2a9d8f;font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span><a href="../index.html">Algorithms</a><span>›</span>Z-Algorithm
+  </nav>
+  <div class="hero" style="margin-bottom:2.5rem">
+    <span class="cat-tag">String Algorithms</span>
+    <h1>Z-Algorithm</h1>
+    <p class="tagline">Compute Z-values in O(n) — for each position, the length of the longest substring matching the string's prefix.</p>
+  </div>
+  <div class="prose" style="margin-bottom:2rem">
+    <p>The Z-array for a string S has Z[i] = length of the longest substring starting at S[i] that is also a prefix of S. Z[0] is defined as 0 (or n). The algorithm maintains a "Z-box" [l, r] — the rightmost segment known to match the prefix — and uses it to skip redundant comparisons.</p>
+    <p>Think of making a rubber stamp of a word and sliding it across the text. Wherever the stamp matches the text exactly, that length is the Z-value. The clever part: if you're inside a previously computed match window, you can copy values from the mirror position instead of re-checking character by character.</p>
+    <p>Z-algorithm is the conceptual twin of KMP. To use it for pattern search: build Z on "pattern + '$' + text"; any Z[i] ≥ m indicates a match. Used in suffix array construction, string periodicity detection, and bioinformatics.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><span class="fact-val">O(n)</span><span class="fact-lbl">Time Complexity</span></div>
+    <div class="fact"><span class="fact-val">O(n)</span><span class="fact-lbl">Space</span></div>
+    <div class="fact"><span class="fact-val">Z-box</span><span class="fact-lbl">Key Optimization</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>String</label><input type="text" id="inp-str" value="aabxaacaabxaa"></div>
+      <button id="btn-run">Compute Z-Array</button>
+      <button class="sec" id="btn-reset">Reset</button>
+    </div>
+    <div style="font-size:.8rem;color:#5a5a72;margin-bottom:.5rem">Characters (top) and Z-values (bottom):</div>
+    <div id="z-grid" class="z-grid"></div>
+    <div class="box-info" id="box-info">Z-box: <span>—</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div id="log"><span class="lg-info">Press Compute Z-Array to begin…</span></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function logLine(msg,cls=''){const s=document.createElement('div');if(cls)s.className=cls;s.textContent=msg;const l=document.getElementById('log');l.appendChild(s);l.scrollTop=l.scrollHeight;}
+function clearLog(){document.getElementById('log').innerHTML='';}
+
+function buildGrid(str, zVals){
+  const grid=document.getElementById('z-grid'); grid.innerHTML='';
+  for(let i=0;i<str.length;i++){
+    const wrap=document.createElement('div'); wrap.className='zch';
+    const cc=document.createElement('div'); cc.className='cc'; cc.textContent=str[i]; cc.id='cc-'+i;
+    const cv=document.createElement('div'); cv.className='cv'; cv.textContent=zVals?zVals[i]:''; cv.id='cv-'+i;
+    wrap.appendChild(cc); wrap.appendChild(cv); grid.appendChild(wrap);
+  }
+}
+
+let timer=null;
+document.getElementById('btn-reset').onclick=()=>{
+  if(timer)clearTimeout(timer);
+  const s=document.getElementById('inp-str').value;
+  buildGrid(s,null);
+  document.getElementById('box-info').innerHTML='Z-box: <span>—</span>';
+  clearLog(); logLine('Reset.','lg-info');
+};
+
+document.getElementById('btn-run').onclick=()=>{
+  if(timer)clearTimeout(timer);
+  const s=document.getElementById('inp-str').value.trim();
+  if(!s){return;}
+  clearLog();
+  const n=s.length;
+  buildGrid(s,new Array(n).fill(0));
+
+  // Collect steps
+  const steps=[];
+  const Z=new Array(n).fill(0);
+  let l=0,r=0;
+  for(let i=1;i<n;i++){
+    let k=0;
+    if(i<r) k=Math.min(r-i,Z[i-l]);
+    let note='';
+    if(i<r) note=`Inside Z-box [${l},${r-1}]: mirror value = Z[${i-l}]=${Z[i-l]}, min(${r-i},${Z[i-l]})=${k}`;
+    else note=`Outside Z-box. Start from scratch.`;
+    while(i+k<n && s[k]===s[i+k]) k++;
+    if(i+k>r){l=i;r=i+k;}
+    Z[i]=k;
+    steps.push({i,z:k,l,r,note});
+  }
+  Z[0]=n; // convention
+
+  let si=0;
+  function next(){
+    if(si>=steps.length){
+      // Show final
+      buildGrid(s,Z);
+      logLine('Z-array complete.','lg-ok');
+      return;
+    }
+    const st=steps[si++];
+    // Update displays
+    for(let i=0;i<n;i++){
+      const cc=document.getElementById('cc-'+i);
+      if(!cc) continue;
+      cc.className='cc';
+    }
+    const cur=document.getElementById('cc-'+st.i);
+    if(cur) cur.className='cc current';
+    if(st.z>0){
+      for(let k=st.i;k<st.i+st.z && k<n;k++){
+        const e=document.getElementById('cc-'+k);if(e)e.className='cc zbox';
+      }
+    }
+    document.getElementById('cv-'+st.i).textContent=st.z;
+    document.getElementById('box-info').innerHTML=`Z-box: <span>[${st.l}, ${st.r-1}]</span>`;
+    logLine(`Z[${st.i}]=${st.z}: "${s.slice(st.i,st.i+st.z)}" matches prefix "${s.slice(0,st.z)}". ${st.note}`,'lg-ok');
+    timer=setTimeout(next,700);
+  }
+  // Show Z[0]
+  const cv0=document.getElementById('cv-0');if(cv0)cv0.textContent=n;
+  logLine(`Z[0]=${n} (full string length by definition)`,'lg-info');
+  next();
+};
+document.getElementById('btn-reset').click();
+</script>
+</body>
+</html>

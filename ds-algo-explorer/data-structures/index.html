@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data Structures — DS/Algo Explorer</title>
+<link rel="stylesheet" href="../assets/style.css"/>
+<style>
+  .cat-section { margin: 2rem 0 3rem; }
+  .cat-header {
+    display: flex; align-items: center; gap: .8rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: .6rem; margin-bottom: 1.4rem;
+  }
+  .cat-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .cat-header h2 { font-size: 1.4rem; }
+  .ds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .ds-card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow .18s, transform .18s, border-color .18s;
+  }
+  .ds-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: var(--card-accent, var(--border)); }
+  .ds-card-name { font-weight: 700; font-size: .95rem; color: var(--ink); margin-bottom: .3rem; }
+  .ds-card-tag {
+    font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--surface); background: var(--card-accent, #888);
+    padding: .1rem .55rem; border-radius: 100px; display: inline-block; margin-bottom: .5rem;
+  }
+  .ds-card-desc { font-size: .8rem; color: var(--ink-muted); line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../index.html">Home</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">Data Structures</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-tag" style="background:#1a1a2e;">Data Structures</div>
+    <h1>Data Structures</h1>
+    <p class="hero-tagline">From simple arrays to exotic persistent trees — pick any structure to explore its mechanics interactively.</p>
+  </div>
+
+  <!-- LINEAR -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:#e8622a;"></div>
+      <h2>Linear</h2>
+    </div>
+    <div class="ds-grid">
+      <a class="ds-card" href="linear/array.html" style="--card-accent:#e8622a">
+        <div class="ds-card-tag" style="background:#e8622a;">Linear</div>
+        <div class="ds-card-name">Array</div>
+        <div class="ds-card-desc">Contiguous memory, O(1) random access, fixed size.</div>
+      </a>
+      <a class="ds-card" href="linear/linked-list.html" style="--card-accent:#e8622a">
+        <div class="ds-card-tag" style="background:#e8622a;">Linear</div>
+        <div class="ds-card-name">Linked List</div>
+        <div class="ds-card-desc">Node chains with O(1) insert/delete at known positions.</div>
+      </a>
+      <a class="ds-card" href="linear/stack.html" style="--card-accent:#e8622a">
+        <div class="ds-card-tag" style="background:#e8622a;">Linear</div>
+        <div class="ds-card-name">Stack</div>
+        <div class="ds-card-desc">LIFO — last in, first out. Push and pop from the top.</div>
+      </a>
+      <a class="ds-card" href="linear/queue.html" style="--card-accent:#e8622a">
+        <div class="ds-card-tag" style="background:#e8622a;">Linear</div>
+        <div class="ds-card-name">Queue</div>
+        <div class="ds-card-desc">FIFO — first in, first out. Enqueue rear, dequeue front.</div>
+      </a>
+      <a class="ds-card" href="linear/deque.html" style="--card-accent:#e8622a">
+        <div class="ds-card-tag" style="background:#e8622a;">Linear</div>
+        <div class="ds-card-name">Deque</div>
+        <div class="ds-card-desc">Double-ended queue: insert/remove at both ends in O(1).</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- TREES -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:#27a060;"></div>
+      <h2>Trees</h2>
+    </div>
+    <div class="ds-grid">
+      <a class="ds-card" href="tree/binary-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Binary Tree</div>
+        <div class="ds-card-desc">Each node has at most two children. Foundation of all tree structures.</div>
+      </a>
+      <a class="ds-card" href="tree/bst.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Binary Search Tree</div>
+        <div class="ds-card-desc">Left &lt; Root &lt; Right. O(log n) average search.</div>
+      </a>
+      <a class="ds-card" href="tree/avl-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">AVL Tree</div>
+        <div class="ds-card-desc">Self-balancing BST with guaranteed O(log n) operations.</div>
+      </a>
+      <a class="ds-card" href="tree/red-black-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Red-Black Tree</div>
+        <div class="ds-card-desc">Balanced BST with color invariants. Fewer rotations than AVL.</div>
+      </a>
+      <a class="ds-card" href="tree/b-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">B-Tree</div>
+        <div class="ds-card-desc">Multi-way search tree for disk-based storage systems.</div>
+      </a>
+      <a class="ds-card" href="tree/b-plus-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">B+ Tree</div>
+        <div class="ds-card-desc">B-Tree with data only in leaves; fast range queries. Used in databases.</div>
+      </a>
+      <a class="ds-card" href="tree/segment-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Segment Tree</div>
+        <div class="ds-card-desc">Range queries and point updates in O(log n).</div>
+      </a>
+      <a class="ds-card" href="tree/fenwick-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Fenwick Tree</div>
+        <div class="ds-card-desc">Binary Indexed Tree — prefix sums with minimal memory.</div>
+      </a>
+      <a class="ds-card" href="tree/trie.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Trie</div>
+        <div class="ds-card-desc">Prefix tree for fast string lookup and autocomplete.</div>
+      </a>
+      <a class="ds-card" href="tree/suffix-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Suffix Tree</div>
+        <div class="ds-card-desc">All suffixes of a string in a tree. O(n) pattern matching.</div>
+      </a>
+      <a class="ds-card" href="tree/heap.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Heap</div>
+        <div class="ds-card-desc">Complete binary tree satisfying heap property. O(log n) insert/extract.</div>
+      </a>
+      <a class="ds-card" href="tree/fibonacci-heap.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Fibonacci Heap</div>
+        <div class="ds-card-desc">Amortized O(1) decrease-key. Optimal for Dijkstra.</div>
+      </a>
+      <a class="ds-card" href="tree/leftist-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Leftist Tree</div>
+        <div class="ds-card-desc">Heap with efficient merge in O(log n).</div>
+      </a>
+      <a class="ds-card" href="tree/splay-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Splay Tree</div>
+        <div class="ds-card-desc">Self-adjusting BST with amortized O(log n). Recently accessed at root.</div>
+      </a>
+      <a class="ds-card" href="tree/treap.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">Treap</div>
+        <div class="ds-card-desc">Randomized BST combining tree + heap properties.</div>
+      </a>
+      <a class="ds-card" href="tree/kd-tree.html" style="--card-accent:#27a060">
+        <div class="ds-card-tag" style="background:#27a060;">Tree</div>
+        <div class="ds-card-name">KD-Tree</div>
+        <div class="ds-card-desc">K-dimensional space partitioning for nearest-neighbour queries.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- GRAPHS -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:#7b4fd4;"></div>
+      <h2>Graphs</h2>
+    </div>
+    <div class="ds-grid">
+      <a class="ds-card" href="graph/graph.html" style="--card-accent:#7b4fd4">
+        <div class="ds-card-tag" style="background:#7b4fd4;">Graph</div>
+        <div class="ds-card-name">Graph</div>
+        <div class="ds-card-desc">Vertices connected by edges. Directed or undirected.</div>
+      </a>
+      <a class="ds-card" href="graph/adjacency-matrix.html" style="--card-accent:#7b4fd4">
+        <div class="ds-card-tag" style="background:#7b4fd4;">Graph</div>
+        <div class="ds-card-name">Adjacency Matrix</div>
+        <div class="ds-card-desc">V×V matrix. O(1) edge lookup, O(V²) space.</div>
+      </a>
+      <a class="ds-card" href="graph/adjacency-list.html" style="--card-accent:#7b4fd4">
+        <div class="ds-card-tag" style="background:#7b4fd4;">Graph</div>
+        <div class="ds-card-name">Adjacency List</div>
+        <div class="ds-card-desc">List per vertex. Space-efficient for sparse graphs.</div>
+      </a>
+      <a class="ds-card" href="graph/incidence-matrix.html" style="--card-accent:#7b4fd4">
+        <div class="ds-card-tag" style="background:#7b4fd4;">Graph</div>
+        <div class="ds-card-name">Incidence Matrix</div>
+        <div class="ds-card-desc">V×E matrix showing vertex-edge membership.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- HASH -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:#d4a017;"></div>
+      <h2>Hash</h2>
+    </div>
+    <div class="ds-grid">
+      <a class="ds-card" href="hash/hash-table.html" style="--card-accent:#d4a017">
+        <div class="ds-card-tag" style="background:#d4a017;">Hash</div>
+        <div class="ds-card-name">Hash Table</div>
+        <div class="ds-card-desc">Key-value map with O(1) average insert, delete, lookup.</div>
+      </a>
+      <a class="ds-card" href="hash/hash-set.html" style="--card-accent:#d4a017">
+        <div class="ds-card-tag" style="background:#d4a017;">Hash</div>
+        <div class="ds-card-name">Hash Set</div>
+        <div class="ds-card-desc">Unordered set backed by a hash table.</div>
+      </a>
+      <a class="ds-card" href="hash/bloom-filter.html" style="--card-accent:#d4a017">
+        <div class="ds-card-tag" style="background:#d4a017;">Hash</div>
+        <div class="ds-card-name">Bloom Filter</div>
+        <div class="ds-card-desc">Probabilistic membership test. No false negatives, possible false positives.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:#c0392b;"></div>
+      <h2>Advanced</h2>
+    </div>
+    <div class="ds-grid">
+      <a class="ds-card" href="advanced/matrix.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Matrix</div>
+        <div class="ds-card-desc">2D array with rich linear-algebra operations.</div>
+      </a>
+      <a class="ds-card" href="advanced/disjoint-set.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Disjoint Set (Union-Find)</div>
+        <div class="ds-card-desc">Near-O(1) union and find with path compression.</div>
+      </a>
+      <a class="ds-card" href="advanced/skip-list.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Skip List</div>
+        <div class="ds-card-desc">Probabilistic linked list hierarchy. O(log n) search.</div>
+      </a>
+      <a class="ds-card" href="advanced/sparse-table.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Sparse Table</div>
+        <div class="ds-card-desc">Static RMQ in O(1) after O(n log n) preprocessing.</div>
+      </a>
+      <a class="ds-card" href="advanced/suffix-array.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Suffix Array</div>
+        <div class="ds-card-desc">Sorted array of all suffixes. Efficient string operations.</div>
+      </a>
+      <a class="ds-card" href="advanced/rope.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Rope</div>
+        <div class="ds-card-desc">Binary tree for efficient string concatenation and splits.</div>
+      </a>
+      <a class="ds-card" href="advanced/cartesian-tree.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Cartesian Tree</div>
+        <div class="ds-card-desc">BST + heap property over an array.</div>
+      </a>
+      <a class="ds-card" href="advanced/van-emde-boas.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Van Emde Boas</div>
+        <div class="ds-card-desc">O(log log U) operations over integer universe U.</div>
+      </a>
+      <a class="ds-card" href="advanced/dancing-links.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Dancing Links</div>
+        <div class="ds-card-desc">Knuth's DLX — exact-cover via reversible linked-list ops.</div>
+      </a>
+      <a class="ds-card" href="advanced/quad-tree.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Quad Tree</div>
+        <div class="ds-card-desc">2D space partitioning with four children per node.</div>
+      </a>
+      <a class="ds-card" href="advanced/octree.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Octree</div>
+        <div class="ds-card-desc">3D space partitioning; eight children per node.</div>
+      </a>
+      <a class="ds-card" href="advanced/r-tree.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">R-Tree</div>
+        <div class="ds-card-desc">Spatial index for rectangles. Used in GIS databases.</div>
+      </a>
+      <a class="ds-card" href="advanced/persistent-segment-tree.html" style="--card-accent:#c0392b">
+        <div class="ds-card-tag" style="background:#c0392b;">Advanced</div>
+        <div class="ds-card-name">Persistent Segment Tree</div>
+        <div class="ds-card-desc">All historical versions of segment tree accessible in O(log n).</div>
+      </a>
+    </div>
+  </div>
+
+  <a class="back-link" href="../index.html">Back to Home</a>
+</div>
+</body>
+</html>

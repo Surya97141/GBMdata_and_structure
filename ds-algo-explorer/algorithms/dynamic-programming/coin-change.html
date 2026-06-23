@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Coin Change – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem}
+.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
+.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
+.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+label{font-size:14px;color:#5a5a72;font-weight:500}
+input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:180px}
+input[type=number]{width:80px;padding:8px 10px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2}
+button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
+button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
+.dp-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.dp-cell{min-width:44px;padding:8px 4px;background:#fff;border:2px solid #e2e0da;border-radius:6px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;transition:all .3s}
+.dp-cell .idx{font-size:10px;color:#5a5a72;display:block}
+.dp-cell.cur{background:#e8622a;color:#fff;border-color:#e8622a}
+.dp-cell.cur .idx{color:#fdebd7}
+.dp-cell.done{background:#fdf0ea;border-color:#f5c4a8}
+.dp-cell.done .idx{color:#e8622a}
+.dp-cell.inf{color:#c8c6c0}
+.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
+.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto}
+.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Coin Change
+  </div>
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Coin Change</h1>
+    <p class="tagline">Find the minimum number of coins needed to make a target amount.</p>
+  </div>
+  <div class="prose">
+    <p>You're at a vending machine that needs exact change. Given coin denominations and a target amount, what is the fewest coins needed? Greedy fails for unusual coin sets (e.g., coins [1,3,4] and target 6 — greedy picks 4+1+1=3 coins, but 3+3=2 coins is optimal).</p>
+    <p>DP solves this cleanly: <code>dp[w]</code> = minimum coins to make amount w. Base case: dp[0]=0. For each amount from 1 to target, try every coin c: if c ≤ w and dp[w-c]+1 &lt; dp[w], update dp[w]. Start with dp[w]=∞ for w&gt;0.</p>
+    <p>After computing dp[target], backtrack through the choice array to find which coins were used. Time O(n·W), space O(W). A classic problem in competitive programming and a great interview question.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-val">O(n·W)</div><div class="fact-lbl">Time Complexity</div></div>
+    <div class="fact"><div class="fact-val">O(W)</div><div class="fact-lbl">Space Complexity</div></div>
+    <div class="fact"><div class="fact-val">Unbounded</div><div class="fact-lbl">Coin Reuse</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Coins: <input type="text" id="coins" value="1,2,5"/></label>
+      <label>Amount: <input type="number" id="amount" value="11" min="1" max="30"/></label>
+      <button id="solveBtn" onclick="solve()">Solve</button>
+      <button onclick="reset()">Reset</button>
+    </div>
+    <div class="dp-row" id="dpRow"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let running=false;
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
+function reset(){document.getElementById('dpRow').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('solveBtn').disabled=false;running=false;}
+function buildCells(W){
+  const wrap=document.getElementById('dpRow');wrap.innerHTML='';
+  for(let w=0;w<=W;w++){
+    const div=document.createElement('div');div.className='dp-cell';div.id=`dc${w}`;
+    div.innerHTML=`<span class="idx">w=${w}</span><span class="val">${w===0?0:'∞'}</span>`;wrap.appendChild(div);
+  }
+}
+function setCell(w,v,cls){
+  const el=document.getElementById(`dc${w}`);if(!el)return;
+  el.querySelector('.val').textContent=v===Infinity?'∞':v;
+  el.className='dp-cell '+(cls||'');
+}
+async function solve(){
+  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
+  document.getElementById('log').innerHTML='';
+  const coins=document.getElementById('coins').value.split(',').map(s=>parseInt(s.trim())).filter(x=>!isNaN(x)&&x>0);
+  const W=parseInt(document.getElementById('amount').value)||11;
+  buildCells(W);
+  const dp=new Array(W+1).fill(Infinity);
+  const from=new Array(W+1).fill(-1);
+  dp[0]=0;
+  log(`<span class="hi">Coins: [${coins.join(',')}], Amount: ${W}</span>`);
+  await sleep(300);
+  for(let w=1;w<=W;w++){
+    setCell(w,Infinity,'cur');await sleep(80);
+    let parts=[];
+    for(const c of coins){
+      if(c<=w&&dp[w-c]+1<dp[w]){dp[w]=dp[w-c]+1;from[w]=c;}
+      if(c<=w) parts.push(`dp[${w-c}]+1=${dp[w-c]===Infinity?'∞':dp[w-c]+1}`);
+    }
+    setCell(w,dp[w],'done');
+    log(`dp[${w}] = min(${parts.join(', ')}) = ${dp[w]===Infinity?'∞':dp[w]}`);
+  }
+  // trace coins
+  const used=[];let w=W;
+  while(w>0&&from[w]>0){used.push(from[w]);w-=from[w];}
+  const res=document.getElementById('result');res.style.display='block';
+  if(dp[W]===Infinity) res.innerHTML=`<b>No solution</b> — cannot make ${W} with given coins.`;
+  else res.innerHTML=`<b>Min coins: ${dp[W]}</b> &nbsp;|&nbsp; Coins used: [${used.join(', ')}]`;
+  log(`✓ Min coins = ${dp[W]===Infinity?'impossible':dp[W]}`);
+  running=false;
+}
+</script>
+</body>
+</html>

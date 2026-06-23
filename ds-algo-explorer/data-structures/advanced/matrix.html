@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Matrix Operations — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+.matrix-wrap{display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px}
+.mat-label{font-size:12px;color:#5a5a72;font-weight:600;margin-bottom:6px;text-align:center}
+table.mat{border-collapse:collapse}
+table.mat td{padding:2px}
+table.mat input{width:52px;height:40px;text-align:center;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;color:#1a1a2e;background:#f7f6f2;outline:none;transition:border .2s}
+table.mat input:focus{border-color:#c0392b;background:#fff}
+table.mat input.highlight{background:#fff0ee;border-color:#c0392b;font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+button.secondary:hover{background:#f7f6f2}
+.result-area{background:#f7f6f2;border-radius:8px;padding:14px;margin-top:12px;min-height:60px}
+.result-area table.mat input{background:#fff;width:52px}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:20px;max-height:160px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.log-box p.err{color:#ff8a80}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Matrix Operations
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Matrix Operations</h1>
+  <p class="tagline">2D arrays powering linear algebra, graphics, and machine learning.</p>
+  <div class="prose">
+    <p>A <strong>matrix</strong> is a rectangular grid of numbers arranged in rows and columns. It is the fundamental object of linear algebra — every transformation in computer graphics (rotation, scaling, projection) is encoded as a matrix multiplication. When you rotate a 3D game character or apply a filter in image processing, a matrix is doing the work under the hood.</p>
+    <p>Key operations include the <strong>transpose</strong> (flipping rows and columns), <strong>matrix multiplication</strong> (composing two transformations), and <strong>row echelon form</strong> (Gaussian elimination for solving linear systems). The <strong>determinant</strong> of a square matrix tells you whether it is invertible — a zero determinant means the system has no unique solution.</p>
+    <p>Real-world analogy: think of a matrix as a recipe card grid — rows are ingredients, columns are steps, and matrix multiplication is like following two recipes sequentially to produce a combined dish.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Multiply</div><div class="fact-value">O(n³)</div></div>
+    <div class="fact"><div class="fact-label">Transpose</div><div class="fact-value">O(n²)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Graphics · ML · Systems</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Interactive Matrix Operations</div>
+    <div class="matrix-wrap">
+      <div>
+        <div class="mat-label">Matrix A (editable)</div>
+        <table class="mat" id="matA"></table>
+      </div>
+      <div>
+        <div class="mat-label">Matrix B (editable, for multiply)</div>
+        <table class="mat" id="matB"></table>
+      </div>
+    </div>
+    <div class="controls">
+      <button onclick="doTranspose()">Transpose A</button>
+      <button onclick="doMultiply()">A × B</button>
+      <button onclick="doDeterminant()">Determinant (top-left 3×3)</button>
+      <button onclick="doRowReduce()">Row Echelon Form</button>
+      <button class="secondary" onclick="resetMats()">Reset</button>
+    </div>
+    <div class="result-area" id="resultArea"><span style="color:#5a5a72;font-size:.9rem">Result will appear here.</span></div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+const N=4;
+function makeMatrix(id,readOnly=false){
+  const t=document.getElementById(id);
+  t.innerHTML='';
+  const data=[];
+  for(let r=0;r<N;r++){
+    const tr=document.createElement('tr');
+    const row=[];
+    for(let c=0;c<N;c++){
+      const td=document.createElement('td');
+      const inp=document.createElement('input');
+      inp.type='number';
+      if(readOnly){inp.readOnly=true;inp.tabIndex=-1;}
+      inp.value=defaultVal(id,r,c);
+      td.appendChild(inp);tr.appendChild(td);row.push(inp);
+    }
+    t.appendChild(tr);data.push(row);
+  }
+  return data;
+}
+function defaultVal(id,r,c){
+  if(id==='matA'){const d=[[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]];return d[r][c];}
+  if(id==='matB'){const d=[[1,0,0,0],[0,2,0,0],[0,0,3,0],[0,0,0,4]];return d[r][c];}
+  return 0;
+}
+function getVal(data,r,c){return parseFloat(data[r][c].value)||0;}
+function getMatrix(data){const m=[];for(let r=0;r<N;r++){const row=[];for(let c=0;c<N;c++)row.push(getVal(data,r,c));m.push(row);}return m;}
+function clearHighlight(data){for(let r=0;r<N;r++)for(let c=0;c<N;c++)data[r][c].classList.remove('highlight');}
+
+let dataA,dataB;
+function resetMats(){dataA=makeMatrix('matA');dataB=makeMatrix('matB');document.getElementById('resultArea').innerHTML='<span style="color:#5a5a72;font-size:.9rem">Result will appear here.</span>';document.getElementById('logBox').innerHTML='';}
+resetMats();
+
+function log(msg,err=false){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(err)p.classList.add('err');b.appendChild(p);b.scrollTop=b.scrollHeight;}
+
+function showResultMatrix(m,label){
+  const area=document.getElementById('resultArea');
+  area.innerHTML=`<div class="mat-label" style="margin-bottom:8px">${label}</div>`;
+  const tbl=document.createElement('table');tbl.className='mat';
+  for(let r=0;r<m.length;r++){const tr=document.createElement('tr');for(let c=0;c<m[r].length;c++){const td=document.createElement('td');const inp=document.createElement('input');inp.type='number';inp.readOnly=true;inp.tabIndex=-1;inp.value=Math.round(m[r][c]*1000)/1000;tr.appendChild(td);td.appendChild(inp);}tbl.appendChild(tr);}
+  area.appendChild(tbl);
+}
+
+function doTranspose(){
+  const M=getMatrix(dataA);
+  const T=[];
+  for(let c=0;c<N;c++){const row=[];for(let r=0;r<N;r++)row.push(M[r][c]);T.push(row);}
+  showResultMatrix(T,'Transpose of A');
+  log('Transpose: T[i][j] = A[j][i] for all i,j');
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(r!==c){dataA[r][c].classList.add('highlight');setTimeout(()=>dataA[r][c].classList.remove('highlight'),1200);}
+}
+
+function doMultiply(){
+  const A=getMatrix(dataA);const B=getMatrix(dataB);
+  const R=Array.from({length:N},()=>Array(N).fill(0));
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){let s=0;for(let k=0;k<N;k++)s+=A[i][k]*B[k][j];R[i][j]=s;}
+  showResultMatrix(R,'A × B');
+  log('Multiply: R[i][j] = Σ A[i][k]*B[k][j] for k=0..3');
+  log(`R[0][0] = ${A[0][0]}*${B[0][0]} + ${A[0][1]}*${B[1][0]} + ... = ${R[0][0]}`);
+}
+
+function det3(m){
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+        -m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+        +m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+function doDeterminant(){
+  const M=getMatrix(dataA);
+  const sub=M.slice(0,3).map(r=>r.slice(0,3));
+  const d=det3(sub);
+  document.getElementById('resultArea').innerHTML=`<div class="mat-label">Determinant of top-left 3×3 submatrix</div><p style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:#c0392b;margin-top:8px">det = ${Math.round(d*1000)/1000}</p>`;
+  log(`det(A[0:3][0:3]) = ${Math.round(d*1000)/1000}`);
+  log(`Using cofactor expansion on row 0`);
+  for(let c=0;c<3;c++){dataA[0][c].classList.add('highlight');setTimeout(()=>dataA[0][c].classList.remove('highlight'),1200);}
+}
+
+function doRowReduce(){
+  const M=getMatrix(dataA).map(r=>[...r]);
+  const steps=[];
+  for(let col=0;col<N;col++){
+    let pivot=-1;
+    for(let r=col;r<N;r++)if(Math.abs(M[r][col])>1e-9){pivot=r;break;}
+    if(pivot===-1)continue;
+    if(pivot!==col){const tmp=M[pivot];M[pivot]=M[col];M[col]=tmp;steps.push(`Swap R${col+1} ↔ R${pivot+1}`);}
+    const pv=M[col][col];
+    for(let r=col+1;r<N;r++){
+      if(Math.abs(M[r][col])<1e-9)continue;
+      const factor=M[r][col]/pv;
+      for(let c=0;c<N;c++)M[r][c]-=factor*M[col][c];
+      steps.push(`R${r+1} = R${r+1} - ${Math.round(factor*100)/100}×R${col+1}`);
+    }
+  }
+  showResultMatrix(M,'Row Echelon Form');
+  steps.forEach(s=>log(s));
+  if(steps.length===0)log('Matrix already in row echelon form.');
+}
+</script>
+</body>
+</html>

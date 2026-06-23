@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Point in Polygon – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#457b9d;text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{font-size:.85rem;color:#5a5a72;padding:1.2rem 2rem;border-bottom:1px solid #e2e0da}
+.breadcrumb span{margin:0 .4rem;color:#c0bdb5}
+.hero{padding:3rem 2rem 2rem;max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:#457b9d22;color:#457b9d;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px;margin-bottom:1rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:.8rem}
+.hero p.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
+.content{max-width:860px;margin:0 auto;padding:0 2rem 2rem}
+.prose p{margin-bottom:1rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.2rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#457b9d}
+.fact .lbl{font-size:.8rem;color:#5a5a72;margin-top:.3rem}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:1.5rem;margin:2rem 0}
+.sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1rem}
+.controls{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.btn{background:#457b9d;color:#fff;border:none;border-radius:8px;padding:.5rem 1.2rem;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn:hover{background:#356080}
+.btn.secondary{background:#fff;color:#457b9d;border:1px solid #457b9d}
+.btn.secondary:hover{background:#457b9d11}
+.btn.active-mode{background:#d4380d;border-color:#d4380d}
+canvas{border:1px solid #e2e0da;border-radius:8px;display:block;background:#fafaf8}
+.log-box{background:#1a1a2e;border-radius:12px;padding:1rem;margin-top:1rem;max-height:160px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8d8ea;margin-bottom:.3rem;line-height:1.4}
+.log-box p.inside{color:#52c41a}
+.log-box p.outside{color:#ff7875}
+.log-box p.dim{color:#5a7a8a}
+.back{display:inline-block;margin:1rem 0 2rem;color:#457b9d;font-size:.9rem}
+.hint{font-size:.82rem;color:#5a5a72;margin-top:.4rem}
+.mode-label{font-size:.85rem;font-weight:600;padding:.5rem .8rem;background:#457b9d15;border-radius:6px;color:#457b9d}
+</style>
+</head>
+<body>
+<div class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Point in Polygon
+</div>
+<div class="hero">
+  <div class="tag">Computational Geometry</div>
+  <h1>Point in Polygon</h1>
+  <p class="tagline">Ray casting: shoot a ray rightward and count how many polygon edges it crosses — odd means inside.</p>
+</div>
+<div class="content">
+  <div class="prose">
+    <p>Imagine standing at a point and shooting a laser beam infinitely to the right. If the beam crosses the polygon boundary an <strong>odd number of times</strong>, you're inside; an even number means you're outside. This is the <strong>ray casting algorithm</strong>, also called the crossing number test.</p>
+    <p>For each edge of the polygon, we check whether the horizontal ray from our test point intersects it. We only count intersections where the edge crosses the ray's horizontal level (one vertex above, one below) and the intersection's x-coordinate is to the right of our point.</p>
+    <p>Used everywhere: determining if a GPS coordinate is inside a country boundary, hit-testing in UI frameworks (is your click inside a widget?), flood-fill operations in image editors, and geographic information systems to assign points to regions.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(n)</div><div class="lbl">Per query (n = edges)</div></div>
+    <div class="fact"><div class="val">Odd/Even</div><div class="lbl">Crossing count rule</div></div>
+    <div class="fact"><div class="val">O(1)</div><div class="lbl">Extra space needed</div></div>
+  </div>
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <button class="btn" id="btnDraw">Draw Polygon</button>
+      <button class="btn secondary" id="btnTest">Test Points</button>
+      <button class="btn secondary" id="btnClear">Clear All</button>
+      <button class="btn secondary" id="btnPreset">Preset Polygon</button>
+      <span class="mode-label" id="modeLabel">Mode: Draw Polygon</span>
+    </div>
+    <p class="hint">Draw mode: click to add vertices, double-click to close polygon. Test mode: click to test a point.</p>
+    <canvas id="cvs" width="700" height="380"></canvas>
+    <div class="log-box" id="log"></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
+const log=document.getElementById('log');
+const modeLabel=document.getElementById('modeLabel');
+let mode='draw',polygon=[],closed=false,testPoints=[],lastClick=null,lastClickTime=0;
+
+function addLog(msg,cls=''){
+  const p=document.createElement('p');
+  if(cls)p.className=cls;
+  p.textContent=msg;
+  log.prepend(p);
+  if(log.children.length>40)log.removeChild(log.lastChild);
+}
+
+function pointInPolygon(px,py,poly){
+  let inside=0;
+  const n=poly.length;
+  for(let i=0,j=n-1;i<n;j=i++){
+    const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;
+    if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi))inside++;
+  }
+  return inside;
+}
+
+function getRayIntersections(px,py,poly){
+  const hits=[];
+  const n=poly.length;
+  for(let i=0,j=n-1;i<n;j=i++){
+    const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;
+    if((yi>py)!==(yj>py)){
+      const xint=(xj-xi)*(py-yi)/(yj-yi)+xi;
+      if(px<xint)hits.push({x:xint,edge:[j,i]});
+    }
+    j=i;
+  }
+  return hits;
+}
+
+function draw(animPt=null,animHits=null){
+  ctx.clearRect(0,0,700,380);
+  if(polygon.length>0){
+    ctx.beginPath();
+    ctx.moveTo(polygon[0].x,polygon[0].y);
+    polygon.forEach(p=>ctx.lineTo(p.x,p.y));
+    if(closed)ctx.closePath();
+    if(closed){
+      ctx.fillStyle='#457b9d14';
+      ctx.fill();
+    }
+    ctx.strokeStyle='#457b9d';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    polygon.forEach((p,i)=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);
+      ctx.fillStyle='#457b9d';ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    });
+  }
+  // Test points
+  testPoints.forEach(tp=>{
+    const inside=tp.inside%2===1;
+    ctx.beginPath();ctx.arc(tp.x,tp.y,8,0,Math.PI*2);
+    ctx.fillStyle=inside?'#52c41a':'#ff4d4f';
+    ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 11px Inter,sans-serif';
+    ctx.fillText(inside?'IN':'OUT',tp.x+11,tp.y+4);
+  });
+  // Animate ray
+  if(animPt){
+    ctx.beginPath();ctx.moveTo(animPt.x,animPt.y);ctx.lineTo(700,animPt.y);
+    ctx.strokeStyle='#457b9d';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+    animHits&&animHits.forEach(h=>{
+      ctx.beginPath();ctx.arc(h.x,animPt.y,5,0,Math.PI*2);
+      ctx.fillStyle='#e07b39';ctx.fill();
+    });
+  }
+}
+
+cvs.addEventListener('dblclick',e=>{
+  if(mode!=='draw'||polygon.length<3||closed)return;
+  closed=true;
+  draw();
+  addLog(`Polygon closed with ${polygon.length} vertices.`,'dim');
+  modeLabel.textContent='Mode: Draw Polygon (closed — switch to Test Points)';
+});
+
+cvs.addEventListener('click',e=>{
+  const r=cvs.getBoundingClientRect();
+  const mp={x:e.clientX-r.left,y:e.clientY-r.top};
+  const now=Date.now();
+  if(now-lastClickTime<300)return; // debounce dblclick
+  lastClickTime=now;
+  if(mode==='draw'){
+    if(closed)return;
+    polygon.push(mp);
+    draw();
+    addLog(`Added vertex (${Math.round(mp.x)},${Math.round(mp.y)}).`,'dim');
+  } else {
+    if(!closed){addLog('Close the polygon first (double-click)!','dim');return;}
+    const crossings=pointInPolygon(mp.x,mp.y,polygon);
+    const hits=getRayIntersections(mp.x,mp.y,polygon);
+    const inside=crossings%2===1;
+    testPoints.push({x:mp.x,y:mp.y,inside:crossings});
+    draw(mp,hits);
+    const hitStr=hits.map((h,i)=>`edge ${h.edge[0]+1}-${h.edge[1]+1} at x=${Math.round(h.x)}`).join(', ');
+    addLog(`Ray from (${Math.round(mp.x)},${Math.round(mp.y)}) → right. Crossings: ${crossings} (${crossings%2===0?'even':'odd'}) → ${inside?'INSIDE':'OUTSIDE'}. ${hitStr}`,inside?'inside':'outside');
+  }
+});
+
+document.getElementById('btnDraw').onclick=()=>{mode='draw';modeLabel.textContent='Mode: Draw Polygon';addLog('Switched to draw mode.','dim');};
+document.getElementById('btnTest').onclick=()=>{mode='test';modeLabel.textContent='Mode: Test Points';addLog('Switched to test mode. Click to test points.','dim');};
+document.getElementById('btnClear').onclick=()=>{polygon=[];closed=false;testPoints=[];mode='draw';modeLabel.textContent='Mode: Draw Polygon';ctx.clearRect(0,0,700,380);addLog('Cleared.','dim');};
+document.getElementById('btnPreset').onclick=()=>{
+  polygon=[{x:200,y:100},{x:500,y:80},{x:600,y:220},{x:520,y:340},{x:340,y:360},{x:150,y:280},{x:120,y:180}];
+  closed=true;testPoints=[];draw();
+  addLog('Preset polygon loaded. Switch to Test Points mode and click to test.','dim');
+};
+draw();
+</script>
+</body>
+</html>

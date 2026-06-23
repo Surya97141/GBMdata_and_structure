@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sparse Table — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+.array-row{display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.array-row label{font-size:12px;color:#5a5a72;width:80px}
+.cell{width:50px;height:40px;border:1.5px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;line-height:40px;cursor:default;background:#f7f6f2;transition:background .2s,border .2s}
+.cell.editable{cursor:text}
+.cell input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none}
+.cell.hl1{background:#fff0ee;border-color:#c0392b;}
+.cell.hl2{background:#e8f6ff;border-color:#3498db;}
+.cell.hl-min{background:#d5f5e3;border-color:#2ecc71;font-weight:700;}
+.table-wrap{overflow-x:auto;margin:16px 0}
+table.sparse{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:13px}
+table.sparse th,table.sparse td{border:1px solid #e2e0da;padding:6px 10px;text-align:center;min-width:40px}
+table.sparse th{background:#f7f6f2;color:#5a5a72;font-size:11px}
+table.sparse td.hl1{background:#fff0ee;color:#c0392b;font-weight:600}
+table.sparse td.hl2{background:#e8f6ff;color:#3498db;font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;align-items:center}
+.ctrl-group{display:flex;gap:6px;align-items:center;font-size:13px;color:#5a5a72}
+input[type=number]{width:58px;height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;outline:none;padding:0 4px;background:#f7f6f2}
+input[type=number]:focus{border-color:#c0392b;background:#fff}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:16px;max-height:160px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.log-box p.err{color:#ff8a80}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Sparse Table
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Sparse Table</h1>
+  <p class="tagline">O(1) Range Minimum Queries after O(n log n) preprocessing.</p>
+  <div class="prose">
+    <p>A <strong>Sparse Table</strong> answers Range Minimum (or Maximum) Queries in O(1) time after O(n log n) preprocessing. The key insight is that any range [l, r] of length L can be covered by two overlapping blocks of size 2^k where 2^k ≤ L. Because minimum is idempotent (min(min(A),min(A)) = min(A)), overlapping is fine.</p>
+    <p>The table <code>st[i][j]</code> stores the minimum over the range starting at index i with length 2^j. To query [l, r], compute k = floor(log2(r-l+1)) and return min(st[l][k], st[r-2^k+1][k]) — one comparison, no loop.</p>
+    <p>Real-world analogy: imagine a city with road-distance tables for every power-of-two stretch. Any trip can be answered by looking up just two precomputed entries that overlap in the middle.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Query</div><div class="fact-value">O(1)</div></div>
+    <div class="fact"><div class="fact-label">Preprocessing</div><div class="fact-value">O(n log n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">RMQ · LCA · Suffix Arrays</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Sparse Table — RMQ Visualization</div>
+    <div class="array-row">
+      <label>Array (8):</label>
+      <div id="inputCells"></div>
+    </div>
+    <div class="controls">
+      <button onclick="buildTable()">Precompute Table</button>
+      <div class="ctrl-group">
+        Query Range: l=<input type="number" id="ql" min="0" max="7" value="2"/>
+        r=<input type="number" id="qr" min="0" max="7" value="6"/>
+        <button onclick="doQuery()">Query</button>
+      </div>
+    </div>
+    <div id="tableWrap" class="table-wrap"></div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+const N=8;
+const defaults=[7,2,3,0,5,10,3,12];
+let arr=[...defaults],st=[],LOG=[];
+let built=false;
+
+function initCells(){
+  const wrap=document.getElementById('inputCells');
+  wrap.style.display='flex';wrap.style.gap='6px';
+  wrap.innerHTML='';
+  arr.forEach((v,i)=>{
+    const d=document.createElement('div');d.className='cell editable';d.title=`index ${i}`;
+    const inp=document.createElement('input');inp.type='number';inp.value=v;inp.min=-99;inp.max=99;
+    inp.addEventListener('change',()=>{arr[i]=parseInt(inp.value)||0;built=false;renderTable([],[]);});
+    d.appendChild(inp);wrap.appendChild(d);
+  });
+}
+
+function buildTable(){
+  arr=[];
+  const inputs=document.querySelectorAll('#inputCells input');
+  inputs.forEach(i=>arr.push(parseInt(i.value)||0));
+  const maxLog=Math.floor(Math.log2(N))+1;
+  LOG=Array(N+1).fill(0);
+  for(let i=2;i<=N;i++)LOG[i]=LOG[Math.floor(i/2)]+1;
+  st=Array.from({length:N},(_,i)=>Array(maxLog).fill(0));
+  for(let i=0;i<N;i++)st[i][0]=arr[i];
+  for(let j=1;(1<<j)<=N;j++)
+    for(let i=0;i+(1<<j)-1<N;i++)
+      st[i][j]=Math.min(st[i][j-1],st[i+(1<<(j-1))][j-1]);
+  built=true;
+  log('Precomputed sparse table. st[i][j] = min of arr[i..i+2^j-1]');
+  renderTable([],[]);
+}
+
+function doQuery(){
+  if(!built){log('Press Precompute first.','err');return;}
+  const l=parseInt(document.getElementById('ql').value);
+  const r=parseInt(document.getElementById('qr').value);
+  if(l<0||r>=N||l>r){log('Invalid range (need 0≤l≤r≤7)','err');return;}
+  const k=LOG[r-l+1];
+  const blk1=[l,l+(1<<k)-1];
+  const blk2=[r-(1<<k)+1,r];
+  const res=Math.min(st[l][k],st[r-(1<<k)+1][k]);
+  log(`Query [${l},${r}]: length=${r-l+1}, log2=${k}, 2^k=${1<<k}`);
+  log(`Block 1: [${blk1[0]},${blk1[1]}] = st[${l}][${k}] = ${st[l][k]}`);
+  log(`Block 2: [${blk2[0]},${blk2[1]}] = st[${r-(1<<k)+1}][${k}] = ${st[r-(1<<k)+1][k]}`);
+  log(`min(${st[l][k]}, ${st[r-(1<<k)+1][k]}) = ${res}`);
+  renderTable([[l,l+(1<<k)-1,'hl1'],[r-(1<<k)+1,r,'hl2']],[]);
+  // highlight array cells
+  const cells=document.querySelectorAll('#inputCells .cell');
+  cells.forEach((c,i)=>{
+    c.classList.remove('hl1','hl2','hl-min');
+    if(i>=blk1[0]&&i<=blk1[1])c.classList.add('hl1');
+    if(i>=blk2[0]&&i<=blk2[1])c.classList.add('hl2');
+    if(arr[i]===res&&i>=l&&i<=r)c.classList.add('hl-min');
+  });
+}
+
+function renderTable(highlights,_){
+  const wrap=document.getElementById('tableWrap');
+  if(!built){wrap.innerHTML='';return;}
+  const maxLog=Math.floor(Math.log2(N))+1;
+  let html='<p style="font-size:12px;color:#5a5a72;margin-bottom:8px">Sparse Table st[i][j] — minimum over [i, i+2^j-1]</p>';
+  html+='<table class="sparse"><tr><th>i \\ j</th>';
+  for(let j=0;j<maxLog;j++)html+=`<th>j=${j} (len ${1<<j})</th>`;
+  html+='</tr>';
+  for(let i=0;i<N;i++){
+    html+=`<tr><th>i=${i}</th>`;
+    for(let j=0;j<maxLog;j++){
+      if(i+(1<<j)-1>=N){html+='<td>—</td>';continue;}
+      let cls='';
+      highlights.forEach(([l,r,c])=>{if(i>=l&&i+(1<<j)-1<=r)cls=c;});
+      html+=`<td class="${cls}">${st[i][j]}</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</table>';
+  wrap.innerHTML=html;
+}
+
+function log(msg,type=''){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(type)p.classList.add(type);b.appendChild(p);b.scrollTop=b.scrollHeight;}
+
+initCells();
+buildTable();
+</script>
+</body>
+</html>

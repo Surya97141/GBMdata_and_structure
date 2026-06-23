@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>0/1 Knapsack – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#e8622a;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem}
+.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
+.prose p{margin-bottom:14px;color:#1a1a2e}
+.prose p:last-child{margin-bottom:0}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
+.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+label{font-size:14px;color:#5a5a72;font-weight:500}
+input[type=number]{width:80px;padding:8px 10px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;color:#1a1a2e}
+button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
+button:hover{background:#cf5224}
+button:disabled{background:#c8c6c0;cursor:not-allowed}
+.items-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}
+.items-table th{background:#fdf0ea;color:#e8622a;padding:8px 12px;text-align:center;border:1px solid #f5c4a8}
+.items-table td{padding:8px 12px;text-align:center;border:1px solid #e2e0da}
+.dp-wrap{overflow-x:auto;margin-bottom:16px}
+table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px}
+table.dp th{background:#fdf0ea;color:#e8622a;padding:6px 10px;border:1px solid #f5c4a8;min-width:36px;text-align:center}
+table.dp td{padding:6px 10px;border:1px solid #e2e0da;text-align:center;min-width:36px;transition:background .3s}
+td.cur{background:#e8622a!important;color:#fff}
+td.src{background:#fdebd7!important}
+td.done{background:#fdf0ea}
+.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
+.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto;margin-top:0}
+.log div{margin-bottom:4px;line-height:1.5}
+.log .hi{color:#e8622a}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    0/1 Knapsack
+  </div>
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>0/1 Knapsack</h1>
+    <p class="tagline">Pick items to maximise value without exceeding a weight budget — each item used at most once.</p>
+  </div>
+  <div class="prose">
+    <p>Imagine you're a thief with a backpack that can hold at most W kilograms. You see several items, each with a weight and a dollar value. You want to walk away with as much value as possible. The "0/1" means you either take an item whole or leave it — no fractions.</p>
+    <p>The DP insight: build a table where <code>dp[i][w]</code> is the best value achievable using the first <em>i</em> items with capacity <em>w</em>. For each item, you decide: skip it (take <code>dp[i-1][w]</code>) or include it (take <code>dp[i-1][w-weight[i]] + value[i]</code>). You pick whichever is larger.</p>
+    <p>After filling the table you backtrack from <code>dp[n][W]</code> to find which items were selected. Time complexity O(n·W), space O(n·W) — or O(W) with the rolling-array trick.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-val">O(n·W)</div><div class="fact-lbl">Time Complexity</div></div>
+    <div class="fact"><div class="fact-val">O(n·W)</div><div class="fact-lbl">Space Complexity</div></div>
+    <div class="fact"><div class="fact-val">Bottom-up</div><div class="fact-lbl">DP Style</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <table class="items-table">
+      <thead><tr><th>Item</th><th>Weight</th><th>Value</th></tr></thead>
+      <tbody id="itemsBody">
+        <tr><td>1</td><td>2</td><td>6</td></tr>
+        <tr><td>2</td><td>2</td><td>10</td></tr>
+        <tr><td>3</td><td>3</td><td>12</td></tr>
+        <tr><td>4</td><td>5</td><td>13</td></tr>
+        <tr><td>5</td><td>4</td><td>8</td></tr>
+      </tbody>
+    </table>
+    <div class="controls">
+      <label>Capacity: <input type="number" id="cap" value="10" min="1" max="20"/></label>
+      <button id="solveBtn" onclick="solve()">Solve</button>
+      <button onclick="reset()">Reset</button>
+    </div>
+    <div class="dp-wrap"><div id="dpTableWrap"></div></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const weights=[0,2,2,3,5,4];
+const values=[0,6,10,12,13,8];
+const n=5;
+let dp=[];
+let running=false;
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function log(msg,hi=false){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  div.innerHTML=hi?`<span class="hi">${msg}</span>`:msg;
+  d.appendChild(div);d.scrollTop=d.scrollHeight;
+}
+function reset(){
+  document.getElementById('dpTableWrap').innerHTML='';
+  document.getElementById('result').style.display='none';
+  document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';
+  document.getElementById('solveBtn').disabled=false;
+  running=false;
+}
+function buildTable(W){
+  let html='<table class="dp"><tr><th>Item\\ W</th>';
+  for(let w=0;w<=W;w++) html+=`<th>${w}</th>`;
+  html+='</tr>';
+  for(let i=0;i<=n;i++){
+    html+=`<tr><th>${i===0?'—':i}</th>`;
+    for(let w=0;w<=W;w++) html+=`<td id="c${i}_${w}">0</td>`;
+    html+='</tr>';
+  }
+  html+='</table>';
+  document.getElementById('dpTableWrap').innerHTML=html;
+}
+function setCell(i,w,val,cls=''){
+  const el=document.getElementById(`c${i}_${w}`);
+  if(!el)return;
+  el.textContent=val;
+  el.className=cls;
+}
+async function solve(){
+  if(running)return;
+  running=true;
+  document.getElementById('solveBtn').disabled=true;
+  document.getElementById('log').innerHTML='';
+  const W=parseInt(document.getElementById('cap').value)||10;
+  buildTable(W);
+  dp=[];
+  for(let i=0;i<=n;i++){dp.push(new Array(W+1).fill(0));}
+  log(`Knapsack: ${n} items, capacity=${W}`);
+  await sleep(300);
+  for(let i=1;i<=n;i++){
+    for(let w=0;w<=W;w++){
+      setCell(i,w,dp[i][w],'cur');
+      await sleep(60);
+      let val=dp[i-1][w];
+      let src='skip';
+      if(weights[i]<=w){
+        const take=dp[i-1][w-weights[i]]+values[i];
+        if(take>val){val=take;src='take';}
+      }
+      dp[i][w]=val;
+      if(weights[i]<=w){
+        setCell(i,w,val,'done');
+        log(`dp[${i}][${w}] = max(dp[${i-1}][${w}]=${dp[i-1][w]}, dp[${i-1}][${w-weights[i]}]+${values[i]}=${dp[i-1][w-weights[i]]+values[i]}) = ${val} [${src}]`);
+      } else {
+        setCell(i,w,val,'done');
+      }
+    }
+  }
+  // backtrace
+  let w=W,chosen=[];
+  for(let i=n;i>=1;i--){
+    if(dp[i][w]!==dp[i-1][w]){chosen.push(i);w-=weights[i];}
+  }
+  chosen.reverse();
+  const res=document.getElementById('result');
+  res.style.display='block';
+  res.innerHTML=`<b>Max Value: ${dp[n][W]}</b> &nbsp;|&nbsp; Selected items: ${chosen.map(i=>`Item ${i} (w=${weights[i]}, v=${values[i]})`).join(', ')}`;
+  log(`✓ Max value = ${dp[n][W]}. Items selected: ${chosen.join(', ')}`,'');
+  running=false;
+}
+</script>
+</body>
+</html>

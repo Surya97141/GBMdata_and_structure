@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Matrix Chain Multiplication – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem}
+.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
+.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
+.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+label{font-size:14px;color:#5a5a72;font-weight:500}
+input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:220px}
+button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
+button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
+.dp-wrap{overflow-x:auto;margin-bottom:16px}
+table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px}
+table.dp th{background:#fdf0ea;color:#e8622a;padding:6px 14px;border:1px solid #f5c4a8;text-align:center;min-width:60px}
+table.dp td{padding:6px 14px;border:1px solid #e2e0da;text-align:center;min-width:60px;transition:background .3s}
+td.cur{background:#e8622a!important;color:#fff}
+td.done{background:#fdf0ea}
+td.diag{background:#f7f6f2;color:#5a5a72}
+.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none;font-family:'JetBrains Mono',monospace}
+.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:220px;overflow-y:auto}
+.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Matrix Chain
+  </div>
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Matrix Chain Multiplication</h1>
+    <p class="tagline">Find the optimal parenthesisation order to minimise scalar multiplications.</p>
+  </div>
+  <div class="prose">
+    <p>Multiplying matrices is associative: (AB)C = A(BC). But the order in which you parenthesise them dramatically changes how many scalar multiplications you need. Given matrices A₁A₂…Aₙ, find the grouping that minimises total operations.</p>
+    <p>Define <code>m[i][j]</code> as the minimum cost to multiply matrices from i to j. For each split point k between i and j: cost = m[i][k] + m[k+1][j] + p[i-1]·p[k]·p[j], where p[] are the dimension sequence. Fill the table by chain length — length 1 costs 0; then length 2, 3, … up to n.</p>
+    <p>The algorithm runs in O(n³) and uses O(n²) space. It finds the optimal sequence for real matrix libraries (NumPy, BLAS) and is foundational in compiler optimisation for expression evaluation order.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-val">O(n³)</div><div class="fact-lbl">Time Complexity</div></div>
+    <div class="fact"><div class="fact-val">O(n²)</div><div class="fact-lbl">Space Complexity</div></div>
+    <div class="fact"><div class="fact-val">Interval DP</div><div class="fact-lbl">DP Style</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>Dimensions (p₀,p₁,…): <input type="text" id="dims" value="30,35,15,5,10"/></label>
+      <button id="solveBtn" onclick="solve()">Solve</button>
+      <button onclick="reset()">Reset</button>
+    </div>
+    <div id="matInfo" style="font-size:13px;color:#5a5a72;margin-bottom:12px"></div>
+    <div class="dp-wrap"><div id="dpWrap"></div></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let running=false;let m=[];let s=[];
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
+function reset(){document.getElementById('dpWrap').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('matInfo').textContent='';document.getElementById('solveBtn').disabled=false;running=false;}
+function buildTable(n){
+  let html='<table class="dp"><tr><th>m[i][j]</th>';
+  for(let j=1;j<=n;j++) html+=`<th>j=${j}</th>`;
+  html+='</tr>';
+  for(let i=1;i<=n;i++){
+    html+=`<tr><th>i=${i}</th>`;
+    for(let j=1;j<=n;j++){
+      if(j<i) html+=`<td class="diag">—</td>`;
+      else html+=`<td id="m${i}_${j}">0</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</table>';
+  document.getElementById('dpWrap').innerHTML=html;
+}
+function setCell(i,j,v,cls){const el=document.getElementById(`m${i}_${j}`);if(!el)return;el.textContent=v;el.className=cls||'';}
+function optimalParen(s,i,j,names){
+  if(i===j)return names[i];
+  return`(${optimalParen(s,i,s[i][j],names)}${optimalParen(s,s[i][j]+1,j,names)})`;
+}
+async function solve(){
+  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
+  document.getElementById('log').innerHTML='';
+  const p=document.getElementById('dims').value.split(',').map(s=>parseInt(s.trim())).filter(x=>!isNaN(x));
+  const n=p.length-1;
+  if(n<2){log('<span class="hi">Need at least 2 matrices (3 dimensions).</span>');running=false;document.getElementById('solveBtn').disabled=false;return;}
+  const names=[];
+  let info='Matrices: ';
+  for(let i=1;i<=n;i++){names.push(String.fromCharCode(64+i));info+=`A${i}(${p[i-1]}×${p[i]}) `;}
+  document.getElementById('matInfo').textContent=info;
+  buildTable(n);
+  m=[];s=[];
+  for(let i=0;i<=n+1;i++){m.push(new Array(n+1).fill(0));s.push(new Array(n+1).fill(0));}
+  log(`<span class="hi">Matrix Chain: ${n} matrices, dims [${p.join(',')}]</span>`);
+  await sleep(300);
+  for(let len=2;len<=n;len++){
+    for(let i=1;i<=n-len+1;i++){
+      const j=i+len-1;
+      m[i][j]=Infinity;
+      setCell(i,j,'…','cur');await sleep(80);
+      for(let k=i;k<j;k++){
+        const cost=m[i][k]+m[k+1][j]+p[i-1]*p[k]*p[j];
+        if(cost<m[i][j]){m[i][j]=cost;s[i][j]=k;}
+      }
+      setCell(i,j,m[i][j],'done');
+      log(`m[${i}][${j}] = ${m[i][j]} (split at k=${s[i][j]})`);
+    }
+  }
+  const paren=optimalParen(s,1,n,[''].concat(names));
+  const res=document.getElementById('result');res.style.display='block';
+  res.innerHTML=`<b>Min multiplications: ${m[1][n]}</b><br>Optimal: ${paren}`;
+  log(`✓ Min cost = ${m[1][n]}, Parenthesisation: ${paren}`);
+  running=false;
+}
+</script>
+</body>
+</html>

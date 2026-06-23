@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Trie – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+/* breadcrumb */
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+/* hero */
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+/* prose */
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+/* facts */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:var(--ink);font-weight:600;}
+/* sim panel */
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:1rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
+.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:140px;}
+.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
+.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
+/* word list */
+.word-list{margin-top:.8rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--m);min-height:1.4rem;}
+/* log */
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+/* back */
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    Trie
+  </nav>
+
+  <header class="hero">
+    <span class="tag">Tree</span>
+    <h1>Trie</h1>
+    <p>A prefix tree that stores strings character-by-character, enabling lightning-fast autocomplete and prefix search.</p>
+  </header>
+
+  <section class="prose">
+    <p>A <strong>Trie</strong> (pronounced "try", from re<em>trie</em>val) is a tree-shaped data structure where each node represents a single character. Words are spelled out along root-to-leaf paths, and every node at depth <em>d</em> stores the <em>d</em>-th character of a set of related strings. Nodes that mark the end of a complete word carry a special flag.</p>
+    <p>Think of your phone's contact book. When you type "Jo", it instantly narrows suggestions to "John", "Jose", "Jordan" — because every contact name was inserted into a trie, and the prefix "Jo" leads directly to only those branches. Each keystroke simply follows one edge deeper into the tree.</p>
+    <p>Tries excel when many strings share common prefixes. Lookup and insert both run in <strong>O(m)</strong> time where <em>m</em> is the word length — independent of how many words are stored. This makes them far faster than sorting or hashing for prefix queries.</p>
+  </section>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Insert / Search</div><div class="fact-val">O(m)</div></div>
+    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(ALPHABET × N)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Autocomplete, Spell-check, IP routing</div></div>
+    <div class="fact"><div class="fact-label">Delete</div><div class="fact-val">O(m)</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">Interactive Trie Simulation</div>
+    <canvas id="cv" height="320"></canvas>
+    <div class="controls">
+      <input id="wordIn" type="text" placeholder="word…" maxlength="10"/>
+      <button class="btn btn-pri" onclick="doInsert()">Insert</button>
+      <button class="btn btn-sec" onclick="doSearch()">Search</button>
+      <button class="btn btn-dan" onclick="doDelete()">Delete</button>
+      <button class="btn btn-sec" onclick="doClear()">Clear</button>
+    </div>
+    <div class="word-list" id="wordList">Words: (none)</div>
+  </div>
+
+  <div class="log-panel" id="logPanel">
+    <h3>Step Log</h3>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+
+<script>
+// ── Trie data structure ──────────────────────────────────────────
+class TrieNode {
+  constructor(ch){ this.ch=ch; this.children={}; this.end=false; }
+}
+class Trie {
+  constructor(){ this.root=new TrieNode(''); this.words=[]; }
+  insert(w){
+    let n=this.root;
+    for(const c of w){ if(!n.children[c]) n.children[c]=new TrieNode(c); n=n.children[c]; }
+    n.end=true;
+    if(!this.words.includes(w)) this.words.push(w);
+  }
+  search(w){
+    let n=this.root; const path=[];
+    for(const c of w){
+      if(!n.children[c]) return {found:false,path};
+      n=n.children[c]; path.push(c);
+    }
+    return {found:n.end,path};
+  }
+  delete(w){
+    const del=(node,w,d)=>{
+      if(d===w.length){ if(!node.end) return false; node.end=false; return Object.keys(node.children).length===0; }
+      const c=w[d]; if(!node.children[c]) return false;
+      const shouldDel=del(node.children[c],w,d+1);
+      if(shouldDel){ delete node.children[c]; return !node.end&&Object.keys(node.children).length===0; }
+      return false;
+    };
+    const existed=this.search(w).found;
+    del(this.root,w,0);
+    this.words=this.words.filter(x=>x!==w);
+    return existed;
+  }
+}
+
+// ── Canvas & rendering ──────────────────────────────────────────
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=320;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+  render();
+}
+window.addEventListener('resize',resize);
+
+const trie=new Trie();
+let highlight=[]; // array of {node,color}
+let highlightMap={}; // key -> color for node keys
+
+// Assign positions to trie nodes via BFS
+function layoutTrie(){
+  const positions={};
+  // BFS, track level widths
+  const queue=[{node:trie.root,key:'root',parent:null,depth:0,idx:0}];
+  const levels=[];
+  const entries=[];
+  while(queue.length){
+    const {node,key,parent,depth,idx}=queue.shift();
+    if(!levels[depth]) levels[depth]=[];
+    levels[depth].push({node,key,parent});
+    entries.push({node,key,parent,depth,idx:levels[depth].length-1});
+    for(const [c,child] of Object.entries(node.children)){
+      queue.push({node:child,key:key+'-'+c,parent:key,depth:depth+1});
+    }
+  }
+  // Assign x by leaf-first pass
+  const nodeMap={};
+  for(const e of entries) nodeMap[e.key]=e;
+  // Compute x positions
+  const xCounter=[0];
+  function assignX(key){
+    const e=nodeMap[key]; if(!e) return 0;
+    const childKeys=Object.entries(e.node.children).map(([c])=>key+'-'+c);
+    if(childKeys.length===0){
+      e.x=xCounter[0]++; return e.x;
+    }
+    const xs=childKeys.map(ck=>assignX(ck));
+    e.x=(xs[0]+xs[xs.length-1])/2;
+    return e.x;
+  }
+  assignX('root');
+  const maxX=xCounter[0]-1||1;
+  const maxDepth=levels.length-1||1;
+  const padding=40;
+  for(const [key,e] of Object.entries(nodeMap)){
+    e.px=padding+(e.x/Math.max(maxX,1))*(W-2*padding);
+    e.py=30+(e.depth/(Math.max(maxDepth,1)))*(H-60);
+  }
+  return nodeMap;
+}
+
+function render(hmap){
+  ctx.clearRect(0,0,W,H);
+  const nm=layoutTrie();
+  // draw edges
+  for(const [key,e] of Object.entries(nm)){
+    if(e.parent&&nm[e.parent]){
+      const p=nm[e.parent];
+      ctx.beginPath(); ctx.moveTo(p.px,p.py); ctx.lineTo(e.px,e.py);
+      ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+  }
+  // draw nodes
+  for(const [key,e] of Object.entries(nm)){
+    const r=e.node.ch===''?10:16;
+    const col=(hmap&&hmap[key])||'#e8f5ee';
+    ctx.beginPath();
+    if(e.node.end){ ctx.arc(e.px,e.py,r+3,0,Math.PI*2); ctx.strokeStyle=col==='#e8f5ee'?'#27a060':'#f0a500'; ctx.lineWidth=2; ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(e.px,e.py,r,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='#c0bfba'; ctx.lineWidth=1; ctx.stroke();
+    if(e.node.ch!==''){
+      ctx.fillStyle='#1a1a2e'; ctx.font="bold 13px 'JetBrains Mono',monospace";
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(e.node.ch,e.px,e.py);
+    } else {
+      ctx.fillStyle='#27a060'; ctx.font="bold 11px 'Inter',sans-serif";
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('root',e.px,e.py);
+    }
+  }
+  // legend
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('● double ring = end of word',8,H-20);
+}
+
+function getNodeKey(prefix,ch){ return prefix+'-'+ch; }
+
+function updateWordList(){
+  const el=document.getElementById('wordList');
+  el.textContent='Words: '+(trie.words.length?trie.words.join(', '):'(none)');
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+function doInsert(){
+  const w=document.getElementById('wordIn').value.trim().toLowerCase();
+  if(!w){alert('Enter a word.');return;}
+  trie.insert(w);
+  // highlight path
+  const hmap={};
+  let key='root'; hmap[key]='#b6e3ca';
+  for(const c of w){ key=key+'-'+c; hmap[key]='#27a060'; }
+  log(`Inserted "${w}": path ${[''].concat([...w]).map((c,i)=>i===0?'root':c).join('→')}*`);
+  render(hmap);
+  updateWordList();
+  setTimeout(()=>{render();},1400);
+}
+
+function doSearch(){
+  const w=document.getElementById('wordIn').value.trim().toLowerCase();
+  if(!w){alert('Enter a word.');return;}
+  const {found,path}=trie.search(w);
+  const hmap={}; let key='root';
+  for(const c of w){
+    const nk=key+'-'+c;
+    if(trie.root){
+      let node=trie.root; let valid=true;
+      for(const cc of (key==='root'?[]:key.split('-').slice(1))){ node=node.children[cc]||null; if(!node){valid=false;break;} }
+      if(valid&&node&&node.children[c]) hmap[nk]='#27a060'; else hmap[nk]='#e74c3c';
+    }
+    key=nk;
+  }
+  log(`Search "${w}": ${found?'FOUND ✓':'NOT FOUND ✗'} — matched path: ${path.join('→')||'(root)'}`);
+  render(hmap);
+  setTimeout(()=>render(),1600);
+}
+
+function doDelete(){
+  const w=document.getElementById('wordIn').value.trim().toLowerCase();
+  if(!w){alert('Enter a word.');return;}
+  const existed=trie.delete(w);
+  log(`Delete "${w}": ${existed?'removed successfully':'word not found'}`);
+  render();
+  updateWordList();
+}
+
+function doClear(){
+  trie.root=new TrieNode(''); trie.words=[];
+  render(); updateWordList(); log('Trie cleared.');
+}
+
+// Seed
+['apple','app','apply','apt','bat','ball'].forEach(w=>trie.insert(w));
+resize();
+updateWordList();
+log('Seeded with: apple, app, apply, apt, bat, ball');
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AVL Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
+.hero{padding:2rem 0 1.5rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
+.tagline{color:var(--m);font-size:1rem;}
+.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;}
+.flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.4rem;}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;}.fsub{font-size:.8rem;color:var(--m);margin-top:.2rem;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.sim-hdr{padding:.8rem 1.4rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block;}
+.sim-body{padding:1.4rem;}
+canvas{display:block;width:100%;border-radius:10px;background:var(--bg);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;}
+.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
+input[type=number]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:80px;}
+input:focus{border-color:var(--a);}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
+.le{border-bottom:1px solid var(--b);padding:1px 0;}.le:last-child{border:none;}
+.li{color:var(--m);}.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}
+.log-empty{color:var(--m);font-style:italic;}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.85rem;font-weight:600;margin:1.5rem 0;}
+.back:hover{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    <span>AVL Tree</span>
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Tree</span>
+    <h1>AVL Tree</h1>
+    <p class="tagline">A self-balancing BST that keeps height difference between subtrees at most 1.</p>
+  </div>
+
+  <div class="explain">
+    <p>An AVL tree is like a perfectly balanced mobile — every branch must stay within one unit of height of its sibling, or the entire structure automatically rebalances itself. Named after Adelson-Velsky and Landis (1962), it was the first self-balancing BST.</p>
+    <p>After each insertion, the tree checks the balance factor at every ancestor (left height minus right height). If any node has a balance factor of +2 or -2, one or two rotations are applied to restore balance. There are four cases: LL, RR, LR, and RL.</p>
+    <p>AVL trees guarantee O(log n) operations in all cases. They shine in read-heavy workloads where look-up speed is critical, such as in-memory databases and symbol tables in compilers. Each node displays its balance factor on the canvas.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="flabel">All Operations</div><div class="fval">O(log n)</div><div class="fsub">Guaranteed (worst case)</div></div>
+    <div class="fact"><div class="flabel">Balance Factor</div><div class="fval">-1, 0, +1</div><div class="fsub">Maintained after every insert</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">Databases</div><div class="fsub">In-memory sorted maps</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation — Auto-balancing AVL</div>
+    <div class="sim-body">
+      <canvas id="cv" height="380"></canvas>
+      <div class="controls">
+        <input type="number" id="valIn" placeholder="Value" min="1" max="999"/>
+        <button class="btn btn-p" onclick="doInsert()">Insert</button>
+        <button class="btn btn-o" onclick="clearTree()">Clear</button>
+        <span style="font-size:.75rem;color:var(--m);margin-left:.4rem;">Balance factors shown in nodes</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem;" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><span class="log-empty">Insert nodes to see rotations…</span></div>
+  </div>
+
+  <a class="back" href="../index.html">&#8592; Back to Data Structures</a>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+cv.width = cv.offsetWidth || 900;
+
+let root = null;
+let lastInserted = null;
+let rotatedNodes = new Set();
+
+class AVLNode {
+  constructor(v){ this.val=v; this.left=null; this.right=null; this.h=1; }
+}
+
+function height(n){ return n ? n.h : 0; }
+function bf(n){ return n ? height(n.left)-height(n.right) : 0; }
+function upH(n){ n.h = 1 + Math.max(height(n.left), height(n.right)); }
+
+function rotR(y){
+  addLog(`Right rotation at node ${y.val}`, 'lw');
+  rotatedNodes.add(y.val);
+  const x=y.left, T2=x.right;
+  x.right=y; y.left=T2;
+  upH(y); upH(x);
+  return x;
+}
+function rotL(x){
+  addLog(`Left rotation at node ${x.val}`, 'lw');
+  rotatedNodes.add(x.val);
+  const y=x.right, T2=y.left;
+  y.left=x; x.right=T2;
+  upH(x); upH(y);
+  return y;
+}
+
+function insert(node, v){
+  if(!node) return new AVLNode(v);
+  if(v < node.val) node.left = insert(node.left, v);
+  else if(v > node.val) node.right = insert(node.right, v);
+  else return node;
+  upH(node);
+  const b = bf(node);
+  if(b>1 && v<node.left.val) return rotR(node);
+  if(b<-1 && v>node.right.val) return rotL(node);
+  if(b>1 && v>node.left.val){ node.left=rotL(node.left); return rotR(node); }
+  if(b<-1 && v<node.right.val){ node.right=rotR(node.right); return rotL(node); }
+  return node;
+}
+
+function doInsert(){
+  const v=parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)) return;
+  rotatedNodes.clear();
+  lastInserted=v;
+  root=insert(root,v);
+  addLog(`Inserted ${v}. Tree height: ${height(root)}`, 'ld');
+  drawTree();
+  document.getElementById('valIn').value='';
+}
+
+function clearTree(){ root=null; lastInserted=null; rotatedNodes.clear(); drawTree(); addLog('Tree cleared.','li'); }
+function clearLog(){ document.getElementById('log').innerHTML='<span class="log-empty">Insert nodes to see rotations…</span>'; }
+
+function addLog(msg,cls='ls'){
+  const log=document.getElementById('log');
+  if(log.querySelector('.log-empty')) log.innerHTML='';
+  const d=document.createElement('div');
+  d.className=`le ${cls}`; d.textContent='> '+msg;
+  log.prepend(d);
+}
+
+function computePos(node, depth, left, right, pos){
+  if(!node) return;
+  pos.set(node,{x:(left+right)/2, y:50+depth*75});
+  computePos(node.left,depth+1,left,(left+right)/2,pos);
+  computePos(node.right,depth+1,(left+right)/2,right,pos);
+}
+
+function drawTree(){
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(!root) return;
+  const pos=new Map();
+  computePos(root,0,20,W-20,pos);
+  const R=22;
+
+  pos.forEach((p,node)=>{
+    ['left','right'].forEach(s=>{
+      if(node[s]&&pos.has(node[s])){
+        const c=pos.get(node[s]);
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(c.x,c.y);
+        ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=2; ctx.stroke();
+      }
+    });
+  });
+
+  pos.forEach((p,node)=>{
+    const isNew=node.val===lastInserted;
+    const isRot=rotatedNodes.has(node.val);
+    const b=bf(node);
+    let fill='#fff', stroke='#c0bdb5', lw=1.5;
+    if(isRot){ fill='#fff8e1'; stroke='#d4a017'; lw=2.5; }
+    if(isNew){ fill='#d4f0e4'; stroke='#27a060'; lw=2.5; }
+
+    ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2);
+    ctx.fillStyle=fill; ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth=lw; ctx.stroke();
+
+    ctx.fillStyle='#1a1a2e';
+    ctx.font="bold 12px 'JetBrains Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(node.val, p.x, p.y-3);
+
+    // balance factor label
+    const bfColor = b===0?'#27a060': Math.abs(b)===1?'#5a5a72':'#e53e3e';
+    ctx.fillStyle=bfColor;
+    ctx.font="10px 'JetBrains Mono',monospace";
+    ctx.fillText(`bf:${b}`, p.x, p.y+10);
+  });
+
+  // Legend
+  ctx.fillStyle='#5a5a72'; ctx.font="11px 'Inter',sans-serif"; ctx.textAlign='left';
+  ctx.fillText('Green = newly inserted   Amber = rotated node', 14, H-14);
+}
+
+window.addEventListener('resize',()=>{ cv.width=cv.offsetWidth; drawTree(); });
+drawTree();
+</script>
+</body>
+</html>

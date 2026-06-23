@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fibonacci Heap – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:100px;}
+.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
+.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
+.info-box{background:#f0fbf5;border:1px solid #b6e3ca;border-radius:10px;padding:.8rem 1rem;margin-top:.8rem;font-size:.82rem;color:#1a4d30;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    Fibonacci Heap
+  </nav>
+  <header class="hero">
+    <span class="tag">Tree</span>
+    <h1>Fibonacci Heap</h1>
+    <p>A lazy collection of min-heap trees offering the best known amortized bounds — the secret engine behind fast Dijkstra and Prim algorithms.</p>
+  </header>
+  <section class="prose">
+    <p>A <strong>Fibonacci Heap</strong> is a collection of min-heap-ordered trees linked in a circular doubly-linked list. It earns its name because a tree of rank <em>k</em> (degree <em>k</em>) has at least F(k+2) nodes, where F is the Fibonacci sequence. This structural guarantee keeps operations tight.</p>
+    <p>Think of it as a <em>lazy assistant</em> who manages your task pile. When you hand them a new task (insert) or merge two piles (union), they just toss it onto the list — no sorting at all, O(1). Only when you demand "what's the most urgent task?" (extract-min) do they actually consolidate and tidy the piles. This lazy batching is the source of the amortized speedup.</p>
+    <p><strong>Decrease-key</strong> is particularly special: it runs in amortized O(1) by cutting a node from its tree and placing it in the root list, cascading cuts up if needed. This makes Fibonacci Heaps uniquely suited for graph algorithms where edge relaxation is frequent.</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Insert</div><div class="fact-val">O(1) amortized</div></div>
+    <div class="fact"><div class="fact-label">Extract Min</div><div class="fact-val">O(log n) amortized</div></div>
+    <div class="fact"><div class="fact-label">Decrease Key</div><div class="fact-val">O(1) amortized</div></div>
+    <div class="fact"><div class="fact-label">Union</div><div class="fact-val">O(1)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Dijkstra, Prim MST</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">Fibonacci Heap Visualization</div>
+    <canvas id="cv" height="320"></canvas>
+    <div class="info-box" id="infoBox">Fibonacci Heap — trees shown as root-children groups. The minimum pointer is shown in green.</div>
+    <div class="controls">
+      <input id="valIn" type="number" placeholder="value…" min="0" max="999"/>
+      <button class="btn btn-pri" onclick="doInsert()">Insert</button>
+      <button class="btn btn-sec" onclick="doExtractMin()">Extract Min</button>
+      <button class="btn btn-sec" onclick="doDecreaseKey()">Decrease Key</button>
+      <button class="btn btn-sec" onclick="doUnion()">Union (merge 2nd heap)</button>
+      <button class="btn btn-dan" onclick="doClear()">Clear</button>
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+
+<script>
+// Simplified Fibonacci Heap implementation for visualization
+let nodeId=0;
+class FNode {
+  constructor(key){
+    this.key=key; this.id=nodeId++;
+    this.degree=0; this.marked=false;
+    this.children=[]; this.parent=null;
+  }
+}
+class FibHeap {
+  constructor(){ this.roots=[]; this.min=null; this.size=0; }
+  insert(key){
+    const n=new FNode(key); this.roots.push(n);
+    if(!this.min||key<this.min.key) this.min=n;
+    this.size++;
+    return n;
+  }
+  extractMin(){
+    if(!this.min) return null;
+    const m=this.min;
+    for(const c of m.children){ c.parent=null; this.roots.push(c); }
+    this.roots=this.roots.filter(r=>r!==m);
+    if(this.roots.length===0){ this.min=null; }
+    else { this.min=this.roots[0]; this._consolidate(); }
+    this.size--;
+    return m.key;
+  }
+  _consolidate(){
+    const degMap={};
+    for(let r of [...this.roots]){
+      let x=r; let d=x.degree;
+      while(degMap[d]){
+        let y=degMap[d];
+        if(x.key>y.key){[x,y]=[y,x];}
+        this._link(y,x); delete degMap[d]; d++;
+      }
+      degMap[d]=x;
+    }
+    this.roots=Object.values(degMap);
+    this.min=this.roots.reduce((a,b)=>a.key<b.key?a:b);
+  }
+  _link(child,parent){
+    this.roots=this.roots.filter(r=>r!==child);
+    parent.children.push(child); child.parent=parent; parent.degree++;
+    child.marked=false;
+  }
+  decreaseKey(node,newKey){
+    if(newKey>node.key) return;
+    node.key=newKey;
+    if(node.parent&&node.key<node.parent.key) this._cut(node);
+    if(node.key<this.min.key) this.min=node;
+  }
+  _cut(node){
+    const p=node.parent;
+    if(!p) return;
+    p.children=p.children.filter(c=>c!==node); p.degree--;
+    node.parent=null; node.marked=false;
+    this.roots.push(node);
+    if(p.parent){ if(!p.marked) p.marked=true; else this._cut(p); }
+  }
+}
+
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+let heap=new FibHeap();
+let heap2=new FibHeap(); // secondary heap for union demo
+let allNodes=[]; // for decrease-key reference
+
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=320; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); render();
+}
+window.addEventListener('resize',resize);
+
+const COLORS=['#27a060','#2980b9','#8e44ad','#e67e22','#16a085','#c0392b','#d35400'];
+
+function renderHeap(h,offsetX,offsetY,label){
+  if(h.roots.length===0) return;
+  const trees=h.roots;
+  let x=offsetX+20;
+  ctx.font="bold 11px 'Inter',sans-serif";
+  ctx.fillStyle='#5a5a72'; ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText(label,offsetX,offsetY-18);
+
+  for(let t=0;t<trees.length;t++){
+    const col=COLORS[t%COLORS.length];
+    x=drawTree(trees[t],x,offsetY+10,col,h.min);
+    x+=30;
+    if(t<trees.length-1){
+      ctx.beginPath(); ctx.setLineDash([4,3]);
+      ctx.moveTo(x-20,offsetY+30); ctx.lineTo(x-10,offsetY+30);
+      ctx.strokeStyle='#aaa'; ctx.lineWidth=1; ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+}
+
+function drawTree(node,x,y,col,minNode){
+  const R=18;
+  // draw children first to get total width
+  let childX=x;
+  const childXs=[];
+  for(const c of node.children){
+    childXs.push(childX);
+    childX=drawTree(c,childX,y+55,COLORS[(COLORS.indexOf(col)+1)%COLORS.length],minNode);
+    childX+=8;
+  }
+  const myX=node.children.length===0?x:(childXs[0]+childXs[childXs.length-1])/2+R/2;
+  // edges to children
+  for(let i=0;i<node.children.length;i++){
+    ctx.beginPath(); ctx.moveTo(myX,y+R); ctx.lineTo(childXs[i]+R/2,y+55);
+    ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+  // node circle
+  ctx.beginPath(); ctx.arc(myX,y,R,0,Math.PI*2);
+  ctx.fillStyle=node===minNode?'#27a060':(node.marked?'#f0a500':'#e8f5ee');
+  ctx.fill(); ctx.strokeStyle=node===minNode?'#1a5c38':'#bbb'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle=node===minNode?'#fff':'#1a1a2e';
+  ctx.font="bold 12px 'JetBrains Mono',monospace";
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(node.key,myX,y);
+  if(node.degree>0){
+    ctx.fillStyle='#888'; ctx.font="9px 'Inter',sans-serif";
+    ctx.fillText('d'+node.degree,myX,y+R+8);
+  }
+  return childX===x?x+R*2:childX-8;
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  if(heap.roots.length===0&&heap2.roots.length===0){
+    ctx.fillStyle='#aaa'; ctx.font="14px 'Inter',sans-serif";
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('Fibonacci heap is empty — insert values to begin',W/2,H/2);
+    return;
+  }
+  renderHeap(heap,10,40,'Main Heap (min='+((heap.min)?heap.min.key:'—')+')');
+  if(heap2.roots.length>0) renderHeap(heap2,10,160,'2nd Heap (for Union)');
+  // legend
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('Green=min  Orange=marked  d=degree',8,H-18);
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+function setInfo(msg){ document.getElementById('infoBox').textContent=msg; }
+
+function doInsert(){
+  const v=parseInt(document.getElementById('valIn').value);
+  if(isNaN(v)){alert('Enter a number.');return;}
+  const n=heap.insert(v); allNodes.push(n);
+  log(`Insert(${v}): added to root list. Min=${heap.min.key}. [O(1) amortized]`);
+  setInfo(`Inserted ${v} into root list. No consolidation yet — that's the laziness!`);
+  render();
+}
+
+function doExtractMin(){
+  if(!heap.min){log('Heap is empty.');return;}
+  const m=heap.min.key;
+  heap.extractMin();
+  log(`ExtractMin(): removed ${m}. Consolidate triggered. New min=${heap.min?heap.min.key:'(empty)'}. [O(log n) amortized]`);
+  setInfo(`Extracted min=${m}. Consolidation merged trees of same degree — like tidying messy piles.`);
+  render();
+}
+
+function doDecreaseKey(){
+  if(allNodes.length===0){log('No nodes yet.');return;}
+  // pick a random non-root non-min node, or any node
+  const n=allNodes[Math.floor(Math.random()*allNodes.length)];
+  const newKey=Math.max(0,n.key-Math.floor(Math.random()*15+5));
+  const old=n.key;
+  heap.decreaseKey(n,newKey);
+  log(`DecreaseKey(node ${old} → ${newKey}): cut from parent if needed. Min=${heap.min?heap.min.key:'?'}. [O(1) amortized]`);
+  setInfo(`Decreased key from ${old} to ${newKey}. Node cut and moved to root list if heap order violated.`);
+  render();
+}
+
+function doUnion(){
+  [11,22,7,33].forEach(v=>{ const n=heap2.insert(v); });
+  log(`Union: merging 2nd heap [11,22,7,33] into main. [O(1) — just concatenate root lists]`);
+  setInfo('Union = concatenate two root lists. O(1). No consolidation yet.');
+  // merge
+  for(const r of heap2.roots){ heap.roots.push(r); allNodes.push(r); }
+  if(!heap.min||heap2.min&&heap2.min.key<heap.min.key) heap.min=heap2.min;
+  heap.size+=heap2.size;
+  heap2=new FibHeap();
+  render();
+}
+
+function doClear(){ heap=new FibHeap(); heap2=new FibHeap(); allNodes=[]; render(); log('Cleared.'); setInfo('Heap cleared.'); }
+
+// Seed
+[15,3,8,20,1,10].forEach(v=>{ const n=heap.insert(v); allNodes.push(n); });
+resize();
+log('Seeded with [15,3,8,20,1,10]. Min='+heap.min.key+'. Root list has '+heap.roots.length+' trees (lazy — no consolidation yet).');
+</script>
+</body>
+</html>

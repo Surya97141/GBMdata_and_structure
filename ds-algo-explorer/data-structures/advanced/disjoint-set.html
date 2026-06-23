@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Disjoint Set (Union-Find) — DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:900px;margin:0 auto;padding:24px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px}
+.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
+.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
+.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-value{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:#c0392b;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
+.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
+canvas{display:block;background:#f7f6f2;border-radius:10px;border:1px solid #e2e0da}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.ctrl-group{display:flex;gap:6px;align-items:center}
+input[type=number]{width:60px;height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;outline:none;padding:0 6px;background:#f7f6f2}
+input[type=number]:focus{border-color:#c0392b;background:#fff}
+button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
+button.secondary:hover{background:#f7f6f2}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:16px;max-height:160px;overflow-y:auto}
+.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
+.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+label{font-size:13px;color:#5a5a72}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Data Structures</a><span>›</span>
+    Disjoint Set (Union-Find)
+  </div>
+  <span class="tag">Advanced</span>
+  <h1>Disjoint Set (Union-Find)</h1>
+  <p class="tagline">Near-constant time connectivity queries with path compression and union by rank.</p>
+  <div class="prose">
+    <p>A <strong>Disjoint Set</strong> (Union-Find) is a data structure that tracks a partition of elements into non-overlapping subsets. It supports two core operations: <code>Union(x, y)</code> — merge the sets containing x and y — and <code>Find(x)</code> — return the representative (root) of x's set.</p>
+    <p>Two key optimizations make it extraordinarily fast. <strong>Union by rank</strong> always attaches the shallower tree under the deeper one, keeping trees flat. <strong>Path compression</strong> during Find rewires every node on the search path directly to the root, so future queries are O(1) amortized. Together they achieve O(α(n)) per operation, where α is the inverse Ackermann function — effectively constant for all practical inputs.</p>
+    <p>Real-world analogy: imagine university students in study groups. When two groups merge, everyone in both groups now share one group leader. Path compression is like every student updating their records to list the top-level leader directly, skipping intermediaries.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Find / Union</div><div class="fact-value">O(α(n)) amort.</div></div>
+    <div class="fact"><div class="fact-label">Space</div><div class="fact-value">O(n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Kruskal · Network · Percolation</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Union-Find Visualization (n = 8 elements)</div>
+    <canvas id="cv" width="780" height="300"></canvas>
+    <div class="controls">
+      <div class="ctrl-group">
+        <label>Union</label>
+        <input type="number" id="ux" min="0" max="7" value="0" placeholder="x"/>
+        <input type="number" id="uy" min="0" max="7" value="1" placeholder="y"/>
+        <button onclick="doUnion()">Union(x,y)</button>
+      </div>
+      <div class="ctrl-group">
+        <label>Find</label>
+        <input type="number" id="fx" min="0" max="7" value="3" placeholder="x"/>
+        <button onclick="doFind()">Find(x)</button>
+      </div>
+      <button class="secondary" onclick="resetDS()">Reset</button>
+    </div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+const N=8;
+const COLORS=['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#e91e63'];
+let parent=[],rank=[],setColor=[];
+
+function resetDS(){
+  parent=Array.from({length:N},(_,i)=>i);
+  rank=Array(N).fill(0);
+  setColor=Array.from({length:N},(_,i)=>COLORS[i%COLORS.length]);
+  document.getElementById('logBox').innerHTML='';
+  draw();
+  log('Reset: 8 singleton sets {0},{1},...,{7}');
+}
+
+function find(x){
+  if(parent[x]!==x){
+    const old=parent[x];
+    parent[x]=find(parent[x]);
+    if(parent[x]!==old)log(`Path compress: parent[${x}] = ${parent[x]}`);
+  }
+  return parent[x];
+}
+function union(x,y){
+  const rx=find(x),ry=find(y);
+  if(rx===ry){log(`Union(${x},${y}): already in same set (root=${rx})`);draw();return;}
+  log(`Union(${x},${y}): root(${x})=${rx}, root(${y})=${ry}, rank: [${rx}]=${rank[rx]}, [${ry}]=${rank[ry]}`);
+  if(rank[rx]<rank[ry]){parent[rx]=ry;setColor[rx]=setColor[ry];log(`Attach ${rx} under ${ry}`);}
+  else if(rank[rx]>rank[ry]){parent[ry]=rx;setColor[ry]=setColor[rx];log(`Attach ${ry} under ${rx}`);}
+  else{parent[ry]=rx;setColor[ry]=setColor[rx];rank[rx]++;log(`Attach ${ry} under ${rx}, rank[${rx}]++ = ${rank[rx]}`);}
+  draw();
+}
+
+function doUnion(){
+  const x=parseInt(document.getElementById('ux').value);
+  const y=parseInt(document.getElementById('uy').value);
+  if(isNaN(x)||isNaN(y)||x<0||x>=N||y<0||y>=N){log('Invalid input: use 0-7');return;}
+  union(x,y);
+}
+function doFind(){
+  const x=parseInt(document.getElementById('fx').value);
+  if(isNaN(x)||x<0||x>=N){log('Invalid input: use 0-7');return;}
+  const r=find(x);
+  log(`Find(${x}) = root ${r}`);
+  draw(x,r);
+}
+
+function log(msg){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;b.appendChild(p);b.scrollTop=b.scrollHeight;}
+
+const cx=document.getElementById('cv').getContext('2d');
+const CW=780,CH=300;
+function nodePos(i){return{x:60+i*(CW-80)/7,y:CH/2};}
+
+function draw(highlight=-1,highlightRoot=-1){
+  cx.clearRect(0,0,CW,CH);
+  // draw parent arrows
+  for(let i=0;i<N;i++){
+    if(parent[i]!==i){
+      const s=nodePos(i),e=nodePos(parent[i]);
+      cx.beginPath();
+      cx.strokeStyle='#c0392b';
+      cx.lineWidth=2;
+      cx.moveTo(s.x,s.y-24);
+      cx.lineTo(e.x,e.y+24);
+      cx.stroke();
+      // arrowhead
+      const dx=e.x-s.x,dy=(e.y+24)-(s.y-24);
+      const len=Math.sqrt(dx*dx+dy*dy);
+      const ux2=dx/len,uy2=dy/len;
+      const ax=e.x-ux2*14-uy2*7,ay=e.y+24-uy2*14+ux2*7;
+      const bx=e.x-ux2*14+uy2*7,by=e.y+24-uy2*14-ux2*7;
+      cx.beginPath();cx.moveTo(e.x,e.y+24);cx.lineTo(ax,ay);cx.lineTo(bx,by);cx.closePath();cx.fillStyle='#c0392b';cx.fill();
+    }
+  }
+  for(let i=0;i<N;i++){
+    const p2=nodePos(i);
+    const col=setColor[find(i)];
+    cx.beginPath();cx.arc(p2.x,p2.y,22,0,Math.PI*2);
+    cx.fillStyle=(i===highlight||i===highlightRoot)?'#fff3cd':col;
+    cx.fill();
+    cx.strokeStyle=(i===highlight||i===highlightRoot)?'#f39c12':'#fff';
+    cx.lineWidth=(i===highlight||i===highlightRoot)?3:2;
+    cx.stroke();
+    cx.fillStyle='#fff';cx.font='bold 14px JetBrains Mono, monospace';cx.textAlign='center';cx.textBaseline='middle';
+    cx.fillText(i,p2.x,p2.y);
+    // rank label
+    if(parent[i]===i){
+      cx.fillStyle='#5a5a72';cx.font='11px Inter, sans-serif';
+      cx.fillText('root r='+rank[i],p2.x,p2.y+38);
+    }
+  }
+}
+resetDS();
+</script>
+</body>
+</html>

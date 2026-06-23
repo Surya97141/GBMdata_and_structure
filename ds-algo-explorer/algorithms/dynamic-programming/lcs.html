@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Longest Common Subsequence – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem}
+.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
+.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
+.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
+.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
+.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+label{font-size:14px;color:#5a5a72;font-weight:500}
+input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:160px}
+button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
+button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
+.dp-wrap{overflow-x:auto;margin-bottom:16px}
+table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px}
+table.dp th{background:#fdf0ea;color:#e8622a;padding:6px 12px;border:1px solid #f5c4a8;text-align:center;min-width:34px}
+table.dp td{padding:6px 12px;border:1px solid #e2e0da;text-align:center;min-width:34px;transition:background .3s}
+td.cur{background:#e8622a!important;color:#fff}
+td.path{background:#fdf0ea;border-color:#e8622a!important;font-weight:700;color:#e8622a}
+td.match{background:#fdebd7}
+.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
+.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto}
+.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    LCS
+  </div>
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Longest Common Subsequence</h1>
+    <p class="tagline">Find the longest sequence of characters that appears in both strings in the same order.</p>
+  </div>
+  <div class="prose">
+    <p>LCS is the backbone of diff tools (like <code>git diff</code>), DNA sequence alignment, and plagiarism detectors. Given strings X and Y, a common subsequence is a sequence of characters that appears in both, in order, but not necessarily contiguously.</p>
+    <p>The DP recurrence: if <code>X[i]==Y[j]</code> then <code>dp[i][j] = dp[i-1][j-1]+1</code>; otherwise <code>dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code>. After filling the table, backtrace from <code>dp[m][n]</code> to reconstruct the actual subsequence.</p>
+    <p>This runs in O(m·n) time and space. Real-world systems often use the space-optimised O(min(m,n)) variant, keeping only two rows at a time.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-val">O(m·n)</div><div class="fact-lbl">Time Complexity</div></div>
+    <div class="fact"><div class="fact-val">O(m·n)</div><div class="fact-lbl">Space Complexity</div></div>
+    <div class="fact"><div class="fact-val">Backtrace</div><div class="fact-lbl">LCS Reconstruction</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <label>String 1: <input type="text" id="s1" value="ABCBDAB"/></label>
+      <label>String 2: <input type="text" id="s2" value="BDCAB"/></label>
+      <button id="solveBtn" onclick="solve()">Solve</button>
+      <button onclick="reset()">Reset</button>
+    </div>
+    <div class="dp-wrap"><div id="dpWrap"></div></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step Log</h2>
+    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let dp=[];let running=false;
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
+function reset(){document.getElementById('dpWrap').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('solveBtn').disabled=false;running=false;}
+function buildTable(X,Y){
+  const m=X.length,n=Y.length;
+  let html='<table class="dp"><tr><th></th><th>ε</th>';
+  for(let j=0;j<n;j++) html+=`<th>${Y[j]}</th>`;
+  html+='</tr><tr><th>ε</th>';
+  for(let j=0;j<=n;j++) html+=`<td id="c0_${j}">0</td>`;
+  html+='</tr>';
+  for(let i=1;i<=m;i++){
+    html+=`<tr><th>${X[i-1]}</th><td id="c${i}_0">0</td>`;
+    for(let j=1;j<=n;j++) html+=`<td id="c${i}_${j}">0</td>`;
+    html+='</tr>';
+  }
+  html+='</table>';
+  document.getElementById('dpWrap').innerHTML=html;
+}
+function setCell(i,j,v,cls){const el=document.getElementById(`c${i}_${j}`);if(!el)return;el.textContent=v;el.className=cls||'';}
+async function solve(){
+  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
+  document.getElementById('log').innerHTML='';
+  const X=document.getElementById('s1').value.toUpperCase();
+  const Y=document.getElementById('s2').value.toUpperCase();
+  const m=X.length,n=Y.length;
+  buildTable(X,Y);
+  dp=[];for(let i=0;i<=m;i++)dp.push(new Array(n+1).fill(0));
+  log(`<span class="hi">LCS: "${X}" vs "${Y}"</span>`);
+  await sleep(300);
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      setCell(i,j,dp[i][j],'cur');await sleep(60);
+      if(X[i-1]===Y[j-1]){
+        dp[i][j]=dp[i-1][j-1]+1;
+        setCell(i,j,dp[i][j],'match');
+        log(`dp[${i}][${j}] = dp[${i-1}][${j-1}]+1 = ${dp[i][j]} (${X[i-1]}==${Y[j-1]})`);
+      } else {
+        dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
+        setCell(i,j,dp[i][j],'');
+        log(`dp[${i}][${j}] = max(dp[${i-1}][${j}]=${dp[i-1][j]}, dp[${i}][${j-1}]=${dp[i][j-1]}) = ${dp[i][j]}`);
+      }
+    }
+  }
+  // backtrace
+  let i=m,j=n,lcs='';
+  while(i>0&&j>0){
+    if(X[i-1]===Y[j-1]){setCell(i,j,dp[i][j],'path');lcs=X[i-1]+lcs;i--;j--;}
+    else if(dp[i-1][j]>dp[i][j-1]){setCell(i,j,dp[i][j],'path');i--;}
+    else{setCell(i,j,dp[i][j],'path');j--;}
+  }
+  const res=document.getElementById('result');res.style.display='block';
+  res.innerHTML=`<b>LCS Length: ${dp[m][n]}</b> &nbsp;|&nbsp; LCS: <code>${lcs}</code>`;
+  log(`✓ LCS = "${lcs}" (length ${dp[m][n]})`);
+  running=false;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stack — DS/Algo Explorer</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;--r:14px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;min-height:100vh;}
+    .wrap{max-width:860px;margin:0 auto;padding:32px 20px 60px;}
+    .bc{font-size:.82rem;color:var(--muted);margin-bottom:28px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+    .bc a{color:var(--muted);text-decoration:none;}.bc a:hover{color:var(--accent);}
+    .bc .curr{color:var(--ink);font-weight:600;}
+    .hero{margin-bottom:28px;}
+    .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin-bottom:10px;}
+    h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--ink);line-height:1.15;margin-bottom:8px;}
+    .tagline{color:var(--muted);font-size:1.05rem;}
+    .explain{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px 28px;margin-bottom:22px;}
+    .explain p{color:var(--muted);margin-bottom:10px;font-size:.97rem;}.explain p:last-child{margin-bottom:0;}
+    .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+    .fact{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
+    .flabel{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:6px;}
+    .fval{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:4px;}
+    .fsub{font-size:.82rem;color:var(--muted);}
+    .sim-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px;}
+    .sim-hdr{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);display:inline-block;}
+    .sim-body{padding:20px;}
+    canvas{display:block;width:100%;max-width:700px;margin:0 auto 18px;border-radius:8px;background:#f9f8f5;border:1px solid var(--border);}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .controls input{font-family:'JetBrains Mono',monospace;font-size:.92rem;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);width:90px;outline:none;}
+    .controls input:focus{border-color:var(--accent);}
+    .btn{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;padding:8px 18px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s,transform .1s;}
+    .btn:active{transform:scale(.97);}
+    .btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover{opacity:.88;}
+    .btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border);}.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+    .log-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:28px;}
+    .log-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
+    .log-hdr button{font-size:.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;}
+    .log-hdr button:hover{border-color:var(--accent);color:var(--accent);}
+    .log-body{max-height:180px;overflow-y:auto;padding:12px 20px;display:flex;flex-direction:column;gap:5px;}
+    .log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:5px 10px;border-radius:6px;background:var(--bg);}
+    .log-entry.ok{border-left:3px solid #27ae60;}.log-entry.err{border-left:3px solid #e74c3c;}.log-entry.info{border-left:3px solid var(--accent);}
+    .log-empty{font-size:.82rem;color:var(--muted);font-style:italic;}
+    .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .15s;}
+    .back:hover{color:var(--accent);}
+    @media(max-width:600px){.facts{grid-template-columns:1fr 1fr;}.controls{gap:8px;}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span class="curr">Stack</span></nav>
+
+  <div class="hero">
+    <span class="tag">Linear</span>
+    <h1>Stack</h1>
+    <p class="tagline">Last In, First Out (LIFO) — the most recent item pushed is always the first to be popped.</p>
+  </div>
+
+  <div class="explain">
+    <p>A stack works exactly like a stack of dinner plates. You place new plates on top (push) and always take from the top first (pop). You cannot grab a plate from the middle without removing everything above it — that is the LIFO (Last In, First Out) guarantee.</p>
+    <p>This simple rule makes stacks invaluable for tracking state that must be "unwound" in reverse order. Your browser's back-button history is a stack. Function call frames sit on the call stack. Expression parsers use stacks to match brackets and evaluate operators. Undo/redo in any editor is two stacks.</p>
+    <p>Both push and pop operate in O(1) time because they only touch the top element. A stack can be implemented as a dynamic array (push/pop at the end) or a singly linked list (push/pop at the head).</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact">
+      <div class="flabel">Time Complexity</div>
+      <div class="fval">O(1)</div>
+      <div class="fsub">push, pop, peek — all constant time</div>
+    </div>
+    <div class="fact">
+      <div class="flabel">Space Complexity</div>
+      <div class="fval">O(n)</div>
+      <div class="fsub">One slot per element</div>
+    </div>
+    <div class="fact">
+      <div class="flabel">Use Cases</div>
+      <div class="fsub">Call stack, undo/redo, bracket matching, DFS, expression eval</div>
+    </div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cv" width="700" height="260"></canvas>
+      <div class="controls">
+        <input id="valInput" type="text" placeholder="Value" maxlength="4"/>
+        <button class="btn btn-primary" onclick="pushVal()">Push</button>
+        <button class="btn btn-secondary" onclick="popVal()">Pop</button>
+        <button class="btn btn-secondary" onclick="peekVal()">Peek</button>
+        <button class="btn btn-secondary" onclick="resetStack()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="log-empty">Ready. Use controls above to begin.</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+  const canvas = document.getElementById('cv');
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+  canvas.width = 700 * DPR; canvas.height = 260 * DPR;
+  canvas.style.width = '100%'; canvas.style.height = '260px';
+  ctx.scale(DPR, DPR);
+
+  const W = 700, H = 260;
+  const CW = 160, CH = 36, CGAP = 6;
+  const CX = W / 2 - CW / 2;
+  const BASE_Y = H - 40;
+  const MAX_ITEMS = 6;
+
+  const COL_ACCENT = '#e8622a', COL_INK = '#1a1a2e', COL_MUTED = '#5a5a72';
+  const COL_BORDER = '#e2e0da';
+
+  let stack = ['bottom', 'data', 'top'];
+  let hlTop = false;
+  let hlPeek = false;
+  let hlTimer = null;
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#f9f8f5';
+    ctx.fillRect(0, 0, W, H);
+
+    // Title
+    ctx.fillStyle = COL_INK;
+    ctx.font = '600 13px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Stack  [size: ' + stack.length + ']', 20, 28);
+
+    // Base plate
+    ctx.fillStyle = '#e2e0da';
+    ctx.fillRect(CX - 10, BASE_Y, CW + 20, 8);
+
+    if (stack.length === 0) {
+      ctx.fillStyle = COL_MUTED;
+      ctx.font = 'italic 13px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Stack is empty', W / 2, BASE_Y - 20);
+    }
+
+    stack.forEach((val, i) => {
+      const isTop = i === stack.length - 1;
+      const y = BASE_Y - (i + 1) * (CH + CGAP);
+      const isHL = isTop && (hlTop || hlPeek);
+
+      // Frame
+      ctx.fillStyle = isHL ? '#fff3ee' : (isTop ? '#fffbf9' : '#fff');
+      ctx.strokeStyle = isHL ? COL_ACCENT : (isTop ? COL_ACCENT : COL_BORDER);
+      ctx.lineWidth = isHL ? 2.5 : (isTop ? 2 : 1.5);
+      roundRect(CX, y, CW, CH, 7);
+
+      // Value text
+      ctx.fillStyle = isHL ? COL_ACCENT : (isTop ? COL_ACCENT : COL_INK);
+      ctx.font = '600 15px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(val), CX + CW / 2, y + CH / 2 + 6);
+
+      // TOP label
+      if (isTop) {
+        ctx.fillStyle = COL_ACCENT;
+        ctx.font = '700 10px Inter, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('TOP', CX + CW + 10, y + CH / 2 + 4);
+        // arrow pointing left
+        ctx.strokeStyle = COL_ACCENT;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(CX + CW + 9, y + CH / 2);
+        ctx.lineTo(CX + CW + 3, y + CH / 2);
+        ctx.stroke();
+      }
+    });
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function pushVal() {
+    const inp = document.getElementById('valInput');
+    const v = inp.value.trim();
+    if (!v) { logStep('Enter a value first.', 'err'); return; }
+    if (stack.length >= MAX_ITEMS) { logStep('Stack full (max ' + MAX_ITEMS + ' for display).', 'err'); return; }
+    stack.push(v);
+    hlTop = true; hlPeek = false;
+    if (hlTimer) clearTimeout(hlTimer);
+    hlTimer = setTimeout(() => { hlTop = false; draw(); }, 700);
+    logStep('push("' + v + '") → stack size = ' + stack.length, 'ok');
+    inp.value = '';
+    draw();
+  }
+
+  function popVal() {
+    if (stack.length === 0) { logStep('pop() failed: stack is empty!', 'err'); return; }
+    const v = stack.pop();
+    hlTop = false; hlPeek = false;
+    logStep('pop() → removed "' + v + '", size now ' + stack.length, 'info');
+    draw();
+  }
+
+  function peekVal() {
+    if (stack.length === 0) { logStep('peek() failed: stack is empty!', 'err'); return; }
+    const v = stack[stack.length - 1];
+    hlPeek = true; hlTop = false;
+    if (hlTimer) clearTimeout(hlTimer);
+    hlTimer = setTimeout(() => { hlPeek = false; draw(); }, 900);
+    logStep('peek() → top = "' + v + '" (not removed)', 'info');
+    draw();
+  }
+
+  function resetStack() {
+    stack = [];
+    hlTop = false; hlPeek = false;
+    logStep('Stack reset to empty.', 'info');
+    draw();
+  }
+
+  function logStep(msg, type) {
+    const log = document.getElementById('log');
+    const empty = log.querySelector('.log-empty');
+    if (empty) empty.remove();
+    const entry = document.createElement('div');
+    entry.className = 'log-entry ' + (type || 'info');
+    const ts = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    entry.textContent = ts + '  ' + msg;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function clearLog() {
+    document.getElementById('log').innerHTML = '<div class="log-empty">Log cleared.</div>';
+  }
+
+  document.getElementById('valInput').addEventListener('keydown', e => { if (e.key === 'Enter') pushVal(); });
+  draw();
+</script>
+</body>
+</html>

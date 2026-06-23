@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hash Set — DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f7f6f2; color: #1a1a2e; font-family: 'Inter', sans-serif; min-height: 100vh; }
+  a { color: #d4a017; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .breadcrumb { padding: 18px 40px; font-size: 13px; color: #5a5a72; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .breadcrumb span { color: #c0bdb5; }
+  .hero { background: #fff; border-bottom: 1px solid #e2e0da; padding: 48px 40px 36px; }
+  .tag { display: inline-block; background: #fdf5de; color: #b8880e; font-size: 11px; font-weight: 600; letter-spacing:.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.6rem; line-height: 1.15; margin-bottom: 10px; }
+  .hero p { color: #5a5a72; font-size: 1.05rem; max-width: 640px; }
+  .content { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.35rem; margin-bottom: 12px; }
+  .prose p { color: #3a3a52; line-height: 1.75; margin-bottom: 14px; font-size: .97rem; }
+  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin: 28px 0; }
+  .fact-card { background: #fff; border: 1px solid #e2e0da; border-radius: 10px; padding: 18px; }
+  .fact-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.07em; color: #5a5a72; margin-bottom: 8px; }
+  .fact-card .value { font-family: 'JetBrains Mono', monospace; font-size: .95rem; color: #d4a017; font-weight: 600; }
+  .fact-card .sub { font-size: .8rem; color: #5a5a72; margin-top: 4px; }
+
+  .sim-box { background: #fff; border: 1px solid #e2e0da; border-radius: 12px; overflow: hidden; margin: 32px 0; }
+  .sim-header { padding: 14px 20px; border-bottom: 1px solid #e2e0da; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .sim-title { font-weight: 600; font-size: .97rem; margin-right: auto; }
+  .ctrl-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 20px; border-bottom: 1px solid #e2e0da; background: #faf9f7; }
+  input[type=text] { padding: 7px 12px; border: 1.5px solid #e2e0da; border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: .88rem; width: 130px; color: #1a1a2e; }
+  input[type=text]:focus { outline: none; border-color: #d4a017; }
+  .btn { padding: 7px 14px; border-radius: 7px; border: 1.5px solid #d4a017; background: #fff; color: #d4a017; font-weight: 600; cursor: pointer; font-size: .84rem; font-family: 'Inter', sans-serif; transition: background .15s, color .15s; }
+  .btn:hover { background: #d4a017; color: #fff; }
+  .btn.danger { border-color: #c33; color: #c33; }
+  .btn.danger:hover { background: #c33; color: #fff; }
+
+  .grid-area { padding: 20px; }
+  .grid-label { font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing:.06em; color: #5a5a72; margin-bottom: 12px; }
+  .hash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; }
+  @media (max-width: 500px) { .hash-grid { grid-template-columns: repeat(6,1fr); } }
+  .cell { border-radius: 8px; border: 2px solid #e2e0da; height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all .25s; position: relative; }
+  .cell .cell-idx { font-family: 'JetBrains Mono', monospace; font-size: .65rem; color: #b0b0b8; position: absolute; top: 4px; left: 0; right: 0; text-align: center; }
+  .cell .cell-val { font-family: 'JetBrains Mono', monospace; font-size: .72rem; font-weight: 700; color: #1a1a2e; margin-top: 8px; text-align: center; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .cell.empty { background: #faf9f7; }
+  .cell.filled { background: #fff8e6; border-color: #d4a017; }
+  .cell.filled .cell-val { color: #b8880e; }
+  .cell.tombstone { background: #fff0f0; border-color: #e08080; }
+  .cell.tombstone .cell-val { color: #c05050; }
+  .cell.probing { background: #e6f4ff; border-color: #4a90d9; box-shadow: 0 0 0 3px #4a90d920; }
+  .cell.found { background: #e6ffe6; border-color: #4a9; box-shadow: 0 0 0 3px #4a9a7020; }
+  .cell.inserted { background: #fdf0c0; border-color: #d4a017; box-shadow: 0 0 0 3px #d4a01720; }
+
+  .probe-anim { min-height: 32px; padding: 8px 20px; background: #faf9f7; border-top: 1px solid #e2e0da; font-family: 'JetBrains Mono', monospace; font-size: .82rem; color: #5a5a72; }
+  .probe-step { display: inline-block; padding: 2px 8px; border-radius: 4px; margin: 2px; background: #e2e0da; }
+  .probe-step.active { background: #d4a017; color: #fff; }
+
+  .log-box { background: #1a1a2e; min-height: 90px; max-height: 140px; overflow-y: auto; padding: 12px 18px; }
+  .log-line { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #a8a4c8; margin-bottom: 4px; }
+  .log-line .ts { color: #5a5a72; margin-right: 8px; }
+  .log-line .hi { color: #ffd060; }
+
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 0 20px 14px; font-size: .8rem; }
+  .leg { display: flex; align-items: center; gap: 6px; color: #5a5a72; }
+  .leg-box { width: 14px; height: 14px; border-radius: 3px; border: 2px solid; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: #d4a017; font-size: .9rem; font-weight: 500; margin-top: 20px; }
+  .info-strip { background: #fdf5de; border-left: 3px solid #d4a017; border-radius: 0 8px 8px 0; padding: 10px 16px; margin-bottom: 20px; font-size: .87rem; color: #6b4f00; }
+</style>
+</head>
+<body>
+
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>/</span>
+  <a href="../index.html">Data Structures</a><span>/</span>
+  <strong>Hash Set</strong>
+</nav>
+
+<header class="hero">
+  <div style="max-width:880px;margin:0 auto;">
+    <div class="tag">Hash</div>
+    <h1>Hash Set</h1>
+    <p>Keys only, no values. Open addressing with linear probing — blazing-fast membership tests and unique-element storage.</p>
+  </div>
+</header>
+
+<main class="content">
+  <section class="prose" style="margin-bottom:28px;">
+    <div class="section-title">How it Works</div>
+    <p>A hash set stores unique keys without associated values. We use <strong>open addressing</strong>: instead of chaining, when a collision happens we probe forward to the next empty slot. The probe sequence for key k is: h(k), h(k)+1, h(k)+2 … (mod table size). Deleted cells become <strong>tombstones</strong> (marked, not truly empty) so future probes don't stop early.</p>
+    <p>Python's <code>set</code> uses open addressing. Adding "apple" and "apple" twice: the second add finds it already there and does nothing — guaranteeing uniqueness. Great for deduplication, membership tests (is this user banned?), and visited-node tracking in graph traversal.</p>
+  </section>
+
+  <div class="facts-grid">
+    <div class="fact-card"><div class="label">Add / Contains</div><div class="value">O(1) avg</div><div class="sub">O(n) worst case</div></div>
+    <div class="fact-card"><div class="label">Remove</div><div class="value">O(1) avg</div><div class="sub">Sets tombstone</div></div>
+    <div class="fact-card"><div class="label">Space</div><div class="value">O(n)</div><div class="sub">Table size = 12 here</div></div>
+    <div class="fact-card"><div class="label">Collision</div><div class="value">Linear probe</div><div class="sub">+1 each step</div></div>
+  </div>
+
+  <div class="info-strip">Hash function: <strong>h(key) = sum of char codes % 12</strong>. Collisions resolved with linear probing. Deleted slots show as tombstones.</div>
+
+  <div class="sim-box">
+    <div class="sim-header">
+      <span class="sim-title">Hash Set — Open Addressing, Linear Probing (size 12)</span>
+    </div>
+    <div class="ctrl-row">
+      <input type="text" id="keyIn" placeholder="key" maxlength="10" />
+      <button class="btn" id="btnAdd">Add</button>
+      <button class="btn" id="btnContains">Contains?</button>
+      <button class="btn danger" id="btnRemove">Remove</button>
+      <button class="btn" id="btnClear">Clear</button>
+    </div>
+    <div class="grid-area">
+      <div class="grid-label">Hash Set  (12 slots)</div>
+      <div class="hash-grid" id="hashGrid"></div>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-box" style="background:#fff8e6;border-color:#d4a017;"></div>Filled</div>
+      <div class="leg"><div class="leg-box" style="background:#fff0f0;border-color:#e08080;"></div>Tombstone (deleted)</div>
+      <div class="leg"><div class="leg-box" style="background:#e6f4ff;border-color:#4a90d9;"></div>Probing</div>
+      <div class="leg"><div class="leg-box" style="background:#e6ffe6;border-color:#4a9;"></div>Found</div>
+    </div>
+    <div class="probe-anim" id="probeAnim">Probe sequence will appear here.</div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">&#8592; Back to Data Structures</a>
+</main>
+
+<script>
+const SIZE = 12;
+const EMPTY = null, TOMB = '__DELETED__';
+let table = new Array(SIZE).fill(EMPTY);
+let animTimeout = null;
+
+function hashFn(key) {
+  let s=0; for(let i=0;i<key.length;i++) s+=key.charCodeAt(i); return s%SIZE;
+}
+
+function log(msg) {
+  const d=new Date();
+  const ts=`${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
+  const lb=document.getElementById('logBox');
+  const line=document.createElement('div'); line.className='log-line';
+  line.innerHTML=`<span class="ts">${ts}</span>${msg}`;
+  lb.appendChild(line); lb.scrollTop=lb.scrollHeight;
+}
+
+function renderGrid(highlights={}) {
+  const grid=document.getElementById('hashGrid');
+  grid.innerHTML='';
+  for(let i=0;i<SIZE;i++) {
+    const cell=document.createElement('div');
+    const hl=highlights[i];
+    if(hl) cell.className='cell '+hl;
+    else if(table[i]===EMPTY) cell.className='cell empty';
+    else if(table[i]===TOMB) cell.className='cell tombstone';
+    else cell.className='cell filled';
+    const idxEl=document.createElement('div'); idxEl.className='cell-idx'; idxEl.textContent=i; cell.appendChild(idxEl);
+    const valEl=document.createElement('div'); valEl.className='cell-val';
+    valEl.textContent=table[i]===EMPTY?'':table[i]===TOMB?'✕':table[i];
+    cell.appendChild(valEl);
+    grid.appendChild(cell);
+  }
+}
+
+function setProbeAnim(probeSeq, activeIdx) {
+  const div=document.getElementById('probeAnim');
+  if(!probeSeq||probeSeq.length===0) { div.innerHTML=''; return; }
+  div.innerHTML='Probe: '+probeSeq.map((idx,i) => `<span class="probe-step${i===activeIdx?' active':''}">${idx}</span>`).join(' → ');
+}
+
+async function animateProbe(probeSeq, finalClass, cb) {
+  for(let i=0;i<probeSeq.length;i++) {
+    const hl={};
+    for(let j=0;j<i;j++) hl[probeSeq[j]]='probing';
+    hl[probeSeq[i]]='probing';
+    setProbeAnim(probeSeq, i);
+    renderGrid(hl);
+    await new Promise(r=>setTimeout(r,300));
+  }
+  const hlFinal={};
+  probeSeq.forEach((idx,i) => { hlFinal[idx] = i===probeSeq.length-1 ? finalClass : 'probing'; });
+  renderGrid(hlFinal);
+  setProbeAnim(probeSeq, probeSeq.length-1);
+  await new Promise(r=>setTimeout(r,600));
+  renderGrid();
+  setProbeAnim([], -1);
+  if(cb) cb();
+}
+
+document.getElementById('btnAdd').addEventListener('click', async () => {
+  const k=document.getElementById('keyIn').value.trim();
+  if(!k) return;
+  const h=hashFn(k);
+  let i=h, probeSeq=[], firstTomb=-1;
+  for(let step=0;step<SIZE;step++) {
+    const idx=(h+step)%SIZE;
+    probeSeq.push(idx);
+    if(table[idx]===k) { log(`'<span class="hi">${k}</span>' already in set at slot ${idx}`); await animateProbe(probeSeq,'found'); return; }
+    if(table[idx]===TOMB && firstTomb===-1) firstTomb=idx;
+    if(table[idx]===EMPTY) {
+      const slot=firstTomb!==-1?firstTomb:idx;
+      table[slot]=k;
+      const steps=probeSeq.join(' → ');
+      log(`hash('<span class="hi">${k}</span>')=${h} — probe: ${steps} — inserted at slot <span class="hi">${slot}</span>`);
+      await animateProbe(probeSeq.slice(0,probeSeq.indexOf(slot)+1),'inserted'); return;
+    }
+  }
+  log(`Table full! Cannot insert '<span class="hi">${k}</span>'`);
+});
+
+document.getElementById('btnContains').addEventListener('click', async () => {
+  const k=document.getElementById('keyIn').value.trim();
+  if(!k) return;
+  const h=hashFn(k);
+  let probeSeq=[];
+  for(let step=0;step<SIZE;step++) {
+    const idx=(h+step)%SIZE;
+    probeSeq.push(idx);
+    if(table[idx]===k) { log(`hash('<span class="hi">${k}</span>')=${h} — <span class="hi">FOUND</span> at slot ${idx} after ${step+1} probe(s)`); await animateProbe(probeSeq,'found'); return; }
+    if(table[idx]===EMPTY) { log(`hash('<span class="hi">${k}</span>')=${h} — NOT FOUND (empty slot at ${idx} after ${step+1} probe(s))`); await animateProbe(probeSeq,'probing'); return; }
+  }
+  log(`'<span class="hi">${k}</span>' not found`);
+});
+
+document.getElementById('btnRemove').addEventListener('click', async () => {
+  const k=document.getElementById('keyIn').value.trim();
+  if(!k) return;
+  const h=hashFn(k);
+  let probeSeq=[];
+  for(let step=0;step<SIZE;step++) {
+    const idx=(h+step)%SIZE;
+    probeSeq.push(idx);
+    if(table[idx]===k) { table[idx]=TOMB; log(`hash('<span class="hi">${k}</span>')=${h} — removed at slot ${idx}, tombstone placed`); await animateProbe(probeSeq,'inserted'); return; }
+    if(table[idx]===EMPTY) { log(`'<span class="hi">${k}</span>' not found`); await animateProbe(probeSeq,'probing'); return; }
+  }
+  log(`'<span class="hi">${k}</span>' not found`);
+});
+
+document.getElementById('btnClear').addEventListener('click', () => {
+  table=new Array(SIZE).fill(EMPTY); renderGrid(); setProbeAnim([],-1); log('Set cleared');
+});
+
+// Seed
+['fox','owl','elk','hen','pig'].forEach(k => {
+  const h=hashFn(k);
+  for(let s=0;s<SIZE;s++) { const idx=(h+s)%SIZE; if(table[idx]===EMPTY){table[idx]=k;break;} }
+});
+renderGrid();
+log('Starter set loaded — try adding "yak" or "emu" to see probing');
+</script>
+</body>
+</html>
