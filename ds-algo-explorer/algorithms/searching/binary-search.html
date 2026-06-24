@@ -1,163 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Binary Search – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:860px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
-.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.controls label{font-size:14px;font-weight:500}
-.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
-.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#e84393}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;font-size:.85rem}
+.input-row label{color:var(--m);font-weight:600}
+.input-row input{
+  font-family:'JetBrains Mono',monospace;font-size:.85rem;
+  padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;
+  background:var(--bg);color:var(--ink);width:100px
+}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.warning{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:.6rem 1rem;
+  font-size:.8rem;color:#7a6400;margin-top:.6rem;display:none}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Binary Search
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    <span>Binary Search</span>
   </nav>
 
-  <div class="hero">
-    <div class="category-tag">Searching</div>
-    <h1>Binary Search</h1>
-    <p class="tagline">Halve the search space at every step — logarithmic elegance.</p>
-  </div>
+  <span class="tag">Searching</span>
+  <h1>Binary Search</h1>
+  <p class="tagline">Halve the search space at every step — logarithmic elegance.</p>
 
-  <div class="explanation">
-    <p>Binary search works on sorted arrays by repeatedly dividing the search interval in half. It compares the target with the middle element: if equal, done; if the target is smaller, search the left half; if larger, search the right half. Each comparison eliminates half the remaining elements.</p>
-    <p>The classic analogy is a phone book search. Looking for "Smith" you open to the middle — "M" names. Smith comes after M, so you discard the left half. Open to the middle of the right half — "T" names. Discard the right half. Continue until you land on Smith. A 1000-page book takes at most 10 steps.</p>
-    <p>Binary search achieves O(log n) time because the search space shrinks exponentially: after k steps, at most n/2^k elements remain. It requires O(1) space in its iterative form. The prerequisite is a sorted collection.</p>
+  <div class="prose">
+    <p>Binary search works on sorted arrays. It compares the target against the middle element, then discards the half where the target cannot be. Each comparison eliminates 50% of remaining candidates, achieving O(log n) in at most ⌈log₂(n+1)⌉ comparisons.</p>
+    <p>The classic analogy: a phone book. Looking for "Smith", open to the middle — "M" section. Smith comes after M, discard the left half. Repeat until found.</p>
   </div>
 
   <div class="facts">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(log n)</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(1)</div></div>
-    <div class="fact-card"><div class="label">Sorted Required</div><div class="value">Yes</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Requires</div><div class="fval">Sorted array</div></div>
   </div>
 
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Target:</label>
-      <input type="number" id="targetInput" value="42">
-      <button class="btn btn-primary" onclick="startSearch()">Search</button>
-      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
-    </div>
-    <canvas id="cvs" width="780" height="200"></canvas>
-    <div class="log">
-      <h3>Step Log</h3>
-      <div id="logEntries"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="180"></canvas>
+
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+
+      <div class="input-row">
+        <label>Array (sorted, comma-separated):</label>
+        <input id="arrIn" type="text" value="3,7,12,18,25,31,42,56,63,78" style="width:260px"/>
+        <label>Target:</label>
+        <input id="tgtIn" type="number" value="42"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
+      </div>
+      <div class="warning" id="warn">⚠ Input was not sorted — it has been sorted automatically.</div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#fff"></span>Active</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>mid (comparing)</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Found</span>
+        <span class="leg"><span class="leg-dot" style="background:#d0d0d0"></span>Eliminated</span>
+      </div>
+      <div style="font-size:.72rem;color:var(--m);margin-top:.5rem;font-family:'JetBrains Mono',monospace">
+        ▲blue = lo · ▲orange = mid · ▲red = hi
+      </div>
     </div>
   </div>
 
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 
 <script>
-const ARR=[3,7,12,18,25,31,42,56,63,78];
-const ACCENT='#e84393',GREEN='#27a060',GRAY='#d0cec8',BLUE='#3b82f6';
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-let state=ARR.map(()=>'default');
-let lo=0,hi=ARR.length-1,mid=-1,running=false;
+const canvas = document.getElementById('cvs');
+const ctx    = canvas.getContext('2d');
+let   player = null;
+let   DPR    = window.devicePixelRatio || 1;
 
-function drawArray(){
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  const n=ARR.length,cellW=64,cellH=58;
-  const startX=(cvs.width-n*cellW)/2,startY=20;
-  ARR.forEach((v,i)=>{
-    const x=startX+i*cellW,y=startY;
-    const s=state[i];
-    ctx.fillStyle=s==='default'?'#fff':s==='mid'?ACCENT:s==='found'?GREEN:GRAY;
-    ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
-    ctx.fillStyle=(s==='default'||s==='eliminated')?'#1a1a2e':'#fff';
-    if(s==='eliminated')ctx.fillStyle='#aaa';
-    ctx.font='bold 15px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(v,x+cellW/2,y+cellH/2);
-    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';
-    ctx.fillText(i,x+cellW/2,y+cellH+10);
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width  = w * DPR; canvas.height = 180 * DPR;
+  canvas.style.width = w + 'px'; canvas.style.height = '180px';
+  ctx.scale(DPR, DPR);
+}
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
+
+/* ── Step generation ───────────────────────────── */
+function generateSteps(arr, target) {
+  const steps = [];
+  const n = arr.length;
+  const st = (lo, mid, hi, elim) =>
+    `lo=${lo} mid=${mid === -1 ? '-' : mid} hi=${hi} · Target: ${target}`;
+
+  const elim = new Set();
+  steps.push({
+    title: 'Initial state', what: `Searching for ${target} in a sorted array of ${n} elements.`,
+    why: 'Binary search starts with the entire array as the active search window.',
+    state: st(0, -1, n - 1, elim),
+    arr, lo: 0, mid: -1, hi: n - 1, elim: new Set(), found: false, notFound: false
   });
-  // Draw pointers
-  const py=startY+cellH+28;
-  if(lo>=0&&lo<ARR.length){
-    const lx=startX+lo*cellW+cellW/2;
-    ctx.fillStyle='#3b82f6';ctx.font='bold 11px Inter';ctx.textAlign='center';
-    ctx.fillText('L',lx,py);
-  }
-  if(hi>=0&&hi<ARR.length){
-    const hx=startX+hi*cellW+cellW/2;
-    ctx.fillStyle='#f59e0b';ctx.font='bold 11px Inter';ctx.textAlign='center';
-    ctx.fillText('R',hx,py);
-  }
-  if(mid>=0&&mid<ARR.length){
-    const mx=startX+mid*cellW+cellW/2;
-    ctx.fillStyle=ACCENT;ctx.font='bold 11px Inter';ctx.textAlign='center';
-    ctx.fillText('M',mx,py);
-  }
-}
 
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+  let lo = 0, hi = n - 1;
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    steps.push({
+      title: `Compare arr[${mid}]=${arr[mid]} with target ${target}`,
+      what: `lo=${lo}, hi=${hi}, mid=${mid}. Checking arr[${mid}]=${arr[mid]}.`,
+      why: arr[mid] === target ? `${arr[mid]} = ${target} — found!`
+        : arr[mid] < target
+          ? `${arr[mid]} < ${target} — target is in right half, move lo to ${mid + 1}.`
+          : `${arr[mid]} > ${target} — target is in left half, move hi to ${mid - 1}.`,
+      state: st(lo, mid, hi, elim),
+      arr, lo, mid, hi, elim: new Set(elim), found: false, notFound: false
+    });
 
-async function startSearch(){
-  if(running)return;running=true;
-  resetSearch(false);
-  const target=parseInt(document.getElementById('targetInput').value);
-  log(`Binary search for target = ${target}`);
-  lo=0;hi=ARR.length-1;mid=-1;
-  let step=0;
-  while(lo<=hi){
-    step++;mid=Math.floor((lo+hi)/2);
-    for(let i=0;i<ARR.length;i++){
-      if(i<lo||i>hi)state[i]='eliminated';
-      else if(i===mid)state[i]='mid';
-      else state[i]='default';
+    if (arr[mid] === target) {
+      steps.push({
+        title: `Found ${target} at index ${mid}!`,
+        what: `arr[${mid}] = ${target} matches the target.`,
+        why: `Binary search completed in ${steps.length} steps — just O(log n) comparisons.`,
+        state: `✓ Found at index ${mid}`,
+        arr, lo, mid, hi, elim: new Set(elim), found: true, notFound: false
+      });
+      break;
+    } else if (arr[mid] < target) {
+      for (let i = lo; i <= mid; i++) elim.add(i);
+      lo = mid + 1;
+    } else {
+      for (let i = mid; i <= hi; i++) elim.add(i);
+      hi = mid - 1;
     }
-    drawArray();
-    log(`Step ${step}: lo=${lo} hi=${hi} mid=${mid} → arr[${mid}]=${ARR[mid]}`);
-    await sleep(800);
-    if(ARR[mid]===target){state[mid]='found';drawArray();log(`✓ Found ${target} at index ${mid}!`);running=false;return;}
-    else if(ARR[mid]<target){log(`${ARR[mid]} < ${target}: search right half`);lo=mid+1;}
-    else{log(`${ARR[mid]} > ${target}: search left half`);hi=mid-1;}
   }
-  drawArray();log(`✗ ${target} not found.`);running=false;
+
+  if (lo > hi) {
+    steps.push({
+      title: `${target} not found`,
+      what: `Search window is empty (lo=${lo} > hi=${hi}).`,
+      why: `${target} does not exist in the array.`,
+      state: `✗ Not found after ${steps.length - 1} comparisons`,
+      arr, lo, mid: -1, hi, elim: new Set(elim), found: false, notFound: true
+    });
+  }
+
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+  return steps;
 }
 
-function resetSearch(clearLog=true){
-  running=false;lo=0;hi=ARR.length-1;mid=-1;
-  state=ARR.map(()=>'default');drawArray();
-  if(clearLog)document.getElementById('logEntries').innerHTML='';
+/* ── Render ────────────────────────────────────── */
+function renderStep(step) {
+  const W = canvas.width / DPR, H = canvas.height / DPR;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#f8f9fd';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const { arr, lo, mid, hi, elim, found, notFound } = step;
+  const n = arr.length;
+  const cellW = Math.min(62, (W - 30) / n);
+  const cellH = 50;
+  const startX = (W - n * cellW) / 2;
+  const startY = 18;
+
+  // Draw cells
+  for (let i = 0; i < n; i++) {
+    const x = startX + i * cellW;
+    let fill, textColor, strokeColor, sw = 1;
+
+    if (found && i === mid) {
+      fill = '#a8e6a3'; textColor = '#1a3a1a'; strokeColor = '#27a060'; sw = 2;
+    } else if (notFound && elim.has(i)) {
+      fill = '#d0d0d0'; textColor = '#999'; strokeColor = '#bbb';
+    } else if (elim.has(i)) {
+      fill = '#d0d0d0'; textColor = '#aaa'; strokeColor = '#ccc';
+    } else if (i === mid) {
+      fill = '#fff176'; textColor = '#2a2a1a'; strokeColor = '#c8c000'; sw = 2;
+    } else {
+      fill = '#fff'; textColor = '#1a1a2e'; strokeColor = '#e2e0da';
+    }
+
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x + 2, startY, cellW - 4, cellH, 7);
+    else ctx.rect(x + 2, startY, cellW - 4, cellH);
+    ctx.fill();
+    ctx.strokeStyle = strokeColor; ctx.lineWidth = sw;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x + 2, startY, cellW - 4, cellH, 7);
+    else ctx.rect(x + 2, startY, cellW - 4, cellH);
+    ctx.stroke();
+
+    ctx.fillStyle = textColor;
+    ctx.font = `bold ${Math.min(14, cellW - 6)}px JetBrains Mono, monospace`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(arr[i], x + cellW / 2, startY + cellH / 2);
+
+    // Index label
+    ctx.fillStyle = '#8a8aaa'; ctx.font = '9px Inter, sans-serif';
+    ctx.fillText(i, x + cellW / 2, startY + cellH + 12);
+  }
+
+  // Pointer triangles
+  const ptrY = startY + cellH + 28;
+  const ptrs = [
+    { idx: lo,  label: 'lo',  color: '#3b82f6' },
+    { idx: mid, label: 'mid', color: '#f59e0b' },
+    { idx: hi,  label: 'hi',  color: '#ef4444' }
+  ];
+  ptrs.forEach(({ idx, label, color }) => {
+    if (idx < 0 || idx >= n) return;
+    const px = startX + idx * cellW + cellW / 2;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(px, ptrY - 8); ctx.lineTo(px - 6, ptrY); ctx.lineTo(px + 6, ptrY);
+    ctx.closePath(); ctx.fill();
+    ctx.font = `bold 9px JetBrains Mono, monospace`;
+    ctx.textAlign = 'center'; ctx.fillText(label, px, ptrY + 12);
+  });
+
+  // Found badge
+  if (found) {
+    const px = startX + mid * cellW + cellW / 2;
+    ctx.fillStyle = '#27a060'; ctx.font = 'bold 11px Inter, sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText('✓ found', px, startY - 6);
+  }
 }
-drawArray();
+
+/* ── Bootstrap ─────────────────────────────────── */
+function rebuild() {
+  let arr = document.getElementById('arrIn').value
+    .split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+  if (arr.length < 2) { alert('Enter at least 2 numbers.'); return; }
+  const sorted = [...arr].sort((a, b) => a - b);
+  const warn = document.getElementById('warn');
+  warn.style.display = JSON.stringify(arr) !== JSON.stringify(sorted) ? 'block' : 'none';
+  arr = sorted;
+  document.getElementById('arrIn').value = arr.join(',');
+
+  const target = parseInt(document.getElementById('tgtIn').value) || arr[Math.floor(arr.length / 2)];
+  setupCanvas();
+  if (player) player.destroy();
+  const steps = generateSteps(arr, target);
+  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
+}
+
+setupCanvas();
+rebuild();
 </script>
 </body>
 </html>

@@ -1,202 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>BFS – Graph Algorithms</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#7b4fd4;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:32px}
-.prose p{color:#1a1a2e;line-height:1.75;margin-bottom:16px;font-size:0.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#7b4fd4}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
-canvas{border:1px solid #e2e0da;border-radius:8px;display:block;margin:0 auto}
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-select,button{font-family:'Inter',sans-serif;font-size:14px;padding:7px 16px;border-radius:7px;border:1px solid #e2e0da;cursor:pointer}
-button{background:#7b4fd4;color:#fff;border-color:#7b4fd4;font-weight:600}
-button:hover{background:#6a3fc0}
-button.secondary{background:#fff;color:#1a1a2e}
-button.secondary:hover{background:#f0eef9}
-.queue-vis{font-family:'JetBrains Mono',monospace;font-size:13px;margin-top:12px;padding:10px 14px;background:#f7f6f2;border-radius:7px;min-height:36px}
-.queue-vis span{display:inline-block;background:#b39ddb;color:#1a1a2e;border-radius:5px;padding:2px 8px;margin:2px}
-#log{height:180px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:12px;background:#f7f6f2;border-radius:7px;padding:10px}
-.le{padding:3px 0;border-bottom:1px solid #e2e0da}
-.les{color:#7b4fd4}
-.lei{color:#27a060;font-weight:600}
-.lew{color:#e8622a}
-.back-link{display:inline-block;margin-top:24px;color:#7b4fd4;font-weight:600}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.queue-bar{
+  font-family:'JetBrains Mono',monospace;font-size:.8rem;
+  padding:.5rem .8rem;background:var(--bg);border:1px solid var(--b);border-radius:8px;
+  margin-top:.75rem;min-height:36px;
+}
+.queue-bar b{color:var(--m);margin-right:.4rem}
+.q-chip{display:inline-block;background:#b39ddb;color:#fff;border-radius:5px;
+  padding:.1rem .5rem;margin:.1rem .15rem;font-size:.75rem}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;
+  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Breadth-First Search
-  </div>
-  <div class="tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    <span>BFS</span>
+  </nav>
+
+  <span class="tag">Graph</span>
   <h1>Breadth-First Search</h1>
-  <p class="tagline">Explore a graph level by level — find the shortest path in an unweighted world.</p>
+  <p class="tagline">Explore a graph level by level — shortest path in an unweighted world.</p>
+
   <div class="prose">
-    <p>BFS is like dropping a stone in water: ripples spread outward layer by layer. Starting from a source node, it visits all neighbors first, then their neighbors, ensuring every node is discovered at the minimum number of hops from the source.</p>
-    <p>Real-world analogy: social network "degrees of separation." BFS from your profile finds direct friends (level 1), friends-of-friends (level 2), and so on. It guarantees that when a node is first dequeued, its distance from the source is optimal.</p>
-    <p>The algorithm uses a queue (FIFO). Enqueue the source, mark it visited, then repeatedly dequeue a node, process it, and enqueue any unvisited neighbors. It terminates when the queue is empty.</p>
+    <p>BFS explores a graph outward from a source, visiting all nodes at distance 1, then distance 2, and so on. It uses a queue (FIFO): enqueue the source, then repeatedly dequeue a node, process it, and enqueue its unvisited neighbours. When a node is first dequeued, its distance from the source is guaranteed optimal.</p>
+    <p>Real-world uses: shortest path in maps, social network degrees-of-separation, web crawling, and network broadcasting.</p>
   </div>
+
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-value">O(V + E)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-value">O(V)</div></div>
-    <div class="fact"><div class="fact-label">Requires</div><div class="fact-value">Queue (FIFO)</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(V + E)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V)</div></div>
+    <div class="fact"><div class="flabel">Data Structure</div><div class="fval">Queue (FIFO)</div></div>
   </div>
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label style="font-size:14px">Source:
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="320"></canvas>
+
+      <div class="queue-bar" id="queueBar">
+        <b>Queue:</b><span id="queueDisplay"></span>
+      </div>
+
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+
+      <div class="input-row">
+        <label>Source node:</label>
         <select id="srcSel">
           <option>0</option><option>1</option><option>2</option>
           <option>3</option><option>4</option><option>5</option><option>6</option>
         </select>
-      </label>
-      <button onclick="runBFS()">Run BFS</button>
-      <button class="secondary" onclick="stepBFS()">Step</button>
-      <button class="secondary" onclick="resetAll()">Reset</button>
+        <button class="btn btn-p" onclick="rebuild()">Run BFS</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#e0e0e0;border:1px solid #bbb"></span>Unvisited</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>In queue</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Dequeued (processing)</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Fully visited</span>
+      </div>
     </div>
-    <canvas id="c" width="700" height="340"></canvas>
-    <div class="queue-vis"><b>Queue:</b> <span id="queueDisplay"></span></div>
   </div>
-  <div class="card">
-    <h2>Step Log</h2>
-    <div id="log"></div>
-  </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
+
 <script>
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-const DPR = window.devicePixelRatio || 1;
-canvas.width = 700 * DPR; canvas.height = 340 * DPR;
-canvas.style.width = '700px'; canvas.style.height = '340px';
-ctx.scale(DPR, DPR);
-
-const nodes = [
-  {x:100,y:170,label:'0'},{x:220,y:80,label:'1'},{x:220,y:260,label:'2'},
-  {x:360,y:50,label:'3'},{x:360,y:170,label:'4'},{x:360,y:290,label:'5'},
-  {x:530,y:170,label:'6'}
+/* ── Graph definition ──────────────────────────── */
+// 7 nodes, 8 edges — fixed graph
+const NODES = [
+  { x: 100, y: 170, label: '0' },
+  { x: 220, y:  80, label: '1' },
+  { x: 220, y: 260, label: '2' },
+  { x: 360, y:  50, label: '3' },
+  { x: 360, y: 170, label: '4' },
+  { x: 360, y: 290, label: '5' },
+  { x: 530, y: 170, label: '6' }
 ];
-const edges = [[0,1],[0,2],[1,3],[1,4],[2,4],[2,5],[4,6],[5,6]];
-const adj = Array.from({length:7},()=>[]);
-edges.forEach(([a,b])=>{adj[a].push(b);adj[b].push(a);});
+const EDGES = [[0,1],[0,2],[1,3],[1,4],[2,4],[2,5],[4,6],[5,6]];
+const ADJ = Array.from({ length: 7 }, () => []);
+EDGES.forEach(([a, b]) => { ADJ[a].push(b); ADJ[b].push(a); });
 
-const COLOR = {white:'#ffffff',frontier:'#b39ddb',visited:'#7b4fd4',done:'#27a060'};
-let state = [];
-let queue = [];
-let visited = [];
-let level = [];
-let stepGen = null;
-let running = false;
+const canvas = document.getElementById('cvs');
+const ctx    = canvas.getContext('2d');
+let   player = null;
+let   DPR    = window.devicePixelRatio || 1;
+let   SCALE  = 1; // used for node coordinate scaling
 
-function resetAll(){
-  state = Array(7).fill('white');
-  queue = [];visited = Array(7).fill(false);level = Array(7).fill(-1);
-  stepGen = null; running = false;
-  document.getElementById('log').innerHTML = '';
-  document.getElementById('queueDisplay').innerHTML = '';
-  draw();
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  const h = 320;
+  SCALE = w / 640;
+  canvas.width  = w * DPR; canvas.height = h * DPR;
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  ctx.scale(DPR, DPR);
 }
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function logStep(msg, type='step'){
-  const log = document.getElementById('log');
-  const el = document.createElement('div');
-  el.className = 'le l'+type[0];
-  el.textContent = msg;
-  log.appendChild(el);
-  log.scrollTop = log.scrollHeight;
-}
+/* ── Step generation ───────────────────────────── */
+function generateSteps(src) {
+  const steps = [];
+  const nodeState = new Array(7).fill('unvisited'); // unvisited|queued|processing|done
+  const levels    = new Array(7).fill(-1);
+  const activeEdges = []; // edges highlighted this step
+  const queueSnap = () => [...bfsQueue]; // closure-captured queue
+  let   bfsQueue  = [];
 
-function updateQueueDisplay(){
-  document.getElementById('queueDisplay').innerHTML =
-    queue.map(n=>`<span>${n}</span>`).join('');
-}
-
-function draw(){
-  ctx.clearRect(0,0,700,340);
-  edges.forEach(([a,b])=>{
-    ctx.beginPath();ctx.moveTo(nodes[a].x,nodes[a].y);
-    ctx.lineTo(nodes[b].x,nodes[b].y);
-    ctx.strokeStyle='#c5c0d0';ctx.lineWidth=2;ctx.stroke();
+  const snap = (extras = {}) => ({
+    nodeState: [...nodeState], levels: [...levels],
+    queue: [...bfsQueue], ...extras
   });
-  nodes.forEach((n,i)=>{
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle = state[i]==='white'?COLOR.white:state[i]==='frontier'?COLOR.frontier:
-      state[i]==='visited'?COLOR.visited:COLOR.done;
-    ctx.fill();ctx.strokeStyle='#1a1a2e';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle = state[i]==='visited'||state[i]==='done'?'#fff':'#1a1a2e';
-    ctx.font="bold 13px 'Inter'";ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.label,n.x,n.y);
-    if(level[i]>=0){
-      ctx.fillStyle='#5a5a72';ctx.font="11px 'Inter'";
-      ctx.fillText('L'+level[i],n.x,n.y+32);
-    }
-  });
-}
 
-function* bfsGen(src){
-  queue = [src]; visited[src]=true; state[src]='frontier'; level[src]=0;
-  logStep(`Level 0: Source node ${src} enqueued.`,'step');
-  updateQueueDisplay(); draw(); yield;
-  while(queue.length){
-    const u = queue.shift();
-    state[u]='visited';
-    logStep(`Visit node ${u} (Level ${level[u]}).`,'info');
-    draw(); updateQueueDisplay(); yield;
-    for(const v of adj[u]){
-      if(!visited[v]){
-        visited[v]=true; state[v]='frontier'; level[v]=level[u]+1;
-        queue.push(v);
-        logStep(`  Enqueue ${v} (Level ${level[v]}) via ${u}.`,'step');
+  steps.push({
+    title: 'Initial graph', what: `7 nodes, 8 edges. Will run BFS from source node ${src}.`,
+    why: 'BFS explores level by level, guaranteeing shortest paths in unweighted graphs.',
+    state: `Source: ${src} · Queue: empty`, ...snap(), activeEdges: []
+  });
+
+  nodeState[src] = 'queued'; levels[src] = 0; bfsQueue.push(src);
+  steps.push({
+    title: `Enqueue source node ${src}`,
+    what: `Node ${src} enqueued as the BFS starting point. Marked as level 0.`,
+    why: 'BFS initialises by placing the source in the queue and marking it visited.',
+    state: `Queue: [${bfsQueue.join(', ')}]`, ...snap(), activeEdges: []
+  });
+
+  while (bfsQueue.length) {
+    const u = bfsQueue.shift();
+    nodeState[u] = 'processing';
+    const neighbours = ADJ[u].filter(v => nodeState[v] === 'unvisited');
+
+    steps.push({
+      title: `Dequeue node ${u} (Level ${levels[u]})`,
+      what: `Removed node ${u} from front of queue. Unvisited neighbours: ${ADJ[u].join(', ') || 'none'}.`,
+      why: `Processing node ${u} — examining all adjacent nodes for unvisited ones to enqueue.`,
+      state: `Queue: [${bfsQueue.join(', ')}] · Processing: ${u}`,
+      ...snap(), activeEdges: []
+    });
+
+    for (const v of ADJ[u]) {
+      if (nodeState[v] === 'unvisited') {
+        nodeState[v] = 'queued'; levels[v] = levels[u] + 1; bfsQueue.push(v);
+        steps.push({
+          title: `Enqueue neighbour ${v} of node ${u}`,
+          what: `Node ${v} is unvisited — enqueue it at level ${levels[v]}.`,
+          why: `Each unvisited neighbour of the current node gets enqueued. Its BFS level is parent level + 1.`,
+          state: `Queue: [${bfsQueue.join(', ')}] · Added: ${v} (L${levels[v]})`,
+          ...snap(), activeEdges: [[u, v]]
+        });
       }
     }
-    state[u]='done'; updateQueueDisplay(); draw(); yield;
+
+    nodeState[u] = 'done';
+    steps.push({
+      title: `Node ${u} fully processed`,
+      what: `All neighbours of node ${u} have been enqueued or were already visited. Mark ${u} as done.`,
+      why: 'A node is "done" when all its edges have been examined.',
+      state: `Queue: [${bfsQueue.join(', ')}] · Done: ${u}`,
+      ...snap(), activeEdges: []
+    });
   }
-  logStep('BFS complete!','info');
+
+  steps.push({
+    title: 'BFS complete!',
+    what: `All ${7 - nodeState.filter(s => s === 'unvisited').length} reachable nodes visited from source ${src}.`,
+    why: `BFS guarantees shortest paths. Levels: ${levels.map((l, i) => `${i}:L${l}`).join(', ')}.`,
+    state: `Visited all reachable nodes · Source: ${src}`,
+    ...snap(), activeEdges: []
+  });
+
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+  return steps;
 }
 
-function stepBFS(){
-  if(!stepGen){
-    const src = parseInt(document.getElementById('srcSel').value);
-    resetAll();
-    stepGen = bfsGen(src);
+/* ── Render ────────────────────────────────────── */
+function renderStep(step) {
+  const W = canvas.width / DPR, H = canvas.height / DPR;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#f8f9fd'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const sc = SCALE;
+
+  // Active edge set for quick lookup
+  const aEdges = new Set((step.activeEdges || []).map(([a,b]) => `${Math.min(a,b)}-${Math.max(a,b)}`));
+
+  // Draw edges
+  EDGES.forEach(([a, b]) => {
+    const key = `${Math.min(a,b)}-${Math.max(a,b)}`;
+    const isActive = aEdges.has(key);
+    ctx.beginPath();
+    ctx.moveTo(NODES[a].x * sc, NODES[a].y * sc);
+    ctx.lineTo(NODES[b].x * sc, NODES[b].y * sc);
+    ctx.strokeStyle = isActive ? '#3b82f6' : '#c5c0d0';
+    ctx.lineWidth   = isActive ? 3 : 1.5;
+    ctx.setLineDash(isActive ? [5, 3] : []);
+    ctx.stroke(); ctx.setLineDash([]);
+  });
+
+  // Draw nodes
+  const stateColor = { unvisited: '#e0e0e0', queued: '#fff176', processing: '#ffb347', done: '#a8e6a3' };
+  const stateStroke = { unvisited: '#bbb', queued: '#c8c000', processing: '#d4700a', done: '#27a060' };
+  NODES.forEach((node, i) => {
+    const st = step.nodeState[i] || 'unvisited';
+    const r  = 22 * sc;
+    ctx.beginPath(); ctx.arc(node.x * sc, node.y * sc, r, 0, Math.PI * 2);
+    ctx.fillStyle = stateColor[st] || '#e0e0e0'; ctx.fill();
+    ctx.strokeStyle = stateStroke[st] || '#bbb';
+    ctx.lineWidth = st === 'processing' ? 3 : 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#1a1a2e';
+    ctx.font = `bold ${Math.round(13 * sc)}px Inter, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(node.label, node.x * sc, node.y * sc);
+
+    const lv = step.levels[i];
+    if (lv >= 0) {
+      ctx.fillStyle = '#5a5a72'; ctx.font = `${Math.round(10 * sc)}px Inter, sans-serif`;
+      ctx.fillText(`L${lv}`, node.x * sc, node.y * sc + r + 10 * sc);
+    }
+  });
+
+  // Update queue display
+  const qd = document.getElementById('queueDisplay');
+  if (qd) {
+    qd.innerHTML = (step.queue || []).map(n => `<span class="q-chip">${n}</span>`).join('');
+    if (!step.queue || !step.queue.length) qd.innerHTML = '<span style="color:#aaa;font-size:.75rem">empty</span>';
   }
-  const r = stepGen.next();
-  if(r.done) stepGen = null;
 }
 
-async function runBFS(){
-  if(running)return;running=true;
+/* ── Bootstrap ─────────────────────────────────── */
+function rebuild() {
   const src = parseInt(document.getElementById('srcSel').value);
-  resetAll();
-  stepGen = bfsGen(src);
-  while(!stepGen.next().done){
-    draw(); updateQueueDisplay();
-    await new Promise(r=>setTimeout(r,700));
-  }
-  running=false;stepGen=null;
+  setupCanvas();
+  if (player) player.destroy();
+  const steps = generateSteps(src);
+  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
 }
 
-resetAll();
+setupCanvas();
+rebuild();
 </script>
 </body>
 </html>

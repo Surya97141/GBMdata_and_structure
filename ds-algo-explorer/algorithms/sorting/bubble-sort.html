@@ -4,43 +4,51 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Bubble Sort – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
-h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
-.tagline{color:var(--m);}
-.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem;}
-.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem;}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;}
-.fsub{font-size:.78rem;color:var(--m);}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem;}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--a);}
-.sim-body{padding:1.3rem;}
-canvas{display:block;width:100%;border-radius:8px;background:var(--bg);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.btn{padding:.38rem .95rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none;}
-.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
-input[type=range]{appearance:none;height:4px;background:var(--b);border-radius:4px;cursor:pointer;width:120px;}
-input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--a);cursor:pointer;}
-label{font-size:.8rem;font-weight:600;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
-.le{border-bottom:1px solid var(--b);}.le:last-child{border:none;}
-.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}.li{color:var(--m);}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0;}
-.back:hover{color:var(--ink);}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+/* Canvas panel */
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+/* Custom input */
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{
+  font-family:'JetBrains Mono',monospace;font-size:.85rem;
+  padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;
+  background:var(--bg);color:var(--ink);width:240px
+}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+/* back */
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;
+  font-size:.82rem;font-weight:600;margin:1.5rem 0;display:block}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -55,147 +63,211 @@ label{font-size:.8rem;font-weight:600;}
   <h1>Bubble Sort</h1>
   <p class="tagline">The classic "let the biggest bubble to the top" algorithm.</p>
 
-  <div class="explain">
-    <p>Bubble sort works by repeatedly stepping through the list, comparing adjacent elements and swapping them if they are in the wrong order. The pass through the list is repeated until the list is sorted. It gets its name because smaller elements "bubble" to the top of the list — or equivalently, larger elements "sink" to the bottom — with each pass.</p>
-    <p>Think of it like sorting a row of numbered blocks by height. You walk from left to right and whenever you spot a tall block next to a shorter one, you swap them. After the first full walk, the tallest block is guaranteed to be at the far right. After the second walk, the second-tallest is in place, and so on.</p>
-    <p>Bubble sort is rarely used in production due to its O(n²) average complexity, but it is easy to understand and implement, making it a classic teaching tool. An optimised version can detect if no swaps occurred in a pass and terminate early — giving O(n) on already-sorted data.</p>
+  <div class="prose">
+    <p>Bubble Sort repeatedly steps through the array comparing adjacent elements and swapping them when out of order. After each full pass the largest unsorted element has "bubbled" to its final position at the end.</p>
+    <p>An optimised version terminates early when a pass completes with zero swaps — giving O(n) on already-sorted data. That optimisation is included in this simulation.</p>
   </div>
 
   <div class="facts">
-    <div class="fact"><div class="flabel">Best Time</div><div class="fval">O(n)</div><div class="fsub">Already sorted</div></div>
-    <div class="fact"><div class="flabel">Average Time</div><div class="fval">O(n²)</div><div class="fsub">Random input</div></div>
-    <div class="fact"><div class="flabel">Worst Time</div><div class="fval">O(n²)</div><div class="fsub">Reverse sorted</div></div>
-    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div><div class="fsub">In-place</div></div>
-    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div><div class="fsub">Preserves order</div></div>
+    <div class="fact"><div class="flabel">Best</div><div class="fval">O(n)</div><div class="fsub">sorted input</div></div>
+    <div class="fact"><div class="flabel">Average</div><div class="fval">O(n²)</div><div class="fsub">random input</div></div>
+    <div class="fact"><div class="flabel">Worst</div><div class="fval">O(n²)</div><div class="fsub">reverse sorted</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div><div class="fsub">in-place</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div></div>
   </div>
 
   <div class="sim-panel">
     <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <canvas id="cvs" height="280"></canvas>
-      <div class="controls">
-        <button class="btn btn-p" id="btnNew">New Array</button>
-        <button class="btn btn-o" id="btnStep">Step</button>
-        <button class="btn btn-p" id="btnRun">Run</button>
-        <button class="btn btn-o" id="btnPause">Pause</button>
-        <label>Speed <input type="range" id="speed" min="1" max="10" value="5"/></label>
+      <canvas id="cvs" height="260"></canvas>
+
+      <!-- explanation + playback bar injected by SimulationPlayer -->
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+
+      <div class="input-row">
+        <input id="arrIn" type="text" placeholder="e.g. 5,3,8,1,9,2,7" value="64,34,25,12,22,11,90"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort this array</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Unsorted</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Comparing</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Swapping</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Sorted</span>
       </div>
     </div>
   </div>
 
-  <div class="log-panel">
-    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.7rem;padding:.2rem .6rem;" id="btnClear">Clear</button></div>
-    <div class="log-body" id="logBody"></div>
-  </div>
-
-  <a class="back" href="../index.html">&#8592; Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
+
 <script>
 const canvas = document.getElementById('cvs');
-const ctx = canvas.getContext('2d');
-const logBody = document.getElementById('logBody');
-const speedEl = document.getElementById('speed');
+const ctx    = canvas.getContext('2d');
+let   player = null;
+let   DPR    = window.devicePixelRatio || 1;
 
-const N = 16;
-let arr = [], colors = [], sortGen = null, running = false, timer = null;
-let comparisons = 0, swaps = 0;
-
-function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function initArray(){
-  arr = Array.from({length:N},()=>rnd(10,100));
-  colors = Array(N).fill('#2a7ae8');
-  comparisons=0; swaps=0;
-  sortGen = null; running=false;
-  if(timer){clearInterval(timer);timer=null;}
-  draw();
+/* ── Canvas sizing ─────────────────────────────── */
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width  = w * DPR; canvas.height = 260 * DPR;
+  canvas.style.width = w + 'px'; canvas.style.height = '260px';
+  ctx.scale(DPR, DPR);
 }
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function setupCanvas(){
-  const dpr = window.devicePixelRatio||1;
-  const w = canvas.parentElement.clientWidth - 2*20;
-  canvas.width = w*dpr; canvas.height = 280*dpr;
-  canvas.style.width = w+'px'; canvas.style.height = '280px';
-  ctx.scale(dpr,dpr);
-}
+/* ── Step generation ───────────────────────────── */
+function generateSteps(arr) {
+  const steps = [];
+  const a = [...arr], n = a.length;
+  const sorted = new Array(n).fill(false);
+  let cmp = 0, swp = 0;
+  const st = () => `Array: [${a.join(', ')}] · Comparisons: ${cmp} · Swaps: ${swp}`;
 
-function draw(){
-  const W = canvas.width/(window.devicePixelRatio||1);
-  const H = 280;
-  ctx.clearRect(0,0,W,H);
-  const pad=16, bw=(W-pad*2)/N, maxVal=100;
-  for(let i=0;i<N;i++){
-    const bh = (arr[i]/maxVal)*(H-40);
-    const x = pad+i*bw+2, y = H-bh-20;
-    ctx.fillStyle = colors[i];
-    ctx.beginPath(); ctx.roundRect(x,y,bw-4,bh,4); ctx.fill();
-    ctx.fillStyle='#1a1a2e'; ctx.font='bold 9px Inter';
-    ctx.textAlign='center'; ctx.fillText(arr[i],x+(bw-4)/2,H-6);
-  }
-}
+  steps.push({ title: 'Initial array', what: `${n} elements ready for Bubble Sort.`,
+    why: 'Each pass moves the largest unsorted element to its final position at the right.',
+    state: st(), phase: 'initial', arr: [...a], sorted: [...sorted], hi: [] });
 
-function addLog(msg,type='ls'){
-  const d=document.createElement('div');
-  d.className='le '+type; d.textContent=msg;
-  logBody.appendChild(d); logBody.scrollTop=logBody.scrollHeight;
-}
-
-function* bubbleSortGen(){
-  const a=[...arr];
-  const n=a.length;
-  for(let pass=0;pass<n-1;pass++){
-    let swapped=false;
-    addLog(`Pass ${pass+1}:`, 'lw');
-    for(let i=0;i<n-1-pass;i++){
-      colors=Array(n).fill('#2a7ae8');
-      for(let k=n-1-pass;k<n;k++) colors[k]='#27a060';
-      colors[i]='#f4a261'; colors[i+1]='#f4a261';
-      arr=[...a]; draw();
-      comparisons++;
-      addLog(`  Comparing arr[${i}]=${a[i]} and arr[${i+1}]=${a[i+1]}`,'ls');
-      yield;
-      if(a[i]>a[i+1]){
-        [a[i],a[i+1]]=[a[i+1],a[i]];
-        swaps++;
-        colors[i]='#e84393'; colors[i+1]='#e84393';
-        arr=[...a]; draw();
-        addLog(`  Swapped ${a[i+1]} and ${a[i]}`,'ld');
-        yield; swapped=true;
+  for (let i = 0; i < n - 1; i++) {
+    let swapped = false;
+    for (let j = 0; j < n - i - 1; j++) {
+      cmp++;
+      steps.push({
+        title: `Pass ${i + 1} · Compare a[${j}]=${a[j]} and a[${j + 1}]=${a[j + 1]}`,
+        what: `Comparing index ${j} (value ${a[j]}) with index ${j + 1} (value ${a[j + 1]}).`,
+        why: a[j] > a[j + 1]
+          ? `${a[j]} > ${a[j + 1]} — out of order, swap needed.`
+          : `${a[j]} ≤ ${a[j + 1]} — already in order, no swap.`,
+        state: st(), phase: 'compare',
+        arr: [...a], sorted: [...sorted], hi: [j, j + 1]
+      });
+      if (a[j] > a[j + 1]) {
+        [a[j], a[j + 1]] = [a[j + 1], a[j]]; swp++; swapped = true;
+        steps.push({
+          title: `Swapping a[${j}] ↔ a[${j + 1}]`,
+          what: `Moved ${a[j + 1]} left and ${a[j]} right.`,
+          why: `After swap: a[${j}]=${a[j]}, a[${j + 1}]=${a[j + 1]}.`,
+          state: st(), phase: 'swap',
+          arr: [...a], sorted: [...sorted], hi: [j, j + 1]
+        });
       }
     }
-    if(!swapped){addLog('No swaps — array sorted early!','lw'); break;}
+    sorted[n - 1 - i] = true;
+    steps.push({
+      title: `Pass ${i + 1} complete — ${a[n - 1 - i]} is in place`,
+      what: `Element ${a[n - 1 - i]} at index ${n - 1 - i} is now in its final sorted position.`,
+      why: 'The largest remaining element always reaches its correct place at the end of a pass.',
+      state: st(), phase: 'pass', arr: [...a], sorted: [...sorted], hi: [n - 1 - i]
+    });
+    if (!swapped) {
+      sorted.fill(true);
+      steps.push({
+        title: 'Early termination — no swaps this pass!',
+        what: `Pass ${i + 1} completed with zero swaps. The array is already sorted.`,
+        why: 'Bubble Sort with the optimisation flag can detect a sorted array in O(n) time.',
+        state: st(), phase: 'done', arr: [...a], sorted: [...sorted], hi: []
+      });
+      break;
+    }
+    if (i === n - 2) {
+      sorted[0] = true;
+      steps.push({
+        title: 'Sorting complete!',
+        what: `Array: [${a.join(', ')}]`,
+        why: `Finished in ${cmp} comparisons and ${swp} swaps.`,
+        state: st(), phase: 'done', arr: [...a], sorted: [...sorted], hi: []
+      });
+    }
   }
-  colors=Array(n).fill('#27a060'); arr=[...a]; draw();
-  addLog(`Sort complete! ${comparisons} comparisons, ${swaps} swaps.`,'ld');
+  if (n <= 1) {
+    sorted.fill(true);
+    steps.push({ title: 'Trivially sorted', what: 'A single element needs no sorting.', why: '', state: st(), phase: 'done', arr: [...a], sorted: [...sorted], hi: [] });
+  }
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+  return steps;
 }
 
-function step(){
-  if(!sortGen) sortGen=bubbleSortGen();
-  const r=sortGen.next();
-  if(r.done){running=false; if(timer){clearInterval(timer);timer=null;}}
+/* ── Render function ───────────────────────────── */
+function renderStep(step) {
+  const W = canvas.width / DPR, H = canvas.height / DPR;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#f8f9fd';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const { arr, sorted, hi, phase } = step;
+  const n = arr.length;
+  if (n === 0) return;
+  const maxVal = Math.max(...arr, 1);
+  const padX = 14, labelH = 26, topPad = 12;
+  const availW = W - padX * 2, availH = H - labelH - topPad;
+  const barW = availW / n;
+
+  for (let i = 0; i < n; i++) {
+    const barH = Math.max(4, (arr[i] / maxVal) * availH);
+    const bx = padX + i * barW + 2;
+    const by = H - labelH - barH;
+    const bw = barW - 4;
+
+    let fill, stroke = null;
+    if (sorted[i]) {
+      fill = '#a8e6a3'; stroke = '#27a060';
+    } else if (phase === 'swap' && hi.includes(i)) {
+      fill = '#ffb347'; stroke = '#d4700a';
+    } else if (phase === 'compare' && hi.includes(i)) {
+      fill = '#fff176'; stroke = '#c8c000';
+    } else if (phase === 'pass' && hi.includes(i)) {
+      fill = '#a8e6a3'; stroke = '#27a060';
+    } else {
+      fill = '#9ec8f0';
+    }
+
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(bx, by, bw, barH, 4);
+    else ctx.rect(bx, by, bw, barH);
+    ctx.fill();
+
+    if (stroke) {
+      ctx.strokeStyle = stroke; ctx.lineWidth = 2;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(bx, by, bw, barH, 4);
+      else ctx.rect(bx, by, bw, barH);
+      ctx.stroke();
+    }
+
+    const fs = Math.max(8, Math.min(13, barW - 6));
+    ctx.fillStyle = '#2a2a3a';
+    ctx.font = `${fs}px JetBrains Mono, monospace`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText(arr[i], padX + i * barW + barW / 2, H - 2);
+  }
 }
 
-function getDelay(){return Math.round(1050-(speedEl.value*100));}
-
-function run(){
-  if(running) return;
-  if(!sortGen) sortGen=bubbleSortGen();
-  running=true;
-  timer=setInterval(()=>{
-    const r=sortGen.next();
-    if(r.done){running=false;clearInterval(timer);timer=null;}
-  },getDelay());
+/* ── Bootstrap ─────────────────────────────────── */
+function parseArr(str) {
+  return str.split(',').map(s => Math.max(1, Math.min(200, parseInt(s.trim()) || 1))).filter(Boolean);
 }
 
-function pause(){running=false;if(timer){clearInterval(timer);timer=null;}}
+function rebuild() {
+  const arr = parseArr(document.getElementById('arrIn').value);
+  if (arr.length < 2 || arr.length > 30) { alert('Enter 2–30 comma-separated numbers.'); return; }
+  setupCanvas();
+  if (player) player.destroy();
+  const steps = generateSteps(arr);
+  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
+}
 
-document.getElementById('btnNew').onclick=()=>{initArray();logBody.innerHTML='';};
-document.getElementById('btnStep').onclick=step;
-document.getElementById('btnRun').onclick=run;
-document.getElementById('btnPause').onclick=pause;
-document.getElementById('btnClear').onclick=()=>{logBody.innerHTML='';};
+function randomize() {
+  const n = 8 + Math.floor(Math.random() * 5);
+  const arr = Array.from({ length: n }, () => 5 + Math.floor(Math.random() * 95));
+  document.getElementById('arrIn').value = arr.join(',');
+  rebuild();
+}
 
-window.addEventListener('resize',()=>{setupCanvas();draw();});
-setupCanvas(); initArray();
+setupCanvas();
+rebuild();
 </script>
 </body>
 </html>

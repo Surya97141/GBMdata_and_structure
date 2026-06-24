@@ -2,303 +2,334 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>N-Queens – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
-body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
-nav.breadcrumb a{color:var(--muted)}
-nav.breadcrumb a:hover{color:var(--accent)}
-nav.breadcrumb span{margin:0 6px}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
-.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
-.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
-.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
-.section{margin-bottom:36px}
-.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
-.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
-.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
-.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
-.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
-.sim-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
-.sim-controls label{font-size:.9rem;font-weight:500;color:var(--muted)}
-select,input[type=number]{border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'Inter',sans-serif;font-size:.9rem;background:var(--bg);color:var(--ink)}
-button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button:disabled{opacity:.45;cursor:not-allowed}
-button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
-.counter{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--muted);margin-left:auto}
-#board-wrap{display:flex;justify-content:center;margin-bottom:20px}
-#queen-board{border-collapse:collapse}
-#queen-board td{width:52px;height:52px;border:1px solid var(--border);text-align:center;vertical-align:middle;font-size:1.5rem;transition:background .2s}
-#queen-board td.queen{background:#fde8e8}
-#queen-board td.attacked{background:#fdf0f0}
-#queen-board td.empty{background:#fff}
-.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);margin-top:16px}
-.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
-.step-log .log-line:last-child{border-bottom:none}
-.log-back{color:var(--accent)}
-.log-place{color:#27ae60}
-.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
-.back-link:hover{color:var(--accent)}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#c0392b}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sol-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--m);margin-left:auto}
+.sim-body{padding:1.3rem}
+/* Board */
+.board-wrap{display:flex;justify-content:center;margin-bottom:.75rem;overflow-x:auto}
+table#board{border-collapse:collapse}
+table#board td{
+  width:52px;height:52px;border:1px solid var(--b);
+  text-align:center;vertical-align:middle;font-size:1.5rem;
+  transition:background .15s;user-select:none;
+}
+/* Cell states */
+.cell-light{background:#fff}
+.cell-dark {background:#f0ede5}
+.cell-queen{background:#fde8e8}
+.cell-try  {background:#fff176 !important} /* trying this cell */
+.cell-back {background:#ffb3b3 !important} /* backtracking flash */
+.cell-solution{background:#a8e6a3 !important} /* solution found */
+.cell-safe {background:rgba(59,130,246,.08) !important} /* safe squares */
+/* Controls */
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.75rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;
+  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:2px;flex-shrink:0;border:1px solid rgba(0,0,0,.15)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  N-Queens
-</nav>
-<div class="hero">
-  <div style="max-width:900px;margin:0 auto">
-    <span class="hero-tag">Backtracking</span>
-    <h1>N-Queens Problem</h1>
-    <p class="tagline">Place N queens on an N×N chessboard so no two queens threaten each other — row, column, or diagonal.</p>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>N-Queens
+  </nav>
+
+  <span class="tag">Backtracking</span>
+  <h1>N-Queens Problem</h1>
+  <p class="tagline">Place N queens on an N×N board — no two queens attack each other.</p>
+
+  <div class="prose">
+    <p>The N-Queens problem is one of the most iconic backtracking challenges: place N queens on an N×N chessboard so no two share a row, column, or diagonal. The search space is enormous (N! placements) but systematic pruning makes it tractable.</p>
+    <p>Algorithm: try each column in the current row, check conflicts against all previously placed queens, recurse to the next row. If no column works, backtrack (remove the last queen and advance its column). The animation shows every placement and backtrack step-by-step.</p>
   </div>
-</div>
-<div class="content">
-  <div class="section">
-    <p>The N-Queens problem asks you to arrange N queens on an N×N chessboard such that no two queens share the same row, column, or diagonal. It is one of the most iconic backtracking problems because the search space is enormous yet pruning makes it tractable.</p>
-    <p>Think of it like placing chess pieces one row at a time. You try a column, check if any previously placed queen attacks the position, and move to the next row. If no column works in a row you backtrack to the previous row and shift that queen right. The analogy is solving a puzzle by erasing and retrying rather than starting fresh every time.</p>
-    <p>For N=8 there are 92 solutions. For N=4 there are 2. For N=1 there is 1. For N=2 and N=3 there are 0 solutions — a fact the solver discovers by exhausting all possibilities.</p>
+
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(N!)</div><div class="fsub">pruning cuts it significantly</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(N)</div><div class="fsub">recursion depth</div></div>
+    <div class="fact"><div class="flabel">Solutions (N=4)</div><div class="fval">2</div></div>
+    <div class="fact"><div class="flabel">Solutions (N=8)</div><div class="fval">92</div></div>
   </div>
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(N!)</div><div class="sub">Upper bound; pruning cuts it drastically</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(N)</div><div class="sub">Recursion depth + column array</div></div>
-    <div class="fact-card"><div class="label">Solutions for N=8</div><div class="value">92</div><div class="sub">Fundamental: 12 (removing symmetry)</div></div>
-  </div>
-  <div class="sim-card">
-    <div class="sim-controls">
-      <label>Board size N =</label>
-      <select id="n-select">
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8" selected>8</option>
-      </select>
-      <button id="btn-first" onclick="solveFirst()">Solve (First)</button>
-      <button id="btn-all" onclick="solveAll()">Solve (All)</button>
-      <button id="btn-step" onclick="manualStep()" class="secondary" disabled>Step</button>
-      <button id="btn-reset" onclick="resetBoard()" class="secondary">Reset</button>
-      <span class="counter" id="sol-counter">Solutions: 0</span>
+
+  <div class="sim-panel">
+    <div class="sim-hdr">
+      <span class="dot"></span>Interactive Simulation
+      <span class="sol-counter" id="solCounter">Solutions: 0</span>
     </div>
-    <div id="board-wrap"><table id="queen-board"></table></div>
-    <div class="step-log" id="step-log"><div class="log-line" style="color:var(--muted)">Press Solve or Step to begin…</div></div>
+    <div class="sim-body">
+      <div class="board-wrap"><table id="board"></table></div>
+
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+
+      <div class="input-row">
+        <label>Board size N =</label>
+        <select id="nSel" onchange="rebuild()">
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+        <button class="btn btn-p" onclick="rebuild()">Regenerate</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#fff176"></span>Currently trying</span>
+        <span class="leg"><span class="leg-dot" style="background:#fde8e8"></span>Queen placed</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb3b3"></span>Backtracking (conflict)</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3"></span>Solution found</span>
+        <span class="leg"><span class="leg-dot" style="background:rgba(59,130,246,.18)"></span>Safe squares</span>
+      </div>
+    </div>
   </div>
-  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
+
 <script>
-let N=8, queens=[], solving=false, stepGen=null, solutionCount=0, animSpeed=120;
+let N = 4, player = null, totalSols = 0;
 
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-
-function buildBoard(){
-  N=parseInt(document.getElementById('n-select').value);
-  queens=new Array(N).fill(-1);
-  const tbl=document.getElementById('queen-board');
-  tbl.innerHTML='';
-  for(let r=0;r<N;r++){
-    const tr=document.createElement('tr');
-    for(let c=0;c<N;c++){
-      const td=document.createElement('td');
-      td.id=`cell-${r}-${c}`;
-      td.className='empty';
-      const isLight=(r+c)%2===0;
-      td.style.background=isLight?'#fff':'#f0ede5';
+/* ── Build DOM board ───────────────────────────── */
+function buildBoard(n) {
+  const tbl = document.getElementById('board');
+  tbl.innerHTML = '';
+  for (let r = 0; r < n; r++) {
+    const tr = document.createElement('tr');
+    for (let c = 0; c < n; c++) {
+      const td = document.createElement('td');
+      td.id = `c_${r}_${c}`;
+      td.className = (r + c) % 2 === 0 ? 'cell-light' : 'cell-dark';
       tr.appendChild(td);
     }
     tbl.appendChild(tr);
   }
 }
 
-function updateCell(r,c,type){
-  const td=document.getElementById(`cell-${r}-${c}`);
-  if(!td)return;
-  const isLight=(r+c)%2===0;
-  if(type==='queen'){td.textContent='♛';td.style.color='var(--accent)';td.style.background='#fde8e8';}
-  else if(type==='attacked'){td.textContent='';td.style.background='#fdf5f5';}
-  else{td.textContent='';td.style.background=isLight?'#fff':'#f0ede5';}
-}
-
-function markAttacked(row,col){
-  for(let c=0;c<N;c++) if(c!==col) updateCell(row,c,'attacked');
-  for(let r=0;r<N;r++) if(r!==row) updateCell(r,col,'attacked');
-  for(let d=-N;d<=N;d++){
-    if(row+d>=0&&row+d<N&&col+d>=0&&col+d<N&&d!==0) updateCell(row+d,col+d,'attacked');
-    if(row+d>=0&&row+d<N&&col-d>=0&&col-d<N&&d!==0) updateCell(row+d,col-d,'attacked');
-  }
-}
-
-function isSafe(queens,row,col){
-  for(let r=0;r<row;r++){
-    const c=queens[r];
-    if(c===col||Math.abs(c-col)===Math.abs(r-row)) return false;
+/* ── Safety check ──────────────────────────────── */
+function isSafe(queens, row, col) {
+  for (let r = 0; r < row; r++) {
+    const c = queens[r];
+    if (c === col || Math.abs(c - col) === Math.abs(r - row)) return false;
   }
   return true;
 }
 
-function log(msg,cls=''){
-  const box=document.getElementById('step-log');
-  const d=document.createElement('div');
-  d.className='log-line'+(cls?' '+cls:'');
-  d.textContent=msg;
-  box.appendChild(d);
-  box.scrollTop=box.scrollHeight;
+/* ── Step generation ───────────────────────────── */
+function generateSteps(n) {
+  const steps = [];
+  let solCount = 0;
+
+  const mkStep = (queens, phase, row, col, extra = {}) => {
+    const safeSet = new Set();
+    if (phase === 'try') {
+      for (let r = row + 1; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+          if (isSafe([...queens.slice(0, row + 1)], r, c)) safeSet.add(`${r},${c}`);
+        }
+      }
+    }
+    return { queens: [...queens], phase, row, col, safeSet, ...extra };
+  };
+
+  const snapshot = (queens, phase, row, col, extra = {}) => {
+    steps.push(mkStep(queens, phase, row, col, extra));
+  };
+
+  steps.push({
+    queens: new Array(n).fill(-1), phase: 'initial', row: -1, col: -1,
+    safeSet: new Set(),
+    title: `N-Queens with N=${n}`,
+    what: `Place ${n} queens on a ${n}×${n} board so no two attack each other.`,
+    why: 'Backtracking tries each column in the current row, pruning when a conflict is detected.',
+    state: `Board size: ${n}×${n} · Solutions found so far: 0`
+  });
+
+  const solve = (queens, row) => {
+    if (row === n) {
+      solCount++;
+      steps.push({
+        queens: [...queens], phase: 'solution', row: n - 1, col: queens[n - 1],
+        safeSet: new Set(), solNum: solCount,
+        title: `Solution #${solCount} found! [${queens.join(',')}]`,
+        what: `All ${n} queens placed without conflicts. Solution: ${queens.map((c, r) => `Q(${r},${c})`).join(', ')}`,
+        why: 'Every queen is safe from all others — no shared rows, columns, or diagonals.',
+        state: `Solutions found: ${solCount}`
+      });
+      return;
+    }
+
+    for (let col = 0; col < n; col++) {
+      if (isSafe(queens, row, col)) {
+        queens[row] = col;
+        steps.push({
+          queens: [...queens], phase: 'try', row, col, safeSet: new Set(),
+          title: `Row ${row} · Trying column ${col}`,
+          what: `Placing queen tentatively at row ${row}, column ${col}. Checking for conflicts with rows 0–${row - 1}.`,
+          why: `Column ${col} has no conflict with any previously placed queen. Moving to row ${row + 1}.`,
+          state: `Queens so far: ${queens.slice(0, row + 1).map((c, r) => `(${r},${c})`).join(', ')}`
+        });
+
+        solve(queens, row + 1);
+
+        if (queens[row] === col) { // backtrack only if not already cleared by a solution-found step
+          queens[row] = -1;
+          steps.push({
+            queens: [...queens], phase: 'backtrack', row, col, safeSet: new Set(),
+            title: `Backtrack from row ${row}, column ${col}`,
+            what: `No valid placement found for rows ${row + 1}+. Removing queen from (${row}, ${col}).`,
+            why: 'Backtracking: undo the last placement and try the next column.',
+            state: `Backtracted — trying next column in row ${row}`
+          });
+        }
+      } else {
+        steps.push({
+          queens: [...queens.slice(0, row), -1, ...new Array(n - row - 1).fill(-1)], phase: 'skip', row, col, safeSet: new Set(),
+          title: `Row ${row} · Column ${col} is unsafe — skip`,
+          what: `Placing at (${row}, ${col}) would conflict with an existing queen. Skipping.`,
+          why: isSafeWhy(queens, row, col),
+          state: `Skipping column ${col} in row ${row}`
+        });
+      }
+    }
+  };
+
+  solve(new Array(n).fill(-1), 0);
+
+  steps.push({
+    queens: new Array(n).fill(-1), phase: 'done', row: -1, col: -1, safeSet: new Set(), solCount,
+    title: `Complete — ${solCount} solution${solCount !== 1 ? 's' : ''} found`,
+    what: `Exhausted all possibilities for N=${n}. Total: ${solCount} distinct solutions.`,
+    why: 'Backtracking has explored every valid path through the search tree.',
+    state: `N=${n} · Total solutions: ${solCount}`
+  });
+
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; s.N = n; });
+  return steps;
 }
 
-function clearLog(){document.getElementById('step-log').innerHTML='';}
-
-function setButtons(state){
-  document.getElementById('btn-first').disabled=state;
-  document.getElementById('btn-all').disabled=state;
-  document.getElementById('btn-step').disabled=!state;
-  document.getElementById('btn-reset').disabled=state;
-  document.getElementById('n-select').disabled=state;
+function isSafeWhy(queens, row, col) {
+  for (let r = 0; r < row; r++) {
+    const c = queens[r];
+    if (c === -1) continue;
+    if (c === col) return `Column ${col} is already occupied by queen at (${r},${c}).`;
+    if (Math.abs(c - col) === Math.abs(r - row)) return `Diagonal conflict with queen at (${r},${c}).`;
+  }
+  return 'Conflict detected.';
 }
 
-function redrawFromQueens(){
-  buildBoard();
-  for(let r=0;r<N;r++){
-    if(queens[r]>=0){
-      updateCell(r,queens[r],'queen');
+/* ── Render ────────────────────────────────────── */
+function renderStep(step) {
+  const { queens, phase, row, col, safeSet, N: n, solNum, solCount } = step;
+
+  // Reset board
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const cell = document.getElementById(`c_${r}_${c}`);
+      if (!cell) continue;
+      const base = (r + c) % 2 === 0 ? 'cell-light' : 'cell-dark';
+      cell.className = base;
+      cell.textContent = '';
     }
   }
-}
 
-async function solveFirst(){
-  resetBoard();
-  solving=true;
-  setButtons(false);
-  solutionCount=0;
-  document.getElementById('sol-counter').textContent='Solutions: 0';
-  log('Starting N-Queens (N='+N+'), finding first solution…');
-  const found=await animateSolve(0,true);
-  if(!found) log('No solution exists for N='+N,'log-back');
-  solving=false;
-  setButtons(false);
-  document.getElementById('btn-step').disabled=true;
-  document.getElementById('btn-reset').disabled=false;
-  document.getElementById('btn-first').disabled=false;
-  document.getElementById('btn-all').disabled=false;
-  document.getElementById('n-select').disabled=false;
-}
-
-async function animateSolve(row, stopFirst){
-  if(row===N){
-    solutionCount++;
-    document.getElementById('sol-counter').textContent='Solutions: '+solutionCount;
-    log('✓ Solution #'+solutionCount+': ['+queens.join(',')+']','log-place');
-    if(stopFirst) return true;
-    await sleep(animSpeed*3);
-    return false;
+  // Safe cells hint (when phase === 'try')
+  if (phase === 'try' && safeSet) {
+    safeSet.forEach(key => {
+      const [sr, sc] = key.split(',').map(Number);
+      const cell = document.getElementById(`c_${sr}_${sc}`);
+      if (cell) cell.classList.add('cell-safe');
+    });
   }
-  for(let col=0;col<N;col++){
-    if(isSafe(queens,row,col)){
-      queens[row]=col;
-      updateCell(row,col,'queen');
-      log('Place Q at ('+row+','+col+')','log-place');
-      await sleep(animSpeed);
-      const res=await animateSolve(row+1,stopFirst);
-      if(res) return true;
-      updateCell(row,col,'');
-      queens[row]=-1;
-      log('Backtrack from ('+row+','+col+')','log-back');
-      await sleep(animSpeed/2);
+
+  // Draw placed queens
+  for (let r = 0; r < n; r++) {
+    if (queens[r] >= 0) {
+      const cell = document.getElementById(`c_${r}_${queens[r]}`);
+      if (!cell) continue;
+      if (phase === 'solution') {
+        cell.className = 'cell-solution'; cell.textContent = '♛';
+      } else if (phase === 'backtrack' && r === row) {
+        cell.className = 'cell-back'; cell.textContent = '♛';
+      } else {
+        cell.className = 'cell-queen'; cell.textContent = '♛';
+      }
     }
   }
-  return false;
-}
 
-async function solveAll(){
-  resetBoard();
-  solving=true;
-  setButtons(false);
-  solutionCount=0;
-  document.getElementById('sol-counter').textContent='Solutions: 0';
-  log('Finding ALL solutions for N='+N+'…');
-  await animateSolve(0,false);
-  log('Done. Total solutions: '+solutionCount,'log-place');
-  solving=false;
-  document.getElementById('btn-step').disabled=true;
-  document.getElementById('btn-reset').disabled=false;
-  document.getElementById('btn-first').disabled=false;
-  document.getElementById('btn-all').disabled=false;
-  document.getElementById('n-select').disabled=false;
-}
-
-let stepSteps=[], stepIndex=0;
-function buildSteps(row,arr){
-  if(row===N){
-    stepSteps.push({type:'solution',q:[...arr]});
-    return;
+  // Highlight current trial cell
+  if (phase === 'try' && row >= 0 && col >= 0) {
+    const cell = document.getElementById(`c_${row}_${col}`);
+    if (cell) { cell.className = 'cell-try'; cell.textContent = '♛'; }
   }
-  for(let col=0;col<N;col++){
-    if(isSafe(arr,row,col)){
-      arr[row]=col;
-      stepSteps.push({type:'place',row,col,q:[...arr]});
-      buildSteps(row+1,arr);
-      arr[row]=-1;
-      stepSteps.push({type:'backtrack',row,col,q:[...arr]});
+
+  // Update solution counter
+  const sc = document.getElementById('solCounter');
+  if (sc) {
+    const cnt = phase === 'done' ? solCount : (step.solNum ? step.solNum : totalSolsSoFar(step));
+    sc.textContent = `Solutions: ${cnt || 0}`;
+  }
+}
+
+function totalSolsSoFar(step) {
+  // Count solutions seen up to current step by looking at stepNumber
+  // We don't have a cumulative count per step, so just show 0 until done
+  return 0;
+}
+
+/* ── Bootstrap ─────────────────────────────────── */
+function rebuild() {
+  N = parseInt(document.getElementById('nSel').value);
+  totalSols = 0;
+  buildBoard(N);
+  document.getElementById('solCounter').textContent = 'Solutions: 0';
+  if (player) player.destroy();
+  const steps = generateSteps(N);
+  // Count solutions to update counter as we go
+  document.addEventListener('sim:step-change', e => {
+    const step = steps[e.detail.step];
+    if (step && step.phase === 'solution') {
+      document.getElementById('solCounter').textContent = `Solutions: ${step.solNum}`;
+    } else if (step && step.phase === 'done') {
+      document.getElementById('solCounter').textContent = `Solutions: ${step.solCount}`;
     }
-  }
+  }, { once: false });
+  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
 }
 
-function initStepMode(){
-  stepSteps=[];
-  stepIndex=0;
-  buildSteps(0,new Array(N).fill(-1));
-  setButtons(true);
-  clearLog();
-  log('Step mode ready. '+stepSteps.length+' steps total. Press "Step" to advance.');
-}
-
-function manualStep(){
-  if(stepIndex>=stepSteps.length){log('All steps complete.','log-place');return;}
-  const s=stepSteps[stepIndex++];
-  queens=[...s.q];
-  redrawFromQueens();
-  if(s.type==='place') log('Place Q at ('+s.row+','+s.col+')','log-place');
-  else if(s.type==='backtrack') log('Backtrack from ('+s.row+','+s.col+')','log-back');
-  else if(s.type==='solution'){solutionCount++;document.getElementById('sol-counter').textContent='Solutions: '+solutionCount;log('✓ Solution found: ['+s.q.join(',')+']','log-place');}
-  if(stepIndex>=stepSteps.length){log('Finished. Total solutions: '+solutionCount,'log-place');setButtons(false);document.getElementById('btn-step').disabled=true;document.getElementById('btn-reset').disabled=false;document.getElementById('btn-first').disabled=false;document.getElementById('btn-all').disabled=false;document.getElementById('n-select').disabled=false;}
-}
-
-// Override Solve(First) to offer step mode via Step button
-const origSolveFirst=solveFirst;
-document.getElementById('btn-step').addEventListener('click',()=>{
-  if(stepIndex===0&&stepSteps.length===0) initStepMode();
-  manualStep();
-});
-
-function resetBoard(){
-  solving=false;
-  solutionCount=0;
-  stepSteps=[];stepIndex=0;
-  document.getElementById('sol-counter').textContent='Solutions: 0';
-  clearLog();
-  buildBoard();
-  setButtons(false);
-  document.getElementById('btn-reset').disabled=false;
-  document.getElementById('btn-first').disabled=false;
-  document.getElementById('btn-all').disabled=false;
-  document.getElementById('n-select').disabled=false;
-  document.getElementById('btn-step').disabled=false;
-  log('Board reset. N='+N+'. Press Solve or Step.');
-}
-
-document.getElementById('n-select').addEventListener('change',resetBoard);
-buildBoard();
-log('Welcome! Select N and press Solve (First), Solve (All), or Step.');
+rebuild();
 </script>
 </body>
 </html>

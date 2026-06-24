@@ -4,299 +4,479 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Trie – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-/* breadcrumb */
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-/* hero */
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-/* prose */
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-/* facts */
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:var(--ink);font-weight:600;}
-/* sim panel */
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:1rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-/* controls */
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
-.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:140px;}
-.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
-.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
-/* word list */
-.word-list{margin-top:.8rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--m);min-height:1.4rem;}
-/* log */
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-/* back */
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{padding:1rem 0;font-size:.82rem;color:var(--m)}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+.bc span{margin:0 .35rem}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;padding:.2rem .7rem;border-radius:99px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.88rem}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b)}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.controls input{
+  font-family:'JetBrains Mono',monospace;font-size:.9rem;
+  padding:.42rem .8rem;border:1.5px solid var(--b);border-radius:8px;
+  background:#f9f8f5;color:var(--ink);width:150px;text-transform:uppercase;
+}
+.controls input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.42rem 1rem;border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn-pri{background:var(--a);color:#fff}.btn-pri:hover{opacity:.87}
+.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca}.btn-sec:hover{background:#ddf2e8}
+.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2}.btn-dan:hover{background:#f9d5d2}
+.btn-neu{background:var(--bg);color:var(--ink);border:1px solid var(--b)}.btn-neu:hover{background:#ece9e3}
+.word-list{margin-top:.7rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--m);min-height:1.4rem}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <nav class="bc">
     <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    Trie
+    <a href="../index.html">Data Structures</a><span>/</span>Trie
   </nav>
 
-  <header class="hero">
-    <span class="tag">Tree</span>
-    <h1>Trie</h1>
-    <p>A prefix tree that stores strings character-by-character, enabling lightning-fast autocomplete and prefix search.</p>
-  </header>
+  <span class="tag">Tree</span>
+  <h1>Trie</h1>
+  <p class="tagline">A prefix tree — lightning-fast autocomplete and prefix search.</p>
 
-  <section class="prose">
-    <p>A <strong>Trie</strong> (pronounced "try", from re<em>trie</em>val) is a tree-shaped data structure where each node represents a single character. Words are spelled out along root-to-leaf paths, and every node at depth <em>d</em> stores the <em>d</em>-th character of a set of related strings. Nodes that mark the end of a complete word carry a special flag.</p>
-    <p>Think of your phone's contact book. When you type "Jo", it instantly narrows suggestions to "John", "Jose", "Jordan" — because every contact name was inserted into a trie, and the prefix "Jo" leads directly to only those branches. Each keystroke simply follows one edge deeper into the tree.</p>
-    <p>Tries excel when many strings share common prefixes. Lookup and insert both run in <strong>O(m)</strong> time where <em>m</em> is the word length — independent of how many words are stored. This makes them far faster than sorting or hashing for prefix queries.</p>
-  </section>
+  <div class="prose">
+    <p>A <strong>Trie</strong> stores strings character-by-character, with each node representing one character. Words sharing a common prefix share the same path from the root. A special <em>end-of-word</em> flag marks complete words.</p>
+    <p>When you type "Jo" in a contacts app, it instantly suggests "John", "Jose", "Jordan" because a trie lets you walk a prefix in O(m) steps — independent of how many words are stored.</p>
+  </div>
 
   <div class="facts">
-    <div class="fact"><div class="fact-label">Insert / Search</div><div class="fact-val">O(m)</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(ALPHABET × N)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Autocomplete, Spell-check, IP routing</div></div>
-    <div class="fact"><div class="fact-label">Delete</div><div class="fact-val">O(m)</div></div>
+    <div class="fact"><div class="flabel">Insert / Search / Delete</div><div class="fval">O(m) where m = word length</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(ALPHABET × N)</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">Autocomplete, spell-check, IP routing</div></div>
   </div>
 
   <div class="sim-panel">
-    <div class="sim-title">Interactive Trie Simulation</div>
-    <canvas id="cv" height="320"></canvas>
-    <div class="controls">
-      <input id="wordIn" type="text" placeholder="word…" maxlength="10"/>
-      <button class="btn btn-pri" onclick="doInsert()">Insert</button>
-      <button class="btn btn-sec" onclick="doSearch()">Search</button>
-      <button class="btn btn-dan" onclick="doDelete()">Delete</button>
-      <button class="btn btn-sec" onclick="doClear()">Clear</button>
-    </div>
-    <div class="word-list" id="wordList">Words: (none)</div>
-  </div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Trie Simulation</div>
+    <div class="sim-body">
+      <canvas id="cv" height="340"></canvas>
 
-  <div class="log-panel" id="logPanel">
-    <h3>Step Log</h3>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+
+      <div class="controls">
+        <input id="wordIn" type="text" placeholder="word (A–Z)" maxlength="10"/>
+        <button class="btn btn-pri" onclick="doInsert()">Insert</button>
+        <button class="btn btn-sec" onclick="doSearch()">Search</button>
+        <button class="btn btn-dan" onclick="doDelete()">Delete</button>
+        <button class="btn btn-neu" onclick="doClear()">Clear All</button>
+      </div>
+      <div class="word-list" id="wordList">Words: (none)</div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#e8f5ee;border:1px solid #27a060"></span>Existing node</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3"></span>Path being traversed</span>
+        <span class="leg"><span class="leg-dot" style="background:#27a060"></span>Newly created node</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Found / Match</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Mismatch / Not found</span>
+        <span class="leg"><span class="leg-dot" style="background:#ff6b6b;border:1px solid #c0392b"></span>Deleted node</span>
+      </div>
+    </div>
   </div>
 
   <a class="back" href="../index.html">← Back to Data Structures</a>
 </div>
 
 <script>
-// ── Trie data structure ──────────────────────────────────────────
+/* ── Trie data structure ──────────────────────── */
 class TrieNode {
-  constructor(ch){ this.ch=ch; this.children={}; this.end=false; }
+  constructor(ch) { this.ch = ch; this.children = {}; this.end = false; }
 }
 class Trie {
-  constructor(){ this.root=new TrieNode(''); this.words=[]; }
-  insert(w){
-    let n=this.root;
-    for(const c of w){ if(!n.children[c]) n.children[c]=new TrieNode(c); n=n.children[c]; }
-    n.end=true;
-    if(!this.words.includes(w)) this.words.push(w);
+  constructor() { this.root = new TrieNode(''); this.words = []; }
+  insert(w) {
+    let n = this.root;
+    for (const c of w) { if (!n.children[c]) n.children[c] = new TrieNode(c); n = n.children[c]; }
+    n.end = true;
+    if (!this.words.includes(w)) this.words.push(w);
   }
-  search(w){
-    let n=this.root; const path=[];
-    for(const c of w){
-      if(!n.children[c]) return {found:false,path};
-      n=n.children[c]; path.push(c);
-    }
-    return {found:n.end,path};
+  search(w) {
+    let n = this.root;
+    for (const c of w) { if (!n.children[c]) return { found: false, partial: false }; n = n.children[c]; }
+    return { found: n.end, partial: !n.end };
   }
-  delete(w){
-    const del=(node,w,d)=>{
-      if(d===w.length){ if(!node.end) return false; node.end=false; return Object.keys(node.children).length===0; }
-      const c=w[d]; if(!node.children[c]) return false;
-      const shouldDel=del(node.children[c],w,d+1);
-      if(shouldDel){ delete node.children[c]; return !node.end&&Object.keys(node.children).length===0; }
+  delete(w) {
+    const del = (node, w, d) => {
+      if (d === w.length) { if (!node.end) return false; node.end = false; return Object.keys(node.children).length === 0; }
+      const c = w[d]; if (!node.children[c]) return false;
+      const should = del(node.children[c], w, d + 1);
+      if (should) { delete node.children[c]; return !node.end && Object.keys(node.children).length === 0; }
       return false;
     };
-    const existed=this.search(w).found;
-    del(this.root,w,0);
-    this.words=this.words.filter(x=>x!==w);
+    const existed = this.search(w).found;
+    del(this.root, w, 0);
+    this.words = this.words.filter(x => x !== w);
     return existed;
   }
-}
-
-// ── Canvas & rendering ──────────────────────────────────────────
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=320;
-  canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr);
-  render();
-}
-window.addEventListener('resize',resize);
-
-const trie=new Trie();
-let highlight=[]; // array of {node,color}
-let highlightMap={}; // key -> color for node keys
-
-// Assign positions to trie nodes via BFS
-function layoutTrie(){
-  const positions={};
-  // BFS, track level widths
-  const queue=[{node:trie.root,key:'root',parent:null,depth:0,idx:0}];
-  const levels=[];
-  const entries=[];
-  while(queue.length){
-    const {node,key,parent,depth,idx}=queue.shift();
-    if(!levels[depth]) levels[depth]=[];
-    levels[depth].push({node,key,parent});
-    entries.push({node,key,parent,depth,idx:levels[depth].length-1});
-    for(const [c,child] of Object.entries(node.children)){
-      queue.push({node:child,key:key+'-'+c,parent:key,depth:depth+1});
-    }
+  clone() {
+    const cloneNode = n => {
+      const nn = new TrieNode(n.ch); nn.end = n.end;
+      for (const [k, v] of Object.entries(n.children)) nn.children[k] = cloneNode(v);
+      return nn;
+    };
+    const t = new Trie(); t.root = cloneNode(this.root); t.words = [...this.words]; return t;
   }
-  // Assign x by leaf-first pass
-  const nodeMap={};
-  for(const e of entries) nodeMap[e.key]=e;
-  // Compute x positions
-  const xCounter=[0];
-  function assignX(key){
-    const e=nodeMap[key]; if(!e) return 0;
-    const childKeys=Object.entries(e.node.children).map(([c])=>key+'-'+c);
-    if(childKeys.length===0){
-      e.x=xCounter[0]++; return e.x;
-    }
-    const xs=childKeys.map(ck=>assignX(ck));
-    e.x=(xs[0]+xs[xs.length-1])/2;
-    return e.x;
+}
+
+/* ── Canvas & layout ──────────────────────────── */
+const canvas = document.getElementById('cv');
+const ctx    = canvas.getContext('2d');
+let   DPR    = window.devicePixelRatio || 1;
+let   W, H, player = null;
+const trie = new Trie();
+
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  W = canvas.parentElement.clientWidth - 26; H = 340;
+  canvas.width = W * DPR; canvas.height = H * DPR;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(DPR, DPR);
+}
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
+
+/* ── Layout algorithm ─────────────────────────── */
+function layoutTrie(root) {
+  const entries = [], levels = [];
+  const nodeMap = {};
+  const bfsQ = [{ node: root, key: 'root', parent: null, depth: 0 }];
+  while (bfsQ.length) {
+    const { node, key, parent, depth } = bfsQ.shift();
+    if (!levels[depth]) levels[depth] = [];
+    levels[depth].push({ node, key, parent, depth });
+    nodeMap[key] = { node, key, parent, depth };
+    for (const [c, child] of Object.entries(node.children))
+      bfsQ.push({ node: child, key: key + '-' + c, parent: key, depth: depth + 1 });
+  }
+  // X positions: leaf-first
+  const xCounter = [0];
+  function assignX(key) {
+    const e = nodeMap[key]; if (!e) return 0;
+    const childKeys = Object.entries(e.node.children).map(([c]) => key + '-' + c);
+    if (!childKeys.length) { e.x = xCounter[0]++; return e.x; }
+    const xs = childKeys.map(ck => assignX(ck));
+    e.x = (xs[0] + xs[xs.length - 1]) / 2; return e.x;
   }
   assignX('root');
-  const maxX=xCounter[0]-1||1;
-  const maxDepth=levels.length-1||1;
-  const padding=40;
-  for(const [key,e] of Object.entries(nodeMap)){
-    e.px=padding+(e.x/Math.max(maxX,1))*(W-2*padding);
-    e.py=30+(e.depth/(Math.max(maxDepth,1)))*(H-60);
+  const maxX = xCounter[0] - 1 || 1;
+  const maxD = levels.length - 1 || 1;
+  const pad = 40;
+  for (const e of Object.values(nodeMap)) {
+    e.px = pad + (e.x / Math.max(maxX, 1)) * (W - 2 * pad);
+    e.py = 30 + (e.depth / Math.max(maxD, 1)) * (H - 70);
   }
   return nodeMap;
 }
 
-function render(hmap){
-  ctx.clearRect(0,0,W,H);
-  const nm=layoutTrie();
-  // draw edges
-  for(const [key,e] of Object.entries(nm)){
-    if(e.parent&&nm[e.parent]){
-      const p=nm[e.parent];
-      ctx.beginPath(); ctx.moveTo(p.px,p.py); ctx.lineTo(e.px,e.py);
-      ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke();
+/* ── Draw trie ────────────────────────────────── */
+function drawTrie(root, hmap) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#f9f9f7'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const nm = layoutTrie(root);
+  // Edges
+  for (const [key, e] of Object.entries(nm)) {
+    if (e.parent && nm[e.parent]) {
+      const p = nm[e.parent];
+      ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(e.px, e.py);
+      ctx.strokeStyle = '#c8c6be'; ctx.lineWidth = 1.5; ctx.stroke();
     }
   }
-  // draw nodes
-  for(const [key,e] of Object.entries(nm)){
-    const r=e.node.ch===''?10:16;
-    const col=(hmap&&hmap[key])||'#e8f5ee';
-    ctx.beginPath();
-    if(e.node.end){ ctx.arc(e.px,e.py,r+3,0,Math.PI*2); ctx.strokeStyle=col==='#e8f5ee'?'#27a060':'#f0a500'; ctx.lineWidth=2; ctx.stroke(); }
-    ctx.beginPath(); ctx.arc(e.px,e.py,r,0,Math.PI*2);
-    ctx.fillStyle=col; ctx.fill();
-    ctx.strokeStyle='#c0bfba'; ctx.lineWidth=1; ctx.stroke();
-    if(e.node.ch!==''){
-      ctx.fillStyle='#1a1a2e'; ctx.font="bold 13px 'JetBrains Mono',monospace";
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(e.node.ch,e.px,e.py);
+  // Nodes
+  for (const [key, e] of Object.entries(nm)) {
+    const r = e.node.ch === '' ? 10 : 18;
+    const col = (hmap && hmap[key]) ? hmap[key].fill : '#e8f5ee';
+    const sc  = (hmap && hmap[key]) ? hmap[key].stroke : '#b6d8c6';
+    if (e.node.end) {
+      ctx.beginPath(); ctx.arc(e.px, e.py, r + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = col === '#e8f5ee' ? '#27a060' : (hmap[key]?.stroke || '#f0a500');
+      ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(e.px, e.py, r, 0, Math.PI * 2);
+    ctx.fillStyle = col; ctx.fill();
+    ctx.strokeStyle = sc; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = e.node.ch === '' ? '#27a060' : '#1a1a2e';
+    ctx.font = e.node.ch === '' ? "bold 10px 'Inter'" : "bold 13px 'JetBrains Mono',monospace";
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(e.node.ch === '' ? 'root' : e.node.ch, e.px, e.py);
+  }
+  // Legend note
+  ctx.font = "10px 'Inter'"; ctx.fillStyle = '#9090aa';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+  ctx.fillText('● double ring = end of word', 8, H - 4);
+}
+
+/* ── Step generators ───────────────────────────── */
+function cloneRoot(root) {
+  const cl = n => {
+    const nn = new TrieNode(n.ch); nn.end = n.end;
+    for (const [k, v] of Object.entries(n.children)) nn.children[k] = cl(v);
+    return nn;
+  };
+  return cl(root);
+}
+
+function generateInsertSteps(word) {
+  const steps = [];
+  const tmpTrie = trie.clone(); // snapshot of trie before this insert
+  let   node = tmpTrie.root;
+  let   key  = 'root';
+  const hmap = () => Object.fromEntries(Object.entries(curHmap).map(([k,v]) => [k, v]));
+  const curHmap = {};
+
+  steps.push({
+    title: `Start inserting "${word}"`,
+    what: `Begin at the root. Process each character of "${word}" in turn.`,
+    why: 'Insert walks the trie top-down, creating missing nodes as needed.',
+    state: `Inserting: "${word}" · depth: 0`,
+    root: cloneRoot(tmpTrie.root), hmap: {}
+  });
+
+  for (let i = 0; i < word.length; i++) {
+    const c = word[i];
+    const nextKey = key + '-' + c;
+    if (!node.children[c]) {
+      node.children[c] = new TrieNode(c);
+      curHmap[nextKey] = { fill: '#27a060', stroke: '#1a7040' };
+      steps.push({
+        title: `Creating new node '${c}' at depth ${i + 1}`,
+        what: `Character '${c}' not found in children of current node. New node created.`,
+        why: `A trie creates a new node for every character that doesn't exist yet on the path.`,
+        state: `Inserting: "${word}" · depth: ${i + 1} · new node '${c}'`,
+        root: cloneRoot(tmpTrie.root), hmap: { ...curHmap }
+      });
     } else {
-      ctx.fillStyle='#27a060'; ctx.font="bold 11px 'Inter',sans-serif";
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText('root',e.px,e.py);
+      curHmap[nextKey] = { fill: '#a8e6a3', stroke: '#27a060' };
+      steps.push({
+        title: `Following existing node '${c}' at depth ${i + 1}`,
+        what: `Character '${c}' already exists as a child. Moving down to that node.`,
+        why: `Shared prefixes reuse existing nodes — this is what makes tries space-efficient.`,
+        state: `Inserting: "${word}" · depth: ${i + 1} · existing '${c}'`,
+        root: cloneRoot(tmpTrie.root), hmap: { ...curHmap }
+      });
     }
-  }
-  // legend
-  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.fillText('● double ring = end of word',8,H-20);
-}
-
-function getNodeKey(prefix,ch){ return prefix+'-'+ch; }
-
-function updateWordList(){
-  const el=document.getElementById('wordList');
-  el.textContent='Words: '+(trie.words.length?trie.words.join(', '):'(none)');
-}
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
-}
-
-function doInsert(){
-  const w=document.getElementById('wordIn').value.trim().toLowerCase();
-  if(!w){alert('Enter a word.');return;}
-  trie.insert(w);
-  // highlight path
-  const hmap={};
-  let key='root'; hmap[key]='#b6e3ca';
-  for(const c of w){ key=key+'-'+c; hmap[key]='#27a060'; }
-  log(`Inserted "${w}": path ${[''].concat([...w]).map((c,i)=>i===0?'root':c).join('→')}*`);
-  render(hmap);
-  updateWordList();
-  setTimeout(()=>{render();},1400);
-}
-
-function doSearch(){
-  const w=document.getElementById('wordIn').value.trim().toLowerCase();
-  if(!w){alert('Enter a word.');return;}
-  const {found,path}=trie.search(w);
-  const hmap={}; let key='root';
-  for(const c of w){
-    const nk=key+'-'+c;
-    if(trie.root){
-      let node=trie.root; let valid=true;
-      for(const cc of (key==='root'?[]:key.split('-').slice(1))){ node=node.children[cc]||null; if(!node){valid=false;break;} }
-      if(valid&&node&&node.children[c]) hmap[nk]='#27a060'; else hmap[nk]='#e74c3c';
+    curHmap['root'] = { fill: '#e8f5ee', stroke: '#27a060' };
+    for (let j = 1; j < i + 1; j++) {
+      const pathKey = 'root' + word.slice(0, j).split('').map(ch => '-' + ch).join('');
+      curHmap[pathKey] = { fill: '#a8e6a3', stroke: '#27a060' };
     }
-    key=nk;
+    node = node.children[c];
+    key  = nextKey;
   }
-  log(`Search "${w}": ${found?'FOUND ✓':'NOT FOUND ✗'} — matched path: ${path.join('→')||'(root)'}`);
-  render(hmap);
-  setTimeout(()=>render(),1600);
+
+  node.end = true;
+  if (!tmpTrie.words.includes(word)) tmpTrie.words.push(word);
+  curHmap[key] = { fill: '#fff176', stroke: '#c8c000' };
+  steps.push({
+    title: `Mark end-of-word for "${word}"`,
+    what: `The final node '${word[word.length - 1]}' is flagged as the end of a complete word.`,
+    why: `The end-of-word flag distinguishes "CA" (prefix only) from "CAT" (complete word).`,
+    state: `Inserted: "${word}" ✓`,
+    root: cloneRoot(tmpTrie.root), hmap: { ...curHmap }
+  });
+
+  // Now actually insert into real trie
+  trie.insert(word);
+
+  steps.push({
+    title: `"${word}" inserted successfully`,
+    what: `Trie now contains: ${trie.words.join(', ')}.`,
+    why: `All nodes are in their final positions. Shared prefix nodes highlighted in light green.`,
+    state: `Words: ${trie.words.join(', ')}`,
+    root: cloneRoot(trie.root), hmap: {}
+  });
+
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+  return steps;
 }
 
-function doDelete(){
-  const w=document.getElementById('wordIn').value.trim().toLowerCase();
-  if(!w){alert('Enter a word.');return;}
-  const existed=trie.delete(w);
-  log(`Delete "${w}": ${existed?'removed successfully':'word not found'}`);
-  render();
+function generateSearchSteps(word) {
+  const steps = [];
+  let node = trie.root, key = 'root';
+  const curHmap = { root: { fill: '#e8f5ee', stroke: '#27a060' } };
+
+  steps.push({
+    title: `Start searching for "${word}"`,
+    what: `Begin at root. Will follow one node per character of "${word}".`,
+    why: 'A trie search visits exactly m nodes for a word of length m.',
+    state: `Searching: "${word}" · at root`,
+    root: cloneRoot(trie.root), hmap: {}
+  });
+
+  for (let i = 0; i < word.length; i++) {
+    const c = word[i];
+    const nextKey = key + '-' + c;
+    if (!node.children[c]) {
+      curHmap[nextKey] = { fill: '#ffb347', stroke: '#d4700a' };
+      steps.push({
+        title: `Character '${c}' not found — search fails`,
+        what: `At depth ${i + 1}, looking for child '${c}'. No such child exists.`,
+        why: `If any character in the search word is missing from the trie, the word is not present.`,
+        state: `"${word}" NOT FOUND ✗ — missing '${c}' at depth ${i + 1}`,
+        root: cloneRoot(trie.root), hmap: { ...curHmap }
+      });
+      steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+      return steps;
+    }
+    curHmap[nextKey] = { fill: '#fff176', stroke: '#c8c000' };
+    steps.push({
+      title: `Found '${c}' at depth ${i + 1} — moving down`,
+      what: `Node '${c}' exists. Advancing to it.`,
+      why: `Each matched character means we're still on a valid path in the trie.`,
+      state: `Searching: "${word}" · matched "${word.slice(0, i + 1)}"`,
+      root: cloneRoot(trie.root), hmap: { ...curHmap }
+    });
+    node = node.children[c]; key = nextKey;
+  }
+
+  const found = node.end;
+  curHmap[key] = { fill: found ? '#a8e6a3' : '#ffb347', stroke: found ? '#27a060' : '#d4700a' };
+  steps.push({
+    title: found ? `"${word}" FOUND ✓` : `Prefix matched but "${word}" is not a complete word`,
+    what: found
+      ? `Reached the end of "${word}" and the final node has the end-of-word flag set.`
+      : `Reached the end of "${word}" but the end-of-word flag is NOT set — this is just a prefix.`,
+    why: found
+      ? `Search successful! All characters matched and the word terminator is present.`
+      : `"${word}" is a prefix of longer words in the trie, but not a complete stored word.`,
+    state: found ? `"${word}" found ✓` : `"${word}" not a complete word ✗`,
+    root: cloneRoot(trie.root), hmap: { ...curHmap }
+  });
+
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+  return steps;
+}
+
+function generateDeleteSteps(word) {
+  const steps = [];
+  const { found } = trie.search(word);
+
+  steps.push({
+    title: `Start deleting "${word}"`,
+    what: `First verify "${word}" is in the trie, then remove nodes that are no longer needed.`,
+    why: 'Trie delete only removes nodes that have no other purpose (no other children, not end-of-word for another string).',
+    state: `Deleting: "${word}" · word exists: ${found}`,
+    root: cloneRoot(trie.root), hmap: {}
+  });
+
+  if (!found) {
+    steps.push({
+      title: `"${word}" not in trie — nothing to delete`,
+      what: `Search confirmed "${word}" is not a complete word in the trie.`,
+      why: 'Cannot delete a word that was never inserted.',
+      state: `Delete failed ✗ — word not found`,
+      root: cloneRoot(trie.root), hmap: {}
+    });
+    steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+    return steps;
+  }
+
+  // Trace path for highlighting
+  let node = trie.root, key = 'root';
+  const pathKeys = ['root'];
+  for (const c of word) { key = key + '-' + c; pathKeys.push(key); node = node.children[c]; }
+  const hmap = {};
+  pathKeys.forEach(k => { hmap[k] = { fill: '#ff6b6b', stroke: '#c0392b' }; });
+
+  steps.push({
+    title: `Tracing path to "${word}"`,
+    what: `Path: ${['root'].concat([...word]).join(' → ')}. Checking which nodes can be removed.`,
+    why: 'Only nodes that are exclusively used by this word (no other children, not shared) can be deleted.',
+    state: `Tracing path for "${word}"`,
+    root: cloneRoot(trie.root), hmap: { ...hmap }
+  });
+
+  // Actually delete
+  trie.delete(word);
+
+  steps.push({
+    title: `"${word}" deleted successfully`,
+    what: `Removed the word "${word}". Nodes exclusive to this word have been pruned.`,
+    why: `Shared nodes (used by other words like prefixes or other words) are kept intact.`,
+    state: `Words remaining: ${trie.words.join(', ') || '(none)'}`,
+    root: cloneRoot(trie.root), hmap: {}
+  });
+
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; });
+  return steps;
+}
+
+/* ── Render function ───────────────────────────── */
+function renderStep(step) {
+  drawTrie(step.root, step.hmap);
   updateWordList();
 }
 
-function doClear(){
-  trie.root=new TrieNode(''); trie.words=[];
-  render(); updateWordList(); log('Trie cleared.');
+function updateWordList() {
+  const el = document.getElementById('wordList');
+  el.textContent = 'Words: ' + (trie.words.length ? trie.words.join(', ') : '(none)');
 }
 
-// Seed
-['apple','app','apply','apt','bat','ball'].forEach(w=>trie.insert(w));
-resize();
+/* ── Operation handlers ───────────────────────── */
+function getWord() {
+  const w = document.getElementById('wordIn').value.trim().toUpperCase();
+  if (!w) { alert('Enter a word.'); return null; }
+  if (!/^[A-Z]+$/.test(w)) { alert('Letters A–Z only.'); return null; }
+  return w;
+}
+
+function startPlayer(steps) {
+  if (player) player.destroy();
+  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
+}
+
+function doInsert() { const w = getWord(); if (w) startPlayer(generateInsertSteps(w)); }
+function doSearch() { const w = getWord(); if (w) startPlayer(generateSearchSteps(w)); }
+function doDelete() { const w = getWord(); if (w) { startPlayer(generateDeleteSteps(w)); } }
+
+function doClear() {
+  trie.root = new TrieNode(''); trie.words = [];
+  updateWordList();
+  const steps = [{
+    stepNumber: 1, totalSteps: 1,
+    title: 'Trie cleared', what: 'All words have been removed. The trie contains only the root node.',
+    why: 'Start fresh to insert new words.', state: 'Words: (none)',
+    root: cloneRoot(trie.root), hmap: {}
+  }];
+  startPlayer(steps);
+}
+
+/* ── Seed & init ───────────────────────────────── */
+setupCanvas();
+['CAT', 'CAR', 'DOG'].forEach(w => trie.insert(w));
 updateWordList();
-log('Seeded with: apple, app, apply, apt, bat, ball');
+// Show initial state
+const initSteps = [{
+  stepNumber: 1, totalSteps: 1,
+  title: 'Initial trie — seeded with CAT, CAR, DOG',
+  what: 'The trie contains three words. CAT and CAR share the C→A prefix. DOG is independent.',
+  why: 'Shared prefixes are stored only once — this is the key efficiency of a trie.',
+  state: 'Words: CAT, CAR, DOG',
+  root: cloneRoot(trie.root), hmap: {}
+}];
+startPlayer(initSteps);
 </script>
 </body>
 </html>

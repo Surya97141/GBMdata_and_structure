@@ -3,178 +3,259 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Sieve of Eratosthenes – DS-Algo Explorer</title>
+<title>Sieve of Eratosthenes – DS Algo Explorer</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
-.breadcrumb span{margin:0 .4rem}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
-.hero-inner{max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
-.hero p.tagline{color:var(--muted);font-size:1.05rem}
-.content{max-width:860px;margin:0 auto;padding:2rem}
-.explain p{margin-bottom:1rem;color:#333}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
-.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
-label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
-input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:120px}
-input[type=number]:focus{outline:none;border-color:var(--accent)}
-.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
-.btn:hover{opacity:.85}
-.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
-.grid{display:flex;flex-wrap:wrap;gap:4px;margin:1rem 0;max-width:680px}
-.cell{width:46px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;border:1.5px solid var(--border);background:var(--bg);transition:all .25s;cursor:default}
-.cell.prime{background:var(--accent);color:#fff;border-color:var(--accent)}
-.cell.composite{background:#d0d0d8;color:#888;border-color:#ccc;text-decoration:line-through}
-.cell.current{background:#e9c46a;border-color:#e9c46a;color:#fff}
-.cell.marking{background:#ffe0d6;border-color:var(--accent);color:var(--accent)}
-.prime-list{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--ink);margin:.5rem 0;max-height:80px;overflow-y:auto}
-#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
-#log div{margin-bottom:.3rem}
-#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
-.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--a)}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+/* Number grid */
+.num-grid{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 .75rem;max-width:700px}
+.num-cell{
+  width:42px;height:36px;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;
+  border:1.5px solid var(--b);background:var(--bg);transition:background .12s,color .12s;
+  cursor:default;
+}
+.num-cell.unmarked  { background:var(--bg); color:var(--ink); border-color:var(--b); }
+.num-cell.current   { background:#fff176; color:#2a2a1a; border-color:#c8c000; }
+.num-cell.marking   { background:#fde68a; color:var(--a); border-color:var(--a); }
+.num-cell.composite { background:#d0d0d0; color:#888; border-color:#bbb; text-decoration:line-through; }
+.num-cell.prime     { background:var(--a); color:#fff; border-color:var(--a); }
+/* Prime list */
+.prime-list{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--ink);
+  margin:.5rem 0;max-height:56px;overflow-y:auto;line-height:1.8}
+/* Controls */
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem;align-items:flex-end}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m);display:block;margin-bottom:.2rem}
+.input-row input{
+  font-family:'JetBrains Mono',monospace;font-size:.85rem;
+  padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;
+  background:var(--bg);color:var(--ink);width:100px;
+}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:10px;border-radius:2px;flex-shrink:0;border:1px solid rgba(0,0,0,.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Sieve of Eratosthenes
-</nav>
-<div class="hero">
-  <div class="hero-inner">
-    <span class="tag">Mathematical</span>
-    <h1>Sieve of Eratosthenes</h1>
-    <p class="tagline">Find all primes up to N by iteratively marking composites — an ancient algorithm with modern relevance.</p>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>Sieve of Eratosthenes
+  </nav>
+
+  <span class="tag">Mathematical</span>
+  <h1>Sieve of Eratosthenes</h1>
+  <p class="tagline">Find all primes up to N by iteratively marking composites — ancient and brilliant.</p>
+
+  <div class="prose">
+    <p>Write all numbers from 2 to N. Circle 2 (it's prime), cross out every 2nd number after it. Circle the next uncrossed number (3), cross out multiples of 3. Repeat. What remains uncrossed at the end are exactly the primes up to N.</p>
+    <p>Key insight: every composite has a prime factor ≤ √N. So we only need to start crossing at p² (everything below p² was already crossed by smaller primes), and stop when p > √N. This gives O(N log log N) — remarkably fast.</p>
   </div>
-</div>
-<div class="content">
-  <div class="explain">
-    <p>Imagine writing all numbers from 2 to N on a grid. You circle 2 (it's prime), then cross out every 2nd number after it — they can't be prime. You circle the next uncrossed number (3), cross out multiples of 3, and repeat. What remains uncrossed are exactly the primes.</p>
-    <p>The sieve works because every composite number has a prime factor no larger than its square root. So we only need to start marking from p² (numbers below p² were already marked by smaller primes), and we stop when p > √N. This gives O(N log log N) time — remarkably fast.</p>
-    <p>Used in cryptography for generating prime tables, in number theory research, and as a preprocessing step for algorithms that need fast prime factorization up to a bound.</p>
-  </div>
+
   <div class="facts">
-    <div class="fact"><div class="val">O(N log log N)</div><div class="lbl">Time complexity</div></div>
-    <div class="fact"><div class="val">O(N)</div><div class="lbl">Space</div></div>
-    <div class="fact"><div class="val">240 BC</div><div class="lbl">Invented by Eratosthenes</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(N log log N)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(N)</div></div>
+    <div class="fact"><div class="flabel">Invented</div><div class="fval">240 BC</div><div class="fsub">Eratosthenes of Cyrene</div></div>
   </div>
 
-  <div class="panel">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div>
-        <label>N (max 150)</label>
-        <input type="number" id="nInput" value="100" min="2" max="150"/>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="num-grid" id="numGrid"></div>
+      <div class="prime-list" id="primeList"></div>
+
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+
+      <div class="input-row">
+        <div>
+          <label>N (max 120)</label>
+          <input type="number" id="nInput" value="50" min="2" max="120"/>
+        </div>
+        <button class="btn btn-p" onclick="rebuild()" style="align-self:flex-end">Run Sieve</button>
+        <button class="btn btn-o" onclick="rebuild()" style="align-self:flex-end">Reset</button>
       </div>
-      <button class="btn" onclick="runSieve()" style="align-self:flex-end">Run Sieve</button>
-      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#f7f6f2"></span>Unmarked (candidate)</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176"></span>Current prime p</span>
+        <span class="leg"><span class="leg-dot" style="background:#fde68a"></span>Being marked as composite</span>
+        <span class="leg"><span class="leg-dot" style="background:#d0d0d0;text-decoration:line-through"></span>Composite (eliminated)</span>
+        <span class="leg"><span class="leg-dot" style="background:#e76f51"></span>Confirmed prime</span>
+      </div>
     </div>
-    <div class="grid" id="numGrid"></div>
-    <div id="primeList" class="prime-list"></div>
-  </div>
-
-  <div class="panel">
-    <h2>Step Log</h2>
-    <div id="log"><div class="hi">// Set N and click "Run Sieve" to animate</div></div>
   </div>
 
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
+
 <script>
-let cells=[], sieveArr=[], animTimer=null;
+let player = null;
 
-function log(msg,cls=''){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  if(cls)div.className=cls;
-  div.textContent=msg;
-  d.appendChild(div);
-  d.scrollTop=d.scrollHeight;
-}
-
-function resetSim(){
-  if(animTimer) clearTimeout(animTimer);
-  cells=[];sieveArr=[];
-  document.getElementById('numGrid').innerHTML='';
-  document.getElementById('primeList').innerHTML='';
-  document.getElementById('log').innerHTML='<div class="hi">// Set N and click "Run Sieve"</div>';
-}
-
-function runSieve(){
-  resetSim();
-  const N=Math.min(150,Math.max(2,parseInt(document.getElementById('nInput').value)||100));
-  sieveArr=new Array(N+1).fill(true);
-  sieveArr[0]=sieveArr[1]=false;
-
-  const grid=document.getElementById('numGrid');
-  // Create cells for 2..N
-  for(let i=2;i<=N;i++){
-    const c=document.createElement('div');c.className='cell';c.textContent=i;c.id=`c-${i}`;
-    grid.appendChild(c);cells[i]=c;
+/* ── Build DOM grid ────────────────────────────── */
+function buildGrid(maxN) {
+  const grid = document.getElementById('numGrid');
+  grid.innerHTML = '';
+  for (let i = 2; i <= maxN; i++) {
+    const div = document.createElement('div');
+    div.className = 'num-cell unmarked';
+    div.id = `n_${i}`;
+    div.textContent = i;
+    grid.appendChild(div);
   }
+}
 
-  log('=== Sieve of Eratosthenes ===','hi');
-  log(`Finding all primes up to N=${N}`);
+/* ── Step generation ───────────────────────────── */
+function generateSteps(maxN) {
+  const steps = [];
+  // state array: 'unmarked'|'prime'|'composite'|'current'|'marking'
+  const state = new Array(maxN + 1).fill('unmarked');
+  state[0] = state[1] = 'composite'; // not in grid but conceptually done
 
-  // Build animation queue
-  const queue=[];
-  for(let p=2;p*p<=N;p++){
-    if(sieveArr[p]){
-      const multiples=[];
-      for(let m=p*p;m<=N;m+=p){
-        if(sieveArr[m]){sieveArr[m]=false;multiples.push(m);}
-      }
-      queue.push({p,multiples});
+  const snap = () => [...state];
+  let primeCount = 0;
+
+  steps.push({
+    title: 'Initial grid',
+    what: `Numbers 2 to ${maxN} — all candidates for primality.`,
+    why: '2 is the smallest prime. We start by circling it and crossing out all its multiples.',
+    state: `N = ${maxN} · Finding all primes ≤ ${maxN}`,
+    nums: snap(), currentPrime: -1, marking: [], phase: 'init', primes: []
+  });
+
+  for (let p = 2; p * p <= maxN; p++) {
+    if (state[p] !== 'unmarked') continue;
+    state[p] = 'prime'; primeCount++;
+    const currentPrimes = [];
+    for (let i = 2; i <= maxN; i++) if (state[i] === 'prime') currentPrimes.push(i);
+
+    steps.push({
+      title: `Prime p = ${p} — marking multiples starting from p² = ${p * p}`,
+      what: `${p} is prime (not yet eliminated). Mark all multiples of ${p} starting from ${p}² = ${p * p}.`,
+      why: `Multiples smaller than p² were already eliminated by earlier primes. We start at p² for efficiency.`,
+      state: `Primes found so far: ${currentPrimes.join(', ')}`,
+      nums: snap(), currentPrime: p, marking: [], phase: 'prime', primes: [...currentPrimes]
+    });
+
+    const multiples = [];
+    for (let m = p * p; m <= maxN; m += p) {
+      if (state[m] === 'unmarked') multiples.push(m);
+    }
+
+    // Mark each multiple as a step
+    for (let mi = 0; mi < multiples.length; mi++) {
+      const m = multiples[mi];
+      state[m] = 'composite';
+      const markedSoFar = multiples.slice(0, mi + 1);
+      steps.push({
+        title: `Marking ${m} = ${p} × ${m / p} as composite`,
+        what: `${m} is a multiple of ${p} (${p} × ${m / p} = ${m}). Cross it out.`,
+        why: `Any multiple of a prime greater than that prime itself cannot be prime — it has the prime as a factor.`,
+        state: `Marking multiples of ${p}: crossed out ${markedSoFar.join(', ')}`,
+        nums: snap(), currentPrime: p, marking: [m], justMarked: m, phase: 'marking', primes: [...currentPrimes]
+      });
+    }
+
+    // Batch summary step
+    if (multiples.length) {
+      steps.push({
+        title: `All multiples of ${p} marked — done with p=${p}`,
+        what: `Crossed out ${multiples.length} multiples of ${p}: ${multiples.slice(0, 8).join(', ')}${multiples.length > 8 ? '…' : ''}.`,
+        why: `Moving on to the next uncrossed number greater than ${p}.`,
+        state: `Finished marking multiples of ${p}`,
+        nums: snap(), currentPrime: p, marking: multiples, phase: 'pass-done', primes: [...currentPrimes]
+      });
     }
   }
 
-  let qi=0;
-  function nextPrime(){
-    if(qi>=queue.length){
-      // Mark all remaining primes
-      for(let i=2;i<=N;i++){
-        if(sieveArr[i]&&cells[i]) cells[i].className='cell prime';
-        else if(!sieveArr[i]&&cells[i]&&!cells[i].className.includes('composite')) cells[i].className='cell composite';
-      }
-      const primes=[];for(let i=2;i<=N;i++) if(sieveArr[i]) primes.push(i);
-      document.getElementById('primeList').textContent=`Primes (${primes.length}): ${primes.join(', ')}`;
-      log(`Done! Found ${primes.length} primes up to ${N}: ${primes.slice(0,10).join(',')}${primes.length>10?'...':''}`, 'ok');
-      return;
-    }
-    const {p,multiples}=queue[qi++];
-    if(cells[p]) cells[p].className='cell current';
-    log(`Marking multiples of ${p}: ${multiples.slice(0,8).join(',')}${multiples.length>8?'...':''}`);
-    let mi=0;
-    function markNext(){
-      if(mi>=multiples.length){
-        if(cells[p]) cells[p].className='cell prime';
-        animTimer=setTimeout(nextPrime,300);
-        return;
-      }
-      const m=multiples[mi++];
-      if(cells[m]){
-        cells[m].className='cell marking';
-        animTimer=setTimeout(()=>{
-          cells[m].className='cell composite';
-          markNext();
-        },80);
-      } else markNext();
-    }
-    markNext();
-  }
-  nextPrime();
+  // Mark all remaining unmarked as prime
+  for (let i = 2; i <= maxN; i++) if (state[i] === 'unmarked') { state[i] = 'prime'; primeCount++; }
+  const allPrimes = [];
+  for (let i = 2; i <= maxN; i++) if (state[i] === 'prime') allPrimes.push(i);
+
+  steps.push({
+    title: `Sieve complete — ${primeCount} primes found`,
+    what: `All numbers ≤ ${maxN} that remain uncrossed are prime.`,
+    why: `The sieve guarantees: every composite ≤ N has been crossed out. The rest are prime.`,
+    state: `Primes (${primeCount}): ${allPrimes.slice(0, 15).join(', ')}${allPrimes.length > 15 ? '…' : ''}`,
+    nums: snap(), currentPrime: -1, marking: [], phase: 'done', primes: allPrimes
+  });
+
+  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; s.maxN = maxN; });
+  return steps;
 }
+
+/* ── Render ────────────────────────────────────── */
+function renderStep(step) {
+  const { nums, currentPrime, marking, phase, primes, maxN } = step;
+  const markSet = new Set(marking || []);
+
+  for (let i = 2; i <= maxN; i++) {
+    const cell = document.getElementById(`n_${i}`);
+    if (!cell) continue;
+
+    let cls = 'num-cell ';
+    if (i === currentPrime) {
+      cls += 'current';
+    } else if (phase === 'marking' && markSet.has(i) && i === step.justMarked) {
+      cls += 'marking';
+    } else {
+      const s = nums[i];
+      if (s === 'prime')      cls += 'prime';
+      else if (s === 'composite') cls += 'composite';
+      else                    cls += 'unmarked';
+    }
+    cell.className = cls;
+  }
+
+  // Prime list
+  const pl = document.getElementById('primeList');
+  if (pl && primes && primes.length) {
+    pl.textContent = `Primes (${primes.length}): ${primes.join(', ')}`;
+  } else if (pl && phase === 'init') {
+    pl.textContent = '';
+  }
+}
+
+/* ── Bootstrap ─────────────────────────────────── */
+function rebuild() {
+  const maxN = Math.max(2, Math.min(120, parseInt(document.getElementById('nInput').value) || 50));
+  document.getElementById('nInput').value = maxN;
+  document.getElementById('primeList').textContent = '';
+  buildGrid(maxN);
+  if (player) player.destroy();
+  const steps = generateSteps(maxN);
+  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
+}
+
+rebuild();
 </script>
 </body>
 </html>
