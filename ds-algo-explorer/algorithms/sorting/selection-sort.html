@@ -4,185 +4,182 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Selection Sort – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
-h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
-.tagline{color:var(--m);}
-.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem;}
-.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem;}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;}
-.fsub{font-size:.78rem;color:var(--m);}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem;}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--a);}
-.sim-body{padding:1.3rem;}
-canvas{display:block;width:100%;border-radius:8px;background:var(--bg);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.btn{padding:.38rem .95rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none;}
-.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
-input[type=range]{appearance:none;height:4px;background:var(--b);border-radius:4px;cursor:pointer;width:120px;}
-input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--a);cursor:pointer;}
-label{font-size:.8rem;font-weight:600;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
-.le{border-bottom:1px solid var(--b);}.le:last-child{border:none;}
-.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}.li{color:var(--m);}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0;}
-.back:hover{color:var(--ink);}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:240px}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Algorithms</a><span>/</span>
-    <span>Selection Sort</span>
-  </nav>
-
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Selection Sort</span></nav>
   <span class="tag">Sorting</span>
   <h1>Selection Sort</h1>
-  <p class="tagline">Pick the smallest, place it, repeat — selection in action.</p>
-
-  <div class="explain">
-    <p>Selection sort divides the array into two parts: a sorted section at the left and an unsorted section at the right. On each pass it scans the entire unsorted section to find the minimum element, then swaps it into the first position of the unsorted section, growing the sorted partition by one.</p>
-    <p>Imagine you have a row of numbered cards face-up. You scan all of them, pick up the card with the lowest number, and place it at the leftmost open slot. Then you scan the remaining cards, pick the lowest again, and place it in the next slot — continuing until all cards are placed.</p>
-    <p>Selection sort always performs exactly n(n-1)/2 comparisons regardless of input, so it has no best-case advantage. However it makes at most n-1 swaps, which can be valuable when writes are expensive. It is not stable in its classic form, as swapping can change the relative order of equal elements.</p>
+  <p class="tagline">Repeatedly find the minimum and place it at the front — simple but always O(n²).</p>
+  <div class="prose">
+    <p>Selection Sort divides the array into sorted (left) and unsorted (right) halves. Each pass scans the unsorted portion to find the minimum element, then swaps it into the next sorted position. It makes at most n−1 swaps regardless of input order.</p>
+    <p>Unlike Bubble Sort there is no early-exit optimisation — the scan is always full — so performance is always Θ(n²). It is useful when write cost dominates, since writes are minimised.</p>
   </div>
-
   <div class="facts">
-    <div class="fact"><div class="flabel">Best Time</div><div class="fval">O(n²)</div><div class="fsub">Always scans all</div></div>
-    <div class="fact"><div class="flabel">Average Time</div><div class="fval">O(n²)</div><div class="fsub">Random input</div></div>
-    <div class="fact"><div class="flabel">Worst Time</div><div class="fval">O(n²)</div><div class="fsub">No variation</div></div>
-    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div><div class="fsub">In-place</div></div>
-    <div class="fact"><div class="flabel">Stable</div><div class="fval">No</div><div class="fsub">Swap disrupts order</div></div>
+    <div class="fact"><div class="flabel">Best</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Average</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Worst</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div><div class="fsub">in-place</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">No</div></div>
   </div>
-
   <div class="sim-panel">
     <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <canvas id="cvs" height="280"></canvas>
-      <div class="controls">
-        <button class="btn btn-p" id="btnNew">New Array</button>
-        <button class="btn btn-o" id="btnStep">Step</button>
-        <button class="btn btn-p" id="btnRun">Run</button>
-        <button class="btn btn-o" id="btnPause">Pause</button>
-        <label>Speed <input type="range" id="speed" min="1" max="10" value="5"/></label>
+      <canvas id="cvs" height="260"></canvas>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" type="text" value="64,25,12,22,11,90,38"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort this array</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Unsorted</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Scanning</span>
+        <span class="leg"><span class="leg-dot" style="background:#ff9800;border:1px solid #e65100"></span>Current minimum</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Swapping</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Sorted</span>
       </div>
     </div>
   </div>
-
-  <div class="log-panel">
-    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.7rem;padding:.2rem .6rem;" id="btnClear">Clear</button></div>
-    <div class="log-body" id="logBody"></div>
-  </div>
-
-  <a class="back" href="../index.html">&#8592; Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const canvas=document.getElementById('cvs');
-const ctx=canvas.getContext('2d');
-const logBody=document.getElementById('logBody');
-const speedEl=document.getElementById('speed');
-const N=16;
-let arr=[],colors=[],sortGen=null,running=false,timer=null;
-let comparisons=0,swaps=0;
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
 
-function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function initArray(){
-  arr=Array.from({length:N},()=>rnd(10,100));
-  colors=Array(N).fill('#2a7ae8');
-  comparisons=0;swaps=0;sortGen=null;running=false;
-  if(timer){clearInterval(timer);timer=null;}
-  draw();
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w * DPR; canvas.height = 260 * DPR;
+  canvas.style.width = w + 'px'; canvas.style.height = '260px';
+  ctx.scale(DPR, DPR);
 }
-function setupCanvas(){
-  const dpr=window.devicePixelRatio||1;
-  const w=canvas.parentElement.clientWidth-40;
-  canvas.width=w*dpr;canvas.height=280*dpr;
-  canvas.style.width=w+'px';canvas.style.height='280px';
-  ctx.scale(dpr,dpr);
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
+
+function generateSteps(arr) {
+  const steps = [], a = [...arr], n = a.length;
+  const sorted = new Array(n).fill(false);
+  let cmp = 0, swp = 0;
+  const st = () => `[${a.join(', ')}] · Cmps: ${cmp} · Swaps: ${swp}`;
+
+  steps.push({ title: 'Initial array', what: `${n} elements ready for Selection Sort.`,
+    why: 'Each pass selects the minimum from the unsorted portion and places it in the next position.',
+    state: st(), phase: 'initial', arr: [...a], sorted: [...sorted], hi: [], minIdx: -1 });
+
+  for (let i = 0; i < n - 1; i++) {
+    let minIdx = i;
+    steps.push({ title: `Pass ${i+1} — find minimum starting at index ${i}`,
+      what: `Initial minimum candidate: a[${i}]=${a[i]}.`,
+      why: `Scanning a[${i}..${n-1}] to find the smallest element.`,
+      state: st(), phase: 'scan', arr: [...a], sorted: [...sorted], hi: [i], minIdx });
+    for (let j = i + 1; j < n; j++) {
+      cmp++;
+      const better = a[j] < a[minIdx];
+      steps.push({ title: `Compare a[${j}]=${a[j]} vs min a[${minIdx}]=${a[minIdx]}`,
+        what: `${a[j]} ${better?'<':'≥'} ${a[minIdx]} — ${better?'new minimum!':'no change.'}`,
+        why: better ? `Update minimum index to ${j}.` : `Keep minimum at index ${minIdx}.`,
+        state: st(), phase: 'scan', arr: [...a], sorted: [...sorted], hi: [j], minIdx: better?j:minIdx });
+      if (better) minIdx = j;
+    }
+    if (minIdx !== i) {
+      steps.push({ title: `Swap a[${i}]=${a[i]} ↔ a[${minIdx}]=${a[minIdx]}`,
+        what: `Minimum ${a[minIdx]} found at index ${minIdx}. Swap with position ${i}.`,
+        why: 'Place the minimum in its correct sorted position.',
+        state: st(), phase: 'swap', arr: [...a], sorted: [...sorted], hi: [i, minIdx], minIdx });
+      [a[i], a[minIdx]] = [a[minIdx], a[i]]; swp++;
+    }
+    sorted[i] = true;
+    steps.push({ title: `Position ${i} settled — ${a[i]} is in place`,
+      what: `a[${i}]=${a[i]} is now permanently sorted.`,
+      why: 'The minimum of the remaining unsorted portion can never be displaced from this position.',
+      state: st(), phase: 'placed', arr: [...a], sorted: [...sorted], hi: [i], minIdx: -1 });
+  }
+  sorted[n-1] = true;
+  steps.push({ title: 'Sorting complete!', what: `Array: [${a.join(', ')}]`,
+    why: `Finished in ${cmp} comparisons and ${swp} swaps.`,
+    state: st(), phase: 'done', arr: [...a], sorted: [...sorted], hi: [], minIdx: -1 });
+  steps.forEach((s, i) => { s.stepNumber = i+1; s.totalSteps = steps.length; });
+  return steps;
 }
-function draw(){
-  const W=canvas.width/(window.devicePixelRatio||1),H=280;
-  ctx.clearRect(0,0,W,H);
-  const pad=16,bw=(W-pad*2)/N,maxVal=100;
-  for(let i=0;i<N;i++){
-    const bh=(arr[i]/maxVal)*(H-40),x=pad+i*bw+2,y=H-bh-20;
-    ctx.fillStyle=colors[i];
-    ctx.beginPath();ctx.roundRect(x,y,bw-4,bh,4);ctx.fill();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 9px Inter';
-    ctx.textAlign='center';ctx.fillText(arr[i],x+(bw-4)/2,H-6);
+
+function renderStep(step) {
+  const W = canvas.width/DPR, H = canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const { arr, sorted, hi, phase, minIdx } = step;
+  const n = arr.length; if (!n) return;
+  const maxVal = Math.max(...arr, 1);
+  const padX = 14, labelH = 26, topPad = 12;
+  const availW = W - padX*2, availH = H - labelH - topPad;
+  const barW = availW / n;
+  for (let i = 0; i < n; i++) {
+    const barH = Math.max(4,(arr[i]/maxVal)*availH);
+    const bx = padX+i*barW+2, by = H-labelH-barH, bw = barW-4;
+    let fill = '#9ec8f0', stroke = null;
+    if (sorted[i])                                  { fill='#a8e6a3'; stroke='#27a060'; }
+    else if (phase==='swap' && hi.includes(i))      { fill='#ffb347'; stroke='#d4700a'; }
+    else if (i===minIdx && phase!=='placed')        { fill='#ff9800'; stroke='#e65100'; }
+    else if (hi.includes(i))                        { fill='#fff176'; stroke='#c8c000'; }
+    ctx.fillStyle = fill;
+    ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.fill();
+    if (stroke) { ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.stroke(); }
+    const fs = Math.max(8,Math.min(13,barW-6));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(arr[i], padX+i*barW+barW/2, H-2);
   }
 }
-function addLog(msg,type='ls'){
-  const d=document.createElement('div');
-  d.className='le '+type;d.textContent=msg;
-  logBody.appendChild(d);logBody.scrollTop=logBody.scrollHeight;
+
+function parseArr(s) { return s.split(',').map(x=>Math.max(1,Math.min(200,parseInt(x.trim())||1))).filter(Boolean); }
+function rebuild() {
+  const arr = parseArr(document.getElementById('arrIn').value);
+  if (arr.length<2||arr.length>30){alert('Enter 2–30 numbers.');return;}
+  setupCanvas(); if (player) player.destroy();
+  player = new SimulationPlayer(generateSteps(arr), renderStep, 'explanation', 'sim-bar');
 }
-function* selectionSortGen(){
-  const a=[...arr];
-  const n=a.length;
-  for(let i=0;i<n-1;i++){
-    let minIdx=i;
-    colors=Array(n).fill('#2a7ae8');
-    for(let k=0;k<i;k++)colors[k]='#27a060';
-    colors[i]='#e84393';
-    arr=[...a];draw();
-    addLog(`Pass ${i+1}: scanning from index ${i} for minimum`,'lw');
-    yield;
-    for(let j=i+1;j<n;j++){
-      colors=Array(n).fill('#2a7ae8');
-      for(let k=0;k<i;k++)colors[k]='#27a060';
-      colors[minIdx]='#e84393';
-      colors[j]='#f4a261';
-      arr=[...a];draw();
-      comparisons++;
-      addLog(`  Comparing arr[${j}]=${a[j]} with current min arr[${minIdx}]=${a[minIdx]}`,'ls');
-      yield;
-      if(a[j]<a[minIdx])minIdx=j;
-    }
-    if(minIdx!==i){
-      [a[i],a[minIdx]]=[a[minIdx],a[i]];
-      swaps++;
-      addLog(`Pass ${i+1}: minimum=${a[i]} at index ${minIdx}, swap with index ${i}`,'ld');
-    } else {
-      addLog(`Pass ${i+1}: minimum already at index ${i}, no swap`,'li');
-    }
-    colors=Array(n).fill('#2a7ae8');
-    for(let k=0;k<=i;k++)colors[k]='#27a060';
-    arr=[...a];draw();yield;
-  }
-  colors=Array(n).fill('#27a060');arr=[...a];draw();
-  addLog(`Sort complete! ${comparisons} comparisons, ${swaps} swaps.`,'ld');
+function randomize() {
+  const n=7+Math.floor(Math.random()*5);
+  document.getElementById('arrIn').value=Array.from({length:n},()=>5+Math.floor(Math.random()*95)).join(',');
+  rebuild();
 }
-function step(){if(!sortGen)sortGen=selectionSortGen();const r=sortGen.next();if(r.done){running=false;if(timer){clearInterval(timer);timer=null;}}}
-function getDelay(){return Math.round(1050-speedEl.value*100);}
-function run(){
-  if(running)return;
-  if(!sortGen)sortGen=selectionSortGen();
-  running=true;
-  timer=setInterval(()=>{const r=sortGen.next();if(r.done){running=false;clearInterval(timer);timer=null;}},getDelay());
-}
-function pause(){running=false;if(timer){clearInterval(timer);timer=null;}}
-document.getElementById('btnNew').onclick=()=>{initArray();logBody.innerHTML='';};
-document.getElementById('btnStep').onclick=step;
-document.getElementById('btnRun').onclick=run;
-document.getElementById('btnPause').onclick=pause;
-document.getElementById('btnClear').onclick=()=>{logBody.innerHTML='';};
-window.addEventListener('resize',()=>{setupCanvas();draw();});
-setupCanvas();initArray();
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

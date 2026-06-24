@@ -4,186 +4,195 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Merge Sort – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
-h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
-.tagline{color:var(--m);}
-.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem;}
-.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem;}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;}
-.fsub{font-size:.78rem;color:var(--m);}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem;}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--a);}
-.sim-body{padding:1.3rem;}
-canvas{display:block;width:100%;border-radius:8px;background:var(--bg);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.btn{padding:.38rem .95rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none;}
-.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
-input[type=range]{appearance:none;height:4px;background:var(--b);border-radius:4px;cursor:pointer;width:120px;}
-input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--a);cursor:pointer;}
-label{font-size:.8rem;font-weight:600;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
-.le{border-bottom:1px solid var(--b);}.le:last-child{border:none;}
-.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}.li{color:var(--m);}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0;}
-.back:hover{color:var(--ink);}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:240px}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Algorithms</a><span>/</span>
-    <span>Merge Sort</span>
-  </nav>
-
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Merge Sort</span></nav>
   <span class="tag">Sorting</span>
   <h1>Merge Sort</h1>
-  <p class="tagline">Divide, sort, conquer — a classic divide-and-conquer masterpiece.</p>
-
-  <div class="explain">
-    <p>Merge sort splits the array in half repeatedly until each piece has only one element, then merges those pieces back together in sorted order. The key insight is that merging two already-sorted arrays is easy and fast — just compare the front elements and always take the smaller one.</p>
-    <p>Think of how you might merge two sorted stacks of exam papers. You look at the top sheet of each stack, take whichever name comes first alphabetically, and place it in the output pile. Repeat until one stack empties, then drop in the rest. Merge sort makes sorting a large pile trivial by recursively dividing until you have stacks of one.</p>
-    <p>This simulation uses bottom-up (iterative) merge sort for clear visual feedback: it begins by treating each element as a sorted subarray of size 1, then merges adjacent pairs to produce subarrays of size 2, then 4, and so on. Merge sort guarantees O(n log n) in all cases, making it reliable for large datasets, at the cost of O(n) auxiliary space.</p>
+  <p class="tagline">Divide, sort each half, then merge — guaranteed O(n log n) every time.</p>
+  <div class="prose">
+    <p>Merge Sort splits the array into halves recursively until each subarray has one element (trivially sorted), then merges adjacent sorted subarrays back together. The merge step compares the front elements of two sorted runs and takes the smaller one.</p>
+    <p>Unlike quicksort, performance is guaranteed O(n log n) regardless of input. The simulation shows the bottom-up iterative version, merging runs of size 1, 2, 4, 8… until the full array is sorted.</p>
   </div>
-
   <div class="facts">
-    <div class="fact"><div class="flabel">Best Time</div><div class="fval">O(n log n)</div><div class="fsub">Always</div></div>
-    <div class="fact"><div class="flabel">Average Time</div><div class="fval">O(n log n)</div><div class="fsub">Guaranteed</div></div>
-    <div class="fact"><div class="flabel">Worst Time</div><div class="fval">O(n log n)</div><div class="fsub">No degradation</div></div>
-    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div><div class="fsub">Aux array needed</div></div>
-    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div><div class="fsub">Preserves order</div></div>
+    <div class="fact"><div class="flabel">Best</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Average</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Worst</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div><div class="fsub">auxiliary</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation (Bottom-Up Merge Sort)</div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <canvas id="cvs" height="280"></canvas>
-      <div class="controls">
-        <button class="btn btn-p" id="btnNew">New Array</button>
-        <button class="btn btn-o" id="btnStep">Step</button>
-        <button class="btn btn-p" id="btnRun">Run</button>
-        <button class="btn btn-o" id="btnPause">Pause</button>
-        <label>Speed <input type="range" id="speed" min="1" max="10" value="5"/></label>
+      <canvas id="cvs" height="260"></canvas>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" type="text" value="38,27,43,3,9,82,10"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort this array</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Unsorted</span>
+        <span class="leg"><span class="leg-dot" style="background:#c3b1e1;border:1px solid #8b5cf6"></span>Left run</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Right run</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Being merged into</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Merged/Sorted</span>
       </div>
     </div>
   </div>
-
-  <div class="log-panel">
-    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.7rem;padding:.2rem .6rem;" id="btnClear">Clear</button></div>
-    <div class="log-body" id="logBody"></div>
-  </div>
-
-  <a class="back" href="../index.html">&#8592; Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const canvas=document.getElementById('cvs');
-const ctx=canvas.getContext('2d');
-const logBody=document.getElementById('logBody');
-const speedEl=document.getElementById('speed');
-const N=16;
-let arr=[],colors=[],sortGen=null,running=false,timer=null;
-let comparisons=0;
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
 
-function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function initArray(){
-  arr=Array.from({length:N},()=>rnd(10,100));
-  colors=Array(N).fill('#2a7ae8');
-  comparisons=0;sortGen=null;running=false;
-  if(timer){clearInterval(timer);timer=null;}
-  draw();
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w*DPR; canvas.height = 260*DPR;
+  canvas.style.width = w+'px'; canvas.style.height = '260px';
+  ctx.scale(DPR, DPR);
 }
-function setupCanvas(){
-  const dpr=window.devicePixelRatio||1;
-  const w=canvas.parentElement.clientWidth-40;
-  canvas.width=w*dpr;canvas.height=280*dpr;
-  canvas.style.width=w+'px';canvas.style.height='280px';
-  ctx.scale(dpr,dpr);
-}
-function draw(){
-  const W=canvas.width/(window.devicePixelRatio||1),H=280;
-  ctx.clearRect(0,0,W,H);
-  const pad=16,bw=(W-pad*2)/N,maxVal=100;
-  for(let i=0;i<N;i++){
-    const bh=(arr[i]/maxVal)*(H-40),x=pad+i*bw+2,y=H-bh-20;
-    ctx.fillStyle=colors[i];
-    ctx.beginPath();ctx.roundRect(x,y,bw-4,bh,4);ctx.fill();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 9px Inter';
-    ctx.textAlign='center';ctx.fillText(arr[i],x+(bw-4)/2,H-6);
-  }
-}
-function addLog(msg,type='ls'){
-  const d=document.createElement('div');
-  d.className='le '+type;d.textContent=msg;
-  logBody.appendChild(d);logBody.scrollTop=logBody.scrollHeight;
-}
-function* mergeSortGen(){
-  const a=[...arr];
-  const n=a.length;
-  let width=1;
-  while(width<n){
-    addLog(`Pass: merging subarrays of size ${width}`,'lw');
-    for(let lo=0;lo<n;lo+=2*width){
-      const mid=Math.min(lo+width,n);
-      const hi=Math.min(lo+2*width,n);
-      if(mid>=hi){continue;}
-      const left=a.slice(lo,mid);
-      const right=a.slice(mid,hi);
-      addLog(`  Merging [${left.join(',')}] and [${right.join(',')}]`,'ls');
-      // Highlight
-      colors=Array(n).fill('#2a7ae8');
-      for(let k=lo;k<mid;k++)colors[k]='#f4a261';
-      for(let k=mid;k<hi;k++)colors[k]='#e84393';
-      arr=[...a];draw();yield;
-      let i=0,j=0,k=lo;
-      while(i<left.length&&j<right.length){
-        comparisons++;
-        if(left[i]<=right[j]){a[k++]=left[i++];}
-        else{a[k++]=right[j++];}
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
+
+function generateSteps(arr) {
+  const steps = [];
+  const a = [...arr], n = a.length;
+  // color map: index -> 'unsorted'|'left'|'right'|'merging'|'sorted'
+  let colors = new Array(n).fill('unsorted');
+  const st = (extra='') => `[${a.join(', ')}]${extra?` · ${extra}`:''}`;
+
+  steps.push({ title: 'Initial array', what: `${n} elements — bottom-up merge sort.`,
+    why: 'We merge runs of size 1→2→4→8… until the whole array is one sorted run.',
+    state: st(), phase: 'initial', arr: [...a], colors: [...colors], lo: -1, mid: -1, hi: -1 });
+
+  for (let width = 1; width < n; width *= 2) {
+    for (let lo = 0; lo < n; lo += 2 * width) {
+      const mid = Math.min(lo + width - 1, n - 1);
+      const hi  = Math.min(lo + 2*width - 1, n - 1);
+      if (mid >= hi) continue;
+
+      // Announce merge
+      const newColors = [...colors];
+      for (let k=lo; k<=mid; k++) newColors[k] = 'left';
+      for (let k=mid+1; k<=hi; k++) newColors[k] = 'right';
+      steps.push({ title: `Merge a[${lo}..${mid}] + a[${mid+1}..${hi}]`,
+        what: `Merging left run [${a.slice(lo,mid+1).join(',')}] with right run [${a.slice(mid+1,hi+1).join(',')}].`,
+        why: `Run size = ${width}. Comparing front elements and picking smaller.`,
+        state: st(), phase: 'merge-start', arr: [...a], colors: [...newColors], lo, mid, hi });
+
+      // Perform merge
+      const tmp = [];
+      let l = lo, r = mid + 1;
+      while (l <= mid && r <= hi) {
+        if (a[l] <= a[r]) tmp.push(a[l++]);
+        else              tmp.push(a[r++]);
       }
-      while(i<left.length)a[k++]=left[i++];
-      while(j<right.length)a[k++]=right[j++];
-      const merged=a.slice(lo,hi);
-      addLog(`  Result: [${merged.join(',')}]`,'ld');
-      colors=Array(n).fill('#2a7ae8');
-      for(let k2=lo;k2<hi;k2++)colors[k2]='#27a060';
-      arr=[...a];draw();yield;
+      while (l <= mid) tmp.push(a[l++]);
+      while (r <= hi)  tmp.push(a[r++]);
+
+      for (let k = 0; k < tmp.length; k++) {
+        a[lo + k] = tmp[k];
+        const nc = [...newColors];
+        nc[lo+k] = 'merging';
+        steps.push({ title: `Place ${tmp[k]} at index ${lo+k}`,
+          what: `Placing merged element ${tmp[k]} into position ${lo+k}.`,
+          why: 'Fill the merged array back left to right.',
+          state: st(), phase: 'merge-step', arr: [...a], colors: nc, lo, mid, hi });
+      }
+
+      const nc2 = [...colors];
+      for (let k=lo; k<=hi; k++) nc2[k] = 'sorted';
+      colors = nc2;
+      steps.push({ title: `a[${lo}..${hi}] merged — [${a.slice(lo,hi+1).join(', ')}]`,
+        what: `The merged run a[${lo}..${hi}] is now sorted.`,
+        why: 'After each merge both runs are consumed and the result is sorted.',
+        state: st(), phase: 'merge-done', arr: [...a], colors: [...colors], lo, mid, hi });
     }
-    width*=2;
   }
-  colors=Array(n).fill('#27a060');arr=[...a];draw();
-  addLog(`Sort complete! ${comparisons} comparisons.`,'ld');
+
+  steps.push({ title: 'Sorting complete!', what: `Array: [${a.join(', ')}]`,
+    why: 'All runs merged. Merge Sort guaranteed O(n log n).',
+    state: st(), phase: 'done', arr: [...a], colors: new Array(n).fill('sorted'), lo:-1,mid:-1,hi:-1 });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function step(){if(!sortGen)sortGen=mergeSortGen();const r=sortGen.next();if(r.done){running=false;if(timer){clearInterval(timer);timer=null;}}}
-function getDelay(){return Math.round(1050-speedEl.value*100);}
-function run(){
-  if(running)return;
-  if(!sortGen)sortGen=mergeSortGen();
-  running=true;
-  timer=setInterval(()=>{const r=sortGen.next();if(r.done){running=false;clearInterval(timer);timer=null;}},getDelay());
+
+function renderStep(step) {
+  const W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const { arr, colors } = step;
+  const n=arr.length; if(!n) return;
+  const maxVal=Math.max(...arr,1), padX=14, labelH=26, topPad=12;
+  const availW=W-padX*2, availH=H-labelH-topPad, barW=availW/n;
+  const colorMap = { unsorted:'#9ec8f0', left:'#c3b1e1', right:'#ffb347', merging:'#fff176', sorted:'#a8e6a3' };
+  const strokeMap = { left:'#8b5cf6', right:'#d4700a', merging:'#c8c000', sorted:'#27a060' };
+  for (let i=0; i<n; i++) {
+    const barH=Math.max(4,(arr[i]/maxVal)*availH);
+    const bx=padX+i*barW+2, by=H-labelH-barH, bw=barW-4;
+    const c=colors[i]||'unsorted';
+    ctx.fillStyle=colorMap[c];
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.fill();
+    if (strokeMap[c]) { ctx.strokeStyle=strokeMap[c]; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.stroke(); }
+    const fs=Math.max(8,Math.min(13,barW-6));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(arr[i], padX+i*barW+barW/2, H-2);
+  }
 }
-function pause(){running=false;if(timer){clearInterval(timer);timer=null;}}
-document.getElementById('btnNew').onclick=()=>{initArray();logBody.innerHTML='';};
-document.getElementById('btnStep').onclick=step;
-document.getElementById('btnRun').onclick=run;
-document.getElementById('btnPause').onclick=pause;
-document.getElementById('btnClear').onclick=()=>{logBody.innerHTML='';};
-window.addEventListener('resize',()=>{setupCanvas();draw();});
-setupCanvas();initArray();
+
+function parseArr(s){return s.split(',').map(x=>Math.max(1,Math.min(200,parseInt(x.trim())||1))).filter(Boolean);}
+function rebuild(){
+  const arr=parseArr(document.getElementById('arrIn').value);
+  if(arr.length<2||arr.length>30){alert('Enter 2–30 numbers.');return;}
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),renderStep,'explanation','sim-bar');
+}
+function randomize(){
+  const n=7+Math.floor(Math.random()*5);
+  document.getElementById('arrIn').value=Array.from({length:n},()=>5+Math.floor(Math.random()*95)).join(',');
+  rebuild();
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>
