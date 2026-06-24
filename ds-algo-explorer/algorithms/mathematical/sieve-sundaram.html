@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sieve of Sundaram – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:120px}
+input[type=number]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+.grid{display:flex;flex-wrap:wrap;gap:4px;margin:1rem 0}
+.cell{width:38px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;border:1.5px solid var(--border);background:var(--bg);transition:all .25s}
+.cell.marked{background:#d0d0d8;color:#999;text-decoration:line-through;border-color:#ccc}
+.cell.prime-k{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cell.marking{background:#ffe0d6;border-color:var(--accent)}
+.formula-box{font-family:'JetBrains Mono',monospace;font-size:.85rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.8rem;margin:.7rem 0;color:var(--ink)}
+.formula-box span{color:var(--accent);font-weight:700}
+.prime-list{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--ink);margin:.5rem 0}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Sieve of Sundaram
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">Mathematical</span>
+    <h1>Sieve of Sundaram</h1>
+    <p class="tagline">Find odd primes by marking composite numbers i+j+2ij, then converting remainders via 2k+1.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>The Sieve of Sundaram (1934, S.P. Sundaram) takes a different approach: instead of directly marking composites, it marks numbers of the form <strong>i + j + 2ij</strong> where 1 ≤ i ≤ j. The key insight is that 2k+1 is composite exactly when k = i+j+2ij for some valid i,j — because 2(i+j+2ij)+1 = (2i+1)(2j+1).</p>
+    <p>So: create a grid of numbers 1 to (N-2)/2. Mark every number of the form i+j+2ij. The unmarked k values correspond to odd primes 2k+1. Then add 2 separately. Result: all primes up to N.</p>
+    <p>The sieve is pedagogically interesting as it proves that finding odd primes reduces to a simple arithmetic marking on a smaller grid. The grid has only N/2 elements rather than N, giving a slight memory advantage over the standard sieve.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(N log N)</div><div class="lbl">Time complexity</div></div>
+    <div class="fact"><div class="val">N/2</div><div class="lbl">Grid size</div></div>
+    <div class="fact"><div class="val">1934</div><div class="lbl">Year (S.P. Sundaram)</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div>
+        <label>N (find primes up to N, max 120)</label>
+        <input type="number" id="nInput" value="50" min="2" max="120"/>
+      </div>
+      <button class="btn" onclick="runSundaram()" style="align-self:flex-end">Run Sieve</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div class="formula-box">Mark <span>k = i + j + 2ij</span> for all 1 ≤ i ≤ j, k ≤ (N-2)/2.<br/>Odd primes = { <span>2k+1</span> : k is unmarked }</div>
+    <div style="font-size:.8rem;color:var(--muted);margin:.4rem 0">Grid (k values 1 to (N-2)/2):</div>
+    <div id="numGrid" class="grid"></div>
+    <div id="primeList" class="prime-list"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Set N and click "Run Sieve"</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let cells=[];
+
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  cells=[];
+  document.getElementById('numGrid').innerHTML='';
+  document.getElementById('primeList').innerHTML='';
+  document.getElementById('log').innerHTML='<div class="hi">// Set N and click "Run Sieve"</div>';
+}
+
+function runSundaram(){
+  resetSim();
+  const N=Math.min(120,Math.max(2,parseInt(document.getElementById('nInput').value)||50));
+  const limit=Math.floor((N-2)/2);
+  const marked=new Array(limit+1).fill(false);
+
+  const grid=document.getElementById('numGrid');
+  for(let k=1;k<=limit;k++){
+    const c=document.createElement('div');c.className='cell';c.textContent=k;c.id=`k-${k}`;
+    grid.appendChild(c);cells[k]=c;
+  }
+
+  log('=== Sieve of Sundaram ===','hi');
+  log(`N=${N}. Grid: k=1..${limit}. We mark k=i+j+2ij.`);
+
+  // Collect marking events
+  const events=[];
+  for(let i=1;i<=limit;i++){
+    for(let j=i;;j++){
+      const k=i+j+2*i*j;
+      if(k>limit) break;
+      if(!marked[k]){marked[k]=true;events.push({k,i,j});}
+    }
+  }
+
+  let ei=0;
+  function nextEvent(){
+    if(ei>=events.length){
+      // Final pass: color unmarked as primes
+      for(let k=1;k<=limit;k++){
+        if(!marked[k]&&cells[k]) cells[k].className='cell prime-k';
+        else if(marked[k]&&cells[k]) cells[k].className='cell marked';
+      }
+      const primes=[2];
+      for(let k=1;k<=limit;k++) if(!marked[k]) primes.push(2*k+1);
+      primes.sort((a,b)=>a-b);
+      document.getElementById('primeList').textContent=`Primes (${primes.length}): ${primes.join(', ')}`;
+      log(`Done! ${primes.length} primes ≤ ${N}.`,'ok');
+      return;
+    }
+    const {k,i,j}=events[ei++];
+    if(cells[k]) cells[k].className='cell marking';
+    log(`Mark k=${k} (i=${i}, j=${j}: ${i}+${j}+2×${i}×${j}=${k}) → 2×${k}+1=${2*k+1} is composite`);
+    setTimeout(()=>{
+      if(cells[k]) cells[k].className='cell marked';
+      setTimeout(nextEvent,60);
+    },120);
+  }
+  nextEvent();
+}
+</script>
+</body>
+</html>

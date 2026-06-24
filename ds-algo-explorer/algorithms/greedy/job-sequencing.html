@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Sequencing – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:900px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px;}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;margin-bottom:16px;}
+  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
+  table.jobs{border-collapse:collapse;width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin-bottom:20px;}
+  table.jobs th,table.jobs td{border:1px solid var(--border);padding:8px 14px;text-align:center;}
+  table.jobs th{background:var(--bg);color:var(--muted);font-weight:600;}
+  table.jobs tr.selected td{background:#fff8e0;font-weight:600;}
+  table.jobs tr.skip td{color:#bbb;}
+  canvas{display:block;border-radius:8px;border:1px solid var(--border);max-width:100%;margin-top:8px;}
+  .result-note{font-size:.95rem;margin-top:12px;}
+  .result-note strong{color:var(--accent);}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#f5d87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Job Sequencing
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Greedy</span>
+    <h1>Job Sequencing with Deadlines</h1>
+    <p class="tagline">Maximize profit by scheduling unit-time jobs before their deadlines.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Each job takes exactly one unit of time, has a deadline (latest time-slot it can occupy), and yields a profit if completed. A single machine processes one job at a time, starting at time 0. How do you pick jobs to maximize total profit?</p>
+    <p>The greedy strategy: sort jobs by profit in descending order. For each job, try to place it in the latest available slot at or before its deadline. This greedy choice is optimal — by processing high-profit jobs first and assigning them to the last valid slot, we keep earlier slots free for other jobs.</p>
+    <p>The result is a schedule shown on a Gantt chart, with gaps shown as idle time if no job could fill a slot.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">O(d)</div><div class="label">Space (d=max deadline)</div></div>
+    <div class="fact-card"><div class="val">Profit-Desc</div><div class="label">Greedy Order</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <button class="btn" id="solveBtn" onclick="startSolve()">Schedule Jobs</button>
+
+    <table class="jobs" id="jobTable"></table>
+    <canvas id="gantt" height="80"></canvas>
+    <div class="result-note" id="resultNote"></div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const JOBS=[
+  {id:'J1',profit:100,deadline:2},
+  {id:'J2',profit:19,deadline:1},
+  {id:'J3',profit:27,deadline:2},
+  {id:'J4',profit:25,deadline:1},
+  {id:'J5',profit:15,deadline:3},
+  {id:'J6',profit:60,deadline:1},
+];
+
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function buildJobTable(jobs,states={}){
+  const tbl=document.getElementById('jobTable');
+  tbl.innerHTML='<tr><th>Job</th><th>Profit</th><th>Deadline</th><th>Status</th></tr>';
+  jobs.forEach(job=>{
+    const tr=tbl.insertRow();
+    const st=states[job.id]||'–';
+    if(st.startsWith('Slot')) tr.classList.add('selected');
+    else if(st==='Skipped') tr.classList.add('skip');
+    [job.id,job.profit,job.deadline,st].forEach(v=>{tr.insertCell().textContent=v;});
+  });
+}
+
+function drawGantt(schedule, maxD){
+  const canvas=document.getElementById('gantt');
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const cellW=W/maxD;
+  const COLORS=['#d4a017','#e8c96d','#a87d10','#f0d87a','#c89010','#b87000'];
+  for(let t=0;t<maxD;t++){
+    const x=t*cellW;
+    if(schedule[t]){
+      const ci=schedule[t].idx%COLORS.length;
+      ctx.fillStyle=COLORS[ci];
+      ctx.fillRect(x+1,8,cellW-2,H-24);
+      ctx.fillStyle='#1a1a2e';ctx.font='bold 12px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillText(schedule[t].id,x+cellW/2,H/2+4);
+    } else {
+      ctx.fillStyle='#e2e0da';ctx.fillRect(x+1,8,cellW-2,H-24);
+      ctx.fillStyle='#aaa';ctx.font='11px Inter';ctx.textAlign='center';
+      ctx.fillText('idle',x+cellW/2,H/2+4);
+    }
+    ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;
+    ctx.strokeRect(x,8,cellW,H-24);
+    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';ctx.textAlign='center';
+    ctx.fillText(`t${t+1}`,x+cellW/2,H-2);
+  }
+}
+
+async function startSolve(){
+  const btn=document.getElementById('solveBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+  document.getElementById('resultNote').innerHTML='';
+
+  const sorted=[...JOBS].sort((a,b)=>b.profit-a.profit);
+  const maxD=Math.max(...JOBS.map(j=>j.deadline));
+  const schedule=new Array(maxD).fill(null);
+  const states={};
+
+  buildJobTable(sorted,states);
+  log(`Sort by profit: ${sorted.map(j=>`${j.id}(p=${j.profit},d=${j.deadline})`).join(' > ')}`);
+  await sleep(400);
+
+  const canvas=document.getElementById('gantt');
+  canvas.width=Math.max(600,canvas.offsetWidth||600);
+  drawGantt(schedule,maxD);
+
+  let totalProfit=0;
+  for(let i=0;i<sorted.length;i++){
+    const job=sorted[i];
+    // Find latest free slot ≤ deadline
+    let placed=false;
+    for(let t=Math.min(job.deadline,maxD)-1;t>=0;t--){
+      if(!schedule[t]){
+        schedule[t]={id:job.id,idx:i};
+        placed=true;
+        totalProfit+=job.profit;
+        states[job.id]=`Slot ${t+1}`;
+        log(`${job.id}(p=${job.profit},d=${job.deadline}): assign to slot ${t+1} (latest free ≤ deadline). Profit so far: ${totalProfit}.`);
+        break;
+      }
+    }
+    if(!placed){
+      states[job.id]='Skipped';
+      log(`${job.id}(p=${job.profit},d=${job.deadline}): no free slot ≤ ${job.deadline} → skip.`);
+    }
+    buildJobTable(sorted,states);
+    drawGantt(schedule,maxD);
+    await sleep(500);
+  }
+
+  document.getElementById('resultNote').innerHTML=
+    `<strong>Total Profit: ${totalProfit}</strong> — Scheduled: ${schedule.filter(Boolean).map(j=>j.id).join(', ')}`;
+  log(`Done. Scheduled jobs in order: ${schedule.map(j=>j?j.id:'idle').join(' → ')}. Total profit = ${totalProfit}.`,true);
+  btn.disabled=false;
+}
+
+buildJobTable(JOBS);
+</script>
+</body>
+</html>

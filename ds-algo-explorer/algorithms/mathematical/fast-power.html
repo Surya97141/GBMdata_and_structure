@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fast Power – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:110px}
+input[type=number]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+.tree{font-family:'JetBrains Mono',monospace;font-size:.82rem;overflow-x:auto;margin:.8rem 0}
+.tree-node{display:inline-block;padding:.3rem .6rem;border:2px solid var(--border);border-radius:7px;background:var(--bg);margin:2px;white-space:nowrap}
+.tree-node.computed{border-color:var(--accent);background:#fde8e2;font-weight:700}
+.tree-node.base{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tree-level{display:flex;gap:8px;flex-wrap:wrap;margin:.3rem 0;align-items:center}
+.tree-level::before{content:attr(data-depth);font-size:.7rem;color:var(--muted);margin-right:.5rem;min-width:40px}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.83rem;margin:.5rem 0}
+th{background:var(--bg);padding:.4rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
+td{padding:.38rem .6rem;border-bottom:1px solid #f0eeea;transition:background .3s}
+tr.active td{background:#fff3e0}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Fast Power
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">Mathematical</span>
+    <h1>Fast Power (Exponentiation by Squaring)</h1>
+    <p class="tagline">Compute b^n in O(log n) multiplications via recursive halving — visualized as a recursion tree.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>Fast power (also called "exponentiation by squaring") halves the exponent at each step: pow(b, n) = pow(b, n/2)² if n is even, or b × pow(b, n-1) if n is odd. This reduces O(n) multiplications to O(log n).</p>
+    <p>The recursion tree is like a binary tree where each node computes one squaring. The depth is log₂(n), so there are at most 2 log₂(n) multiplications total. For n=1 billion, that's only 60 multiplications instead of 1 billion.</p>
+    <p>Unlike modular exponentiation, fast power computes exact values — useful for polynomial exponentiation, matrix exponentiation (Fibonacci in O(log n)), and computing binomial coefficients with exact arithmetic.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(log n)</div><div class="lbl">Multiplications</div></div>
+    <div class="fact"><div class="val">O(log n)</div><div class="lbl">Recursion depth</div></div>
+    <div class="fact"><div class="val">Matrix</div><div class="lbl">Also works for matrices</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>Base (b)</label><input type="number" id="baseIn" value="2" min="0"/></div>
+      <div><label>Exponent (n, max 20)</label><input type="number" id="expIn" value="13" min="0" max="20"/></div>
+      <button class="btn" onclick="runFastPow()" style="align-self:flex-end">Compute pow(b,n)</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);margin:.5rem 0 .2rem">Recursion tree:</div>
+    <div id="treeViz" class="tree"></div>
+    <div style="margin-top:1rem;font-size:.85rem;font-weight:600;color:var(--muted)">Iterative step table:</div>
+    <table>
+      <thead><tr><th>Step</th><th>Action</th><th>Value</th></tr></thead>
+      <tbody id="stepTable"></tbody>
+    </table>
+    <div id="answerBox" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);margin:.5rem 0"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter base and exponent then click Compute</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let treeNodes=[];
+
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  treeNodes=[];
+  document.getElementById('treeViz').innerHTML='';
+  document.getElementById('stepTable').innerHTML='';
+  document.getElementById('answerBox').textContent='';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter values and click Compute</div>';
+}
+
+function buildTree(b,n,depth,nodes){
+  if(n===0){nodes.push({label:`pow(${b},0)=1`,depth,result:1,base:true});return 1;}
+  if(n===1){nodes.push({label:`pow(${b},1)=${b}`,depth,result:b,base:true});return b;}
+  if(n%2===0){
+    const half=buildTree(b,n/2,depth+1,nodes);
+    const res=half*half;
+    nodes.push({label:`pow(${b},${n})=pow(${b},${n/2})²=${half}²=${res}`,depth,result:res,computed:true});
+    return res;
+  } else {
+    const half=buildTree(b,n-1,depth+1,nodes);
+    const res=b*half;
+    nodes.push({label:`pow(${b},${n})=${b}×pow(${b},${n-1})=${b}×${half}=${res}`,depth,result:res,computed:true});
+    return res;
+  }
+}
+
+function runFastPow(){
+  resetSim();
+  const b=parseInt(document.getElementById('baseIn').value)||2;
+  const n=Math.min(20,Math.max(0,parseInt(document.getElementById('expIn').value)||13));
+  log('=== Fast Power ===','hi');
+  log(`Computing pow(${b}, ${n})`);
+
+  const nodes=[];
+  const result=buildTree(b,n,0,nodes);
+
+  // Group by depth
+  const byDepth={};
+  nodes.forEach(nd=>{
+    if(!byDepth[nd.depth]) byDepth[nd.depth]=[];
+    byDepth[nd.depth].push(nd);
+  });
+
+  const treeViz=document.getElementById('treeViz');
+  const maxDepth=Math.max(...Object.keys(byDepth).map(Number));
+  for(let d=maxDepth;d>=0;d--){
+    const levelDiv=document.createElement('div');
+    levelDiv.className='tree-level';
+    levelDiv.dataset.depth=`d=${d}`;
+    (byDepth[d]||[]).forEach(nd=>{
+      const el=document.createElement('div');
+      el.className=`tree-node ${nd.base?'base':nd.computed?'computed':''}`;
+      el.textContent=nd.label;
+      levelDiv.appendChild(el);
+    });
+    treeViz.appendChild(levelDiv);
+  }
+
+  // Iterative steps
+  const tbody=document.getElementById('stepTable');
+  let steps=[];
+  let tmp=n,bb=b,res=1;
+  while(tmp>0){
+    if(tmp&1){steps.push({action:`result×=${bb} (bit=1)`,val:`result=${res}×${bb}=${res*bb}`,res:res*bb});res*=bb;}
+    else{steps.push({action:`skip (bit=0)`,val:`result=${res}`,res});}
+    bb*=bb;tmp>>=1;
+    if(tmp>0) steps.push({action:`base²`,val:`base=${bb}`,res});
+  }
+  // Reset for clean display
+  steps=[];
+  let rr=1,bbb=b,tt=n;
+  let si=0;
+  while(tt>0){
+    if(tt&1){
+      const nrr=rr*bbb;
+      steps.push({step:++si,action:`bit=1: result×=${bbb}`,val:`${rr}×${bbb}=${nrr}`,res:nrr});
+      rr=nrr;
+    } else {
+      steps.push({step:++si,action:`bit=0: skip multiply`,val:`result=${rr}`,res:rr});
+    }
+    const nbbb=bbb*bbb;
+    if(tt>>1>0) steps.push({step:++si,action:`square base`,val:`${bbb}²=${nbbb}`,res:rr});
+    bbb=nbbb;
+    tt>>=1;
+  }
+  steps.forEach((s,i)=>{
+    const tr=document.createElement('tr');
+    tr.id=`strow-${i}`;
+    tr.innerHTML=`<td>${s.step}</td><td>${s.action}</td><td>${s.val}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('answerBox').textContent=`pow(${b}, ${n}) = ${result}`;
+  steps.forEach((s,i)=>setTimeout(()=>{
+    document.querySelectorAll('tr.active').forEach(r=>r.classList.remove('active'));
+    document.getElementById(`strow-${i}`)?.classList.add('active');
+    log(`Step ${s.step}: ${s.action} → ${s.val}`);
+  },i*350));
+  setTimeout(()=>log(`pow(${b},${n}) = ${result}`,'ok'),steps.length*350+200);
+}
+</script>
+</body>
+</html>

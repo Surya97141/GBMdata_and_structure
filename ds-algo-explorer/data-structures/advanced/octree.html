@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Octree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#c0392b;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:80px;}
+.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#fdecea;color:var(--a);border:1px solid #f5c6c2;}.btn-sec:hover{background:#f9d5d2;}
+.btn-neu{background:#eee;color:#444;border:1px solid #ddd;}.btn-neu:hover{background:#e0e0e0;}
+.octant-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.8rem;}
+.octant{background:#f9f9f7;border:1px solid var(--b);border-radius:8px;padding:.5rem .7rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--m);transition:background .3s;}
+.octant.active{background:#fdecea;color:#c0392b;border-color:#f5c6c2;font-weight:600;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    Octree
+  </nav>
+  <header class="hero">
+    <span class="tag">Advanced</span>
+    <h1>Octree</h1>
+    <p>The 3D extension of a quad-tree — divides 3D space into 8 octants recursively for fast spatial indexing of 3D scenes.</p>
+  </header>
+  <section class="prose">
+    <p>An <strong>Octree</strong> is to 3D space what a quad-tree is to 2D: it recursively subdivides a cube into 8 equal sub-cubes (octants), labeled by the sign of each coordinate relative to the center: +++, ++−, +−+, +−−, −++, −+−, −−+, −−−. Each octant that contains more than a threshold of points is itself subdivided.</p>
+    <p>Imagine a 3D video game world. The entire scene is one big cube. The octree splits it into 8 sub-cubes. Rooms, buildings, and forests subdivide densely; empty sky remains a single large voxel. When the game engine checks whether a bullet hit anything, it descends only the octants the bullet passes through — skipping everything else. Modern AAA game engines use octrees (or related BVH structures) everywhere.</p>
+    <p>Below we visualize an octree using a 2D top-down projection (XY plane). Each inserted point is classified into one of 8 octants by comparing its (x,y,z) to the center (0,0,0). The canvas shows the XY cross-section with quadrant divisions. The octant table highlights which octant(s) are occupied.</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Insert</div><div class="fact-val">O(log n)</div></div>
+    <div class="fact"><div class="fact-label">Range Search</div><div class="fact-val">O(k + log n)</div></div>
+    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">3D games, LiDAR, Ray tracing</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">Octree — 3D Points with XY Top-Down Projection</div>
+    <canvas id="cv" height="380"></canvas>
+    <div class="octant-grid" id="octGrid">
+      <div class="octant" id="oct0">+++ (x+,y+,z+)</div>
+      <div class="octant" id="oct1">++− (x+,y+,z−)</div>
+      <div class="octant" id="oct2">+−+ (x+,y−,z+)</div>
+      <div class="octant" id="oct3">+−− (x+,y−,z−)</div>
+      <div class="octant" id="oct4">−++ (x−,y+,z+)</div>
+      <div class="octant" id="oct5">−+− (x−,y+,z−)</div>
+      <div class="octant" id="oct6">−−+ (x−,y−,z+)</div>
+      <div class="octant" id="oct7">−−− (x−,y−,z−)</div>
+    </div>
+    <div class="controls">
+      <input id="xIn" type="number" placeholder="x (-10–10)" min="-10" max="10" step="0.5"/>
+      <input id="yIn" type="number" placeholder="y (-10–10)" min="-10" max="10" step="0.5"/>
+      <input id="zIn" type="number" placeholder="z (-10–10)" min="-10" max="10" step="0.5"/>
+      <button class="btn btn-pri" onclick="doAdd()">Add Point</button>
+      <button class="btn btn-sec" onclick="doRandom()">Add Random</button>
+      <button class="btn btn-neu" onclick="doClear()">Clear</button>
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+const PAD=40;
+
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=380; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); render();
+}
+window.addEventListener('resize',resize);
+
+let points3D=[]; // [{x,y,z,oct}]
+
+function getOctant(x,y,z){
+  const bits=(x>=0?4:0)|(y>=0?2:0)|(z>=0?1:0);
+  const labels=['−−−','−−+','−+−','−++','+−−','+−+','++−','+++'];
+  const ids=[7,6,5,4,3,2,1,0];
+  return {label:labels[bits],id:ids[bits]};
+}
+
+function toCanvas2D(x,y){
+  // Map x,y from [-12,12] to canvas
+  const range=24;
+  return [PAD+(x+12)/range*(W-2*PAD), PAD+(12-y)/range*(H-2*PAD)];
+}
+
+const OCTANT_COLORS=['#c0392b','#e74c3c','#8e44ad','#9b59b6','#27a060','#2ecc71','#2980b9','#3498db'];
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  // Grid lines for XY plane
+  ctx.strokeStyle='#e2e0da'; ctx.lineWidth=1;
+  const cx=W/2, cy=H/2;
+  // Vertical center
+  ctx.beginPath(); ctx.moveTo(cx,PAD); ctx.lineTo(cx,H-PAD); ctx.stroke();
+  // Horizontal center
+  ctx.beginPath(); ctx.moveTo(PAD,cy); ctx.lineTo(W-PAD,cy); ctx.stroke();
+  // Border
+  ctx.strokeStyle='#ccc'; ctx.strokeRect(PAD,PAD,W-2*PAD,H-2*PAD);
+
+  // Quadrant labels
+  ctx.font="bold 11px 'Inter',sans-serif"; ctx.textAlign='center'; ctx.textBaseline='middle';
+  const qmid=(W-2*PAD)/4;
+  ctx.fillStyle='rgba(192,57,43,0.15)';
+  ctx.fillRect(cx,PAD,W/2-PAD,cy-PAD);
+  ctx.fillStyle='rgba(142,68,173,0.10)';
+  ctx.fillRect(PAD,PAD,W/2-PAD,cy-PAD);
+  ctx.fillStyle='rgba(39,160,96,0.10)';
+  ctx.fillRect(PAD,cy,W/2-PAD,H/2-PAD);
+  ctx.fillStyle='rgba(41,128,185,0.10)';
+  ctx.fillRect(cx,cy,W/2-PAD,H/2-PAD);
+  ctx.fillStyle='#5a5a72';
+  ctx.fillText('x+,y+ (NE)',cx+(W/2-PAD)/2,PAD+14);
+  ctx.fillText('x−,y+ (NW)',PAD+(W/2-PAD)/2,PAD+14);
+  ctx.fillText('x−,y− (SW)',PAD+(W/2-PAD)/2,H-PAD-14);
+  ctx.fillText('x+,y− (SE)',cx+(W/2-PAD)/2,H-PAD-14);
+  // Axis labels
+  ctx.fillStyle='#aaa'; ctx.font="11px 'Inter',sans-serif";
+  ctx.fillText('X',W-PAD+12,cy); ctx.fillText('Y',cx,PAD-12);
+  ctx.fillText('0',cx-10,cy+12);
+
+  // Points
+  for(const p of points3D){
+    const [px,py]=toCanvas2D(p.x,p.y);
+    const col=OCTANT_COLORS[p.oct.id];
+    ctx.beginPath(); ctx.arc(px,py,6,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.lineWidth=1; ctx.stroke();
+    // z indicator: size proportional to z
+    const zR=Math.abs(p.z/10)*4;
+    if(zR>0.5){
+      ctx.beginPath(); ctx.arc(px,py,6+zR,0,Math.PI*2);
+      ctx.strokeStyle=p.z>0?'rgba(192,57,43,0.4)':'rgba(41,128,185,0.4)';
+      ctx.lineWidth=1.5; ctx.setLineDash([3,2]); ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.fillStyle='#1a1a2e'; ctx.font="9px 'JetBrains Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(p.oct.label,px,py-8);
+  }
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('Top-down XY view  |  Ring size = |z| magnitude  |  Red ring=z+ Blue ring=z−',8,H-20);
+}
+
+function updateOctantGrid(){
+  const active=new Set(points3D.map(p=>p.oct.id));
+  for(let i=0;i<8;i++){
+    document.getElementById('oct'+i).classList.toggle('active',active.has(i));
+  }
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+function addPoint(x,y,z){
+  const oct=getOctant(x,y,z);
+  points3D.push({x,y,z,oct});
+  log(`Point (${x},${y},${z}): octant ${oct.label} — ${x>=0?'x+':'x−'}, ${y>=0?'y+':'y−'}, ${z>=0?'z+':'z−'}`);
+  updateOctantGrid(); render();
+}
+
+function doAdd(){
+  const x=parseFloat(document.getElementById('xIn').value);
+  const y=parseFloat(document.getElementById('yIn').value);
+  const z=parseFloat(document.getElementById('zIn').value);
+  if(isNaN(x)||isNaN(y)||isNaN(z)){alert('Enter x, y, z values.');return;}
+  addPoint(Math.max(-10,Math.min(10,x)),Math.max(-10,Math.min(10,y)),Math.max(-10,Math.min(10,z)));
+}
+
+function doRandom(){
+  const r=()=>(Math.random()*20-10).toFixed(1)*1;
+  addPoint(r(),r(),r());
+}
+
+function doClear(){
+  points3D=[]; updateOctantGrid(); render();
+  log('Cleared all points.');
+}
+
+resize();
+// Seed
+[[5,3,2],[−3,4,−1],[−2,−5,3],[4,−2,−4],[1,6,5],[−5,−3,−2],[3,1,−3],[−4,3,2]].forEach(([x,y,z])=>addPoint(x,y,z));
+log('Seeded with 8 points — one in each octant. Colors identify octant membership.');
+</script>
+</body>
+</html>

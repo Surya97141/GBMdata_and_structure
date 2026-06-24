@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sudoku Solver – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
+nav.breadcrumb a{color:var(--muted)}
+nav.breadcrumb span{margin:0 6px}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
+.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
+.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
+.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
+.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
+.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
+.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
+.sim-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
+#sudoku-grid{display:inline-grid;grid-template-columns:repeat(9,52px);gap:0;border:2px solid var(--ink);margin-bottom:16px}
+.sudoku-cell{width:52px;height:52px;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;transition:background .15s;position:relative}
+.sudoku-cell.given{background:#f0ede5;color:var(--ink)}
+.sudoku-cell.empty-cell{background:#fff;color:#555}
+.sudoku-cell.trying{background:#fde8e8;color:var(--accent)}
+.sudoku-cell.solved{background:#eafaf1;color:#1a7a40}
+.sudoku-cell.conflict{background:#ffe0e0;color:#900}
+.box-right{border-right:2px solid var(--ink)}
+.box-bottom{border-bottom:2px solid var(--ink)}
+.grid-wrap{display:flex;justify-content:center;margin-bottom:16px;overflow-x:auto}
+.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)}
+.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
+.log-ok{color:#27ae60}.log-back{color:var(--accent)}.log-done{color:#1a7a40;font-weight:600}
+.section{margin-bottom:36px}
+.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Sudoku Solver
+</nav>
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <span class="hero-tag">Backtracking</span>
+    <h1>Sudoku Solver</h1>
+    <p class="tagline">Fill a 9×9 grid with digits 1–9 so each row, column, and 3×3 box contains all nine digits exactly once.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="section">
+    <p>Sudoku is a constraint-satisfaction puzzle that backtracking handles elegantly. Starting from the first empty cell, the algorithm tries each digit 1–9 in order, checks whether placing it violates any row, column, or 3×3 box constraint, and recurses to the next empty cell on success.</p>
+    <p>If no digit fits in a cell, the algorithm backtracks to the previous empty cell and tries the next digit — exactly like an expert human solver who pencils in a digit, continues, and erases if a contradiction appears later. The cleverness is in the pruning: invalid digits are skipped immediately rather than explored.</p>
+    <p>A well-formed Sudoku puzzle has exactly one solution. The backtracking algorithm will always find it (or report that the puzzle is unsolvable). You can also edit the grey empty cells before solving.</p>
+  </div>
+  <div class="facts-grid">
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(9^m)</div><div class="sub">m = number of empty cells</div></div>
+    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(m)</div><div class="sub">Recursion depth = empty cells</div></div>
+    <div class="fact-card"><div class="label">Valid Puzzles</div><div class="value">~6.7×10²¹</div><div class="sub">Completed 9×9 Sudoku grids</div></div>
+  </div>
+  <div class="sim-card">
+    <div class="sim-controls">
+      <button id="btn-solve" onclick="startSolve()">Solve</button>
+      <button id="btn-reset" onclick="resetPuzzle()" class="secondary">Reset</button>
+      <button id="btn-new" onclick="loadNewPuzzle()" class="secondary">New Puzzle</button>
+      <label style="font-size:.85rem;color:var(--muted);margin-left:8px">Speed:
+        <select id="speed-sel" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem">
+          <option value="60">Fast</option>
+          <option value="150" selected>Medium</option>
+          <option value="350">Slow</option>
+        </select>
+      </label>
+    </div>
+    <div class="grid-wrap"><div id="sudoku-grid"></div></div>
+    <div class="step-log" id="step-log"><div class="log-line">Press Solve to animate backtracking…</div></div>
+  </div>
+  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+</div>
+<script>
+const PUZZLES=[
+  [5,3,0,0,7,0,0,0,0,
+   6,0,0,1,9,5,0,0,0,
+   0,9,8,0,0,0,0,6,0,
+   8,0,0,0,6,0,0,0,3,
+   4,0,0,8,0,3,0,0,1,
+   7,0,0,0,2,0,0,0,6,
+   0,6,0,0,0,0,2,8,0,
+   0,0,0,4,1,9,0,0,5,
+   0,0,0,0,8,0,0,7,9],
+  [0,0,0,2,6,0,7,0,1,
+   6,8,0,0,7,0,0,9,0,
+   1,9,0,0,0,4,5,0,0,
+   8,2,0,1,0,0,0,4,0,
+   0,0,4,6,0,2,9,0,0,
+   0,5,0,0,0,3,0,2,8,
+   0,0,9,3,0,0,0,7,4,
+   0,4,0,0,5,0,0,3,6,
+   7,0,3,0,1,8,0,0,0]
+];
+let currentPuzzle=0, givenMask=[], board=[], solving=false;
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function speed(){return parseInt(document.getElementById('speed-sel').value)}
+
+function buildGrid(puzzle){
+  board=[...puzzle];
+  givenMask=puzzle.map(v=>v!==0);
+  const grid=document.getElementById('sudoku-grid');
+  grid.innerHTML='';
+  for(let i=0;i<81;i++){
+    const r=Math.floor(i/9),c=i%9;
+    const cell=document.createElement('div');
+    cell.className='sudoku-cell '+(givenMask[i]?'given':'empty-cell');
+    cell.id='sc-'+i;
+    if(givenMask[i]){cell.textContent=puzzle[i];}
+    else{
+      const inp=document.createElement('input');
+      inp.type='text';inp.maxLength=1;inp.value=puzzle[i]||'';
+      inp.style.cssText='width:100%;height:100%;border:none;background:transparent;text-align:center;font-family:JetBrains Mono,monospace;font-size:1.1rem;font-weight:600;color:#555;outline:none';
+      inp.addEventListener('input',e=>{
+        const v=parseInt(e.target.value);
+        board[i]=(isNaN(v)||v<1||v>9)?0:v;
+        e.target.value=board[i]||'';
+      });
+      cell.appendChild(inp);
+    }
+    if(c===2||c===5) cell.classList.add('box-right');
+    if(r===2||r===5) cell.classList.add('box-bottom');
+    grid.appendChild(cell);
+  }
+}
+
+function setCell(idx,val,cls){
+  const cell=document.getElementById('sc-'+idx);
+  if(!cell||givenMask[idx]) return;
+  cell.className='sudoku-cell '+cls;
+  const inp=cell.querySelector('input');
+  if(inp) inp.value=val||'';
+  else cell.textContent=val||'';
+  const r=Math.floor(idx/9),c=idx%9;
+  if(c===2||c===5) cell.classList.add('box-right');
+  if(r===2||r===5) cell.classList.add('box-bottom');
+}
+
+function isValid(b,idx,val){
+  const r=Math.floor(idx/9),c=idx%9;
+  for(let cc=0;cc<9;cc++){if(cc!==c&&b[r*9+cc]===val) return false;}
+  for(let rr=0;rr<9;rr++){if(rr!==r&&b[rr*9+c]===val) return false;}
+  const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+  for(let dr=0;dr<3;dr++) for(let dc=0;dc<3;dc++){
+    const ii=(br+dr)*9+(bc+dc);
+    if(ii!==idx&&b[ii]===val) return false;
+  }
+  return true;
+}
+
+function log(msg,cls=''){
+  const box=document.getElementById('step-log');
+  const d=document.createElement('div');
+  d.className='log-line'+(cls?' '+cls:'');
+  d.textContent=msg;
+  box.appendChild(d);
+  box.scrollTop=box.scrollHeight;
+}
+function clearLog(){document.getElementById('step-log').innerHTML='';}
+
+async function solve(b,pos){
+  if(!solving) return false;
+  while(pos<81&&givenMask[pos]) pos++;
+  if(pos===81) return true;
+  const r=Math.floor(pos/9),c=pos%9;
+  for(let v=1;v<=9;v++){
+    if(!solving) return false;
+    if(isValid(b,pos,v)){
+      b[pos]=v;
+      setCell(pos,v,'trying');
+      log('Cell ('+r+','+c+'): try '+v+' → OK','log-ok');
+      await sleep(speed());
+      const res=await solve(b,pos+1);
+      if(res) return true;
+      b[pos]=0;
+      setCell(pos,'','empty-cell');
+      log('Cell ('+r+','+c+'): backtrack from '+v,'log-back');
+      await sleep(speed()/2);
+    } else {
+      log('Cell ('+r+','+c+'): try '+v+' → conflict');
+    }
+  }
+  return false;
+}
+
+async function startSolve(){
+  if(solving) return;
+  solving=true;
+  clearLog();
+  document.getElementById('btn-solve').disabled=true;
+  document.getElementById('btn-reset').disabled=true;
+  const b=[...board];
+  log('Starting Sudoku solver…');
+  const found=await solve(b,0);
+  if(found){
+    for(let i=0;i<81;i++) if(!givenMask[i]&&b[i]) setCell(i,b[i],'solved');
+    log('Puzzle solved!','log-done');
+  } else {
+    log('No solution exists for this puzzle.','log-back');
+  }
+  solving=false;
+  document.getElementById('btn-solve').disabled=false;
+  document.getElementById('btn-reset').disabled=false;
+}
+
+function resetPuzzle(){
+  solving=false;
+  clearLog();
+  buildGrid(PUZZLES[currentPuzzle]);
+  document.getElementById('btn-solve').disabled=false;
+  document.getElementById('btn-reset').disabled=false;
+  log('Puzzle reset. Edit empty cells or press Solve.');
+}
+
+function loadNewPuzzle(){
+  solving=false;
+  currentPuzzle=(currentPuzzle+1)%PUZZLES.length;
+  clearLog();
+  buildGrid(PUZZLES[currentPuzzle]);
+  log('New puzzle loaded. Press Solve to animate.');
+}
+
+buildGrid(PUZZLES[0]);
+</script>
+</body>
+</html>

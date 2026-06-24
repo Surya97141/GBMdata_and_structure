@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>LCA – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
+.sel-row{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem;}
+.sel-row label{font-size:.9rem;font-weight:500;color:var(--m);}
+.sel-row select{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.4rem .7rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);}
+.result-box{margin-top:.7rem;font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);background:#f0fbf5;border:1px solid #b6e3ca;border-radius:8px;padding:.6rem 1rem;min-height:2rem;}
+.controls{display:flex;gap:.6rem;margin-top:.8rem;}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-neu{background:#eee;color:#444;border:1px solid #ddd;}.btn-neu:hover{background:#e5e5e5;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    Lowest Common Ancestor
+  </nav>
+  <header class="hero">
+    <span class="tag">Tree Algorithm</span>
+    <h1>Lowest Common Ancestor</h1>
+    <p>The deepest node in a tree that is an ancestor of two given nodes — a fundamental primitive in tree distance, path queries, and phylogenetics.</p>
+  </header>
+  <section class="prose">
+    <p>The <strong>Lowest Common Ancestor (LCA)</strong> of two nodes u and v in a rooted tree is the deepest (lowest) node that is an ancestor of both. In a family tree analogy, if you trace the lineage of two cousins up through parents and grandparents, the LCA is their most recent common ancestor — perhaps a shared grandparent, not a more distant great-grandparent.</p>
+    <p>The naive algorithm traces both paths to the root, then finds the deepest intersection. This runs in O(n) in the worst case. The preprocessing-based approach (Euler tour + RMQ, or binary lifting) answers LCA queries in O(1) or O(log n) after O(n log n) preprocessing — essential when millions of queries are needed on the same tree.</p>
+    <p>LCA appears in computing tree distances: dist(u,v) = depth[u] + depth[v] - 2·depth[LCA(u,v)]. It's used in network routing, version control merge-base computation, and in phylogenetics to find the closest common evolutionary ancestor of two species.</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Naive Query</div><div class="fact-val">O(n)</div></div>
+    <div class="fact"><div class="fact-label">With Binary Lifting</div><div class="fact-val">O(log n) query</div></div>
+    <div class="fact"><div class="fact-label">Preprocessing</div><div class="fact-val">O(n log n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Tree distance, Merging, Phylogenetics</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">LCA Visualization — Path Tracing</div>
+    <div class="sel-row">
+      <label>Node A:</label>
+      <select id="selA"><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>2</option><option>3</option><option>1</option></select>
+      <label>Node B:</label>
+      <select id="selB"><option>6</option><option>7</option><option>4</option><option>5</option><option>8</option><option>2</option><option>3</option><option>1</option></select>
+    </div>
+    <canvas id="cv" height="320"></canvas>
+    <div class="result-box" id="resultBox">Select two nodes and click Find LCA.</div>
+    <div class="controls">
+      <button class="btn btn-pri" onclick="doFind()">Find LCA</button>
+      <button class="btn btn-neu" onclick="doReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+// 8-node tree
+//        1
+//      /   \
+//     2     3
+//    / \   / \
+//   4   5 6   7
+//  /
+// 8
+const nodes={};
+function N(v,l,r,d,p){ return {v,l,r,depth:d,parent:p,_x:0,_y:0}; }
+const T={
+  1:{v:1,depth:0,parent:null,l:2,r:3},
+  2:{v:2,depth:1,parent:1,l:4,r:5},
+  3:{v:3,depth:1,parent:1,l:6,r:7},
+  4:{v:4,depth:2,parent:2,l:8,r:null},
+  5:{v:5,depth:2,parent:2,l:null,r:null},
+  6:{v:6,depth:2,parent:3,l:null,r:null},
+  7:{v:7,depth:2,parent:3,l:null,r:null},
+  8:{v:8,depth:3,parent:4,l:null,r:null}
+};
+
+function getPath(v){
+  const path=[];
+  while(v!==null){ path.push(v); v=T[v].parent; }
+  return path;
+}
+
+function findLCA(a,b){
+  const pa=getPath(a), pb=getPath(b);
+  const setA=new Set(pa);
+  for(const v of pb){ if(setA.has(v)) return v; }
+  return null;
+}
+
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+
+// Layout positions
+const POS={
+  1:[0.5,0.1],
+  2:[0.25,0.33],3:[0.75,0.33],
+  4:[0.15,0.56],5:[0.35,0.56],6:[0.65,0.56],7:[0.85,0.56],
+  8:[0.1,0.79]
+};
+
+function toXY(v){ const [rx,ry]=POS[v]; return [PAD+rx*(W-2*PAD),40+ry*(H-80)]; }
+
+const PAD=24;
+
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=320; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); render();
+}
+window.addEventListener('resize',resize);
+
+let pathA=[], pathB=[], lcaNode=null;
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  const edges=[[1,2],[1,3],[2,4],[2,5],[3,6],[3,7],[4,8]];
+  for(const [u,v] of edges){
+    const [ux,uy]=toXY(u), [vx,vy]=toXY(v);
+    const onA=pathA.includes(u)&&pathA.includes(v);
+    const onB=pathB.includes(u)&&pathB.includes(v);
+    ctx.beginPath(); ctx.moveTo(ux,uy); ctx.lineTo(vx,vy);
+    ctx.strokeStyle=onA&&onB?'#27a060':onA?'#2980b9':onB?'#e74c3c':'#c8c6be';
+    ctx.lineWidth=onA||onB?2.5:1.5; ctx.stroke();
+  }
+  for(let v=1;v<=8;v++){
+    const [x,y]=toXY(v);
+    const isA=pathA.includes(v);
+    const isB=pathB.includes(v);
+    const isLCA=lcaNode===v;
+    ctx.beginPath(); ctx.arc(x,y,20,0,Math.PI*2);
+    ctx.fillStyle=isLCA?'#27a060':isA&&isB?'#8e44ad':isA?'#2980b9':isB?'#e74c3c':'#e8f5ee';
+    ctx.fill();
+    ctx.strokeStyle=isLCA?'#1a5c38':'#bbb'; ctx.lineWidth=isLCA?3:1.5; ctx.stroke();
+    if(isLCA){ ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.strokeStyle='#27a060';ctx.lineWidth=2;ctx.setLineDash([3,2]);ctx.stroke();ctx.setLineDash([]); }
+    ctx.fillStyle=(isA||isB||isLCA)?'#fff':'#1a1a2e';
+    ctx.font="bold 13px 'JetBrains Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(v,x,y);
+  }
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('Blue=path A  |  Red=path B  |  Purple=shared  |  Green=LCA',8,H-20);
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+function doFind(){
+  const a=parseInt(document.getElementById('selA').value);
+  const b=parseInt(document.getElementById('selB').value);
+  pathA=getPath(a); pathB=getPath(b);
+  lcaNode=findLCA(a,b);
+  const dist=T[a].depth+T[b].depth-2*T[lcaNode].depth;
+  document.getElementById('resultBox').textContent=`LCA(${a}, ${b}) = node ${lcaNode}  |  Tree distance = ${dist}`;
+  log(`Path ${a}→root: [${pathA.join('→')}]`);
+  log(`Path ${b}→root: [${pathB.join('→')}]`);
+  log(`LCA = node ${lcaNode} (first common node) | dist(${a},${b}) = ${T[a].depth}+${T[b].depth}-2×${T[lcaNode].depth} = ${dist}`);
+  render();
+}
+
+function doReset(){ pathA=[]; pathB=[]; lcaNode=null; document.getElementById('resultBox').textContent='Select two nodes and click Find LCA.'; render(); }
+
+resize();
+log('8-node tree loaded. Select two nodes from the dropdowns and click Find LCA.');
+</script>
+</body>
+</html>

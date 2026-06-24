@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strassen's Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:920px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.matrix-area{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:24px;align-items:start}
+.matrix-label{font-size:12px;font-weight:600;color:#5a5a72;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+table.mat{border-collapse:collapse}
+table.mat td{width:44px;height:38px;text-align:center;border:1px solid #e2e0da;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;background:#fff;border-radius:4px;transition:background .3s,color .3s}
+table.mat td.highlight{background:#27a060;color:#fff}
+table.mat td input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#1a1a2e;outline:none}
+.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.product-card{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:12px;transition:background .3s,border-color .3s}
+.product-card.active{background:#d1fae5;border-color:#27a060}
+.product-card .p-label{font-size:11px;font-weight:700;color:#27a060;margin-bottom:4px}
+.product-card .p-formula{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a5a72;margin-bottom:4px}
+.product-card .p-value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#1a1a2e}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+.log{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+.compare-note{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px;font-size:13px;color:#92400e;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Strassen's Algorithm
+  </nav>
+  <div class="hero">
+    <div class="category-tag">Divide &amp; Conquer</div>
+    <h1>Strassen's Algorithm</h1>
+    <p class="tagline">Multiply 2×2 matrices with 7 multiplications instead of 8.</p>
+  </div>
+  <div class="explanation">
+    <p>Strassen's algorithm is a divide-and-conquer approach to matrix multiplication. For 2×2 matrices, naïve multiplication requires 8 scalar multiplications and 4 additions. Strassen showed in 1969 that 7 multiplications (P1–P7) suffice — the result matrix entries are computed from these 7 products using only additions and subtractions.</p>
+    <p>The divide-and-conquer structure: split each n×n matrix into four n/2×n/2 sub-matrices, recursively apply Strassen's 7-multiplication scheme to the sub-matrices, and combine. The recurrence T(n) = 7T(n/2) + O(n²) yields complexity O(n^log₂7) ≈ O(n^2.807), beating the naive O(n³).</p>
+    <p>Though Strassen is asymptotically faster, the smaller constant factor of naive multiplication and cache effects make Strassen practical only for matrices larger than roughly 100×100. It is, however, theoretically important and spawned a rich line of research into sub-cubic matrix multiplication.</p>
+  </div>
+  <div class="facts">
+    <div class="fact-card"><div class="label">Multiplications</div><div class="value">7 (vs 8 naïve)</div></div>
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n^2.807)</div></div>
+    <div class="fact-card"><div class="label">Space</div><div class="value">O(n²)</div></div>
+  </div>
+  <div class="sim-section">
+    <h2>Interactive Simulation — 2×2 Matrix Multiplication</h2>
+    <div class="compare-note">Naïve: 8 multiplications | Strassen: 7 multiplications (saves 1 per level of recursion)</div>
+    <div class="controls">
+      <button class="btn btn-primary" onclick="runStrassen()">Compute (Strassen)</button>
+      <button class="btn btn-secondary" onclick="resetMatrices()">Reset</button>
+    </div>
+    <div class="matrix-area">
+      <div>
+        <div class="matrix-label">Matrix A</div>
+        <table class="mat" id="matA">
+          <tr><td><input id="a11" value="2"></td><td><input id="a12" value="3"></td></tr>
+          <tr><td><input id="a21" value="1"></td><td><input id="a22" value="4"></td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="matrix-label">Matrix B</div>
+        <table class="mat" id="matB">
+          <tr><td><input id="b11" value="5"></td><td><input id="b12" value="6"></td></tr>
+          <tr><td><input id="b21" value="7"></td><td><input id="b22" value="8"></td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="matrix-label">Result C = A×B</div>
+        <table class="mat" id="matC">
+          <tr><td id="c11">?</td><td id="c12">?</td></tr>
+          <tr><td id="c21">?</td><td id="c22">?</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="products-grid" id="products">
+      <div class="product-card" id="pc1"><div class="p-label">P1</div><div class="p-formula">A11 × (B12 - B22)</div><div class="p-value">—</div></div>
+      <div class="product-card" id="pc2"><div class="p-label">P2</div><div class="p-formula">(A11 + A12) × B22</div><div class="p-value">—</div></div>
+      <div class="product-card" id="pc3"><div class="p-label">P3</div><div class="p-formula">(A21 + A22) × B11</div><div class="p-value">—</div></div>
+      <div class="product-card" id="pc4"><div class="p-label">P4</div><div class="p-formula">A22 × (B21 - B11)</div><div class="p-value">—</div></div>
+      <div class="product-card" id="pc5"><div class="p-label">P5</div><div class="p-formula">(A11 + A22) × (B11 + B22)</div><div class="p-value">—</div></div>
+      <div class="product-card" id="pc6"><div class="p-label">P6</div><div class="p-formula">(A12 - A22) × (B21 + B22)</div><div class="p-value">—</div></div>
+      <div class="product-card" id="pc7"><div class="p-label">P7</div><div class="p-formula">(A11 - A21) × (B11 + B12)</div><div class="p-value">—</div></div>
+    </div>
+    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function getVal(id){return parseFloat(document.getElementById(id).value)||0;}
+function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function runStrassen(){
+  document.getElementById('logEntries').innerHTML='';
+  ['c11','c12','c21','c22'].forEach(id=>document.getElementById(id).textContent='?');
+  for(let i=1;i<=7;i++){const c=document.getElementById('pc'+i);c.classList.remove('active');c.querySelector('.p-value').textContent='—';}
+  const a11=getVal('a11'),a12=getVal('a12'),a21=getVal('a21'),a22=getVal('a22');
+  const b11=getVal('b11'),b12=getVal('b12'),b21=getVal('b21'),b22=getVal('b22');
+  log(`A = [[${a11},${a12}],[${a21},${a22}]]`);
+  log(`B = [[${b11},${b12}],[${b21},${b22}]]`);
+  log(`Computing 7 Strassen products...`);
+  const steps=[
+    {id:'pc1',label:'P1',formula:`${a11} × (${b12} - ${b22})`,val:a11*(b12-b22)},
+    {id:'pc2',label:'P2',formula:`(${a11}+${a12}) × ${b22}`,val:(a11+a12)*b22},
+    {id:'pc3',label:'P3',formula:`(${a21}+${a22}) × ${b11}`,val:(a21+a22)*b11},
+    {id:'pc4',label:'P4',formula:`${a22} × (${b21}-${b11})`,val:a22*(b21-b11)},
+    {id:'pc5',label:'P5',formula:`(${a11}+${a22}) × (${b11}+${b22})`,val:(a11+a22)*(b11+b22)},
+    {id:'pc6',label:'P6',formula:`(${a12}-${a22}) × (${b21}+${b22})`,val:(a12-a22)*(b21+b22)},
+    {id:'pc7',label:'P7',formula:`(${a11}-${a21}) × (${b11}+${b12})`,val:(a11-a21)*(b11+b12)},
+  ];
+  let vals={};
+  for(const s of steps){
+    const card=document.getElementById(s.id);card.classList.add('active');
+    card.querySelector('.p-value').textContent=`= ${s.val}`;
+    vals[s.label]=s.val;
+    log(`${s.label} = ${s.formula} = ${s.val}`);
+    await sleep(600);
+    card.classList.remove('active');
+  }
+  const {P1,P2,P3,P4,P5,P6,P7}=vals;
+  const c11=P5+P4-P2+P6,c12=P1+P2,c21=P3+P4,c22=P5+P1-P3-P7;
+  log(`C11 = P5+P4-P2+P6 = ${P5}+${P4}-${P2}+${P6} = ${c11}`);
+  log(`C12 = P1+P2 = ${P1}+${P2} = ${c12}`);
+  log(`C21 = P3+P4 = ${P3}+${P4} = ${c21}`);
+  log(`C22 = P5+P1-P3-P7 = ${P5}+${P1}-${P3}-${P7} = ${c22}`);
+  document.getElementById('c11').textContent=c11;
+  document.getElementById('c12').textContent=c12;
+  document.getElementById('c21').textContent=c21;
+  document.getElementById('c22').textContent=c22;
+  ['c11','c12','c21','c22'].forEach(id=>{const el=document.getElementById(id);el.classList.add('highlight');});
+  log(`Result C = [[${c11},${c12}],[${c21},${c22}]] ✓`);
+}
+
+function resetMatrices(){
+  document.getElementById('logEntries').innerHTML='';
+  ['c11','c12','c21','c22'].forEach(id=>{const el=document.getElementById(id);el.textContent='?';el.classList.remove('highlight');});
+  for(let i=1;i<=7;i++){const c=document.getElementById('pc'+i);c.classList.remove('active');c.querySelector('.p-value').textContent='—';}
+}
+</script>
+</body>
+</html>

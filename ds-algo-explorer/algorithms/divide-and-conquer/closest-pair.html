@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Closest Pair of Points – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
+a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:920px;margin:0 auto;padding:32px 24px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
+.hero{margin-bottom:36px}
+.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:1.05rem;color:#5a5a72}
+.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
+.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
+.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
+.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
+canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
+.log{margin-top:16px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:200px;overflow-y:auto}
+.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
+.log-entry:last-child{border-bottom:none}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Closest Pair of Points
+  </nav>
+  <div class="hero">
+    <div class="category-tag">Divide &amp; Conquer</div>
+    <h1>Closest Pair of Points</h1>
+    <p class="tagline">Find the two nearest points in a plane in O(n log n) time.</p>
+  </div>
+  <div class="explanation">
+    <p>The closest pair problem asks: given n points in a plane, which two are closest together? The naïve O(n²) solution checks every pair. The divide-and-conquer algorithm achieves O(n log n) by recursively finding the closest pair in the left and right halves, then checking a narrow strip around the dividing line for any cross-half closest pair.</p>
+    <p>The algorithm divides points by the median x-coordinate into left and right halves, recursively finds the minimum distance d in each half, then examines the strip of width 2d around the dividing line. A geometric argument shows that within this strip, each point need only be compared with at most 7 other points — keeping the strip check linear.</p>
+    <p>This algorithm is a beautiful example of D&C where the "combine" step requires careful geometric insight. The recurrence T(n) = 2T(n/2) + O(n log n) yields O(n log² n) without the strip optimization, and O(n log n) with it.</p>
+  </div>
+  <div class="facts">
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n log n)</div></div>
+    <div class="fact-card"><div class="label">Space</div><div class="value">O(n)</div></div>
+    <div class="fact-card"><div class="label">Naïve Comparison</div><div class="value">O(n²)</div></div>
+  </div>
+  <div class="sim-section">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="generatePoints()">Generate Points</button>
+      <button class="btn btn-primary" onclick="findClosest()">Find Closest Pair</button>
+    </div>
+    <canvas id="cvs" width="820" height="380"></canvas>
+    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
+  </div>
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
+const W=cvs.width,H=cvs.height,PAD=30;
+let points=[],closestPair=[],divX=0,stripW=0,running=false;
+let phase='idle'; // idle, divided, found
+
+function rnd(lo,hi){return lo+Math.random()*(hi-lo);}
+function dist(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);}
+
+function generatePoints(){
+  if(running)return;
+  points=[];
+  for(let i=0;i<14;i++)points.push({x:rnd(PAD,W-PAD),y:rnd(PAD,H-PAD)});
+  closestPair=[];divX=0;stripW=0;phase='idle';
+  document.getElementById('logEntries').innerHTML='';
+  draw();
+}
+
+function draw(highlight={},stripRange=null,result=null){
+  ctx.clearRect(0,0,W,H);
+  // Background halves
+  if(phase==='divided'||phase==='found'){
+    ctx.fillStyle='rgba(39,160,96,0.04)';ctx.fillRect(PAD,PAD,divX-PAD,H-PAD*2);
+    ctx.fillStyle='rgba(59,130,246,0.04)';ctx.fillRect(divX,PAD,W-divX-PAD,H-PAD*2);
+    ctx.strokeStyle='#27a060';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(divX,PAD);ctx.lineTo(divX,H-PAD);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#27a060';ctx.font='11px Inter';ctx.textAlign='center';
+    ctx.fillText('divide',divX,PAD-6);
+  }
+  // Strip
+  if(stripRange){
+    ctx.fillStyle='rgba(245,158,11,0.12)';
+    ctx.fillRect(stripRange[0],PAD,stripRange[1]-stripRange[0],H-PAD*2);
+    ctx.strokeStyle='#f59e0b';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(stripRange[0],PAD);ctx.lineTo(stripRange[0],H-PAD);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(stripRange[1],PAD);ctx.lineTo(stripRange[1],H-PAD);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#92400e';ctx.font='10px Inter';ctx.textAlign='center';
+    ctx.fillText('strip',( stripRange[0]+stripRange[1])/2,H-PAD+14);
+  }
+  // Points
+  points.forEach((p,i)=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);
+    const inLeft=p.x<divX;
+    ctx.fillStyle=phase==='idle'?'#27a060':inLeft?'#27a060':'#3b82f6';
+    ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i,p.x,p.y);
+  });
+  // Closest pair line
+  if(closestPair.length===2){
+    const[a,b]=closestPair;
+    ctx.strokeStyle='#ef4444';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    ctx.fillStyle='#ef4444';ctx.font='bold 12px Inter';ctx.textAlign='center';
+    const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    ctx.fillText(`d=${dist(a,b).toFixed(2)}`,mx,my-12);
+    [a,b].forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,9,0,Math.PI*2);ctx.strokeStyle='#ef4444';ctx.lineWidth=3;ctx.stroke();});
+  }
+}
+
+function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function bruteForce(pts){
+  let best=Infinity,pair=[pts[0],pts[1]];
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const d=dist(pts[i],pts[j]);if(d<best){best=d;pair=[pts[i],pts[j]];}
+  }
+  return{d:best,pair};
+}
+
+async function findClosest(){
+  if(running||points.length<2)return;
+  running=true;
+  document.getElementById('logEntries').innerHTML='';
+  log(`Finding closest pair among ${points.length} points`);
+  const sorted=[...points].sort((a,b)=>a.x-b.x);
+  const mid=Math.floor(sorted.length/2);
+  divX=sorted[mid].x;phase='divided';draw();
+  await sleep(700);
+  const left=sorted.slice(0,mid),right=sorted.slice(mid);
+  const leftRes=bruteForce(left),rightRes=bruteForce(right);
+  log(`Left half: closest dist = ${leftRes.d.toFixed(3)} (${left.length} pts)`);
+  log(`Right half: closest dist = ${rightRes.d.toFixed(3)} (${right.length} pts)`);
+  await sleep(600);
+  const d=Math.min(leftRes.d,rightRes.d);
+  const strip=sorted.filter(p=>Math.abs(p.x-divX)<d);
+  const sx=divX-d,ex=divX+d;
+  draw({},[sx,ex]);
+  log(`δ = min(${leftRes.d.toFixed(3)}, ${rightRes.d.toFixed(3)}) = ${d.toFixed(3)}`);
+  log(`Strip width = 2δ = ${(2*d).toFixed(3)}, contains ${strip.length} points`);
+  await sleep(700);
+  // Check strip
+  strip.sort((a,b)=>a.y-b.y);
+  let stripBest=d,stripPair=leftRes.d<rightRes.d?leftRes.pair:rightRes.pair;
+  for(let i=0;i<strip.length;i++){
+    for(let j=i+1;j<strip.length&&(strip[j].y-strip[i].y)<stripBest;j++){
+      const dd=dist(strip[i],strip[j]);
+      if(dd<stripBest){stripBest=dd;stripPair=[strip[i],strip[j]];}
+    }
+  }
+  log(`Strip check: best in strip = ${stripBest.toFixed(3)}`);
+  closestPair=stripPair;phase='found';
+  draw({},[sx,ex]);
+  log(`Closest pair found! Distance = ${stripBest.toFixed(3)}`);
+  running=false;
+}
+
+generatePoints();
+</script>
+</body>
+</html>

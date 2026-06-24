@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Suffix Array Construction – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#2a9d8f}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=text]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:220px}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+th{background:var(--bg);padding:.4rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:.35rem .6rem;border-bottom:1px solid #f0eeea;transition:background .3s}
+tr.highlight td{background:#e8f8f5;font-weight:600}
+tr.active-row td{background:#fff3e0}
+.step-title{font-size:.8rem;font-weight:600;color:var(--accent);margin:.7rem 0 .3rem;font-family:'JetBrains Mono',monospace}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:220px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+.rank-row{display:flex;gap:4px;flex-wrap:wrap;margin:.5rem 0;font-family:'JetBrains Mono',monospace;font-size:.8rem}
+.rank-cell{padding:.2rem .4rem;background:var(--bg);border:1px solid var(--border);border-radius:4px;text-align:center}
+.rank-cell .r{color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Suffix Array Construction
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">String</span>
+    <h1>Suffix Array Construction</h1>
+    <p class="tagline">Build a sorted array of all suffixes in O(n log n) using the prefix-doubling (DC3/skew) approach.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>A suffix array is the sorted order of all suffixes of a string. Think of it as an alphabetical index of every possible ending of a book — if the book is "banana$", the index would let you binary-search for any pattern in O(m log n) time after O(n log n) preprocessing.</p>
+    <p>The prefix-doubling algorithm (Manber & Myers) works in rounds. In round k, suffixes are ranked by their first 2^k characters. Starting from single-character ranks, each doubling step sorts by the pair (rank[i], rank[i+k]), giving new ranks. After O(log n) rounds, all ranks are unique and define the suffix array.</p>
+    <p>Combined with the LCP array (Longest Common Prefix between adjacent suffixes), the suffix array enables O(n) pattern search, substring deduplication, and efficient string comparison — the backbone of bioinformatics tools like BWA and samtools.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(n log n)</div><div class="lbl">Build time</div></div>
+    <div class="fact"><div class="val">O(n)</div><div class="lbl">Space</div></div>
+    <div class="fact"><div class="val">O(log n)</div><div class="lbl">Doubling rounds</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div>
+        <label>Input String</label>
+        <input type="text" id="strInput" value="banana$"/>
+      </div>
+      <button class="btn" onclick="buildSA()" style="align-self:flex-end">Build SA</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div id="stepsViz"></div>
+    <div id="finalViz"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter a string and click "Build SA" to see prefix-doubling steps</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  document.getElementById('stepsViz').innerHTML='';
+  document.getElementById('finalViz').innerHTML='';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter a string and click "Build SA"</div>';
+}
+
+function buildSA(){
+  resetSim();
+  const s=document.getElementById('strInput').value.trim();
+  if(!s){alert('Enter a string');return;}
+  const n=s.length;
+  log('=== Suffix Array Construction (Prefix Doubling) ===','hi');
+  log(`String: "${s}" (n=${n})`);
+
+  // Initial ranks by char code
+  let rank=Array.from(s).map(c=>c.charCodeAt(0));
+  // Normalize ranks
+  const chars=[...new Set(rank)].sort((a,b)=>a-b);
+  const charMap={};chars.forEach((c,i)=>charMap[c]=i);
+  rank=rank.map(c=>charMap[c]);
+
+  let sa=Array.from({length:n},(_,i)=>i);
+  const steps=[];
+  steps.push({k:0,rank:[...rank],sa:[...sa].sort((a,b)=>rank[a]-rank[b])});
+
+  log(`Step 0 (k=1 char): ranks=[${rank.join(',')}]`);
+  const uniq0=[...new Set(rank)].sort((a,b)=>a-b);
+  log(`  Unique chars sorted: ${chars.map(c=>String.fromCharCode(c)).join(',')} → ranks ${uniq0.join(',')}`);
+
+  let k=1;
+  while(k<n){
+    const prevRank=[...rank];
+    sa.sort((a,b)=>{
+      if(prevRank[a]!==prevRank[b]) return prevRank[a]-prevRank[b];
+      const ra=a+k<n?prevRank[a+k]:-1;
+      const rb=b+k<n?prevRank[b+k]:-1;
+      return ra-rb;
+    });
+    // Assign new ranks
+    const newRank=new Array(n).fill(0);
+    newRank[sa[0]]=0;
+    for(let i=1;i<n;i++){
+      const p=sa[i-1],c=sa[i];
+      const samePrimary=prevRank[p]===prevRank[c];
+      const rp=p+k<n?prevRank[p+k]:-1;
+      const rc=c+k<n?prevRank[c+k]:-1;
+      const sameSecondary=rp===rc;
+      newRank[sa[i]]=newRank[sa[i-1]]+(samePrimary&&sameSecondary?0:1);
+    }
+    rank=newRank;
+    steps.push({k,rank:[...rank],sa:[...sa]});
+    log(`Step k=${k} (prefix len ${k*2}): SA=[${sa.join(',')}]`,'');
+    log(`  Ranks: [${rank.join(',')}]`);
+    if(Math.max(...rank)===n-1) break;
+    k*=2;
+  }
+
+  // Final SA
+  sa.sort((a,b)=>rank[a]-rank[b]);
+
+  // Compute LCP (Kasai)
+  const lcp=new Array(n).fill(0);
+  const inv=new Array(n).fill(0);
+  sa.forEach((v,i)=>inv[v]=i);
+  let h=0;
+  for(let i=0;i<n;i++){
+    if(inv[i]>0){
+      const j=sa[inv[i]-1];
+      while(i+h<n&&j+h<n&&s[i+h]===s[j+h]) h++;
+      lcp[inv[i]]=h;
+      if(h>0) h--;
+    }
+  }
+
+  // Render steps
+  renderSteps(steps,s,sa,lcp,n);
+}
+
+function renderSteps(steps,s,sa,lcp,n){
+  const viz=document.getElementById('stepsViz');
+  steps.forEach((step,si)=>{
+    const title=document.createElement('div');
+    title.className='step-title';
+    title.textContent=si===0?`Step 0: Initial ranks (k=1 char)`:`Step ${si}: k=${step.k} → prefix length ${step.k*2}`;
+    viz.appendChild(title);
+    const rrow=document.createElement('div');rrow.className='rank-row';
+    for(let i=0;i<n;i++){
+      const cell=document.createElement('div');cell.className='rank-cell';
+      cell.innerHTML=`<div>${s[i]}</div><div class="r">${step.rank[i]}</div>`;
+      rrow.appendChild(cell);
+    }
+    viz.appendChild(rrow);
+  });
+
+  // Final SA + LCP table
+  const fviz=document.getElementById('finalViz');
+  const ft=document.createElement('div');ft.className='step-title';ft.textContent='Final Suffix Array + LCP Array:';
+  fviz.appendChild(ft);
+  const tbl=document.createElement('table');
+  tbl.innerHTML=`<thead><tr><th>SA[i]</th><th>Suffix</th><th>LCP[i]</th></tr></thead>`;
+  const tbody=document.createElement('tbody');
+  sa.forEach((idx,i)=>{
+    const tr=document.createElement('tr');
+    const suf=s.substring(idx);
+    // Highlight common prefix with prev
+    let prefHtml=suf;
+    if(i>0&&lcp[i]>0){
+      prefHtml=`<span style="color:var(--accent);font-weight:700">${suf.substring(0,lcp[i])}</span>${suf.substring(lcp[i])}`;
+    }
+    tr.innerHTML=`<td>${idx}</td><td>${prefHtml}</td><td>${lcp[i]}</td>`;
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  fviz.appendChild(tbl);
+  log(`Final SA: [${sa.join(',')}]`,'ok');
+  log(`LCP array: [${lcp.join(',')}]`,'ok');
+}
+</script>
+</body>
+</html>

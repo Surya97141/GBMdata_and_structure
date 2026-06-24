@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rod Cutting – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .container{max-width:900px;margin:0 auto;padding:0 24px;}
+  /* breadcrumb */
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  /* hero */
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  /* explanation */
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;color:var(--ink);}
+  /* facts */
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  /* simulation */
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
+  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
+  .input-group{display:flex;flex-direction:column;gap:4px;}
+  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
+  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;width:220px;background:var(--bg);}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+  .btn:hover{opacity:.85;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  /* dp table */
+  .dp-scroll{overflow-x:auto;margin:18px 0;}
+  table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.85rem;}
+  table.dp th,table.dp td{border:1px solid var(--border);padding:8px 14px;text-align:center;min-width:52px;transition:background .3s,color .3s;}
+  table.dp th{background:var(--bg);font-weight:600;color:var(--muted);}
+  table.dp td{background:var(--surface);}
+  table.dp td.active{background:var(--accent);color:#fff;}
+  table.dp td.done{background:#fff3ed;}
+  .cuts-result{margin-top:14px;font-size:.95rem;}
+  .cuts-result strong{color:var(--accent);}
+  /* step log */
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#e8a87c;}
+  /* back */
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Rod Cutting
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Rod Cutting</h1>
+    <p class="tagline">Maximize profit by cutting a rod into pieces sold at different prices.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Imagine you own a steel rod of length <em>n</em> and a price list that tells you how much a piece of each length is worth. You can make as many cuts as you like, anywhere along the rod. The goal is to figure out the cutting strategy that maximizes total revenue.</p>
+    <p>A greedy approach (always cut the highest-ratio piece first) fails. Dynamic programming saves us: <code>dp[i]</code> stores the maximum revenue from a rod of length <em>i</em>. To fill it, we try every first-cut size <em>j</em> from 1 to <em>i</em> and take <code>max(price[j] + dp[i-j])</code>.</p>
+    <p>This bottom-up DP runs in O(n²) time — each subproblem is solved once and its result reused, turning a naively exponential search into a fast polynomial one.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">O(n)</div><div class="label">Space Complexity</div></div>
+    <div class="fact-card"><div class="val">Bottom-Up</div><div class="label">DP Approach</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <div class="input-row">
+      <div class="input-group">
+        <label>Rod Length (n)</label>
+        <input type="number" id="rodLen" value="8" min="1" max="12">
+      </div>
+      <div class="input-group">
+        <label>Prices p[1..n] (comma-separated)</label>
+        <input type="text" id="prices" value="1,5,8,9,10,17,17,20">
+      </div>
+      <button class="btn" id="solveBtn" onclick="startSolve()">Solve</button>
+    </div>
+
+    <div class="dp-scroll">
+      <table class="dp" id="dpTable"></table>
+    </div>
+    <div class="cuts-result" id="cutsResult"></div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+function log(msg, highlight=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(highlight) p.classList.add('highlight');
+  p.textContent=msg;
+  lb.appendChild(p);
+  lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSolve(){
+  const btn=document.getElementById('solveBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+  document.getElementById('cutsResult').innerHTML='';
+
+  const n=parseInt(document.getElementById('rodLen').value)||8;
+  const rawPrices=document.getElementById('prices').value.split(',').map(x=>parseInt(x.trim())||0);
+  const p=[0,...rawPrices]; // 1-indexed
+
+  // Build dp and choice arrays
+  const dp=new Array(n+1).fill(0);
+  const choice=new Array(n+1).fill(0);
+
+  // Build header row
+  const tbl=document.getElementById('dpTable');
+  tbl.innerHTML='';
+  const thead=tbl.createTHead();
+  const hrow=thead.insertRow();
+  hrow.insertCell().textContent='i';
+  for(let i=0;i<=n;i++){const th=document.createElement('th');th.textContent=i;hrow.appendChild(th);}
+
+  const tbody=tbl.createTBody();
+  const drow=tbody.insertRow();
+  const firstCell=drow.insertCell();
+  firstCell.textContent='dp[i]';
+  firstCell.style.fontWeight='600';
+  const cells=[];
+  for(let i=0;i<=n;i++){
+    const td=drow.insertCell();
+    td.textContent='–';
+    cells.push(td);
+  }
+
+  // Set dp[0]=0
+  cells[0].textContent='0';
+  cells[0].classList.add('done');
+  log('dp[0] = 0 (base case: empty rod has value 0)');
+  await sleep(300);
+
+  for(let i=1;i<=n;i++){
+    cells[i].classList.add('active');
+    let best=-Infinity, bestJ=1;
+    const parts=[];
+    for(let j=1;j<=i;j++){
+      const val=(p[j]||0)+dp[i-j];
+      parts.push(`p[${j}]+dp[${i-j}]=${val}`);
+      if(val>best){best=val;bestJ=j;}
+    }
+    dp[i]=best;
+    choice[i]=bestJ;
+    log(`dp[${i}] = max(${parts.join(', ')}) = ${best}`, i===n);
+    await sleep(350);
+    cells[i].textContent=best;
+    cells[i].classList.remove('active');
+    cells[i].classList.add('done');
+  }
+
+  // Backtrace cuts
+  let rem=n, cuts=[];
+  while(rem>0){cuts.push(choice[rem]);rem-=choice[rem];}
+  document.getElementById('cutsResult').innerHTML=
+    `<strong>Max Revenue: ${dp[n]}</strong> &nbsp;|&nbsp; Best cuts: [${cuts.join(', ')}]`;
+  log(`Done. Max revenue = ${dp[n]}. Cuts: [${cuts.join(', ')}]`, true);
+  btn.disabled=false;
+}
+
+// Init table on load
+window.onload=()=>startSolve();
+</script>
+</body>
+</html>

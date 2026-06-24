@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Aho-Corasick Algorithm – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#2a9d8f}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem;color:var(--border)}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=text]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:260px}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+.char-row{display:flex;flex-wrap:wrap;gap:4px;margin:1rem 0}
+.ch{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:600;border:2px solid var(--border);background:var(--bg);transition:all .3s}
+.ch.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ch.matched{background:#e8f8f5;color:var(--accent);border-color:var(--accent)}
+.trie-area{overflow-x:auto;margin:1rem 0}
+.trie-node{display:inline-block;background:var(--surface);border:2px solid var(--border);border-radius:8px;padding:.3rem .6rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;margin:2px;position:relative}
+.trie-node.match{border-color:var(--accent);background:#e8f8f5}
+.trie-node.current{border-color:#e9c46a;background:#fff9e6}
+.trie-level{display:flex;flex-wrap:wrap;gap:6px;margin:.4rem 0}
+.trie-label{font-size:.75rem;color:var(--muted);margin-bottom:.3rem}
+.pattern-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.ptag{padding:.2rem .6rem;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#e8f8f5;color:var(--accent);border:1px solid var(--accent)}
+.match-result{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.mresult{padding:.2rem .6rem;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.8rem;background:var(--accent);color:#fff}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem;line-height:1.5}
+#log .hi{color:#79c0ff}
+#log .ok{color:#56d364}
+#log .warn{color:#e3b341}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Aho-Corasick
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">String</span>
+    <h1>Aho-Corasick Algorithm</h1>
+    <p class="tagline">Multi-pattern string search using a trie with failure links — find all patterns simultaneously in linear time.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>Aho-Corasick is like a postal sorting machine that knows all zip codes at once. Instead of checking each pattern one by one (like KMP for each pattern separately), it builds a trie from all patterns, then adds <strong>failure links</strong> (suffix links) that let the automaton gracefully fall back to the longest proper suffix that is a prefix of some pattern.</p>
+    <p>During the search phase, the algorithm processes the text left-to-right exactly once. At each character, it either advances to a child node, follows a failure link, or uses a precomputed goto table that folds both transitions. The time complexity is O(N + M + Z) where N is text length, M is total pattern length, and Z is the number of matches.</p>
+    <p>Real-world uses include intrusion detection systems (Snort), biological sequence search (searching DNA for motifs), and search engines indexing against keyword blacklists.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(N+M+Z)</div><div class="lbl">Search time</div></div>
+    <div class="fact"><div class="val">O(M·Σ)</div><div class="lbl">Build time</div></div>
+    <div class="fact"><div class="val">Linear</div><div class="lbl">Text passes</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div>
+        <label>Text</label>
+        <input type="text" id="txtInput" value="he is his sister"/>
+      </div>
+      <div>
+        <label>Patterns (comma-separated)</label>
+        <input type="text" id="patInput" value="he,she,his,hers"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn" onclick="buildAutomaton()">Build Automaton</button>
+      <button class="btn sec" onclick="searchText()">Search Text</button>
+      <button class="btn sec" onclick="resetAll()">Reset</button>
+    </div>
+
+    <div style="margin-top:1.2rem">
+      <div class="trie-label">Trie States (after build):</div>
+      <div id="trieViz" class="trie-area"></div>
+    </div>
+    <div style="margin-top:1rem">
+      <div class="trie-label">Text scanning:</div>
+      <div id="textViz" class="char-row"></div>
+    </div>
+    <div style="margin-top:.5rem">
+      <div class="trie-label">Matches found:</div>
+      <div id="matchViz" class="match-result"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Build automaton and search to see steps</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let goto_fn={}, fail={}, output={}, stateCount=0;
+let builtPatterns=[];
+
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetAll(){
+  goto_fn={};fail={};output={};stateCount=0;builtPatterns=[];
+  document.getElementById('trieViz').innerHTML='';
+  document.getElementById('textViz').innerHTML='';
+  document.getElementById('matchViz').innerHTML='';
+  document.getElementById('log').innerHTML='<div class="hi">// Build automaton and search to see steps</div>';
+}
+
+function buildAutomaton(){
+  resetAll();
+  const patterns=document.getElementById('patInput').value.split(',').map(s=>s.trim()).filter(s=>s);
+  builtPatterns=patterns;
+  // Init root
+  goto_fn[0]={};output[0]=[];fail[0]=0;stateCount=1;
+
+  log('=== Building Trie ===','hi');
+  // Build trie
+  for(let p of patterns){
+    let cur=0;
+    for(let ch of p){
+      if(goto_fn[cur][ch]===undefined){
+        goto_fn[stateCount]={};output[stateCount]=[];fail[stateCount]=0;
+        goto_fn[cur][ch]=stateCount++;
+      }
+      cur=goto_fn[cur][ch];
+    }
+    output[cur].push(p);
+    log(`Pattern "${p}": state ${cur} → output=${JSON.stringify(output[cur])}`);
+  }
+
+  // Fill missing transitions from root
+  for(let ch of 'abcdefghijklmnopqrstuvwxyz '.split('')){
+    if(goto_fn[0][ch]===undefined) goto_fn[0][ch]=0;
+  }
+
+  // BFS to build failure links
+  log('=== Building Failure Links (BFS) ===','hi');
+  const queue=[];
+  for(let ch in goto_fn[0]){
+    const s=goto_fn[0][ch];
+    if(s!==0){fail[s]=0;queue.push(s);}
+  }
+  while(queue.length){
+    const r=queue.shift();
+    for(let ch in goto_fn[r]){
+      const s=goto_fn[r][ch];
+      queue.push(s);
+      let state=fail[r];
+      while(state!==0 && goto_fn[state][ch]===undefined) state=fail[state];
+      fail[s]= (goto_fn[state][ch]!==undefined && goto_fn[state][ch]!==s) ? goto_fn[state][ch] : 0;
+      output[s]=[...output[s],...output[fail[s]]];
+      if(output[fail[s]].length>0)
+        log(`  State ${s}: fail→${fail[s]}, inherited output ${JSON.stringify(output[fail[s]])}`, 'ok');
+      else
+        log(`  State ${s}: fail→${fail[s]}`);
+    }
+  }
+
+  renderTrie();
+  log('Automaton built! Click "Search Text" to scan.','warn');
+}
+
+function renderTrie(){
+  const viz=document.getElementById('trieViz');
+  viz.innerHTML='';
+  // Show states as flat list with transitions
+  const info=document.createElement('div');
+  info.style.fontSize='.82rem';info.style.fontFamily='JetBrains Mono,monospace';
+  for(let s=0;s<stateCount;s++){
+    const trans=Object.entries(goto_fn[s]||{}).filter(([,v])=>v!==0||s===0).map(([k,v])=>`${k}→${v}`).join(', ');
+    const out=output[s]&&output[s].length?` [OUTPUT: ${output[s].join(',')}]`:'';
+    const fl=`  fail→${fail[s]||0}`;
+    const row=document.createElement('div');
+    row.id=`st-${s}`;
+    row.style.cssText='padding:.2rem .5rem;margin:2px 0;border-radius:4px;display:inline-block;margin-right:6px;border:1.5px solid var(--border);background:var(--bg)';
+    row.textContent=`S${s}${out} | {${trans}}${fl}`;
+    if(out) row.style.borderColor='var(--accent)',row.style.background='#e8f8f5';
+    info.appendChild(row);
+    info.appendChild(document.createElement('br'));
+  }
+  viz.appendChild(info);
+}
+
+function searchText(){
+  if(stateCount===0){alert('Build automaton first!');return;}
+  const text=document.getElementById('txtInput').value;
+  const tviz=document.getElementById('textViz');
+  tviz.innerHTML='';
+  document.getElementById('matchViz').innerHTML='';
+  const allChar=text.split('');
+  const spans=allChar.map((c,i)=>{
+    const sp=document.createElement('span');
+    sp.className='ch';sp.textContent=c;sp.id=`tc-${i}`;
+    tviz.appendChild(sp);
+    return sp;
+  });
+
+  log('=== Searching Text ===','hi');
+  const matches=[];
+  let state=0;
+  let delay=0;
+  const step=(i)=>{
+    if(i>=text.length){
+      renderMatches(matches,text);
+      return;
+    }
+    const ch=text[i].toLowerCase();
+    // Highlight current
+    spans.forEach(s=>s.classList.remove('active'));
+    spans[i].classList.add('active');
+    // Highlight current state
+    document.querySelectorAll('[id^="st-"]').forEach(el=>{
+      el.style.background='';el.style.borderColor='';
+    });
+    const stEl=document.getElementById(`st-${state}`);
+    if(stEl){stEl.style.background='#fff9e6';stEl.style.borderColor='#e9c46a';}
+
+    // Follow failure links if no transition
+    let nextState=state;
+    while(nextState!==0 && goto_fn[nextState][ch]===undefined) nextState=fail[nextState];
+    if(goto_fn[nextState][ch]!==undefined) nextState=goto_fn[nextState][ch];
+    else nextState=0;
+
+    log(`i=${i} ('${text[i]}'): S${state}→S${nextState}${output[nextState]&&output[nextState].length?' MATCH:'+JSON.stringify(output[nextState]):''}`);
+    state=nextState;
+
+    if(output[state]&&output[state].length){
+      output[state].forEach(p=>{
+        const start=i-p.length+1;
+        matches.push({start,end:i,pattern:p});
+        for(let k=start;k<=i;k++) spans[k]&&spans[k].classList.add('matched');
+      });
+      log(`  Output at S${state}: ${JSON.stringify(output[state])}`,'ok');
+    }
+    setTimeout(()=>step(i+1),400);
+  };
+  step(0);
+}
+
+function renderMatches(matches,text){
+  const mv=document.getElementById('matchViz');
+  if(!matches.length){mv.textContent='No matches found.';return;}
+  matches.forEach(m=>{
+    const d=document.createElement('span');
+    d.className='mresult';
+    d.textContent=`"${m.pattern}" @${m.start}`;
+    mv.appendChild(d);
+  });
+  log(`Done. ${matches.length} match(es) found.`,'ok');
+}
+</script>
+</body>
+</html>

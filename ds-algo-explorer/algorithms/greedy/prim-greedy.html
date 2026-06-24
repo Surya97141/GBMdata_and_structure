@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prim's Algorithm – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:960px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px;}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;margin-bottom:16px;}
+  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
+  .viz-row{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;}
+  canvas{display:block;border-radius:8px;border:1px solid var(--border);}
+  .mst-table{font-family:'JetBrains Mono',monospace;font-size:.85rem;align-self:start;}
+  .mst-table table{border-collapse:collapse;}
+  .mst-table th,.mst-table td{border:1px solid var(--border);padding:8px 14px;text-align:center;}
+  .mst-table th{background:var(--bg);color:var(--muted);font-weight:600;}
+  .mst-table tr.added td{background:#fff8e0;font-weight:600;color:var(--accent);}
+  .total-cost{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent);}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#f5d87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Prim's Algorithm (Greedy)
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Greedy</span>
+    <h1>Prim's Algorithm</h1>
+    <p class="tagline">Grow a Minimum Spanning Tree one cheapest crossing edge at a time.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Given a connected, weighted, undirected graph, the Minimum Spanning Tree (MST) is the subset of edges that connects all vertices with minimum total weight and no cycles. Prim's algorithm builds the MST greedily, starting from any node.</p>
+    <p>At each step, Prim looks at all edges that cross the "cut" — one endpoint in the current MST, one outside — and picks the <strong>cheapest</strong> crossing edge. This greedy choice is provably optimal by the Cut Property: the minimum-weight edge crossing any cut must be in some MST.</p>
+    <p>Prim's is conceptually similar to Dijkstra but tracks edge weight instead of path distance. It runs in O(E log V) with a priority queue and is well-suited for dense graphs.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(E log V)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">Cut Property</div><div class="label">Correctness Proof</div></div>
+    <div class="fact-card"><div class="val">V−1 edges</div><div class="label">MST Size</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <button class="btn" id="runBtn" onclick="runPrim()">Run Prim (Greedy)</button>
+
+    <div class="viz-row">
+      <canvas id="graphCanvas" width="500" height="340"></canvas>
+      <div class="mst-table">
+        <table id="mstTable"></table>
+        <div class="total-cost" id="totalCost"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const NODES=[
+  {id:0,label:'A',x:80,y:170},
+  {id:1,label:'B',x:200,y:60},
+  {id:2,label:'C',x:200,y:280},
+  {id:3,label:'D',x:340,y:60},
+  {id:4,label:'E',x:340,y:280},
+  {id:5,label:'F',x:460,y:170},
+];
+const EDGES=[
+  {u:0,v:1,w:2},{u:0,v:2,w:6},{u:1,v:2,w:8},{u:1,v:3,w:5},
+  {u:2,v:4,w:9},{u:3,v:4,w:10},{u:3,v:5,w:15},{u:4,v:5,w:8},
+  {u:1,v:4,w:3},{u:2,v:3,w:7},
+];
+
+let inMST, mstEdges, nodeStates;
+
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function getAdj(){
+  const adj=Array.from({length:6},()=>[]);
+  EDGES.forEach(e=>{adj[e.u].push({to:e.v,w:e.w,eu:e.u,ev:e.v});adj[e.v].push({to:e.u,w:e.w,eu:e.u,ev:e.v});});
+  return adj;
+}
+
+function drawGraph(highlightEdge=null){
+  const canvas=document.getElementById('graphCanvas');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  EDGES.forEach(e=>{
+    const isMST=mstEdges&&mstEdges.some(me=>(me.u===e.u&&me.v===e.v)||(me.u===e.v&&me.v===e.u));
+    const isHl=highlightEdge&&((highlightEdge.u===e.u&&highlightEdge.v===e.v)||(highlightEdge.u===e.v&&highlightEdge.v===e.u));
+    ctx.strokeStyle=isHl?'#e8622a':isMST?'#d4a017':'#d0ccc4';
+    ctx.lineWidth=isMST?3.5:isHl?2.5:1.5;
+    ctx.beginPath();
+    ctx.moveTo(NODES[e.u].x,NODES[e.u].y);
+    ctx.lineTo(NODES[e.v].x,NODES[e.v].y);
+    ctx.stroke();
+    const mx=(NODES[e.u].x+NODES[e.v].x)/2;
+    const my=(NODES[e.u].y+NODES[e.v].y)/2;
+    ctx.fillStyle='#5a5a72';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(e.w,mx,my-4);
+  });
+
+  NODES.forEach(n=>{
+    const inMst=inMST&&inMST[n.id];
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    ctx.fillStyle=inMst?'#d4a017':'#1a1a2e';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 13px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.label,n.x,n.y);ctx.textBaseline='alphabetic';
+  });
+
+  // Cut indicator
+  if(inMST){
+    const mstNodes=NODES.filter(n=>inMST[n.id]);
+    const nonMST=NODES.filter(n=>!inMST[n.id]);
+    // Draw a subtle dashed region
+    if(mstNodes.length>0&&nonMST.length>0){
+      ctx.setLineDash([5,4]);
+      ctx.strokeStyle='rgba(212,160,23,0.35)';ctx.lineWidth=1;
+      ctx.beginPath();
+      mstNodes.forEach((n,i)=>{if(i===0)ctx.moveTo(n.x,n.y);else ctx.lineTo(n.x,n.y);});
+      ctx.closePath();ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+}
+
+function buildMSTTable(edges=[]){
+  const tbl=document.getElementById('mstTable');
+  tbl.innerHTML='<tr><th>Edge</th><th>Weight</th></tr>';
+  let total=0;
+  edges.forEach(e=>{
+    const tr=tbl.insertRow();tr.classList.add('added');
+    tr.insertCell().textContent=`${NODES[e.u].label}−${NODES[e.v].label}`;
+    tr.insertCell().textContent=e.w;
+    total+=e.w;
+  });
+  document.getElementById('totalCost').textContent=edges.length?`Total: ${total}`:'';
+}
+
+async function runPrim(){
+  const btn=document.getElementById('runBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+  document.getElementById('totalCost').textContent='';
+
+  inMST=new Array(6).fill(false);
+  mstEdges=[];
+  const adj=getAdj();
+
+  // Start from node 0
+  inMST[0]=true;
+  drawGraph();buildMSTTable();
+  log(`Start Prim from node ${NODES[0].label}. MST={A}.`);
+  await sleep(400);
+
+  for(let iter=0;iter<5;iter++){
+    // Find min crossing edge
+    let best=null;
+    EDGES.forEach(e=>{
+      const crossU=inMST[e.u]&&!inMST[e.v];
+      const crossV=inMST[e.v]&&!inMST[e.u];
+      if(crossU||crossV){
+        if(!best||e.w<best.w) best=e;
+      }
+    });
+    if(!best) break;
+
+    const newNode=inMST[best.u]?best.v:best.u;
+    log(`Greedy: cheapest crossing edge=(${NODES[best.u].label},${NODES[best.v].label},w=${best.w}). Add to MST.`);
+
+    drawGraph(best);
+    await sleep(600);
+
+    inMST[newNode]=true;
+    mstEdges.push(best);
+    drawGraph();buildMSTTable(mstEdges);
+
+    // Log new crossing edges
+    const newCrossing=EDGES.filter(e=>{
+      const cu=inMST[e.u]&&!inMST[e.v];
+      const cv=inMST[e.v]&&!inMST[e.u];
+      return cu||cv;
+    });
+    if(newCrossing.length){
+      log(`  New crossing edges: ${newCrossing.map(e=>`(${NODES[e.u].label},${NODES[e.v].label},w=${e.w})`).join(', ')}.`);
+    }
+    await sleep(500);
+  }
+
+  const total=mstEdges.reduce((s,e)=>s+e.w,0);
+  log(`MST complete. Edges: ${mstEdges.map(e=>`${NODES[e.u].label}-${NODES[e.v].label}(${e.w})`).join(', ')}. Total weight=${total}.`,true);
+  btn.disabled=false;
+}
+
+inMST=new Array(6).fill(false);mstEdges=[];
+drawGraph();buildMSTTable();
+</script>
+</body>
+</html>

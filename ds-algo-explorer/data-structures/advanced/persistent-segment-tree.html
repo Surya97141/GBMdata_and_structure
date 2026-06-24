@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Persistent Segment Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#c0392b;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
+.ver-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;}
+.ver-chip{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.3rem .7rem;border-radius:8px;border:1.5px solid var(--b);background:#f9f9f7;cursor:pointer;transition:all .15s;}
+.ver-chip.active{background:var(--a);color:#fff;border-color:var(--a);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:80px;}
+.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
+.controls label{font-size:.85rem;color:var(--m);font-weight:500;}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#fdecea;color:var(--a);border:1px solid #f5c6c2;}.btn-sec:hover{background:#f9d5d2;}
+.query-result{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);margin-top:.6rem;min-height:1.4rem;font-weight:600;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    Persistent Segment Tree
+  </nav>
+  <header class="hero">
+    <span class="tag">Advanced</span>
+    <h1>Persistent Segment Tree</h1>
+    <p>A segment tree that never forgets — every update creates a new version while sharing unchanged nodes, enabling time-travel queries on any historical state.</p>
+  </header>
+  <section class="prose">
+    <p>A <strong>Persistent Segment Tree</strong> extends a regular segment tree by preserving all historical versions after updates. Instead of modifying nodes in place, each update creates at most O(log n) new nodes along the changed path and reuses all unchanged nodes from the previous version. The result: a branching tree of versions where each root points to a complete, self-consistent snapshot.</p>
+    <p>Think of a Git repository. Each commit creates a new tree object, reusing unchanged blobs and trees. You can checkout any commit (version) and see the exact file state at that point. A persistent segment tree does the same for arrays: update one element, get a new version — but "old commits" remain fully queryable in O(log n) time without storing n elements each time.</p>
+    <p>The key insight: only the nodes on the root-to-leaf path change (O(log n) nodes). Every other subtree is identical in both versions — represented by the same node object in memory, pointed to by both version trees. This sharing makes each update O(log n) space instead of O(n).</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Update</div><div class="fact-val">O(log n) time+space</div></div>
+    <div class="fact"><div class="fact-label">Query (any version)</div><div class="fact-val">O(log n)</div></div>
+    <div class="fact"><div class="fact-label">Total Space</div><div class="fact-val">O(n + q·log n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Offline queries, Undo history, K-th order stats</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">Persistent Segment Tree — Range Sum, 8-element array</div>
+    <canvas id="cv" height="360"></canvas>
+    <div class="ver-row" id="verRow"></div>
+    <div class="query-result" id="qResult"></div>
+    <div class="controls">
+      <label>Update: index</label>
+      <input id="idxIn" type="number" placeholder="1–8" min="1" max="8"/>
+      <label>= value</label>
+      <input id="valIn" type="number" placeholder="value" min="0" max="99"/>
+      <button class="btn btn-pri" onclick="doUpdate()">Apply Update (new version)</button>
+    </div>
+    <div class="controls" style="margin-top:.5rem;">
+      <label>Query version</label>
+      <input id="qver" type="number" placeholder="ver" min="0"/>
+      <label>range [</label>
+      <input id="ql" type="number" placeholder="l" min="1" max="8"/>
+      <label>,</label>
+      <input id="qr" type="number" placeholder="r" min="1" max="8"/>
+      <label>]</label>
+      <button class="btn btn-sec" onclick="doQuery()">Query Sum</button>
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+const N=8;
+let nodePool=[];
+let roots=[];
+let activeVer=0;
+let arrVersions=[];
+
+function newNode(l,r,sum,isNew=false){
+  const n={l,r,sum,isNew}; nodePool.push(n); return n;
+}
+
+function build(lo,hi,arr){
+  if(lo===hi) return newNode(null,null,arr[lo-1]);
+  const mid=(lo+hi)>>1;
+  const L=build(lo,mid,arr),R=build(mid+1,hi,arr);
+  return newNode(L,R,L.sum+R.sum);
+}
+
+function update(node,lo,hi,pos,val){
+  if(lo===hi) return newNode(null,null,val,true);
+  const mid=(lo+hi)>>1;
+  let L=node.l,R=node.r;
+  if(pos<=mid) L=update(node.l,lo,mid,pos,val);
+  else R=update(node.r,mid+1,hi,pos,val);
+  const n=newNode(L,R,L.sum+R.sum,true);
+  return n;
+}
+
+function query(node,lo,hi,l,r){
+  if(!node) return 0;
+  if(l<=lo&&hi<=r) return node.sum;
+  const mid=(lo+hi)>>1;
+  let s=0;
+  if(l<=mid) s+=query(node.l,lo,mid,l,r);
+  if(r>mid) s+=query(node.r,mid+1,hi,l,r);
+  return s;
+}
+
+// Init
+const initArr=[3,1,4,1,5,9,2,6];
+arrVersions.push([...initArr]);
+const root0=build(1,N,initArr);
+roots.push(root0);
+
+// Canvas
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=360; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); render();
+}
+window.addEventListener('resize',resize);
+
+// Assign positions to a single tree rooted at r
+function assignPos(node,lo,hi,x,y,spread){
+  if(!node) return;
+  node._x=x; node._y=y; node._lo=lo; node._hi=hi;
+  if(node.l||node.r){
+    const mid=(lo+hi)>>1;
+    if(node.l) assignPos(node.l,lo,mid,x-spread,y+55,spread/2);
+    if(node.r) assignPos(node.r,mid+1,hi,x+spread,y+55,spread/2);
+  }
+}
+
+const VER_COLORS=['#c0392b','#2980b9','#27a060','#8e44ad','#f39c12','#16a085'];
+
+function drawTree(node,verColor,alpha){
+  if(!node) return;
+  if(node.l){
+    ctx.beginPath(); ctx.moveTo(node._x,node._y); ctx.lineTo(node.l._x,node.l._y);
+    ctx.strokeStyle=node.l.isNew?verColor:'#c8c6be';
+    ctx.lineWidth=node.l.isNew?2:1.2; ctx.stroke();
+    drawTree(node.l,verColor,alpha);
+  }
+  if(node.r){
+    ctx.beginPath(); ctx.moveTo(node._x,node._y); ctx.lineTo(node.r._x,node.r._y);
+    ctx.strokeStyle=node.r.isNew?verColor:'#c8c6be';
+    ctx.lineWidth=node.r.isNew?2:1.2; ctx.stroke();
+    drawTree(node.r,verColor,alpha);
+  }
+  const R=14;
+  ctx.beginPath(); ctx.arc(node._x,node._y,R,0,Math.PI*2);
+  ctx.fillStyle=node.isNew?verColor:'#e8f5ee'; ctx.fill();
+  ctx.strokeStyle=node.isNew?verColor:'#bbb'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle=node.isNew?'#fff':'#1a1a2e';
+  ctx.font="bold 10px 'JetBrains Mono',monospace";
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(node.sum,node._x,node._y);
+  // Range label
+  ctx.fillStyle='#8a8a9a'; ctx.font="8px 'Inter',sans-serif";
+  ctx.fillText(`[${node._lo},${node._hi}]`,node._x,node._y+R+9);
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  // Show at most 2 versions side by side
+  const showCount=Math.min(roots.length,2);
+  const startVer=Math.max(0,activeVer-1);
+  const versToShow=roots.slice(startVer,startVer+showCount);
+  const treeW=W/showCount;
+  for(let i=0;i<versToShow.length;i++){
+    const v=startVer+i;
+    const root=versToShow[i];
+    const col=VER_COLORS[v%VER_COLORS.length];
+    // clear new markers for non-active
+    if(v!==activeVer) clearNewMarks(root);
+    assignPos(root,1,N,treeW/2+i*treeW,36,treeW/4.5);
+    // Version header
+    ctx.fillStyle=v===activeVer?col:'#aaa';
+    ctx.font=`bold 12px 'Inter',sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText(`Version ${v}${v===activeVer?' (active)':''}`,treeW/2+i*treeW,6);
+    // Array row
+    const arr=arrVersions[v];
+    if(arr){
+      const cw=Math.min(32,(treeW-20)/(N));
+      const sx=treeW/2+i*treeW-cw*N/2;
+      for(let j=0;j<N;j++){
+        ctx.fillStyle=v===activeVer?'#fdecea':'#f0f0ec';
+        ctx.fillRect(sx+j*cw,22,cw-2,16);
+        ctx.strokeStyle=v===activeVer?col:'#bbb';ctx.lineWidth=1;ctx.strokeRect(sx+j*cw,22,cw-2,16);
+        ctx.fillStyle=v===activeVer?col:'#666';ctx.font="9px 'JetBrains Mono',monospace";
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(arr[j],sx+j*cw+cw/2-1,30);
+      }
+    }
+    drawTree(root,col,v===activeVer?1:0.5);
+  }
+  // Shared node hint
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('Colored nodes = new in that version  |  Grey = shared with previous version',8,H-20);
+}
+
+function clearNewMarks(node){ if(!node) return; node.isNew=false; clearNewMarks(node.l); clearNewMarks(node.r); }
+
+function updateVerChips(){
+  const el=document.getElementById('verRow');
+  el.innerHTML='';
+  roots.forEach((_,i)=>{
+    const chip=document.createElement('span');
+    chip.className='ver-chip'+(i===activeVer?' active':'');
+    chip.textContent=`V${i}`;
+    chip.onclick=()=>{ activeVer=i; updateVerChips(); render(); };
+    el.appendChild(chip);
+  });
+  document.getElementById('qver').value=activeVer;
+  document.getElementById('ql').value=1;
+  document.getElementById('qr').value=N;
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+function doUpdate(){
+  const idx=parseInt(document.getElementById('idxIn').value);
+  const val=parseInt(document.getElementById('valIn').value);
+  if(isNaN(idx)||isNaN(val)||idx<1||idx>N){alert('Index 1-8 and a value required.');return;}
+  const prevArr=[...arrVersions[activeVer]];
+  const newArr=[...prevArr]; newArr[idx-1]=val;
+  arrVersions.push(newArr);
+  // Clear old new-marks
+  for(const r of roots) clearNewMarks(r);
+  const newRoot=update(roots[activeVer],1,N,idx,val);
+  roots.push(newRoot);
+  const newVer=roots.length-1;
+  activeVer=newVer;
+  log(`V${newVer}: update index ${idx} → ${val}. Created O(log ${N}) new nodes. Old V${newVer-1} unchanged (shared subtrees).`);
+  updateVerChips(); render();
+}
+
+function doQuery(){
+  const v=parseInt(document.getElementById('qver').value);
+  const l=parseInt(document.getElementById('ql').value);
+  const r=parseInt(document.getElementById('qr').value);
+  if(isNaN(v)||isNaN(l)||isNaN(r)||v<0||v>=roots.length||l<1||r>N||l>r){alert('Invalid query params.');return;}
+  const result=query(roots[v],1,N,l,r);
+  document.getElementById('qResult').textContent=`Query(V${v}, [${l},${r}]) = ${result}`;
+  log(`Query V${v} range sum[${l},${r}] = ${result}`);
+}
+
+resize();
+updateVerChips();
+log(`Initialized V0 with array [${initArr.join(',')}]. Sum[1,8]=${initArr.reduce((a,b)=>a+b,0)}`);
+</script>
+</body>
+</html>

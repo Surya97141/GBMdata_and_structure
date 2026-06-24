@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>LCP Array (Kasai's Algorithm) – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#2a9d8f}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=text]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:200px}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.83rem}
+th{background:var(--bg);padding:.45rem .6rem;text-align:left;font-size:.76rem;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:.38rem .6rem;border-bottom:1px solid #f0eeea;transition:background .4s}
+tr.active-row td{background:#fff3e0}
+tr.done-row td{background:#f0faf8}
+.pref{color:var(--accent);font-weight:700}
+.suf-rest{color:var(--ink)}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:220px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.8rem;margin:.6rem 0}
+.leg{display:flex;align-items:center;gap:.3rem}
+.leg-dot{width:12px;height:12px;border-radius:3px}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  LCP Array (Kasai)
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">String</span>
+    <h1>LCP Array — Kasai's Algorithm</h1>
+    <p class="tagline">Compute the Longest Common Prefix array from a suffix array in O(n) time using the LCP invariant.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>The LCP (Longest Common Prefix) array stores, for each position i in the suffix array, how many characters the suffix at SA[i] shares with SA[i-1]. Together with the suffix array, LCP enables counting distinct substrings, finding the longest repeated substring, and powerful range-minimum-query optimizations.</p>
+    <p>Kasai's algorithm computes LCP in O(n) using the key insight: if suffix at position i has LCP h with its predecessor in SA, then suffix at position i+1 has LCP at least h-1 with its predecessor. We process suffixes in text order (not SA order), and h never decreases by more than 1 per step, so the total work is O(n).</p>
+    <p>Analogy: imagine comparing stacks of sorted index cards. Once you know how many cards match from the top for one card, the next card in reading order can reuse almost all of that comparison work — you just drop one card from the matching stack.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(n)</div><div class="lbl">Kasai time</div></div>
+    <div class="fact"><div class="val">O(n)</div><div class="lbl">Space</div></div>
+    <div class="fact"><div class="val">2003</div><div class="lbl">Year published</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div>
+        <label>Input String</label>
+        <input type="text" id="strInput" value="banana"/>
+      </div>
+      <button class="btn" onclick="computeLCP()" style="align-self:flex-end">Compute</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:#e8f8f5;border:1px solid var(--accent)"></div> Common prefix</div>
+      <div class="leg"><div class="leg-dot" style="background:#fff3e0;border:1px solid #e9c46a"></div> Current row</div>
+      <div class="leg"><div class="leg-dot" style="background:#f0faf8"></div> Done</div>
+    </div>
+    <div id="tableViz" style="overflow-x:auto"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter a string and click "Compute" to see Kasai's algorithm</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  document.getElementById('tableViz').innerHTML='';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter a string and click "Compute"</div>';
+}
+
+function buildSA(s){
+  const n=s.length;
+  let rank=Array.from(s).map(c=>c.charCodeAt(0));
+  const chars=[...new Set(rank)].sort((a,b)=>a-b);
+  const cm={};chars.forEach((c,i)=>cm[c]=i);
+  rank=rank.map(c=>cm[c]);
+  let sa=Array.from({length:n},(_,i)=>i);
+  let k=1;
+  while(k<n){
+    const pr=[...rank];
+    sa.sort((a,b)=>{
+      if(pr[a]!==pr[b])return pr[a]-pr[b];
+      return (a+k<n?pr[a+k]:-1)-(b+k<n?pr[b+k]:-1);
+    });
+    const nr=new Array(n).fill(0);
+    nr[sa[0]]=0;
+    for(let i=1;i<n;i++){
+      const p=sa[i-1],c=sa[i];
+      const sp=pr[p]===pr[c]&&(p+k<n?pr[p+k]:-1)===(c+k<n?pr[c+k]:-1);
+      nr[sa[i]]=nr[sa[i-1]]+(sp?0:1);
+    }
+    rank=nr;
+    if(Math.max(...rank)===n-1) break;
+    k*=2;
+  }
+  sa.sort((a,b)=>rank[a]-rank[b]);
+  return sa;
+}
+
+function computeLCP(){
+  resetSim();
+  const s=document.getElementById('strInput').value.trim();
+  if(!s){alert('Enter a string');return;}
+  const n=s.length;
+  const sa=buildSA(s);
+  const inv=new Array(n).fill(0);
+  sa.forEach((v,i)=>inv[v]=i);
+  const lcp=new Array(n).fill(0);
+  let h=0;
+
+  log('=== Kasai\'s LCP Algorithm ===','hi');
+  log(`String: "${s}"`);
+  log(`SA: [${sa.join(',')}]`);
+
+  // Build table DOM first
+  const tbl=document.createElement('table');
+  tbl.innerHTML=`<thead><tr><th>i (SA pos)</th><th>SA[i]</th><th>Suffix</th><th>LCP[i]</th></tr></thead>`;
+  const tbody=document.createElement('tbody');
+  const rows=sa.map((idx,i)=>{
+    const tr=document.createElement('tr');
+    tr.id=`row-${i}`;
+    tr.innerHTML=`<td>${i}</td><td>${idx}</td><td id="suf-${i}">${s.substring(idx)}</td><td id="lcp-${i}">–</td>`;
+    tbody.appendChild(tr);
+    return tr;
+  });
+  tbl.appendChild(tbody);
+  document.getElementById('tableViz').appendChild(tbl);
+
+  // Animate Kasai
+  const steps=[];
+  const hTrack=[];
+  let hh=0;
+  for(let i=0;i<n;i++){
+    if(inv[i]>0){
+      const j=sa[inv[i]-1];
+      const prevH=hh;
+      while(i+hh<n&&j+hh<n&&s[i+hh]===s[j+hh]) hh++;
+      lcp[inv[i]]=hh;
+      steps.push({saPos:inv[i],saIdx:sa[inv[i]],lcpVal:hh,prevH,j,textPos:i});
+      if(hh>0) hh--;
+    } else {
+      steps.push({saPos:inv[i],saIdx:sa[inv[i]],lcpVal:0,prevH:0,j:-1,textPos:i});
+    }
+  }
+
+  let si=0;
+  function animStep(){
+    if(si>=steps.length){
+      log('Kasai complete!','ok');
+      log(`LCP: [${lcp.join(',')}]`,'ok');
+      return;
+    }
+    // Reset highlight
+    rows.forEach(r=>{r.classList.remove('active-row');r.classList.add('done-row');});
+    const st=steps[si];
+    const row=document.getElementById(`row-${st.saPos}`);
+    if(row){row.classList.remove('done-row');row.classList.add('active-row');}
+    // Update LCP cell
+    const lcpCell=document.getElementById(`lcp-${st.saPos}`);
+    if(lcpCell) lcpCell.textContent=st.lcpVal;
+    // Color common prefix
+    const sufCell=document.getElementById(`suf-${st.saPos}`);
+    if(sufCell){
+      const suf=s.substring(st.saIdx);
+      if(st.lcpVal>0){
+        sufCell.innerHTML=`<span class="pref">${suf.substring(0,st.lcpVal)}</span><span class="suf-rest">${suf.substring(st.lcpVal)}</span>`;
+      } else sufCell.textContent=suf;
+    }
+    // Log
+    const suf=s.substring(st.saIdx);
+    const prev=st.j>=0?s.substring(st.j):'(none)';
+    log(`Text pos ${st.textPos}: SA pos ${st.saPos}. suffix="${suf}", prev="${prev}". LCP=${st.lcpVal}`+(st.prevH>0?` (reused h=${st.prevH} from prev step)`:''));
+    if(st.lcpVal>0) log(`  Common prefix: "${suf.substring(0,st.lcpVal)}"  (${st.lcpVal} chars)`,'ok');
+    si++;
+    setTimeout(animStep,550);
+  }
+  animStep();
+}
+</script>
+</body>
+</html>

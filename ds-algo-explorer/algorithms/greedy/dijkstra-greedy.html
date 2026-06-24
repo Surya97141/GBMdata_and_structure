@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dijkstra (Greedy) – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:960px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px;}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;margin-bottom:16px;}
+  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
+  .viz-row{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;}
+  canvas{display:block;border-radius:8px;border:1px solid var(--border);}
+  table.dist{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.85rem;align-self:start;}
+  table.dist th,table.dist td{border:1px solid var(--border);padding:8px 14px;text-align:center;}
+  table.dist th{background:var(--bg);color:var(--muted);font-weight:600;}
+  table.dist td.settled{background:#fff8e0;font-weight:700;color:var(--accent);}
+  table.dist td.current{background:var(--accent);color:#fff;font-weight:700;}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#f5d87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Dijkstra (Greedy)
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Greedy</span>
+    <h1>Dijkstra's Algorithm</h1>
+    <p class="tagline">Find shortest paths greedily — always settle the nearest unsettled node first.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Dijkstra's algorithm finds the shortest path from a source node to every other node in a weighted graph (non-negative weights). It is fundamentally greedy: at each step, pick the unvisited node with the smallest current tentative distance and "settle" it.</p>
+    <p>The greedy choice is safe because edge weights are non-negative — if a node has the minimum tentative distance among unsettled nodes, no future path through other nodes can improve it. This exchange-argument reasoning gives us an O((V+E) log V) algorithm with a priority queue.</p>
+    <p>Dijkstra is the backbone of GPS routing, network routing protocols (OSPF), and any problem reducible to shortest paths on non-negative weighted graphs.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(E log V)</div><div class="label">Time (priority queue)</div></div>
+    <div class="fact-card"><div class="val">Non-negative</div><div class="label">Weight Requirement</div></div>
+    <div class="fact-card"><div class="val">Greedy+DP</div><div class="label">Hybrid Technique</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <button class="btn" id="runBtn" onclick="runDijkstra()">Run Dijkstra (Greedy)</button>
+
+    <div class="viz-row">
+      <canvas id="graphCanvas" width="540" height="340"></canvas>
+      <table class="dist" id="distTable"></table>
+    </div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+// Graph definition (node 0 is source)
+const NODES=[
+  {id:0,label:'A',x:80,y:160},
+  {id:1,label:'B',x:200,y:60},
+  {id:2,label:'C',x:200,y:270},
+  {id:3,label:'D',x:360,y:60},
+  {id:4,label:'E',x:360,y:270},
+  {id:5,label:'F',x:480,y:160},
+];
+const EDGES=[
+  {u:0,v:1,w:4},{u:0,v:2,w:2},{u:1,v:2,w:5},{u:1,v:3,w:10},
+  {u:2,v:4,w:3},{u:3,v:5,w:11},{u:4,v:3,w:4},{u:4,v:5,w:6},
+];
+
+let nodeStates, dist, settled;
+
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function getAdj(){
+  const adj=Array.from({length:6},()=>[]);
+  EDGES.forEach(e=>{adj[e.u].push({to:e.v,w:e.w});adj[e.v].push({to:e.u,w:e.w});});
+  return adj;
+}
+
+function drawGraph(currentNode=-1, settledEdges=[]){
+  const canvas=document.getElementById('graphCanvas');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Draw edges
+  EDGES.forEach(e=>{
+    const isSettled=settledEdges.some(se=>(se[0]===e.u&&se[1]===e.v)||(se[0]===e.v&&se[1]===e.u));
+    ctx.strokeStyle=isSettled?'#d4a017':'#d0ccc4';
+    ctx.lineWidth=isSettled?3:1.5;
+    ctx.beginPath();
+    ctx.moveTo(NODES[e.u].x,NODES[e.u].y);
+    ctx.lineTo(NODES[e.v].x,NODES[e.v].y);
+    ctx.stroke();
+    // Weight label
+    const mx=(NODES[e.u].x+NODES[e.v].x)/2;
+    const my=(NODES[e.u].y+NODES[e.v].y)/2;
+    ctx.fillStyle='#5a5a72';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(e.w,mx,my-4);
+  });
+
+  // Draw nodes
+  NODES.forEach(n=>{
+    const st=nodeStates?nodeStates[n.id]:'idle';
+    let fill='#1a1a2e';
+    if(st==='settled') fill='#d4a017';
+    else if(st==='current') fill='#e8622a';
+    else if(st==='queued') fill='#5a5a72';
+
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    ctx.fillStyle=fill;ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+
+    ctx.fillStyle='#fff';ctx.font='bold 13px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.label,n.x,n.y);ctx.textBaseline='alphabetic';
+
+    // Distance label
+    const d=dist?dist[n.id]:Infinity;
+    const dLabel=d===Infinity?'∞':d;
+    ctx.fillStyle=fill==='#d4a017'?'#a87d10':'#5a5a72';
+    ctx.font='11px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(dLabel,n.x,n.y+34);
+  });
+}
+
+function buildDistTable(currentNode=-1){
+  const tbl=document.getElementById('distTable');
+  tbl.innerHTML='<tr><th>Node</th><th>Dist</th><th>State</th></tr>';
+  NODES.forEach(n=>{
+    const tr=tbl.insertRow();
+    const st=nodeStates?nodeStates[n.id]:'unsettled';
+    if(n.id===currentNode) tr.cells[0]&&tr.cells[0].classList.add('current');
+    const d=dist?dist[n.id]:Infinity;
+    [n.label,d===Infinity?'∞':d,st].forEach((v,i)=>{
+      const td=tr.insertCell();td.textContent=v;
+      if(st==='settled') td.classList.add('settled');
+      if(n.id===currentNode) td.classList.add('current');
+    });
+  });
+}
+
+async function runDijkstra(){
+  const btn=document.getElementById('runBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+
+  dist=new Array(6).fill(Infinity);
+  dist[0]=0;
+  nodeStates=Array.from({length:6},()=>'unsettled');
+  const settledEdges=[];
+  const adj=getAdj();
+  let prev=new Array(6).fill(-1);
+
+  drawGraph(-1,settledEdges);
+  buildDistTable(-1);
+  log('Init: dist[A]=0, all others=∞. Source=A.');
+  await sleep(400);
+
+  for(let iter=0;iter<6;iter++){
+    // Pick min unsettled
+    let u=-1, minD=Infinity;
+    for(let i=0;i<6;i++){
+      if(nodeStates[i]!=='settled'&&dist[i]<minD){minD=dist[i];u=i;}
+    }
+    if(u===-1) break;
+
+    nodeStates[u]='current';
+    drawGraph(u,settledEdges);buildDistTable(u);
+    log(`Greedy pick: node ${NODES[u].label}, dist=${dist[u]}.`);
+    await sleep(600);
+
+    // Relax neighbours
+    for(const {to,w} of adj[u]){
+      if(nodeStates[to]==='settled') continue;
+      const newD=dist[u]+w;
+      if(newD<dist[to]){
+        const old=dist[to]===Infinity?'∞':dist[to];
+        dist[to]=newD;prev[to]=u;
+        log(`  Relax: ${NODES[u].label}→${NODES[to].label}: ${dist[u]}+${w}=${newD} < ${old} → update.`);
+      }
+    }
+
+    nodeStates[u]='settled';
+    if(prev[u]>=0) settledEdges.push([prev[u],u]);
+    drawGraph(-1,settledEdges);buildDistTable(-1);
+    await sleep(500);
+  }
+
+  log('Done. Final shortest distances from A:',false);
+  log(NODES.map(n=>`${n.label}=${dist[n.id]===Infinity?'∞':dist[n.id]}`).join('  '),true);
+  btn.disabled=false;
+}
+
+nodeStates=Array.from({length:6},()=>'unsettled');
+dist=new Array(6).fill(Infinity);dist[0]=0;
+drawGraph();buildDistTable();
+</script>
+</body>
+</html>

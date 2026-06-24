@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Break – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:900px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
+  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
+  .input-group{display:flex;flex-direction:column;gap:4px;}
+  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
+  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;background:var(--bg);}
+  .input-group input.wide{width:240px;}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
+  /* dp array display */
+  .dp-array{display:flex;gap:0;margin:20px 0;overflow-x:auto;}
+  .dp-cell{display:flex;flex-direction:column;align-items:center;min-width:48px;}
+  .dp-cell .idx{font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:2px 0;}
+  .dp-cell .val{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;transition:background .3s,color .3s;background:var(--surface);color:#bbb;}
+  .dp-cell .char{font-size:.8rem;font-family:'JetBrains Mono',monospace;color:var(--ink);padding:2px 0;font-weight:600;}
+  .dp-cell .val.true{background:#d4f5d4;color:#1a5c1a;}
+  .dp-cell .val.active{background:var(--accent);color:#fff;}
+  /* string segments */
+  .seg-display{margin:16px 0;font-family:'JetBrains Mono',monospace;font-size:1.1rem;}
+  .seg{display:inline-block;padding:4px 10px;margin:3px;border-radius:6px;background:#fff3ed;border:2px solid var(--accent);color:var(--accent);font-weight:600;}
+  .result-note{font-size:.95rem;margin-top:8px;}
+  .result-note strong{color:var(--accent);}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#e8a87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Word Break
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Word Break</h1>
+    <p class="tagline">Can a string be segmented into dictionary words? DP finds the answer.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Imagine running text through an autocorrect engine: "leetcode" has no spaces, but a smart parser knows it's "leet" + "code". Given a string and a dictionary, can the string be completely segmented into dictionary words?</p>
+    <p>We use a 1D boolean DP: <code>dp[i]</code> is true if <code>s[0..i-1]</code> can be segmented. Start with <code>dp[0] = true</code> (empty prefix). For each position <em>i</em>, we look back at every <em>j</em>: if <code>dp[j]</code> is true and <code>s[j..i-1]</code> is in the dictionary, then <code>dp[i] = true</code>.</p>
+    <p>The intuition: a green cell at position <em>i</em> is a valid "word boundary" — you've successfully assembled the prefix up to that point from dictionary words. We trace back through these boundaries to recover the actual word sequence.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(n²·m)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">O(n)</div><div class="label">Space Complexity</div></div>
+    <div class="fact-card"><div class="val">String DP</div><div class="label">Technique</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <div class="input-row">
+      <div class="input-group">
+        <label>String</label>
+        <input class="wide" type="text" id="strInput" value="leetcode" maxlength="20">
+      </div>
+      <div class="input-group">
+        <label>Dictionary (comma-separated)</label>
+        <input class="wide" type="text" id="dictInput" value="leet,code,lee,tc">
+      </div>
+      <button class="btn" id="solveBtn" onclick="startSolve()">Solve</button>
+    </div>
+
+    <div class="dp-array" id="dpArray"></div>
+    <div class="result-note" id="resultNote"></div>
+    <div class="seg-display" id="segDisplay"></div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSolve(){
+  const btn=document.getElementById('solveBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+  document.getElementById('resultNote').innerHTML='';
+  document.getElementById('segDisplay').innerHTML='';
+
+  const s=document.getElementById('strInput').value.trim()||'leetcode';
+  const dictWords=document.getElementById('dictInput').value.split(',').map(w=>w.trim().toLowerCase()).filter(Boolean);
+  const dict=new Set(dictWords);
+  const n=s.length;
+  const dp=new Array(n+1).fill(false);
+  const prev=new Array(n+1).fill(-1);
+  dp[0]=true;
+
+  log(`String: "${s}"  |  Dictionary: [${[...dict].join(', ')}]`);
+
+  // Build dp array display
+  const container=document.getElementById('dpArray');
+  container.innerHTML='';
+  const cells=[];
+  for(let i=0;i<=n;i++){
+    const cell=document.createElement('div');
+    cell.className='dp-cell';
+    const idx=document.createElement('div');idx.className='idx';idx.textContent=i;
+    const val=document.createElement('div');val.className='val';val.textContent=i===0?'T':'F';
+    if(i===0)val.classList.add('true');
+    const ch=document.createElement('div');ch.className='char';ch.textContent=i<n?s[i]:'';
+    cell.appendChild(idx);cell.appendChild(val);cell.appendChild(ch);
+    container.appendChild(cell);
+    cells.push(val);
+  }
+
+  await sleep(300);
+
+  for(let i=1;i<=n;i++){
+    cells[i].classList.add('active');
+    let found=false, foundWord='';
+    for(let j=0;j<i;j++){
+      if(dp[j]){
+        const word=s.slice(j,i);
+        if(dict.has(word)){
+          dp[i]=true;prev[i]=j;
+          found=true;foundWord=word;
+          log(`dp[${i}]=true: dp[${j}]=true and "${word}" ∈ dictionary`);
+          break;
+        }
+      }
+    }
+    if(!found) log(`dp[${i}]=false: no valid word ending at position ${i}`);
+    await sleep(280);
+    cells[i].classList.remove('active');
+    cells[i].textContent=dp[i]?'T':'F';
+    if(dp[i]) cells[i].classList.add('true');
+  }
+
+  if(dp[n]){
+    // Backtrace words
+    const words=[];
+    let pos=n;
+    while(pos>0){const p=prev[pos];words.unshift(s.slice(p,pos));pos=p;}
+    document.getElementById('resultNote').innerHTML=`<strong>YES</strong> — "${s}" can be segmented.`;
+    const sd=document.getElementById('segDisplay');
+    words.forEach(w=>{const sp=document.createElement('span');sp.className='seg';sp.textContent=w;sd.appendChild(sp);});
+    log(`Segmentation: ${words.map(w=>`"${w}"`).join(' + ')}`,true);
+  } else {
+    document.getElementById('resultNote').innerHTML=`<strong>NO</strong> — "${s}" cannot be fully segmented using the given dictionary.`;
+    log(`"${s}" cannot be segmented.`,true);
+  }
+  btn.disabled=false;
+}
+
+window.onload=()=>startSolve();
+</script>
+</body>
+</html>

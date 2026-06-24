@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Palindrome Partitioning – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:960px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
+  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
+  .input-group{display:flex;flex-direction:column;gap:4px;}
+  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
+  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;width:200px;background:var(--bg);}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
+  .section-label{font-size:.85rem;font-weight:600;color:var(--muted);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.05em;}
+  .dp-scroll{overflow-x:auto;margin:6px 0 18px;}
+  table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;}
+  table.dp th,table.dp td{border:1px solid var(--border);padding:7px 12px;text-align:center;min-width:42px;transition:background .25s,color .25s;}
+  table.dp th{background:var(--bg);font-weight:600;color:var(--muted);}
+  table.dp td{background:var(--surface);color:#bbb;}
+  table.dp td.pal{background:#d4f5d4;color:#1a5c1a;font-weight:600;}
+  table.dp td.active{background:var(--accent);color:#fff;}
+  .cut-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;}
+  .cut-cell{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:6px 14px;border-radius:6px;background:var(--bg);border:1px solid var(--border);}
+  .cut-cell.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .result-note{margin-top:14px;font-size:.95rem;}
+  .result-note strong{color:var(--accent);}
+  .partition-display{margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;letter-spacing:.05em;}
+  .partition-display .part{display:inline-block;padding:4px 10px;margin:3px;border-radius:6px;background:#fff3ed;border:2px solid var(--accent);color:var(--accent);font-weight:600;}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#e8a87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Palindrome Partitioning
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Palindrome Partitioning</h1>
+    <p class="tagline">Cut a string into the fewest palindrome pieces possible.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Given a string, partition it so that every substring is a palindrome. We want the <strong>minimum number of cuts</strong> needed to achieve this. Every individual character is trivially a palindrome, so the answer is always at most n−1.</p>
+    <p>Two DP tables work together: first, <code>isPalin[i][j]</code> tells us in O(n²) time whether substring s[i..j] is a palindrome. Then, <code>cut[i]</code> stores the minimum cuts for s[0..i]. We set <code>cut[i] = min over j where isPalin[j][i] of (cut[j-1] + 1)</code>.</p>
+    <p>The analogy: imagine breaking a word into "mirror pieces". You want as few breaks as possible, and a green cell in the palindrome table is your hint that a no-cut exists for that range.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Space Complexity</div></div>
+    <div class="fact-card"><div class="val">Two-Phase DP</div><div class="label">Technique</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <div class="input-row">
+      <div class="input-group">
+        <label>String Input</label>
+        <input type="text" id="strInput" value="aabbc" maxlength="10">
+      </div>
+      <button class="btn" id="solveBtn" onclick="startSolve()">Solve</button>
+    </div>
+
+    <div class="section-label">Phase 1: isPalin[i][j] table (green = palindrome)</div>
+    <div class="dp-scroll"><table class="dp" id="palTable"></table></div>
+
+    <div class="section-label">Phase 2: cut[i] array</div>
+    <div class="cut-row" id="cutRow"></div>
+
+    <div class="result-note" id="resultNote"></div>
+    <div class="partition-display" id="partDisp"></div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSolve(){
+  const btn=document.getElementById('solveBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+  document.getElementById('resultNote').innerHTML='';
+  document.getElementById('partDisp').innerHTML='';
+
+  const s=document.getElementById('strInput').value.trim()||'aabbc';
+  const n=s.length;
+
+  // Build isPalin table
+  const isPalin=Array.from({length:n},()=>new Array(n).fill(false));
+
+  const tbl=document.getElementById('palTable');
+  tbl.innerHTML='';
+  const thead=tbl.createTHead();
+  const hrow=thead.insertRow();
+  hrow.insertCell().textContent='i \\ j';
+  for(let j=0;j<n;j++){const th=document.createElement('th');th.textContent=`${j}(${s[j]})`;hrow.appendChild(th);}
+
+  const tbody=tbl.createTBody();
+  const pcells=[];
+  for(let i=0;i<n;i++){
+    const row=tbody.insertRow();
+    const lbl=row.insertCell();lbl.textContent=`${i}(${s[i]})`;lbl.style.fontWeight='600';lbl.style.color='var(--muted)';
+    pcells[i]=[];
+    for(let j=0;j<n;j++){const td=row.insertCell();td.textContent='';pcells[i][j]=td;}
+  }
+
+  // Fill isPalin
+  for(let i=0;i<n;i++){isPalin[i][i]=true;}
+  for(let i=0;i<n-1;i++){isPalin[i][i+1]=(s[i]===s[i+1]);}
+
+  // Set single chars
+  for(let i=0;i<n;i++){
+    pcells[i][i].textContent='T';pcells[i][i].classList.add('pal');
+    if(i<n-1){
+      pcells[i][i+1].textContent=isPalin[i][i+1]?'T':'F';
+      if(isPalin[i][i+1])pcells[i][i+1].classList.add('pal');
+    }
+  }
+  await sleep(300);
+
+  for(let len=3;len<=n;len++){
+    for(let i=0;i<=n-len;i++){
+      const j=i+len-1;
+      pcells[i][j].classList.add('active');
+      isPalin[i][j]=(s[i]===s[j]&&isPalin[i+1][j-1]);
+      await sleep(100);
+      pcells[i][j].classList.remove('active');
+      pcells[i][j].textContent=isPalin[i][j]?'T':'F';
+      if(isPalin[i][j])pcells[i][j].classList.add('pal');
+      if(isPalin[i][j]) log(`isPalin[${i}][${j}] = true  ("${s.slice(i,j+1)}" is a palindrome)`);
+    }
+  }
+
+  await sleep(200);
+
+  // Phase 2: cut array
+  const cut=new Array(n).fill(Infinity);
+  const splitAt=new Array(n).fill(-1);
+  for(let i=0;i<n;i++) if(isPalin[0][i]) cut[i]=0;
+
+  const cutRow=document.getElementById('cutRow');
+  cutRow.innerHTML='';
+  const ccells=[];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.className='cut-cell';
+    d.textContent=`cut[${i}]=?`;
+    cutRow.appendChild(d);
+    ccells[i]=d;
+  }
+  await sleep(200);
+
+  for(let i=0;i<n;i++){
+    ccells[i].classList.add('active');
+    for(let j=1;j<=i;j++){
+      if(isPalin[j][i] && cut[j-1]+1<cut[i]){
+        cut[i]=cut[j-1]+1;
+        splitAt[i]=j;
+      }
+    }
+    await sleep(150);
+    ccells[i].textContent=`cut[${i}]=${cut[i]}`;
+    ccells[i].classList.remove('active');
+    log(`cut[${i}] = ${cut[i]}${splitAt[i]>=0?' (split before index '+splitAt[i]+')':`  (s[0..${i}]="${s.slice(0,i+1)}" is a palindrome)`}`);
+  }
+
+  // Backtrace partition
+  const parts=[];
+  let end=n-1;
+  while(end>=0){
+    const sp=splitAt[end];
+    if(sp<0||sp===0){parts.unshift(s.slice(0,end+1));break;}
+    parts.unshift(s.slice(sp,end+1));
+    end=sp-1;
+  }
+
+  document.getElementById('resultNote').innerHTML=
+    `<strong>Min cuts: ${cut[n-1]}</strong> for "${s}"`;
+  const pd=document.getElementById('partDisp');
+  parts.forEach(p=>{
+    const span=document.createElement('span');
+    span.className='part';span.textContent=p;pd.appendChild(span);
+  });
+  log(`Optimal partition: ${parts.map(p=>`"${p}"`).join(' | ')} → ${cut[n-1]} cut(s)`,true);
+  btn.disabled=false;
+}
+
+window.onload=()=>startSolve();
+</script>
+</body>
+</html>

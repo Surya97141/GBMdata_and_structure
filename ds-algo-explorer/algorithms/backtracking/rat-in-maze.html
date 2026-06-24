@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Rat in a Maze – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
+nav.breadcrumb a{color:var(--muted)}nav.breadcrumb span{margin:0 6px}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
+.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
+.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
+.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
+.section{margin-bottom:36px}
+.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
+.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
+.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
+.sim-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}button:disabled{opacity:.45;cursor:not-allowed}
+button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
+.canvas-wrap{display:flex;justify-content:center;margin-bottom:16px}
+canvas{border:2px solid var(--border);border-radius:8px;cursor:pointer}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:.8rem;color:var(--muted)}
+.leg-item{display:flex;align-items:center;gap:6px}
+.leg-box{width:16px;height:16px;border-radius:3px;border:1px solid var(--border)}
+.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)}
+.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
+.log-ok{color:#27ae60}.log-back{color:var(--accent)}.log-done{color:#1a7a40;font-weight:600}
+.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Rat in a Maze
+</nav>
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <span class="hero-tag">Backtracking</span>
+    <h1>Rat in a Maze</h1>
+    <p class="tagline">Find a path through a grid maze from top-left to bottom-right, navigating around walls using backtracking DFS.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="section">
+    <p>A rat starts at cell (0,0) and must reach cell (N-1,N-1). Some cells are blocked (walls). The rat can move right or down (or in all 4 directions in extended versions). Backtracking explores each path and retreats when it hits a dead end.</p>
+    <p>Think of navigating a physical maze: you walk forward, mark your trail, and when you hit a dead end you retrace your steps to the last junction and try a different direction. The algorithm does exactly this, making the explored-and-failed cells visually distinguishable from the current active path.</p>
+    <p>Click any cell to toggle it as a wall (dark) or open (light). The start (0,0) and end (7,7) cannot be walled. Then press Solve to watch the backtracking DFS in action.</p>
+  </div>
+  <div class="facts-grid">
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(2^(N²))</div><div class="sub">Worst-case without pruning</div></div>
+    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(N²)</div><div class="sub">Visited matrix + recursion</div></div>
+    <div class="fact-card"><div class="label">Moves</div><div class="value">4-dir</div><div class="sub">Up, Down, Left, Right</div></div>
+  </div>
+  <div class="sim-card">
+    <div class="sim-controls">
+      <button id="btn-solve" onclick="startSolve()">Solve</button>
+      <button id="btn-reset" onclick="resetMaze()" class="secondary">Reset</button>
+      <button id="btn-clear" onclick="clearWalls()" class="secondary">Clear Walls</button>
+      <label style="font-size:.85rem;color:var(--muted)">Speed:
+        <select id="spd" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem">
+          <option value="30">Fast</option>
+          <option value="80" selected>Medium</option>
+          <option value="200">Slow</option>
+        </select>
+      </label>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-box" style="background:#4CAF50"></div> Start (0,0)</div>
+      <div class="leg-item"><div class="leg-box" style="background:var(--accent)"></div> End (7,7)</div>
+      <div class="leg-item"><div class="leg-box" style="background:#fde8e8"></div> Current Path</div>
+      <div class="leg-item"><div class="leg-box" style="background:#e0e0e0"></div> Tried & Failed</div>
+      <div class="leg-item"><div class="leg-box" style="background:#2c3e50"></div> Wall</div>
+    </div>
+    <div class="canvas-wrap"><canvas id="maze-canvas" width="416" height="416"></canvas></div>
+    <div class="step-log" id="step-log"><div class="log-line">Click cells to toggle walls. Press Solve to begin.</div></div>
+  </div>
+  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+</div>
+<script>
+const ROWS=8,COLS=8,CELL=52;
+let maze=[], visited=[], pathState=[], solving=false;
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function spd(){return parseInt(document.getElementById('spd').value)}
+
+const canvas=document.getElementById('maze-canvas');
+const ctx=canvas.getContext('2d');
+
+function initMaze(){
+  maze=Array.from({length:ROWS},()=>new Array(COLS).fill(0));
+  // Default walls
+  const defaultWalls=[[0,2],[1,2],[2,2],[2,3],[3,5],[3,6],[4,0],[4,1],[5,3],[6,3],[6,4],[7,2]];
+  defaultWalls.forEach(([r,c])=>maze[r][c]=1);
+  visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
+  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
+  draw();
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const x=c*CELL,y=r*CELL;
+      if(maze[r][c]===1){ctx.fillStyle='#2c3e50';}
+      else if(r===0&&c===0){ctx.fillStyle='#4CAF50';}
+      else if(r===ROWS-1&&c===COLS-1){ctx.fillStyle=pathState[r][c]==='path'?'#a93226':'var(--accent)';}
+      else if(pathState[r][c]==='path'){ctx.fillStyle='#fde8e8';}
+      else if(pathState[r][c]==='failed'){ctx.fillStyle='#e8e8e8';}
+      else{ctx.fillStyle='#fff';}
+      ctx.fillRect(x+1,y+1,CELL-2,CELL-2);
+      ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;
+      ctx.strokeRect(x+1,y+1,CELL-2,CELL-2);
+      if(r===0&&c===0){ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('S',x+CELL/2,y+CELL/2);}
+      else if(r===ROWS-1&&c===COLS-1){ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('E',x+CELL/2,y+CELL/2);}
+      else if(pathState[r][c]==='path'){ctx.fillStyle='var(--accent)';ctx.font='bold 16px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('•',x+CELL/2,y+CELL/2);}
+    }
+  }
+}
+
+canvas.addEventListener('click',e=>{
+  if(solving) return;
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=canvas.width/rect.width, scaleY=canvas.height/rect.height;
+  const cx=Math.floor((e.clientX-rect.left)*scaleX/CELL);
+  const cy=Math.floor((e.clientY-rect.top)*scaleY/CELL);
+  if(cy<0||cy>=ROWS||cx<0||cx>=COLS) return;
+  if((cy===0&&cx===0)||(cy===ROWS-1&&cx===COLS-1)) return;
+  maze[cy][cx]=maze[cy][cx]===1?0:1;
+  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
+  draw();
+});
+
+function log(msg,cls=''){
+  const box=document.getElementById('step-log');
+  const d=document.createElement('div');
+  d.className='log-line'+(cls?' '+cls:'');
+  d.textContent=msg;
+  box.appendChild(d);box.scrollTop=box.scrollHeight;
+}
+function clearLog(){document.getElementById('step-log').innerHTML='';}
+
+async function dfs(r,c){
+  if(!solving) return false;
+  if(r<0||r>=ROWS||c<0||c>=COLS||maze[r][c]===1||visited[r][c]) return false;
+  visited[r][c]=true;
+  pathState[r][c]='path';
+  draw();
+  if(r===ROWS-1&&c===COLS-1){log('Reached end ('+r+','+c+')! Path found.','log-done');return true;}
+  log('Move to ('+r+','+c+')','log-ok');
+  await sleep(spd());
+  const dirs=[[1,0],[0,1],[-1,0],[0,-1]];
+  const dirNames=['Down','Right','Up','Left'];
+  for(let i=0;i<4;i++){
+    const nr=r+dirs[i][0],nc=c+dirs[i][1];
+    log('Try '+dirNames[i]+' → ('+nr+','+nc+')');
+    const res=await dfs(nr,nc);
+    if(res) return true;
+  }
+  pathState[r][c]='failed';
+  draw();
+  log('Backtrack from ('+r+','+c+')','log-back');
+  await sleep(spd()/2);
+  return false;
+}
+
+async function startSolve(){
+  if(solving) return;
+  solving=true;
+  clearLog();
+  visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
+  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
+  document.getElementById('btn-solve').disabled=true;
+  document.getElementById('btn-reset').disabled=true;
+  log('Starting maze solver from (0,0)…');
+  const found=await dfs(0,0);
+  if(!found) log('No path exists through this maze.','log-back');
+  solving=false;
+  document.getElementById('btn-solve').disabled=false;
+  document.getElementById('btn-reset').disabled=false;
+}
+
+function resetMaze(){
+  solving=false;
+  clearLog();
+  initMaze();
+  log('Maze reset. Click cells to add/remove walls.');
+}
+
+function clearWalls(){
+  if(solving) return;
+  maze=Array.from({length:ROWS},()=>new Array(COLS).fill(0));
+  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
+  visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
+  clearLog();log('Walls cleared.');draw();
+}
+
+initMaze();
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Euclidean GCD – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:130px}
+input[type=number]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:.8rem 0}
+th{background:var(--bg);padding:.5rem .7rem;text-align:left;font-size:.78rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
+td{padding:.45rem .7rem;border-bottom:1px solid #f0eeea;transition:background .3s}
+tr.active td{background:#fff3e0}
+tr.result-row td{background:#fde8e2;font-weight:700;color:var(--accent)}
+.geo-vis{margin:1rem 0}
+.rect-outer{position:relative;background:var(--bg);border:2px solid var(--border);border-radius:6px;overflow:hidden;height:80px;width:100%;max-width:500px}
+.rect-inner{position:absolute;top:0;left:0;height:100%;background:var(--accent);opacity:.2;transition:width .5s}
+.rect-gcd{position:absolute;top:0;left:0;height:100%;background:var(--accent);opacity:.5;transition:width .4s}
+.geo-label{font-size:.78rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:.3rem}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Euclidean GCD
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">Mathematical</span>
+    <h1>Euclidean Algorithm (GCD)</h1>
+    <p class="tagline">Find the greatest common divisor using repeated division — one of the oldest algorithms in existence.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>The Euclidean algorithm finds the GCD of two numbers by repeatedly replacing the larger with the remainder of division. The key insight: GCD(a, b) = GCD(b, a mod b), because any common divisor of a and b also divides a - k·b.</p>
+    <p>Geometrically, think of fitting the largest square into an a×b rectangle. After removing as many b×b squares as fit, you're left with a b×(a mod b) rectangle — the same problem scaled down. Eventually you're left with a square of side GCD(a,b).</p>
+    <p>The algorithm runs in O(log min(a,b)) steps — Fibonacci numbers are the worst case, requiring exactly the most divisions. Used everywhere: fraction simplification, RSA key generation, and lattice reduction algorithms.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(log N)</div><div class="lbl">Time complexity</div></div>
+    <div class="fact"><div class="val">300 BC</div><div class="lbl">Euclid's Elements</div></div>
+    <div class="fact"><div class="val">Fibonacci</div><div class="lbl">Worst-case inputs</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>a</label><input type="number" id="aInput" value="48" min="1"/></div>
+      <div><label>b</label><input type="number" id="bInput" value="18" min="1"/></div>
+      <button class="btn" onclick="runGCD()" style="align-self:flex-end">Compute GCD</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div class="geo-vis">
+      <div class="rect-outer" id="geoRect">
+        <div class="rect-inner" id="geoA"></div>
+        <div class="rect-gcd" id="geoGCD"></div>
+      </div>
+      <div class="geo-label" id="geoLabel">Rectangle visualization</div>
+    </div>
+    <table>
+      <thead><tr><th>Step</th><th>a</th><th>b</th><th>a = q × b + r</th><th>remainder</th></tr></thead>
+      <tbody id="gcdTable"></tbody>
+    </table>
+    <div id="resultBox" style="font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;margin:.5rem 0;color:var(--accent)"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter a and b then click "Compute GCD"</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  document.getElementById('gcdTable').innerHTML='';
+  document.getElementById('resultBox').textContent='';
+  document.getElementById('geoLabel').textContent='Rectangle visualization';
+  document.getElementById('geoA').style.width='100%';
+  document.getElementById('geoGCD').style.width='0';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter a and b then click "Compute GCD"</div>';
+}
+
+function runGCD(){
+  resetSim();
+  let a=Math.abs(parseInt(document.getElementById('aInput').value)||48);
+  let b=Math.abs(parseInt(document.getElementById('bInput').value)||18);
+  if(b>a){[a,b]=[b,a];}
+  const origA=a,origB=b;
+  log('=== Euclidean Algorithm ===','hi');
+  log(`gcd(${a}, ${b})`);
+
+  const steps=[];
+  let ca=a,cb=b;
+  while(cb!==0){
+    const q=Math.floor(ca/cb);
+    const r=ca%cb;
+    steps.push({a:ca,b:cb,q,r});
+    ca=cb;cb=r;
+  }
+  const gcd=ca;
+
+  const tbody=document.getElementById('gcdTable');
+  steps.forEach((s,i)=>{
+    const tr=document.createElement('tr');
+    tr.id=`gr-${i}`;
+    tr.innerHTML=`<td>${i+1}</td><td>${s.a}</td><td>${s.b}</td><td>${s.a} = ${s.q} × ${s.b} + ${s.r}</td><td>${s.r}</td>`;
+    tbody.appendChild(tr);
+  });
+  // Result row
+  const tr=document.createElement('tr');tr.className='result-row';
+  tr.innerHTML=`<td>–</td><td>${gcd}</td><td>0</td><td>GCD found!</td><td>–</td>`;
+  tbody.appendChild(tr);
+
+  document.getElementById('resultBox').textContent=`GCD(${origA}, ${origB}) = ${gcd}`;
+  document.getElementById('geoA').style.width='100%';
+  document.getElementById('geoGCD').style.width=`${(gcd/origA)*100}%`;
+  document.getElementById('geoLabel').textContent=`Rectangle ${origA}×1: GCD ${gcd} fits ${Math.floor(origA/gcd)} times`;
+
+  // Animate rows
+  steps.forEach((s,i)=>{
+    setTimeout(()=>{
+      document.querySelectorAll('tr.active').forEach(r=>r.classList.remove('active'));
+      const r=document.getElementById(`gr-${i}`);
+      if(r) r.classList.add('active');
+      log(`Step ${i+1}: gcd(${s.a},${s.b}) → ${s.a} = ${s.q}×${s.b} + ${s.r}`);
+    },i*500);
+  });
+  setTimeout(()=>log(`GCD(${origA}, ${origB}) = ${gcd}`,'ok'),steps.length*500);
+}
+</script>
+</body>
+</html>

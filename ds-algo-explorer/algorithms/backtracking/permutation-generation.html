@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Permutation Generation – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
+nav.breadcrumb a{color:var(--muted)}nav.breadcrumb span{margin:0 6px}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
+.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
+.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
+.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
+.section{margin-bottom:36px}
+.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
+.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
+.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
+.sim-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}button:disabled{opacity:.45;cursor:not-allowed}
+button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
+input[type=text]{border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:.9rem;background:var(--bg);color:var(--ink);width:180px}
+.array-vis{display:flex;gap:6px;justify-content:center;margin-bottom:16px;min-height:56px;align-items:center}
+.arr-cell{width:52px;height:52px;border-radius:10px;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--ink);transition:background .2s,border-color .2s,transform .15s;position:relative}
+.arr-cell.swapping{background:#fde8e8;border-color:var(--accent);transform:scale(1.1)}
+.arr-cell.fixed{background:#eafaf1;border-color:#27ae60}
+.counter-row{font-size:.88rem;color:var(--muted);margin-bottom:8px;font-family:'JetBrains Mono',monospace;text-align:center}
+.perm-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:44px;max-height:180px;overflow-y:auto}
+.perm-chip{background:#fde8e8;border:1px solid #f5c6c6;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:4px 10px;border-radius:20px;animation:popIn .2s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.swap-log-box{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;max-height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);margin-bottom:8px}
+.swap-log-box .log-line{padding:1px 0;border-bottom:1px solid var(--border)}
+.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)}
+.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
+.log-ok{color:#27ae60}.log-swap{color:var(--accent)}.log-done{color:#1a7a40;font-weight:600}
+.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Permutation Generation
+</nav>
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <span class="hero-tag">Backtracking</span>
+    <h1>Permutation Generation</h1>
+    <p class="tagline">Generate all n! arrangements of an array by systematically swapping elements — the classic swap-based backtracking approach.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="section">
+    <p>A permutation is an ordered arrangement of all elements of a set. For n distinct elements there are n! (n factorial) permutations: 3 elements give 6, 4 give 24, 5 give 120. Generating them all is fundamental to solving problems like the Traveling Salesman Problem by brute force.</p>
+    <p>The swap-based backtracking algorithm works by fixing one element at each position. For position i, it swaps every element from index i to n-1 into position i, recurses to fill positions i+1 through n-1, then swaps back to restore the array. The "swap back" is the backtracking step.</p>
+    <p>Think of arranging books on a shelf: pick any book for the first slot, arrange the rest any way you like, then swap the first book back so you can try the next one. The animated swaps make each decision visible.</p>
+  </div>
+  <div class="facts-grid">
+    <div class="fact-card"><div class="label">Total Permutations</div><div class="value">n!</div><div class="sub">Grows very fast: 5! = 120</div></div>
+    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n · n!)</div><div class="sub">Each permutation costs O(n) to output</div></div>
+    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(n)</div><div class="sub">In-place swaps, depth n recursion</div></div>
+  </div>
+  <div class="sim-card">
+    <div class="sim-controls">
+      <label style="font-size:.9rem;font-weight:500;color:var(--muted)">Array:</label>
+      <input type="text" id="arr-input" value="1,2,3" placeholder="e.g. 1,2,3"/>
+      <button id="btn-gen" onclick="startGenerate()">Generate All</button>
+      <button id="btn-reset" onclick="resetAll()" class="secondary">Reset</button>
+      <label style="font-size:.85rem;color:var(--muted)">Speed:
+        <select id="spd" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem">
+          <option value="80">Fast</option>
+          <option value="250" selected>Medium</option>
+          <option value="600">Slow</option>
+        </select>
+      </label>
+    </div>
+    <div class="counter-row" id="counter-row">Permutations: 0 / 0 &nbsp;|&nbsp; n! = 0</div>
+    <div class="array-vis" id="array-vis"></div>
+    <div style="font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Permutations Found</div>
+    <div class="perm-grid" id="perm-grid"></div>
+    <div class="step-log" id="step-log"><div class="log-line">Press "Generate All" to animate all permutations via swap-backtrack.</div></div>
+  </div>
+  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+</div>
+<script>
+let solving=false, permCount=0, arr=[], cellStates=[];
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function spd(){return parseInt(document.getElementById('spd').value)}
+
+function factorial(n){let f=1;for(let i=2;i<=n;i++)f*=i;return f;}
+
+function parseArr(){
+  return document.getElementById('arr-input').value.split(',').map(s=>s.trim()).filter(s=>s!=='');
+}
+
+function renderArray(swapI=-1,swapJ=-1,fixedUpTo=-1){
+  const vis=document.getElementById('array-vis');
+  vis.innerHTML='';
+  arr.forEach((v,i)=>{
+    const cell=document.createElement('div');
+    cell.className='arr-cell';
+    if(i===swapI||i===swapJ) cell.classList.add('swapping');
+    else if(i<fixedUpTo) cell.classList.add('fixed');
+    cell.textContent=v;
+    vis.appendChild(cell);
+  });
+}
+
+function log(msg,cls=''){
+  const box=document.getElementById('step-log');
+  const d=document.createElement('div');d.className='log-line'+(cls?' '+cls:'');d.textContent=msg;
+  box.appendChild(d);box.scrollTop=box.scrollHeight;
+}
+function clearLog(){document.getElementById('step-log').innerHTML='';}
+
+function addPermChip(){
+  const grid=document.getElementById('perm-grid');
+  const chip=document.createElement('div');chip.className='perm-chip';
+  chip.textContent='['+arr.join(',')+']';
+  grid.appendChild(chip);
+  grid.scrollTop=grid.scrollHeight;
+}
+
+function updateCounter(){
+  const n=arr.length;const f=factorial(n);
+  document.getElementById('counter-row').textContent='Permutations: '+permCount+' / '+f+'  |  n! = '+f;
+}
+
+async function permute(start){
+  if(!solving) return;
+  if(start===arr.length){
+    permCount++;
+    addPermChip();
+    renderArray(-1,-1,arr.length);
+    log('Permutation #'+permCount+': ['+arr.join(',')+']','log-ok');
+    updateCounter();
+    await sleep(spd());
+    return;
+  }
+  for(let i=start;i<arr.length;i++){
+    if(!solving) return;
+    // Swap
+    log('Swap('+start+','+i+'): ['+arr.join(',')+'] → swap positions '+start+' and '+i,'log-swap');
+    renderArray(start,i,start);
+    await sleep(spd()/2);
+    [arr[start],arr[i]]=[arr[i],arr[start]];
+    renderArray(-1,-1,start+1);
+    await sleep(spd()/2);
+    await permute(start+1);
+    // Swap back
+    [arr[start],arr[i]]=[arr[i],arr[start]];
+    if(solving){
+      log('Swap back('+start+','+i+'): restored to ['+arr.join(',')+']','log-swap');
+      renderArray(start,i,start);
+      await sleep(spd()/3);
+    }
+  }
+}
+
+async function startGenerate(){
+  if(solving) return;
+  arr=parseArr();
+  if(arr.length===0){log('Please enter at least one element.');return;}
+  if(arr.length>6){log('Maximum 6 elements for animation performance.');return;}
+  solving=true;permCount=0;
+  clearLog();
+  document.getElementById('perm-grid').innerHTML='';
+  document.getElementById('btn-gen').disabled=true;
+  document.getElementById('btn-reset').disabled=true;
+  updateCounter();
+  renderArray();
+  log('Generating all permutations of ['+arr.join(',')+']… ('+arr.length+'!='+factorial(arr.length)+' expected)');
+  await permute(0);
+  if(solving){
+    log('Done! '+permCount+' permutations generated.','log-done');
+    renderArray();
+  }
+  solving=false;
+  document.getElementById('btn-gen').disabled=false;
+  document.getElementById('btn-reset').disabled=false;
+}
+
+function resetAll(){
+  solving=false;permCount=0;
+  arr=parseArr();
+  clearLog();
+  document.getElementById('perm-grid').innerHTML='';
+  renderArray();
+  document.getElementById('counter-row').textContent='Permutations: 0 / 0  |  n! = 0';
+  document.getElementById('btn-gen').disabled=false;
+  document.getElementById('btn-reset').disabled=false;
+  log('Reset. Edit array and press "Generate All".');
+}
+
+arr=parseArr();renderArray();
+</script>
+</body>
+</html>

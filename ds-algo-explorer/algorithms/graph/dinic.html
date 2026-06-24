@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dinic's Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px;color:#c0bdb6}
+.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
+.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
+canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
+.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
+.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
+.back-link{margin-top:28px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>Dinic's Algorithm
+  </div>
+  <div class="hero-tag">Graph</div>
+  <h1>Dinic's Algorithm</h1>
+  <p class="tagline">Fastest max-flow in practice — BFS level graph + DFS blocking flow, phase by phase.</p>
+  <div class="prose">
+    <p>Dinic's algorithm computes maximum network flow by alternating between two phases. First, BFS builds a "level graph" — a layered structure where each node's level is its BFS distance from the source. Second, DFS finds a "blocking flow" — a set of paths from source to sink through the level graph such that every path is saturated.</p>
+    <p>The genius of Dinic's is that each BFS phase strictly increases the length of augmenting paths. Since path length is bounded by V, there are at most O(V) phases. Each blocking flow phase takes O(VE) with the DFS using the "current arc" optimization. Total: O(V²E), much better than naive Ford-Fulkerson on large graphs.</p>
+    <p>Dinic's is the algorithm of choice in competitive programming and real systems like matching and scheduling. For unit-capacity graphs it runs even faster at O(E√V), making it ideal for bipartite matching.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(V²E)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
+    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Level Graph + Blocking Flow</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Flow Network — S=node 0, T=node 5. Shows capacity/flow on edges.</div>
+    <canvas id="cv" width="700" height="320"></canvas>
+    <div class="controls">
+      <button id="btnRun">Run Dinic</button>
+      <button id="btnPhase" class="sec">Phase</button>
+      <button id="btnReset" class="sec">Reset</button>
+      <span id="maxflow" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+    </div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Step Log</div>
+    <div class="log-box" id="log"></div>
+  </div>
+  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+</div>
+<script>
+// nodes: 0=S,1,2,3,4,5=T
+const nodes=[
+  {x:80,y:160,l:'S'},{x:220,y:80,l:'1'},{x:220,y:240,l:'2'},
+  {x:400,y:80,l:'3'},{x:400,y:240,l:'4'},{x:580,y:160,l:'T'}
+];
+// [from,to,cap,rev_idx in adj[to]]
+let graph=[];
+function addEdge(u,v,c){
+  graph[u].push({to:v,cap:c,flow:0,rev:graph[v].length});
+  graph[v].push({to:u,cap:0,flow:0,rev:graph[u].length-1});
+}
+let level=[],iter_=[];
+let totalFlow=0,done=false,phases=[];
+const S=0,T=5;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let lastPath=[],lastFlow=0;
+
+function initGraph(){
+  graph=Array.from({length:6},()=>[]);
+  addEdge(0,1,10);addEdge(0,2,8);addEdge(1,3,5);addEdge(1,2,2);
+  addEdge(2,4,10);addEdge(3,4,3);addEdge(3,5,7);addEdge(4,5,10);
+  totalFlow=0;done=false;phases=[];lastPath=[];lastFlow=0;
+  document.getElementById('log').innerHTML='';
+  document.getElementById('maxflow').textContent='';
+  addLog('Flow network ready. S=node 0, T=node 5.');
+  draw();
+}
+function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
+function bfs(){
+  level=new Array(6).fill(-1);level[S]=0;
+  const q=[S];
+  while(q.length){
+    const u=q.shift();
+    graph[u].forEach(e=>{if(e.cap>e.flow&&level[e.to]<0){level[e.to]=level[u]+1;q.push(e.to);}});
+  }
+  return level[T]>=0;
+}
+function dfs(u,pushed){
+  if(u===T)return pushed;
+  for(;iter_[u]<graph[u].length;iter_[u]++){
+    const e=graph[u][iter_[u]];
+    if(e.cap<=e.flow||level[e.to]!==level[u]+1)continue;
+    const d=dfs(e.to,Math.min(pushed,e.cap-e.flow));
+    if(d>0){e.flow+=d;graph[e.to][e.rev].flow-=d;return d;}
+  }
+  return 0;
+}
+function runPhase(){
+  if(done)return;
+  if(!bfs()){done=true;addLog(`No augmenting path. Max Flow = ${totalFlow}`);document.getElementById('maxflow').textContent=`Max Flow: ${totalFlow}`;draw();return;}
+  const levels=level.map((l,i)=>`${nodes[i].l}:L${l}`).join(', ');
+  addLog(`BFS levels: ${levels}`);
+  iter_=new Array(6).fill(0);
+  let phaseFlow=0,paths=[];
+  let f;
+  while((f=dfs(S,Infinity))>0){phaseFlow+=f;totalFlow+=f;paths.push(f);}
+  addLog(`Blocking flow phase: sent ${phaseFlow} (paths: ${paths.join('+')}). Total flow=${totalFlow}`);
+  draw();
+}
+function drawArrow(x1,y1,x2,y2,color,lw){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len;
+  const ex=x2-ux*24,ey=y2-uy*24;
+  ctx.strokeStyle=color;ctx.lineWidth=lw;
+  ctx.beginPath();ctx.moveTo(x1+ux*24,y1+uy*24);ctx.lineTo(ex,ey);ctx.stroke();
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  const ax=ex-uy*6-ux*10,ay=ey+ux*6-uy*10;
+  const bx=ex+uy*6-ux*10,by=ey-ux*6-uy*10;
+  ctx.moveTo(ex,ey);ctx.lineTo(ax,ay);ctx.lineTo(bx,by);ctx.closePath();ctx.fill();
+}
+function draw(){
+  ctx.clearRect(0,0,700,320);
+  graph.forEach((edges,u)=>{
+    edges.forEach(e=>{
+      if(e.cap===0)return;// skip reverse edges
+      const v=e.to;
+      const flow=e.flow,cap=e.cap;
+      const sat=cap>0?flow/cap:0;
+      const color=sat>=1?'#e84393':sat>0?'#7b4fd4':'#c0bcc8';
+      const lw=sat>0?3:1.5;
+      drawArrow(nodes[u].x,nodes[u].y,nodes[v].x,nodes[v].y,color,lw);
+      const mx=(nodes[u].x+nodes[v].x)/2,my=(nodes[u].y+nodes[v].y)/2;
+      ctx.fillStyle='#1a1a2e';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillText(`${flow}/${cap}`,mx,my-7);
+      if(level[u]>=0&&level[v]===level[u]+1&&e.cap>e.flow){
+        ctx.strokeStyle='#ede8fa';ctx.lineWidth=6;
+        ctx.beginPath();ctx.moveTo(nodes[u].x+24,nodes[u].y);ctx.lineTo(nodes[v].x-24,nodes[v].y);
+        // just color the label background
+      }
+    });
+  });
+  nodes.forEach((n,i)=>{
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    const lv=level[i];
+    ctx.fillStyle=lv>=0?`hsl(${260-lv*30},60%,92%)`:'#fff';ctx.fill();
+    ctx.strokeStyle=i===S||i===T?'#e8622a':'#7b4fd4';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.l,n.x,n.y);
+    if(lv>=0){ctx.font='9px JetBrains Mono';ctx.fillStyle='#7b4fd4';ctx.fillText('L'+lv,n.x,n.y+32);}
+  });
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+document.getElementById('btnPhase').onclick=()=>runPhase();
+document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else runPhase();},800);};
+document.getElementById('btnReset').onclick=()=>initGraph();
+initGraph();
+</script>
+</body>
+</html>

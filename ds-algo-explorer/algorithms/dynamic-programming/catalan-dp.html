@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalan Numbers – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:900px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
+  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
+  .input-group{display:flex;flex-direction:column;gap:4px;}
+  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
+  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;width:80px;background:var(--bg);}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
+  /* catalan table */
+  .cat-table-wrap{display:flex;gap:0;margin:18px 0;overflow-x:auto;}
+  .cat-cell{display:flex;flex-direction:column;align-items:center;min-width:64px;}
+  .cat-cell .idx{font-size:.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:3px 0;}
+  .cat-cell .val{width:58px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;transition:background .35s,color .35s;background:var(--surface);color:#888;}
+  .cat-cell .val.done{background:#fff3ed;color:var(--accent);}
+  .cat-cell .val.active{background:var(--accent);color:#fff;}
+  /* applications */
+  .apps-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px;}
+  .app-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px;}
+  .app-card h3{font-size:.95rem;font-weight:600;margin-bottom:10px;color:var(--ink);}
+  .app-card .app-val{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent);}
+  .paren-list{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);margin-top:6px;line-height:1.8;}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#e8a87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Catalan Numbers (DP)
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Catalan Numbers</h1>
+    <p class="tagline">A sequence that secretly governs parentheses, trees, and triangulations.</p>
+  </div>
+
+  <div class="explanation">
+    <p>The Catalan numbers are a sequence of natural numbers that appear in many combinatorial problems: the number of valid bracket sequences with n pairs, the number of distinct Binary Search Trees with n nodes, the number of ways to triangulate a polygon, and many more.</p>
+    <p>The recurrence is elegant: <code>C(0) = 1</code> and <code>C(n) = Σ C(i) · C(n-1-i)</code> for i from 0 to n-1. It mirrors the structure of dividing problems at a "root": everything to the left is one subproblem, everything to the right is another. DP lets us compute this bottom-up in O(n²).</p>
+    <p>The first few values are 1, 1, 2, 5, 14, 42, 132 — they grow exponentially, yet each is built from exactly those that came before.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">O(n)</div><div class="label">Space Complexity</div></div>
+    <div class="fact-card"><div class="val">Combinatorial</div><div class="label">Application Class</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <div class="input-row">
+      <div class="input-group">
+        <label>Compute C(0)..C(n)</label>
+        <input type="number" id="nInput" value="7" min="1" max="10">
+      </div>
+      <button class="btn" id="solveBtn" onclick="startSolve()">Compute</button>
+    </div>
+
+    <div class="cat-table-wrap" id="catTable"></div>
+
+    <div class="apps-grid" id="appsGrid"></div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function genParens(n){
+  const res=[];
+  function bt(s,open,close){
+    if(s.length===2*n){res.push(s);return;}
+    if(open<n) bt(s+'(',open+1,close);
+    if(close<open) bt(s+')',open,close+1);
+  }
+  bt('',0,0);
+  return res;
+}
+
+async function startSolve(){
+  const btn=document.getElementById('solveBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+
+  const n=Math.max(1,Math.min(10,parseInt(document.getElementById('nInput').value)||7));
+  const C=new Array(n+1).fill(0);
+  C[0]=1;
+
+  // Build table UI
+  const ct=document.getElementById('catTable');
+  ct.innerHTML='';
+  const cells=[];
+  for(let i=0;i<=n;i++){
+    const cell=document.createElement('div');cell.className='cat-cell';
+    const idx=document.createElement('div');idx.className='idx';idx.textContent=`C(${i})`;
+    const val=document.createElement('div');val.className='val';val.textContent='–';
+    cell.appendChild(idx);cell.appendChild(val);ct.appendChild(cell);
+    cells.push(val);
+  }
+
+  // C(0)=1
+  cells[0].textContent='1';cells[0].classList.add('done');
+  log('C(0) = 1  (base case)');
+  await sleep(300);
+
+  for(let i=1;i<=n;i++){
+    cells[i].classList.add('active');
+    const terms=[];
+    for(let j=0;j<i;j++){
+      C[i]+=C[j]*C[i-1-j];
+      terms.push(`C(${j})·C(${i-1-j})=${C[j]*C[i-1-j]}`);
+    }
+    log(`C(${i}) = ${terms.join(' + ')} = ${C[i]}`, i===n);
+    await sleep(400);
+    cells[i].textContent=C[i];
+    cells[i].classList.remove('active');
+    cells[i].classList.add('done');
+  }
+
+  // Applications panel
+  const ag=document.getElementById('appsGrid');
+  ag.innerHTML='';
+
+  // Valid parens
+  const parens=genParens(Math.min(n,4));
+  const pc=document.createElement('div');pc.className='app-card';
+  pc.innerHTML=`<h3>Valid Parentheses for ${Math.min(n,4)} pairs</h3>
+    <div class="app-val">${C[Math.min(n,4)]}</div>
+    <div class="paren-list">${parens.slice(0,10).join('  ')}${parens.length>10?'...':''}</div>`;
+  ag.appendChild(pc);
+
+  // BSTs
+  const bc=document.createElement('div');bc.className='app-card';
+  bc.innerHTML=`<h3>Distinct BSTs with ${n} nodes</h3>
+    <div class="app-val">${C[n]}</div>
+    <div class="paren-list" style="margin-top:8px;color:var(--muted);font-size:.82rem;">Each BST structure corresponds to a unique way of inserting ${n} keys. C(${n}) = ${C[n]} such structures exist.</div>`;
+  ag.appendChild(bc);
+
+  btn.disabled=false;
+}
+
+window.onload=()=>startSolve();
+</script>
+</body>
+</html>

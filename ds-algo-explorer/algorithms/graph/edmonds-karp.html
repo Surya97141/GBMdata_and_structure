@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Edmonds-Karp Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px;color:#c0bdb6}
+.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
+.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
+canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
+.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
+.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
+.back-link{margin-top:28px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>Edmonds-Karp
+  </div>
+  <div class="hero-tag">Graph</div>
+  <h1>Edmonds-Karp Algorithm</h1>
+  <p class="tagline">BFS-based max-flow — always augment along the shortest path in the residual graph.</p>
+  <div class="prose">
+    <p>Edmonds-Karp is a specific implementation of Ford-Fulkerson that uses BFS to find augmenting paths instead of DFS. This seemingly small change provides a crucial guarantee: BFS always finds the shortest augmenting path (fewest edges), which ensures the algorithm terminates in O(VE²) time regardless of edge capacity values.</p>
+    <p>The key insight is that using BFS makes the augmenting path lengths non-decreasing across iterations. Since path length is at most V−1 and each edge can become "critical" (bottleneck) at most V/2 times before the path length increases, the total number of augmentations is bounded by O(VE).</p>
+    <p>Think of water flowing through pipes: BFS finds the most direct route each time you pump water. The pink highlighted path shows the current augmenting path found by BFS, and you can see flows on edges update as water fills the network.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(VE²)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
+    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">BFS Shortest Path</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Flow Network — S=node 0, T=node 5. Pink = current BFS path.</div>
+    <canvas id="cv" width="700" height="320"></canvas>
+    <div class="controls">
+      <button id="btnRun">Run</button>
+      <button id="btnStep" class="sec">Step</button>
+      <button id="btnReset" class="sec">Reset</button>
+      <span id="mf" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+    </div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Step Log</div>
+    <div class="log-box" id="log"></div>
+  </div>
+  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+</div>
+<script>
+const nodes=[
+  {x:80,y:160,l:'S'},{x:230,y:70,l:'1'},{x:230,y:250,l:'2'},
+  {x:420,y:70,l:'3'},{x:420,y:250,l:'4'},{x:600,y:160,l:'T'}
+];
+const N=6,S=0,T=5;
+let cap=[],flow=[];
+const edgeList=[[0,1,10],[0,2,8],[1,3,5],[1,2,2],[2,4,10],[3,4,3],[3,5,7],[4,5,10]];
+let totalFlow=0,done=false,currentPath=[];
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+
+function initGraph(){
+  cap=Array.from({length:N},()=>new Array(N).fill(0));
+  flow=Array.from({length:N},()=>new Array(N).fill(0));
+  edgeList.forEach(([u,v,c])=>{cap[u][v]=c;});
+  totalFlow=0;done=false;currentPath=[];
+  document.getElementById('log').innerHTML='';document.getElementById('mf').textContent='';
+  addLog('Flow network ready. S=0, T=5. Click Step or Run.');draw();
+}
+function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
+function bfsPath(){
+  const parent=new Array(N).fill(-1);parent[S]=S;
+  const q=[S];
+  while(q.length){
+    const u=q.shift();
+    if(u===T)break;
+    for(let v=0;v<N;v++){
+      if(parent[v]===-1&&cap[u][v]-flow[u][v]>0){parent[v]=u;q.push(v);}
+    }
+  }
+  if(parent[T]===-1)return null;
+  const path=[];let cur=T;
+  while(cur!==S){path.unshift(cur);cur=parent[cur];}path.unshift(S);
+  return path;
+}
+function step(){
+  if(done)return;
+  const path=bfsPath();
+  if(!path){done=true;addLog(`No more augmenting paths. Max Flow = ${totalFlow}`);document.getElementById('mf').textContent=`Max Flow: ${totalFlow}`;currentPath=[];draw();return;}
+  let bottleneck=Infinity;
+  for(let i=0;i<path.length-1;i++)bottleneck=Math.min(bottleneck,cap[path[i]][path[i+1]]-flow[path[i]][path[i+1]]);
+  for(let i=0;i<path.length-1;i++){flow[path[i]][path[i+1]]+=bottleneck;flow[path[i+1]][path[i]]-=bottleneck;}
+  totalFlow+=bottleneck;
+  const pStr=path.map(i=>nodes[i].l).join('→');
+  addLog(`BFS path: ${pStr}. Bottleneck=${bottleneck}. Update flows. Max-flow=${totalFlow}`);
+  currentPath=path;draw();
+}
+function drawArrow(u,v,color,lw){
+  const n1=nodes[u],n2=nodes[v];
+  const dx=n2.x-n1.x,dy=n2.y-n1.y,len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len;
+  const sx=n1.x+ux*24,sy=n1.y+uy*24,ex=n2.x-ux*24,ey=n2.y-uy*24;
+  ctx.strokeStyle=color;ctx.lineWidth=lw;
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-uy*6-ux*10,ey+ux*6-uy*10);ctx.lineTo(ex+uy*6-ux*10,ey-ux*6-uy*10);
+  ctx.closePath();ctx.fill();
+  const mx=(sx+ex)/2,my=(sy+ey)/2;
+  ctx.fillStyle='#1a1a2e';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText(`${flow[u][v]}/${cap[u][v]}`,mx,my-8);
+}
+function draw(){
+  ctx.clearRect(0,0,700,320);
+  edgeList.forEach(([u,v])=>{
+    const onPath=currentPath.some((n,i)=>currentPath[i+1]!==undefined&&n===u&&currentPath[i+1]===v);
+    const f=flow[u][v],c=cap[u][v];
+    const color=onPath?'#e84393':f>=c?'#e8622a':f>0?'#7b4fd4':'#b0aec8';
+    drawArrow(u,v,color,onPath?3.5:1.8);
+  });
+  nodes.forEach((n,i)=>{
+    const onPath=currentPath.includes(i);
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    ctx.fillStyle=onPath?'#fff0f8':'#fff';ctx.fill();
+    ctx.strokeStyle=i===S||i===T?'#e8622a':onPath?'#e84393':'#7b4fd4';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.l,n.x,n.y);
+  });
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+document.getElementById('btnStep').onclick=()=>step();
+document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},700);};
+document.getElementById('btnReset').onclick=()=>initGraph();
+initGraph();
+</script>
+</body>
+</html>

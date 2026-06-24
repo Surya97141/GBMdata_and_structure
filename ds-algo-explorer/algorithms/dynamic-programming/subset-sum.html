@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subset Sum – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:960px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
+  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
+  .input-group{display:flex;flex-direction:column;gap:4px;}
+  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
+  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;background:var(--bg);}
+  .input-group input.wide{width:280px;}
+  .input-group input.narrow{width:100px;}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
+  .dp-scroll{overflow-x:auto;margin:18px 0;}
+  table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem;}
+  table.dp th,table.dp td{border:1px solid var(--border);padding:6px 10px;text-align:center;min-width:36px;transition:background .25s,color .25s;}
+  table.dp th{background:var(--bg);font-weight:600;color:var(--muted);}
+  table.dp td{background:var(--surface);}
+  table.dp td.true{background:#d4f5d4;color:#1a5c1a;}
+  table.dp td.false{background:var(--surface);color:#bbb;}
+  table.dp td.active{background:var(--accent);color:#fff;}
+  table.dp td.trace{background:#e8622a;color:#fff;font-weight:700;}
+  .result-note{margin-top:12px;font-size:.95rem;}
+  .result-note strong{color:var(--accent);}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#e8a87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Subset Sum
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Dynamic Programming</span>
+    <h1>Subset Sum</h1>
+    <p class="tagline">Determine whether any subset of numbers adds up to a given target.</p>
+  </div>
+
+  <div class="explanation">
+    <p>Given a set of positive integers and a target value, can you select a subset that sums to exactly that target? This is one of the most fundamental NP-complete problems, yet DP handles it efficiently when the target is not astronomically large.</p>
+    <p>We build a 2D boolean table: <code>dp[i][s]</code> is <em>true</em> if the first <em>i</em> items can form sum <em>s</em>. The transition is: we either skip item <em>i</em> (inherit <code>dp[i-1][s]</code>) or take it if <code>s ≥ arr[i]</code> and <code>dp[i-1][s-arr[i]]</code> is true.</p>
+    <p>Think of it like a cashier's coin problem: you want exact change. Each row of the table represents adding one more denomination. Green cells mean "reachable"; after filling the table we backtrace the highlighted path to recover the actual subset.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(n·T)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">O(n·T)</div><div class="label">Space Complexity</div></div>
+    <div class="fact-card"><div class="val">NP-Complete</div><div class="label">Problem Class</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <div class="input-row">
+      <div class="input-group">
+        <label>Array (comma-separated)</label>
+        <input class="wide" type="text" id="arrInput" value="3,1,4,1,5,9,2,6">
+      </div>
+      <div class="input-group">
+        <label>Target Sum</label>
+        <input class="narrow" type="number" id="targetInput" value="11">
+      </div>
+      <button class="btn" id="solveBtn" onclick="startSolve()">Solve</button>
+    </div>
+    <div class="dp-scroll"><table class="dp" id="dpTable"></table></div>
+    <div class="result-note" id="resultNote"></div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function startSolve(){
+  const btn=document.getElementById('solveBtn');
+  btn.disabled=true;
+  document.getElementById('logBox').innerHTML='';
+  document.getElementById('resultNote').innerHTML='';
+
+  const arr=document.getElementById('arrInput').value.split(',').map(x=>parseInt(x.trim())).filter(x=>!isNaN(x));
+  const T=parseInt(document.getElementById('targetInput').value)||11;
+  const n=arr.length;
+
+  // Limit T for display
+  const maxT=Math.min(T,30);
+
+  // Build DP table
+  const dp=Array.from({length:n+1},()=>new Array(maxT+1).fill(false));
+  for(let i=0;i<=n;i++) dp[i][0]=true;
+
+  // Build HTML table
+  const tbl=document.getElementById('dpTable');
+  tbl.innerHTML='';
+  const thead=tbl.createTHead();
+  const hrow=thead.insertRow();
+  hrow.insertCell().textContent='item \\ sum';
+  for(let s=0;s<=maxT;s++){const th=document.createElement('th');th.textContent=s;hrow.appendChild(th);}
+
+  const tbody=tbl.createTBody();
+  const cells=[];
+  // Row 0: no items
+  {
+    const row=tbody.insertRow();
+    const lbl=row.insertCell();lbl.textContent='(none)';lbl.style.color='var(--muted)';lbl.style.fontWeight='600';
+    cells[0]=[];
+    for(let s=0;s<=maxT;s++){
+      const td=row.insertCell();
+      td.textContent=s===0?'T':'F';
+      td.classList.add(s===0?'true':'false');
+      cells[0][s]=td;
+    }
+  }
+  for(let i=1;i<=n;i++){
+    const row=tbody.insertRow();
+    const lbl=row.insertCell();lbl.textContent=`+${arr[i-1]}`;lbl.style.color='var(--muted)';lbl.style.fontWeight='600';
+    cells[i]=[];
+    for(let s=0;s<=maxT;s++){
+      const td=row.insertCell();td.textContent='–';
+      cells[i][s]=td;
+    }
+  }
+
+  await sleep(300);
+
+  // Fill row by row
+  for(let i=1;i<=n;i++){
+    for(let s=0;s<=maxT;s++){
+      cells[i][s].classList.add('active');
+      let val=dp[i-1][s];
+      if(!val && s>=arr[i-1]) val=dp[i-1][s-arr[i-1]];
+      dp[i][s]=val;
+      await sleep(60);
+      cells[i][s].classList.remove('active');
+      cells[i][s].textContent=val?'T':'F';
+      cells[i][s].classList.add(val?'true':'false');
+    }
+    if(T<=maxT){
+      log(`Row ${i} (item=${arr[i-1]}): dp[${i}][${T}]=${dp[i][T]}`);
+    }
+  }
+
+  const found=T<=maxT ? dp[n][T] : false;
+
+  if(T<=maxT && found){
+    // Backtrace
+    let i=n,s=T;
+    const chosen=[];
+    while(i>0&&s>0){
+      if(!dp[i-1][s]){
+        chosen.push(arr[i-1]);
+        cells[i][s].classList.remove('true');
+        cells[i][s].classList.add('trace');
+        s-=arr[i-1];
+      } else {
+        cells[i][s].classList.remove('true');
+        cells[i][s].classList.add('trace');
+      }
+      i--;
+    }
+    cells[0][s].classList.add('trace');
+    document.getElementById('resultNote').innerHTML=
+      `<strong>YES</strong> — Subset found: [${chosen.reverse().join(', ')}] sums to ${T}`;
+    log(`Subset: [${chosen.join(', ')}] sums to ${T}`,true);
+  } else if(T>maxT){
+    document.getElementById('resultNote').innerHTML=
+      `Target ${T} is larger than display cap (${maxT}). Table shown for sums 0–${maxT}.`;
+    log(`Target ${T} truncated for display. Check T ≤ 30.`);
+  } else {
+    document.getElementById('resultNote').innerHTML=
+      `<strong>NO</strong> — No subset of [${arr.join(', ')}] sums to ${T}.`;
+    log(`No subset sums to ${T}.`,true);
+  }
+  btn.disabled=false;
+}
+
+window.onload=()=>startSolve();
+</script>
+</body>
+</html>

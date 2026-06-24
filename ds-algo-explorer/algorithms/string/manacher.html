@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Manacher's Algorithm – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#2a9d8f}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=text]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:280px}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+.char-row{display:flex;flex-wrap:wrap;gap:3px;margin:.6rem 0;align-items:flex-end}
+.ch{display:flex;flex-direction:column;align-items:center;gap:2px}
+.ch .box{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;border:2px solid var(--border);background:var(--bg);transition:all .3s}
+.ch .idx{font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.ch .pval{font-size:.7rem;font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;min-height:1rem}
+.ch.center .box{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ch.expand .box{background:#e8f8f5;border-color:var(--accent)}
+.ch.mirror .box{background:#fff3e0;border-color:#e9c46a}
+.info-row{display:flex;gap:1rem;flex-wrap:wrap;margin:.8rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem}
+.info-pill{padding:.3rem .7rem;border-radius:5px;background:var(--bg);border:1px solid var(--border)}
+.info-pill span{color:var(--accent);font-weight:700}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:220px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+.longest-info{margin-top:.8rem;font-size:.9rem;font-weight:600}
+.longest-info span{color:var(--accent)}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Manacher's Algorithm
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">String</span>
+    <h1>Manacher's Algorithm</h1>
+    <p class="tagline">Find all palindromic substrings in O(n) time using a clever center-expansion mirror trick.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>Manacher's algorithm is like using a mirror. If you know a large palindrome centered at C, and you're looking at position i inside it, then its mirror i' (= 2C - i) already tells you how far the palindrome at i can extend — you don't need to re-expand from scratch.</p>
+    <p>The key insight: transform the string by inserting '#' between every character (and at ends). This converts all palindromes to odd-length, simplifying the algorithm. We maintain a center C and right boundary R of the rightmost known palindrome. For each new position, we either use the mirror value directly or expand further.</p>
+    <p>The amortized cost is O(n) because R only moves right, never left. Applications include DNA palindrome detection, syntax highlighting, and competitive programming problems asking for longest palindrome.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(n)</div><div class="lbl">Time complexity</div></div>
+    <div class="fact"><div class="val">O(n)</div><div class="lbl">Space complexity</div></div>
+    <div class="fact"><div class="val">1975</div><div class="lbl">Year discovered</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div>
+        <label>Input String</label>
+        <input type="text" id="strInput" value="abacaba"/>
+      </div>
+      <button class="btn" onclick="runManacher()" style="align-self:flex-end">Run Manacher</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div class="info-row">
+      <div class="info-pill">Center C = <span id="cVal">–</span></div>
+      <div class="info-pill">Right boundary R = <span id="rVal">–</span></div>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">Transformed string (#-separated) + P[] array:</div>
+    <div id="charViz" class="char-row"></div>
+    <div id="longestInfo" class="longest-info"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter a string and click "Run Manacher" to animate</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let simSteps=[], stepIdx=0, charEls=[], tStr='', P=[];
+
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls) div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  simSteps=[];stepIdx=0;charEls=[];tStr='';P=[];
+  document.getElementById('charViz').innerHTML='';
+  document.getElementById('longestInfo').innerHTML='';
+  document.getElementById('cVal').textContent='–';
+  document.getElementById('rVal').textContent='–';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter a string and click "Run Manacher" to animate</div>';
+}
+
+function transform(s){
+  return '#'+s.split('').join('#')+'#';
+}
+
+function runManacher(){
+  resetSim();
+  const s=document.getElementById('strInput').value.trim();
+  if(!s){alert('Enter a string');return;}
+  tStr=transform(s);
+  const n=tStr.length;
+  P=new Array(n).fill(0);
+  simSteps=[];
+
+  log('=== Manacher\'s Algorithm ===','hi');
+  log(`Original: "${s}" → Transformed: "${tStr}"`);
+
+  // Build P array and record steps
+  let C=0,R=0;
+  for(let i=0;i<n;i++){
+    const mirror=2*C-i;
+    let expand=false;
+    if(i<R){
+      P[i]=Math.min(R-i,P[mirror]);
+      if(i+P[i]===R) expand=true;
+    } else expand=true;
+
+    if(expand){
+      while(i+P[i]+1<n && i-P[i]-1>=0 && tStr[i+P[i]+1]===tStr[i-P[i]-1]) P[i]++;
+    }
+    if(i+P[i]>R){C=i;R=i+P[i];}
+    simSteps.push({i,C,R,P:[...P]});
+  }
+
+  // Render static chars
+  renderChars();
+  // Animate steps
+  animateStep(0);
+}
+
+function renderChars(){
+  const viz=document.getElementById('charViz');
+  viz.innerHTML='';
+  charEls=[];
+  for(let i=0;i<tStr.length;i++){
+    const wrap=document.createElement('div');wrap.className='ch';
+    const box=document.createElement('div');box.className='box';box.textContent=tStr[i];
+    const pv=document.createElement('div');pv.className='pval';pv.id=`pv-${i}`;pv.textContent='';
+    const idx=document.createElement('div');idx.className='idx';idx.textContent=i;
+    wrap.id=`cw-${i}`;
+    wrap.appendChild(pv);wrap.appendChild(box);wrap.appendChild(idx);
+    viz.appendChild(wrap);
+    charEls.push(wrap);
+  }
+}
+
+function animateStep(idx){
+  if(idx>=simSteps.length){
+    // Show final result
+    const best=P.indexOf(Math.max(...P));
+    const palLen=P[best];
+    const start=(best-palLen)/2;
+    const orig=document.getElementById('strInput').value;
+    const pal=orig.substring(start,start+palLen);
+    document.getElementById('longestInfo').innerHTML=`Longest palindrome: <span>"${pal}"</span> (length ${palLen})`;
+    log(`Done! Longest palindrome: "${pal}" at position ${start}, length ${palLen}`,'ok');
+    // Show all P values
+    charEls.forEach((el,i)=>{
+      const pv=document.getElementById(`pv-${i}`);
+      if(pv) pv.textContent=simSteps[simSteps.length-1].P[i];
+    });
+    return;
+  }
+  const step=simSteps[idx];
+  document.getElementById('cVal').textContent=step.C;
+  document.getElementById('rVal').textContent=step.R;
+
+  // Reset all
+  charEls.forEach(el=>el.className='ch');
+  // Mark right boundary range
+  for(let k=step.C-P[step.C>0?step.C:0];k<=step.R;k++){
+    if(charEls[k]) charEls[k].classList.add('expand');
+  }
+  // Center
+  if(charEls[step.C]) charEls[step.C].classList.add('center');
+  // Current i
+  const mirror=2*step.C-step.i;
+  if(charEls[mirror]) charEls[mirror].classList.add('mirror');
+  // Update P values
+  for(let k=0;k<=step.i;k++){
+    const pv=document.getElementById(`pv-${k}`);
+    if(pv) pv.textContent=step.P[k];
+  }
+
+  const s=simSteps[idx];
+  const mi=2*s.C-s.i;
+  log(`i=${s.i} ('${tStr[s.i]}'): mirror i'=${mi<0?'N/A':mi}${mi>=0?' P['+mi+']='+s.P[mi]:''}, C=${s.C}, R=${s.R} → P[${s.i}]=${s.P[s.i]}`);
+
+  setTimeout(()=>animateStep(idx+1),500);
+}
+</script>
+</body>
+</html>

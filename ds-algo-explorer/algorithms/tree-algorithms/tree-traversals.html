@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tree Traversals – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
+.radio-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.radio-row label{display:flex;align-items:center;gap:.4rem;font-size:.9rem;cursor:pointer;font-weight:500;}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
+.btn-neu{background:#eee;color:#444;border:1px solid #ddd;}.btn-neu:hover{background:#e5e5e5;}
+.output-row{margin-top:.8rem;font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--ink);background:#f0fbf5;border:1px solid #b6e3ca;border-radius:8px;padding:.6rem 1rem;min-height:2.2rem;letter-spacing:.05em;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    Tree Traversals
+  </nav>
+  <header class="hero">
+    <span class="tag">Tree Algorithm</span>
+    <h1>Tree Traversals</h1>
+    <p>The three fundamental ways to visit every node in a binary tree — inorder, preorder, and postorder — each revealing a different structural view.</p>
+  </header>
+  <section class="prose">
+    <p><strong>Tree traversal</strong> means visiting every node in a binary tree exactly once. The three classic DFS traversals differ only in when they visit the current node relative to its subtrees. <em>Preorder</em> (Root → Left → Right) visits the parent before children. <em>Inorder</em> (Left → Root → Right) visits nodes in sorted order for a BST. <em>Postorder</em> (Left → Right → Root) visits children before parents — perfect for deletion or expression evaluation.</p>
+    <p>Think of reading a book's table of contents. Preorder is like reading chapter numbers before seeing the chapter — you always know your position first. Inorder is alphabetical order in a dictionary. Postorder is like finishing all sub-tasks before marking a project complete — you "visit" (complete) children before the parent task.</p>
+    <p>All three run in O(n) time and O(h) space (where h is tree height, for the call stack). For a balanced tree h = O(log n); for a degenerate (linear) tree h = O(n).</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(n)</div></div>
+    <div class="fact"><div class="fact-label">Space (stack)</div><div class="fact-val">O(h)</div></div>
+    <div class="fact"><div class="fact-label">Inorder BST</div><div class="fact-val">Sorted output</div></div>
+    <div class="fact"><div class="fact-label">Postorder Use</div><div class="fact-val">Tree deletion, Expr eval</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">Interactive Traversal Simulation</div>
+    <div class="radio-row">
+      <label><input type="radio" name="trav" value="inorder" checked/> Inorder (L→Root→R)</label>
+      <label><input type="radio" name="trav" value="preorder"/> Preorder (Root→L→R)</label>
+      <label><input type="radio" name="trav" value="postorder"/> Postorder (L→R→Root)</label>
+    </div>
+    <canvas id="cv" height="280"></canvas>
+    <div class="output-row" id="outputRow">Output sequence will appear here…</div>
+    <div class="controls">
+      <button class="btn btn-pri" onclick="doRun()">Run</button>
+      <button class="btn btn-sec" onclick="doStep()">Step</button>
+      <button class="btn btn-neu" onclick="doReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+// Fixed 7-node binary tree
+const TREE={v:1,l:{v:2,l:{v:4,l:null,r:null},r:{v:5,l:null,r:null}},r:{v:3,l:{v:6,l:null,r:null},r:{v:7,l:null,r:null}}};
+
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=280; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); render();
+}
+window.addEventListener('resize',resize);
+
+// Assign positions
+function assignPos(node,x,y,spread){
+  if(!node) return;
+  node._x=x; node._y=y;
+  if(node.l) assignPos(node.l,x-spread,y+70,spread/2);
+  if(node.r) assignPos(node.r,x+spread,y+70,spread/2);
+}
+
+let visited=new Set();
+let current=null;
+let steps=[];
+let stepIdx=0;
+let outputSeq=[];
+
+function buildSteps(node,order){
+  if(!node) return;
+  if(order==='preorder'){
+    steps.push({node,msg:`Visit ${node.v} (preorder: node first)`});
+    buildSteps(node.l,order);
+    buildSteps(node.r,order);
+  } else if(order==='inorder'){
+    buildSteps(node.l,order);
+    steps.push({node,msg:`Visit ${node.v} (inorder: after left subtree)`});
+    buildSteps(node.r,order);
+  } else {
+    buildSteps(node.l,order);
+    buildSteps(node.r,order);
+    steps.push({node,msg:`Visit ${node.v} (postorder: children done)`});
+  }
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  assignPos(TREE,W/2,36,W/4.5);
+  function drawEdges(n){
+    if(!n) return;
+    if(n.l){ ctx.beginPath();ctx.moveTo(n._x,n._y);ctx.lineTo(n.l._x,n.l._y);ctx.strokeStyle='#c8c6be';ctx.lineWidth=1.5;ctx.stroke(); drawEdges(n.l); }
+    if(n.r){ ctx.beginPath();ctx.moveTo(n._x,n._y);ctx.lineTo(n.r._x,n.r._y);ctx.strokeStyle='#c8c6be';ctx.lineWidth=1.5;ctx.stroke(); drawEdges(n.r); }
+  }
+  drawEdges(TREE);
+  function drawNodes(n){
+    if(!n) return;
+    const isCur=n===current;
+    const isVis=visited.has(n.v);
+    ctx.beginPath();ctx.arc(n._x,n._y,20,0,Math.PI*2);
+    ctx.fillStyle=isCur?'#f0a500':isVis?'#27a060':'#e8f5ee';
+    ctx.fill(); ctx.strokeStyle=isCur?'#c87800':isVis?'#1a5c38':'#bbb'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle=(isCur||isVis)?'#fff':'#1a1a2e';
+    ctx.font="bold 14px 'JetBrains Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.v,n._x,n._y);
+    drawNodes(n.l); drawNodes(n.r);
+  }
+  drawNodes(TREE);
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('Orange = current  |  Green = visited',8,H-20);
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+function getOrder(){ return document.querySelector('input[name="trav"]:checked').value; }
+
+function doReset(){
+  visited.clear(); current=null; steps=[]; stepIdx=0; outputSeq=[];
+  document.getElementById('outputRow').textContent='Output sequence will appear here…';
+  render();
+}
+
+function doRun(){
+  doReset();
+  const order=getOrder();
+  buildSteps(TREE,order);
+  log(`Running ${order} traversal on 7-node tree:`);
+  let i=0;
+  function next(){
+    if(i>=steps.length){ current=null; render();
+      document.getElementById('outputRow').textContent=outputSeq.join(' → ');
+      log(`Complete. Output: ${outputSeq.join(' → ')}`); return;
+    }
+    const {node,msg}=steps[i++];
+    current=node; visited.add(node.v); outputSeq.push(node.v);
+    document.getElementById('outputRow').textContent=outputSeq.join(' → ')+'…';
+    log(msg); render(); setTimeout(next,600);
+  }
+  next();
+}
+
+function doStep(){
+  if(steps.length===0){
+    const order=getOrder();
+    buildSteps(TREE,order);
+    log(`Stepping through ${order} traversal:`);
+  }
+  if(stepIdx>=steps.length){
+    current=null; render();
+    document.getElementById('outputRow').textContent=outputSeq.join(' → ')+' (done)';
+    log('Traversal complete.'); return;
+  }
+  const {node,msg}=steps[stepIdx++];
+  current=node; visited.add(node.v); outputSeq.push(node.v);
+  document.getElementById('outputRow').textContent=outputSeq.join(' → ');
+  log(msg); render();
+}
+
+resize();
+log('Preset 7-node binary tree loaded. Choose a traversal type and click Run or Step.');
+</script>
+</body>
+</html>

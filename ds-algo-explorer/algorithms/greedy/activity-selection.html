@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity Selection – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+  .container{max-width:900px;margin:0 auto;padding:0 24px;}
+  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
+  .breadcrumb span{margin:0 6px;}
+  .hero{padding:48px 0 32px;}
+  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
+  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
+  .explanation{padding:24px 0;}
+  .explanation p{margin-bottom:14px;}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
+  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
+  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
+  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
+  .btn-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .btn{border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border);}
+  .btn:hover{opacity:.82;}.btn:disabled{opacity:.38;cursor:not-allowed;}
+  canvas{display:block;border-radius:8px;border:1px solid var(--border);max-width:100%;}
+  .result-note{margin-top:14px;font-size:.95rem;}
+  .result-note strong{color:var(--accent);}
+  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
+  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
+  .log-box p.highlight{color:#f5d87c;}
+  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>
+    Activity Selection
+  </nav>
+
+  <div class="hero">
+    <span class="tag">Greedy</span>
+    <h1>Activity Selection</h1>
+    <p class="tagline">Schedule the maximum number of non-overlapping activities using a greedy finish-time strategy.</p>
+  </div>
+
+  <div class="explanation">
+    <p>You have a list of activities, each with a start and finish time, sharing a single resource (a lecture hall, a machine). You want to select the <strong>maximum number of compatible activities</strong> — no two can overlap.</p>
+    <p>The greedy insight is non-obvious but provably optimal: always pick the activity that finishes earliest among those compatible with the last selected one. By finishing early, we leave the maximum room for future activities.</p>
+    <p>The algorithm runs in O(n log n): sort by finish time, then do a single linear scan. No DP needed — greedy gives the global optimum.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact-card"><div class="val">O(n log n)</div><div class="label">Time Complexity</div></div>
+    <div class="fact-card"><div class="val">O(1)</div><div class="label">Extra Space</div></div>
+    <div class="fact-card"><div class="val">Exchange Arg</div><div class="label">Proof Technique</div></div>
+  </div>
+
+  <div class="sim-box">
+    <h2>Interactive Simulation</h2>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="sortBtn" onclick="doSort()">1. Sort by Finish Time</button>
+      <button class="btn btn-primary" id="greedyBtn" onclick="doGreedy()" disabled>2. Select Greedily</button>
+      <button class="btn btn-secondary" onclick="reset()">Reset</button>
+    </div>
+    <canvas id="canvas" width="840" height="310"></canvas>
+    <div class="result-note" id="resultNote"></div>
+  </div>
+
+  <div class="sim-box" style="padding:20px;">
+    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+</div>
+
+<script>
+const RAW=[
+  {name:'A',s:1,f:4},{name:'B',s:3,f:5},{name:'C',s:0,f:6},
+  {name:'D',s:5,f:7},{name:'E',s:3,f:9},{name:'F',s:5,f:9},
+  {name:'G',s:6,f:10},{name:'H',s:8,f:11}
+];
+
+let acts, sorted=false, done=false;
+
+function log(msg,h=false){
+  const lb=document.getElementById('logBox');
+  const p=document.createElement('p');
+  if(h)p.classList.add('highlight');
+  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function reset(){
+  acts=RAW.map(a=>({...a,state:'idle'}));
+  sorted=false;done=false;
+  document.getElementById('sortBtn').disabled=false;
+  document.getElementById('greedyBtn').disabled=true;
+  document.getElementById('resultNote').innerHTML='';
+  document.getElementById('logBox').innerHTML='';
+  draw();
+}
+
+function draw(){
+  const canvas=document.getElementById('canvas');
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const PAD_L=36,PAD_R=24,PAD_TOP=30,BAR_H=22,GAP=10;
+  const maxT=12;
+  const scaleX=(W-PAD_L-PAD_R)/maxT;
+
+  // Timeline grid
+  ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;
+  for(let t=0;t<=maxT;t++){
+    const x=PAD_L+t*scaleX;
+    ctx.beginPath();ctx.moveTo(x,PAD_TOP-8);ctx.lineTo(x,H-20);ctx.stroke();
+    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';ctx.textAlign='center';
+    ctx.fillText(t,x,H-6);
+  }
+
+  // Activity bars
+  acts.forEach((a,i)=>{
+    const x=PAD_L+a.s*scaleX;
+    const w=(a.f-a.s)*scaleX;
+    const y=PAD_TOP+i*(BAR_H+GAP);
+
+    let fill='#d8d5cc';
+    if(a.state==='selected') fill='#4caf78';
+    else if(a.state==='skip') fill='#aaa';
+    else if(a.state==='current') fill='#d4a017';
+
+    ctx.fillStyle=fill;
+    ctx.beginPath();ctx.roundRect(x,y,w,BAR_H,4);ctx.fill();
+
+    ctx.fillStyle='#fff';ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(`${a.name}[${a.s},${a.f})`,x+w/2,y+BAR_H/2+4);
+
+    // index label
+    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';ctx.textAlign='right';
+    ctx.fillText(i+1,PAD_L-4,y+BAR_H/2+4);
+  });
+}
+
+function doSort(){
+  acts=RAW.map(a=>({...a,state:'idle'}));
+  acts.sort((a,b)=>a.f-b.f||(a.s-b.s));
+  sorted=true;
+  document.getElementById('sortBtn').disabled=true;
+  document.getElementById('greedyBtn').disabled=false;
+  log('Sorted by finish time: '+acts.map(a=>`[${a.name}:${a.s}-${a.f}]`).join(' → '));
+  draw();
+}
+
+async function doGreedy(){
+  if(!sorted){doSort();}
+  document.getElementById('greedyBtn').disabled=true;
+  document.getElementById('sortBtn').disabled=true;
+  const selected=[];let lastFinish=-Infinity;
+
+  for(let i=0;i<acts.length;i++){
+    acts[i].state='current';draw();
+    await sleep(500);
+    if(acts[i].s>=lastFinish){
+      acts[i].state='selected';
+      selected.push(acts[i].name);
+      lastFinish=acts[i].f;
+      log(`Select ${acts[i].name} [${acts[i].s},${acts[i].f}). Last finish=${lastFinish}.`);
+    } else {
+      acts[i].state='skip';
+      log(`Skip ${acts[i].name} [${acts[i].s},${acts[i].f}): overlaps (start ${acts[i].s} < last finish ${lastFinish}).`);
+    }
+    draw();
+    await sleep(400);
+  }
+  document.getElementById('resultNote').innerHTML=
+    `<strong>${selected.length} activities selected:</strong> ${selected.join(', ')}`;
+  log(`Done. Selected: [${selected.join(', ')}]`,true);
+  done=true;
+}
+
+reset();
+</script>
+</body>
+</html>

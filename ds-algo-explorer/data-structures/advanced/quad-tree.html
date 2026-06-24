@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Quad-Tree – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#c0392b;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);cursor:crosshair;}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#fdecea;color:var(--a);border:1px solid #f5c6c2;}.btn-sec:hover{background:#f9d5d2;}
+.btn-neu{background:#eee;color:#444;border:1px solid #ddd;}.btn-neu:hover{background:#e0e0e0;}
+.hint{font-size:.8rem;color:var(--m);margin-top:.5rem;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Data Structures</a><span>/</span>
+    Quad-Tree
+  </nav>
+  <header class="hero">
+    <span class="tag">Advanced</span>
+    <h1>Quad-Tree</h1>
+    <p>A spatial tree that recursively divides 2D space into four quadrants, enabling lightning-fast region queries and collision detection.</p>
+  </header>
+  <section class="prose">
+    <p>A <strong>Quad-Tree</strong> partitions a 2D plane by recursively subdividing each region into four equal quadrants: NE, NW, SW, SE. Subdivision continues until each region contains at most one point (or a set capacity). The result is a hierarchical spatial index that mirrors a map's zoom levels — city, district, block, building.</p>
+    <p>Think of Google Maps tiles. At zoom level 1 the world splits into 4 tiles. Each tile splits into 4 more at zoom level 2, giving 16 tiles. Each zoom doubles the granularity. A quad-tree is exactly this: a hierarchical tiling adapted dynamically to where your data actually lives, so dense urban areas subdivide deeply while empty oceans stay as single large tiles.</p>
+    <p>Region queries are blazingly efficient: instead of checking every point, you only descend into quadrants that overlap your query rectangle, pruning entire branches early. This powers map rendering, collision detection in 2D games, and mesh simplification in computer graphics.</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Insert</div><div class="fact-val">O(log n) avg</div></div>
+    <div class="fact"><div class="fact-label">Range Query</div><div class="fact-val">O(√n + k)</div></div>
+    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Maps, Collision, Image compression</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">Quad-Tree Partition Visualization — Click to Add Points</div>
+    <canvas id="cv" height="400"></canvas>
+    <div class="hint">Click canvas to add points. Drag to draw query rectangle. Max 1 point per leaf node before subdivision.</div>
+    <div class="controls">
+      <button class="btn btn-pri" onclick="doAddRandom()">Add Random Point</button>
+      <button class="btn btn-sec" onclick="doClearQuery()">Clear Query</button>
+      <button class="btn btn-neu" onclick="doClear()">Clear All</button>
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Data Structures</a>
+</div>
+<script>
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+const MAX_CAPACITY=1;
+const MAX_DEPTH=6;
+
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=400; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); render();
+}
+window.addEventListener('resize',resize);
+
+class QNode {
+  constructor(x,y,w,h,depth){
+    this.x=x;this.y=y;this.w=w;this.h=h;this.depth=depth;
+    this.points=[];this.children=null;
+  }
+  subdivide(){
+    const hw=this.w/2,hh=this.h/2;
+    this.children=[
+      new QNode(this.x+hw,this.y,hw,hh,this.depth+1),   // NE
+      new QNode(this.x,this.y,hw,hh,this.depth+1),       // NW
+      new QNode(this.x,this.y+hh,hw,hh,this.depth+1),    // SW
+      new QNode(this.x+hw,this.y+hh,hw,hh,this.depth+1)  // SE
+    ];
+    for(const p of this.points){
+      for(const c of this.children){ if(c.contains(p)) {c.points.push(p);break;} }
+    }
+    this.points=[];
+  }
+  contains(p){ return p[0]>=this.x&&p[0]<this.x+this.w&&p[1]>=this.y&&p[1]<this.y+this.h; }
+  insert(p){
+    if(!this.contains(p)) return false;
+    if(!this.children){
+      if(this.points.length<MAX_CAPACITY||this.depth>=MAX_DEPTH){
+        this.points.push(p); return true;
+      }
+      this.subdivide();
+    }
+    for(const c of this.children){ if(c.insert(p)) return true; }
+    return false;
+  }
+  query(rx,ry,rw,rh,found){
+    if(!this.intersects(rx,ry,rw,rh)) return;
+    for(const p of this.points){
+      if(p[0]>=rx&&p[0]<=rx+rw&&p[1]>=ry&&p[1]<=ry+rh) found.push(p);
+    }
+    if(this.children) for(const c of this.children) c.query(rx,ry,rw,rh,found);
+  }
+  intersects(rx,ry,rw,rh){
+    return !(rx>this.x+this.w||rx+rw<this.x||ry>this.y+this.h||ry+rh<this.y);
+  }
+}
+
+let qtRoot=new QNode(0,0,W||600,H||400,0);
+let allPoints=[];
+let queryRect=null;
+let queryResults=[];
+let dragStart=null;
+
+const DEPTH_COLORS=['rgba(192,57,43,0.10)','rgba(192,57,43,0.15)','rgba(192,57,43,0.20)','rgba(192,57,43,0.25)','rgba(192,57,43,0.30)','rgba(192,57,43,0.35)'];
+
+function drawNode(node){
+  if(node.children){
+    for(const c of node.children) drawNode(c);
+  } else {
+    const col=DEPTH_COLORS[Math.min(node.depth,DEPTH_COLORS.length-1)];
+    ctx.fillStyle=col;
+    ctx.fillRect(node.x,node.y,node.w,node.h);
+    ctx.strokeStyle='rgba(192,57,43,0.4)';
+    ctx.lineWidth=1;
+    ctx.strokeRect(node.x,node.y,node.w,node.h);
+  }
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  if(qtRoot){ drawNode(qtRoot); }
+  // Query rect
+  if(queryRect){
+    ctx.fillStyle='rgba(41,128,185,0.12)';
+    ctx.fillRect(queryRect.x,queryRect.y,queryRect.w,queryRect.h);
+    ctx.strokeStyle='rgba(41,128,185,0.7)';
+    ctx.lineWidth=2; ctx.setLineDash([5,3]);
+    ctx.strokeRect(queryRect.x,queryRect.y,queryRect.w,queryRect.h);
+    ctx.setLineDash([]);
+  }
+  // Points
+  for(const p of allPoints){
+    const inQuery=queryResults.some(r=>r[0]===p[0]&&r[1]===p[1]);
+    ctx.beginPath(); ctx.arc(p[0],p[1],inQuery?7:4,0,Math.PI*2);
+    ctx.fillStyle=inQuery?'#c0392b':'#27a060'; ctx.fill();
+    if(inQuery){ ctx.strokeStyle='#922b21';ctx.lineWidth=2;ctx.stroke(); }
+  }
+  // Legend
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('Depth shading: lighter=shallow  |  Red=in query region  |  Drag to query',8,H-20);
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+function addPoint(px,py){
+  qtRoot.insert([px,py]);
+  allPoints.push([px,py]);
+  log(`Insert (${Math.round(px)},${Math.round(py)}): depth=${getDepthAt(qtRoot,[px,py])}`);
+  render();
+}
+
+function getDepthAt(node,p){
+  if(!node.children) return node.depth;
+  for(const c of node.children){ if(c.contains(p)) return getDepthAt(c,p); }
+  return node.depth;
+}
+
+function doAddRandom(){
+  addPoint(Math.random()*(W-20)+10, Math.random()*(H-40)+10);
+}
+
+function doClearQuery(){ queryRect=null; queryResults=[]; render(); }
+
+function doClear(){
+  allPoints=[]; queryRect=null; queryResults=[];
+  qtRoot=new QNode(0,0,W,H,0);
+  render(); log('Cleared all points and quad-tree reset.');
+}
+
+canvas.addEventListener('click',function(e){
+  const rect=canvas.getBoundingClientRect();
+  const px=(e.clientX-rect.left)*(W/rect.width);
+  const py=(e.clientY-rect.top)*(H/rect.height);
+  addPoint(px,py);
+});
+
+canvas.addEventListener('mousedown',function(e){
+  const rect=canvas.getBoundingClientRect();
+  dragStart={x:(e.clientX-rect.left)*(W/rect.width),y:(e.clientY-rect.top)*(H/rect.height)};
+});
+canvas.addEventListener('mousemove',function(e){
+  if(!dragStart) return;
+  const rect=canvas.getBoundingClientRect();
+  const cx=(e.clientX-rect.left)*(W/rect.width);
+  const cy=(e.clientY-rect.top)*(H/rect.height);
+  queryRect={x:Math.min(dragStart.x,cx),y:Math.min(dragStart.y,cy),w:Math.abs(cx-dragStart.x),h:Math.abs(cy-dragStart.y)};
+  render();
+});
+canvas.addEventListener('mouseup',function(e){
+  if(dragStart&&queryRect&&queryRect.w>5&&queryRect.h>5){
+    queryResults=[];
+    qtRoot.query(queryRect.x,queryRect.y,queryRect.w,queryRect.h,queryResults);
+    log(`Region query [${Math.round(queryRect.x)},${Math.round(queryRect.y)},${Math.round(queryRect.w)}×${Math.round(queryRect.h)}]: found ${queryResults.length} point(s)`);
+    render();
+  }
+  dragStart=null;
+});
+
+// Seed
+resize();
+[[120,80],[300,200],[450,120],[200,300],[500,280],[80,320],[380,350],[240,150],[560,90],[160,240]].forEach(([px,py])=>{
+  qtRoot.insert([px,py]); allPoints.push([px,py]);
+});
+log(`Seeded with ${allPoints.length} points. Drag a rectangle to run a region query.`);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Hopcroft-Karp Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px;color:#c0bdb6}
+.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
+.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
+canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
+.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
+.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
+.back-link{margin-top:28px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>Hopcroft-Karp
+  </div>
+  <div class="hero-tag">Graph</div>
+  <h1>Hopcroft-Karp Algorithm</h1>
+  <p class="tagline">Maximum bipartite matching in O(E√V) — BFS layered graph + simultaneous DFS augmentations.</p>
+  <div class="prose">
+    <p>Hopcroft-Karp finds maximum matching in a bipartite graph in O(E√V) time. Like Dinic's algorithm for max-flow, it works in phases: each phase runs a BFS to build a layered graph of alternating paths, then finds multiple augmenting paths simultaneously using DFS.</p>
+    <p>The algorithm maintains matchedL[] and matchedR[] arrays — the current matching. An augmenting path alternates between unmatched and matched edges, starting and ending at unmatched vertices. By finding all shortest augmenting paths in one BFS phase, the algorithm achieves its superior complexity.</p>
+    <p>Bipartite matching has countless real-world applications: assigning workers to jobs, students to schools, organs to recipients, tasks to processors. Hopcroft-Karp is the algorithm of choice when you need the most efficient maximum matching.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(E√V)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
+    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Augmenting Path BFS</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Bipartite Graph — L={0,1,2,3} left, R={4,5,6,7} right. Green = matched edges.</div>
+    <canvas id="cv" width="700" height="320"></canvas>
+    <div class="controls">
+      <button id="btnRun">Run Hopcroft-Karp</button>
+      <button id="btnPhase" class="sec">Phase</button>
+      <button id="btnReset" class="sec">Reset</button>
+      <span id="msize" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+    </div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Step Log</div>
+    <div class="log-box" id="log"></div>
+  </div>
+  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+</div>
+<script>
+// L: 0,1,2,3  R: 4,5,6,7
+const L=[0,1,2,3],R=[4,5,6,7];
+const NL=4,NR=4,INF=1e9;
+// adjacency for left nodes (0-3) to right nodes (0-3 internally)
+const adjL=[[0,1],[1,2],[2,3],[0,3]];// L0→R4,R5; L1→R5,R6; L2→R6,R7; L3→R4,R7
+const nodes=[
+  {x:120,y:80,l:'L0'},{x:120,y:160,l:'L1'},{x:120,y:240,l:'L2'},{x:120,y:310,l:'L3'},
+  {x:560,y:80,l:'R4'},{x:560,y:160,l:'R5'},{x:560,y:240,l:'R6'},{x:560,y:310,l:'R7'}
+];
+const edgePairs=[[0,4],[0,5],[1,5],[1,6],[2,6],[2,7],[3,4],[3,7]];
+let matchL,matchR,dist,done,phase;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+
+function init(){
+  matchL=new Array(NL).fill(-1);matchR=new Array(NR).fill(-1);
+  dist=new Array(NL).fill(0);done=false;phase=0;
+  document.getElementById('log').innerHTML='';document.getElementById('msize').textContent='';
+  addLog('Bipartite graph ready. Click "Phase" or "Run".');draw();
+}
+function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
+function bfs(){
+  const queue=[];
+  for(let u=0;u<NL;u++){
+    if(matchL[u]===-1){dist[u]=0;queue.push(u);}else dist[u]=INF;
+  }
+  let found=false;
+  while(queue.length){
+    const u=queue.shift();
+    adjL[u].forEach(v=>{
+      const w=matchR[v];
+      if(w===-1)found=true;
+      else if(dist[w]===INF){dist[w]=dist[u]+1;queue.push(w);}
+    });
+  }
+  return found;
+}
+function dfs(u){
+  for(const v of adjL[u]){
+    const w=matchR[v];
+    if(w===-1||(dist[w]===dist[u]+1&&dfs(w))){matchL[u]=v;matchR[v]=u;return true;}
+  }
+  dist[u]=INF;return false;
+}
+function runPhase(){
+  if(done)return;
+  if(!bfs()){done=true;const ms=matchL.filter(x=>x!==-1).length;addLog(`No more augmenting paths. Max matching = ${ms}`);document.getElementById('msize').textContent=`Matching: ${ms}`;draw();return;}
+  let augmented=0;
+  for(let u=0;u<NL;u++)if(matchL[u]===-1&&dfs(u))augmented++;
+  phase++;
+  const ms=matchL.filter(x=>x!==-1).length;
+  addLog(`Phase ${phase}: BFS found layered graph. DFS augmented ${augmented} paths. Matching size: ${ms}`);
+  addLog(`Matched pairs: ${matchL.map((r,l)=>r!==-1?`L${l}↔R${r+4}`:null).filter(Boolean).join(', ')}`);
+  document.getElementById('msize').textContent=`Matching: ${ms}`;
+  draw();
+}
+function draw(){
+  ctx.clearRect(0,0,700,320);
+  edgePairs.forEach(([u,v])=>{
+    const lu=u,rv=v-4;
+    const matched=matchL[lu]===rv;
+    ctx.strokeStyle=matched?'#27a060':'#d0ccc8';ctx.lineWidth=matched?3.5:1.5;
+    ctx.beginPath();ctx.moveTo(nodes[u].x,nodes[u].y);ctx.lineTo(nodes[v].x,nodes[v].y);ctx.stroke();
+  });
+  nodes.forEach((n,i)=>{
+    const isL=i<4,idx=isL?i:i-4;
+    const matched=isL?matchL[idx]!==-1:matchR[idx]!==-1;
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    ctx.fillStyle=matched?'#e8f7f0':'#fff';ctx.fill();
+    ctx.strokeStyle=matched?'#27a060':'#7b4fd4';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 11px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.l,n.x,n.y);
+  });
+  // labels
+  ctx.fillStyle='#5a5a72';ctx.font='12px Inter';ctx.textAlign='center';
+  ctx.fillText('Left',120,30);ctx.fillText('Right',560,30);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+document.getElementById('btnPhase').onclick=()=>runPhase();
+document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else runPhase();},800);};
+document.getElementById('btnReset').onclick=()=>init();
+init();
+</script>
+</body>
+</html>

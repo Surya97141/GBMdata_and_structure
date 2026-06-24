@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Bucket Sort – DS Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
+.tagline{color:var(--m);}
+.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem;}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem;}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;}
+.fsub{font-size:.78rem;color:var(--m);}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);}
+.sim-body{padding:1.3rem;}
+canvas{display:block;width:100%;border-radius:8px;background:var(--bg);}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
+.btn{padding:.38rem .95rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none;}
+.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
+input[type=range]{appearance:none;height:4px;background:var(--b);border-radius:4px;cursor:pointer;width:120px;}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--a);cursor:pointer;}
+label{font-size:.8rem;font-weight:600;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
+.le{border-bottom:1px solid var(--b);}.le:last-child{border:none;}
+.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}.li{color:var(--m);}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0;}
+.back:hover{color:var(--ink);}
+.phase-label{font-size:.78rem;font-weight:700;color:var(--a);margin-bottom:.5rem;}
+.buckets-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:.8rem;}
+.bkt{background:var(--bg);border:1.5px solid var(--b);border-radius:6px;padding:4px;min-height:50px;}
+.bkt-lbl{font-size:.6rem;font-weight:700;text-align:center;color:var(--m);margin-bottom:3px;}
+.bkt-item{font-family:'JetBrains Mono',monospace;font-size:.6rem;background:#2a7ae8;color:#fff;border-radius:2px;text-align:center;margin:1px 0;padding:1px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    <span>Bucket Sort</span>
+  </nav>
+
+  <span class="tag">Sorting</span>
+  <h1>Bucket Sort</h1>
+  <p class="tagline">Scatter into buckets, sort each bucket, gather — ideal for uniformly distributed data.</p>
+
+  <div class="explain">
+    <p>Bucket sort distributes elements into a number of "buckets", each covering a range of values. Each bucket is then sorted individually — typically with insertion sort or recursively with bucket sort — and finally all buckets are concatenated to produce the sorted output.</p>
+    <p>Imagine you're alphabetising a large pile of names. Instead of sorting all of them at once, you first split them into 26 smaller piles (one per letter). You then sort each small pile independently. Merging 26 almost-sorted small piles is far easier than tackling the whole heap.</p>
+    <p>When input is uniformly distributed, bucket sort achieves O(n + k) average time, where k is the number of buckets. It excels in practice for floating-point data in [0, 1). The worst case is O(n²) when all elements land in the same bucket. Extra space O(n + k) is required.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="flabel">Best Time</div><div class="fval">O(n+k)</div><div class="fsub">Uniform data</div></div>
+    <div class="fact"><div class="flabel">Average Time</div><div class="fval">O(n+k)</div><div class="fsub">Uniform dist.</div></div>
+    <div class="fact"><div class="flabel">Worst Time</div><div class="fval">O(n²)</div><div class="fsub">All in one bucket</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n+k)</div><div class="fsub">Bucket storage</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div><div class="fsub">With stable inner</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="phase-label" id="phaseLabel">Ready</div>
+      <canvas id="cvs" height="200"></canvas>
+      <div class="buckets-grid" id="bucketsGrid"></div>
+      <div class="controls">
+        <button class="btn btn-p" id="btnNew">New Array</button>
+        <button class="btn btn-o" id="btnStep">Step</button>
+        <button class="btn btn-p" id="btnRun">Run</button>
+        <button class="btn btn-o" id="btnPause">Pause</button>
+        <label>Speed <input type="range" id="speed" min="1" max="10" value="5"/></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.7rem;padding:.2rem .6rem;" id="btnClear">Clear</button></div>
+    <div class="log-body" id="logBody"></div>
+  </div>
+
+  <a class="back" href="../index.html">&#8592; Back to Algorithms</a>
+</div>
+<script>
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+const logBody=document.getElementById('logBody');
+const speedEl=document.getElementById('speed');
+const phaseLabel=document.getElementById('phaseLabel');
+const bucketsGrid=document.getElementById('bucketsGrid');
+const N=16, NBUCKETS=8;
+let arr=[],colors=[],sortGen=null,running=false,timer=null;
+
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function initArray(){
+  arr=Array.from({length:N},()=>rnd(1,100));
+  colors=Array(N).fill('#2a7ae8');
+  sortGen=null;running=false;
+  if(timer){clearInterval(timer);timer=null;}
+  bucketsGrid.innerHTML='';phaseLabel.textContent='Ready';
+  draw();
+}
+function setupCanvas(){
+  const dpr=window.devicePixelRatio||1;
+  const w=canvas.parentElement.clientWidth-40;
+  canvas.width=w*dpr;canvas.height=200*dpr;
+  canvas.style.width=w+'px';canvas.style.height='200px';
+  ctx.scale(dpr,dpr);
+}
+function draw(){
+  const W=canvas.width/(window.devicePixelRatio||1),H=200;
+  ctx.clearRect(0,0,W,H);
+  const pad=16,bw=(W-pad*2)/N,maxVal=Math.max(...arr,1);
+  for(let i=0;i<N;i++){
+    const bh=(arr[i]/maxVal)*(H-30),x=pad+i*bw+2,y=H-bh-16;
+    ctx.fillStyle=colors[i];
+    ctx.beginPath();ctx.roundRect(x,y,bw-4,bh,4);ctx.fill();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 9px Inter';
+    ctx.textAlign='center';ctx.fillText(arr[i],x+(bw-4)/2,H-4);
+  }
+}
+function renderBuckets(buckets){
+  bucketsGrid.innerHTML='';
+  const range=Math.ceil(100/NBUCKETS);
+  for(let b=0;b<NBUCKETS;b++){
+    const div=document.createElement('div');div.className='bkt';
+    const lo=b*range+1,hi=Math.min((b+1)*range,100);
+    div.innerHTML=`<div class="bkt-lbl">${lo}-${hi}</div>`;
+    (buckets[b]||[]).forEach(v=>{
+      const it=document.createElement('div');it.className='bkt-item';it.textContent=v;
+      div.appendChild(it);
+    });
+    bucketsGrid.appendChild(div);
+  }
+}
+function insertionSort(a){
+  for(let i=1;i<a.length;i++){
+    const key=a[i];let j=i-1;
+    while(j>=0&&a[j]>key){a[j+1]=a[j];j--;}
+    a[j+1]=key;
+  }
+  return a;
+}
+function addLog(msg,type='ls'){
+  const d=document.createElement('div');
+  d.className='le '+type;d.textContent=msg;
+  logBody.appendChild(d);logBody.scrollTop=logBody.scrollHeight;
+}
+function* bucketSortGen(){
+  const a=[...arr];
+  const n=a.length;
+  const range=Math.ceil(100/NBUCKETS);
+  const buckets=Array.from({length:NBUCKETS},()=>[]);
+  phaseLabel.textContent='Phase 1: Distributing into buckets';
+  addLog(`Distributing ${n} elements into ${NBUCKETS} buckets (range 1-100)`,'lw');
+  for(let i=0;i<n;i++){
+    const v=a[i];
+    const b=Math.min(Math.floor((v-1)/range),NBUCKETS-1);
+    buckets[b].push(v);
+    colors=Array(n).fill('#2a7ae8');colors[i]='#e84393';
+    arr=[...a];draw();renderBuckets(buckets);
+    addLog(`  Element ${v} → bucket ${b} (range ${b*range+1}-${Math.min((b+1)*range,100)})`,'ls');
+    yield;
+  }
+  phaseLabel.textContent='Phase 2: Sorting each bucket';
+  addLog('Sorting each bucket with insertion sort...','lw');
+  for(let b=0;b<NBUCKETS;b++){
+    if(buckets[b].length>1){
+      insertionSort(buckets[b]);
+      addLog(`  Bucket ${b} sorted: [${buckets[b].join(',')}]`,'ld');
+    } else if(buckets[b].length===1){
+      addLog(`  Bucket ${b} has 1 element, already sorted`,'li');
+    }
+    renderBuckets(buckets);yield;
+  }
+  phaseLabel.textContent='Phase 3: Merging buckets';
+  addLog('Merging all buckets into output array...','lw');
+  let idx=0;
+  for(let b=0;b<NBUCKETS;b++){
+    for(const v of buckets[b]){
+      a[idx++]=v;
+      colors=Array(n).fill('#2a7ae8');
+      for(let k=0;k<idx;k++)colors[k]='#27a060';
+      arr=[...a];draw();
+      addLog(`  Placed ${v} at output position ${idx-1}`,'ls');
+      yield;
+    }
+  }
+  colors=Array(n).fill('#27a060');arr=[...a];draw();
+  bucketsGrid.innerHTML='';phaseLabel.textContent='Sorted!';
+  addLog('Sort complete!','ld');
+}
+function step(){if(!sortGen)sortGen=bucketSortGen();const r=sortGen.next();if(r.done){running=false;if(timer){clearInterval(timer);timer=null;}}}
+function getDelay(){return Math.round(1050-speedEl.value*100);}
+function run(){
+  if(running)return;
+  if(!sortGen)sortGen=bucketSortGen();
+  running=true;
+  timer=setInterval(()=>{const r=sortGen.next();if(r.done){running=false;clearInterval(timer);timer=null;}},getDelay());
+}
+function pause(){running=false;if(timer){clearInterval(timer);timer=null;}}
+document.getElementById('btnNew').onclick=()=>{initArray();logBody.innerHTML='';};
+document.getElementById('btnStep').onclick=step;
+document.getElementById('btnRun').onclick=run;
+document.getElementById('btnPause').onclick=pause;
+document.getElementById('btnClear').onclick=()=>{logBody.innerHTML='';};
+window.addEventListener('resize',()=>{setupCanvas();draw();});
+setupCanvas();initArray();
+</script>
+</body>
+</html>

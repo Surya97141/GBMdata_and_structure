@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Bridges & Articulation Points – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px;color:#c0bdb6}
+.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
+.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
+canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
+.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
+.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
+.back-link{margin-top:28px;font-size:.9rem}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:.8rem;color:#5a5a72}
+.leg{display:flex;align-items:center;gap:5px}
+.leg-c{width:14px;height:14px;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>Bridges &amp; Articulation Points
+  </div>
+  <div class="hero-tag">Graph</div>
+  <h1>Bridges &amp; Articulation Points</h1>
+  <p class="tagline">Find the critical edges and vertices whose removal disconnects the network.</p>
+  <div class="prose">
+    <p>A bridge is an edge whose removal increases the number of connected components in a graph — it's the only connection between two parts of the network. An articulation point (or cut vertex) is a node whose removal disconnects the graph. Finding these is crucial for network reliability analysis.</p>
+    <p>Tarjan's bridge-finding algorithm uses DFS and maintains two arrays: disc[] (discovery time) and low[] (lowest discovery time reachable). An edge (u,v) is a bridge if low[v] > disc[u] — meaning v can't reach u or its ancestors without going through u→v. Similarly, u is an articulation point if it's the root with ≥2 DFS children, or a non-root where some child v has low[v] ≥ disc[u].</p>
+    <p>Think of a city network: bridges are the single roads connecting city clusters, and articulation points are the junctions that, if blocked, isolate neighborhoods. Telecom engineers use this to identify single points of failure in fiber networks.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(V + E)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V)</div></div>
+    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">disc[] &amp; low[]</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Graph with hardcoded bridges (red) and articulation points (orange)</div>
+    <canvas id="cv" width="700" height="320"></canvas>
+    <div class="legend">
+      <div class="leg"><div class="leg-c" style="background:#fff;border:2px solid #7b4fd4"></div>Normal</div>
+      <div class="leg"><div class="leg-c" style="background:#e8622a;border:2px solid #e8622a"></div>Articulation Pt</div>
+      <div class="leg"><div class="leg-c" style="background:#e84393;border:2px solid #e84393;width:20px;height:4px;border-radius:2px"></div>Bridge</div>
+    </div>
+    <div class="controls">
+      <button id="btnBridges">Find Bridges</button>
+      <button id="btnAPs" class="sec">Find APs</button>
+      <button id="btnBoth" class="sec">Find Both</button>
+      <button id="btnReset" class="sec">Reset</button>
+    </div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Step Log</div>
+    <div class="log-box" id="log"></div>
+  </div>
+  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+</div>
+<script>
+const nodes=[
+  {x:80,y:160,l:'0'},{x:200,y:80,l:'1'},{x:200,y:240,l:'2'},
+  {x:340,y:160,l:'3'},{x:460,y:80,l:'4'},{x:460,y:240,l:'5'},
+  {x:580,y:120,l:'6'},{x:620,y:240,l:'7'}
+];
+const adj=[[1,2],[0,2,3],[0,1,3],[1,2,4,5],[3,5,6],[3,4,7],[4],[5]];
+// edges list
+const edges=[];adj.forEach((nb,u)=>nb.forEach(v=>{if(v>u)edges.push([u,v]);}));
+let disc=[],low=[],visited=[],ap=new Set(),bridges=[],timer_=0;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let showBridges=false,showAPs=false,animated=false;
+let stepLog=[];
+
+function dfs(u,parent){
+  visited[u]=true;disc[u]=low[u]=timer_++;
+  let children=0;
+  adj[u].forEach(v=>{
+    if(!visited[v]){
+      children++;
+      dfs(v,u);
+      low[u]=Math.min(low[u],low[v]);
+      // bridge
+      if(showBridges&&low[v]>disc[u]){
+        bridges.push([u,v]);
+        stepLog.push(`Edge(${u},${v}): low[${v}]=${low[v]} > disc[${u}]=${disc[u]} → BRIDGE`);
+      }
+      // articulation point
+      if(showAPs){
+        if(parent===-1&&children>1){ap.add(u);stepLog.push(`Node ${u}: root with ${children} children → ARTICULATION POINT`);}
+        if(parent!==-1&&low[v]>=disc[u]){ap.add(u);stepLog.push(`Node ${u}: child ${v}, low[${v}]=${low[v]} ≥ disc[${u}]=${disc[u]} → ARTICULATION POINT`);}
+      }
+    } else if(v!==parent){
+      low[u]=Math.min(low[u],disc[v]);
+    }
+  });
+}
+function runAnalysis(){
+  disc=new Array(nodes.length).fill(-1);low=new Array(nodes.length).fill(0);
+  visited=new Array(nodes.length).fill(false);ap=new Set();bridges=[];timer_=0;stepLog=[];
+  for(let i=0;i<nodes.length;i++)if(!visited[i])dfs(i,-1);
+  const logEl=document.getElementById('log');logEl.innerHTML='';
+  stepLog.forEach(m=>{logEl.innerHTML+=`<div class="entry">${m}</div>`;});
+  logEl.innerHTML+=`<div class="entry" style="color:#7b4fd4">Done. Bridges: ${bridges.length}, APs: ${ap.size}</div>`;
+  logEl.scrollTop=logEl.scrollHeight;
+  draw();
+}
+function draw(){
+  ctx.clearRect(0,0,700,320);
+  edges.forEach(([u,v])=>{
+    const isBridge=bridges.some(([a,b])=>(a===u&&b===v)||(a===v&&b===u));
+    ctx.strokeStyle=isBridge?'#e84393':'#ccc8c0';
+    ctx.lineWidth=isBridge?3.5:1.8;
+    ctx.beginPath();ctx.moveTo(nodes[u].x,nodes[u].y);ctx.lineTo(nodes[v].x,nodes[v].y);ctx.stroke();
+  });
+  nodes.forEach((n,i)=>{
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    ctx.fillStyle=ap.has(i)?'#fff5ec':'#fff';ctx.fill();
+    ctx.strokeStyle=ap.has(i)?'#e8622a':'#7b4fd4';
+    ctx.lineWidth=ap.has(i)?3:2;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.l,n.x,n.y);
+    if(disc[i]!==-1){
+      ctx.font='9px JetBrains Mono';ctx.fillStyle='#5a5a72';
+      ctx.fillText(`d${disc[i]}`,n.x-14,n.y-28);
+      ctx.fillText(`l${low[i]}`,n.x+6,n.y-28);
+    }
+  });
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+document.getElementById('btnBridges').onclick=()=>{showBridges=true;showAPs=false;runAnalysis();};
+document.getElementById('btnAPs').onclick=()=>{showBridges=false;showAPs=true;runAnalysis();};
+document.getElementById('btnBoth').onclick=()=>{showBridges=true;showAPs=true;runAnalysis();};
+document.getElementById('btnReset').onclick=()=>{
+  showBridges=false;showAPs=false;disc=[];low=[];visited=[];ap=new Set();bridges=[];
+  document.getElementById('log').innerHTML='<div class="entry">Reset. Click a button to run analysis.</div>';
+  draw();
+};
+draw();
+document.getElementById('log').innerHTML='<div class="entry">Click "Find Bridges", "Find APs", or "Find Both".</div>';
+</script>
+</body>
+</html>
