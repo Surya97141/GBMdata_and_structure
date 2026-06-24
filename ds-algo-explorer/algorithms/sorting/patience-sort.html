@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Patience Sort – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
+  a{color:#2a7ae8;text-decoration:none}a:hover{text-decoration:underline}
+  .breadcrumb{padding:14px 32px;font-size:.85rem;color:#5a5a72;border-bottom:1px solid #e2e0da;background:#fff}
+  .breadcrumb a{color:#5a5a72}.breadcrumb span{margin:0 6px}
+  .hero{background:#fff;padding:48px 32px 36px;border-bottom:1px solid #e2e0da}
+  .tag{display:inline-block;background:#dbeafe;color:#2a7ae8;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:10px}
+  .hero p.tagline{color:#5a5a72;font-size:1.1rem;max-width:640px}
+  .container{max-width:860px;margin:0 auto;padding:36px 32px}
+  .prose p{margin-bottom:14px;color:#1a1a2e;font-size:1rem}
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0}
+  .fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+  .fact .label{font-size:.75rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+  .fact .value{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:#1a1a2e}
+  .viz-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-top:28px}
+  .viz-card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
+  canvas{display:block;border-radius:8px;background:#f7f6f2;width:100%;max-width:700px}
+  .controls{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .btn{padding:8px 18px;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+  .btn-primary{background:#2a7ae8;color:#fff}.btn-secondary{background:#e2e0da;color:#1a1a2e}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .speed-wrap{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:.85rem;color:#5a5a72}
+  input[type=range]{accent-color:#2a7ae8;width:90px}
+  .log-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;margin-top:18px}
+  .log-card h3{font-size:1rem;font-weight:600;margin-bottom:10px}
+  #log{height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#1a1a2e;background:#f7f6f2;border-radius:8px;padding:10px;line-height:1.7}
+  #log p{border-bottom:1px solid #e2e0da;padding-bottom:2px;margin-bottom:2px}
+  .back{display:inline-block;margin-top:28px;color:#5a5a72;font-size:.9rem}
+  .back:hover{color:#2a7ae8}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Patience Sort
+</nav>
+<div class="hero">
+  <span class="tag">Sorting</span>
+  <h1>Patience Sort</h1>
+  <p class="tagline">A solitaire card game turned sorting algorithm — build patience piles, then merge them for an elegant O(n log n) sort.</p>
+</div>
+<div class="container">
+  <div class="prose">
+    <p>Patience Sort is inspired by the single-player card game Patience (also known as Klondike Solitaire). The algorithm works in two phases: first, deal cards (numbers) into piles where each card can only go on top of a pile whose top card is greater than or equal to the incoming card. If no such pile exists, start a new one. This greedy placement rule minimises the number of piles — and that minimum equals the length of the longest increasing subsequence (LIS) of the input.</p>
+    <p>Think of sorting a shuffled deck face-up: you lay each card on the leftmost pile whose top is not smaller than the new card. When finished dealing, you have several face-up stacks. The second phase performs a k-way merge across pile tops, always picking the smallest visible card — just like a dealer collecting the sorted deck from left to right.</p>
+    <p>Patience Sort is rarely used as a general-purpose sort due to its O(n) extra space for piles, but it has a beautiful connection to LIS computation and is occasionally used in practice for sorting data that arrives as a stream or is already partially ordered into increasing runs.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="label">Best Time</div><div class="value">O(n log n)</div></div>
+    <div class="fact"><div class="label">Average Time</div><div class="value">O(n log n)</div></div>
+    <div class="fact"><div class="label">Worst Time</div><div class="value">O(n log n)</div></div>
+    <div class="fact"><div class="label">Space</div><div class="value">O(n)</div></div>
+  </div>
+  <div class="viz-card">
+    <h2>Animated Simulation</h2>
+    <canvas id="cv" height="280"></canvas>
+    <div class="controls">
+      <button class="btn btn-secondary" id="btnNew">New Array</button>
+      <button class="btn btn-secondary" id="btnStep">Step</button>
+      <button class="btn btn-primary" id="btnRun">Run</button>
+      <button class="btn btn-secondary" id="btnPause">Pause</button>
+      <div class="speed-wrap"><span>Speed</span><input type="range" id="speed" min="1" max="10" value="5"/></div>
+    </div>
+  </div>
+  <div class="log-card">
+    <h3>Step Log</h3>
+    <div id="log"></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const logEl=document.getElementById('log');
+const speedEl=document.getElementById('speed');
+let arr=[],N=16,W,H,running=false,timer=null;
+let steps=[],stepIdx=0;
+
+function dpr(){return window.devicePixelRatio||1}
+function initCanvas(){
+  const d=dpr();
+  const rect=cv.parentElement.getBoundingClientRect();
+  W=Math.min(700,rect.width-48);H=280;
+  cv.width=W*d;cv.height=H*d;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  ctx.scale(d,d);
+}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function newArray(){
+  arr=Array.from({length:N},()=>rnd(10,99));
+  buildSteps();stepIdx=0;
+  drawPiles([],arr,0,-1);logEl.innerHTML='';
+  addLog('New array generated. Press Step or Run.');
+}
+function addLog(msg){const p=document.createElement('p');p.textContent=msg;logEl.prepend(p);}
+
+function drawPiles(piles,remaining,doneIdx,highlightPile){
+  ctx.clearRect(0,0,W,H);
+  const maxPiles=Math.max(piles.length,1);
+  const colW=Math.min(40,(W-32)/(maxPiles+1));
+  const cardH=16;
+  // draw piles
+  piles.forEach((pile,pi)=>{
+    const x=16+pi*(colW+4);
+    pile.forEach((v,vi)=>{
+      const y=H-24-(vi*(cardH+2));
+      ctx.fillStyle=pi===highlightPile?'#e84393':'#2a7ae8';
+      ctx.beginPath();ctx.roundRect(x,y,colW-2,cardH,3);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='bold 9px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillText(v,x+(colW-2)/2,y+11);
+    });
+    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';ctx.textAlign='center';
+    ctx.fillText(`P${pi+1}`,x+(colW-2)/2,H-8);
+  });
+  // draw remaining input
+  const startX=piles.length*(colW+4)+32;
+  const remW=W-startX-8;
+  if(remaining.length>0&&remW>0){
+    ctx.fillStyle='#e2e0da';ctx.font='10px Inter';ctx.textAlign='left';
+    ctx.fillText('Input remaining:',startX,20);
+    remaining.forEach((v,i)=>{
+      const rx=startX+(i%(Math.floor(remW/24)))*24;
+      const ry=28+(Math.floor(i/(Math.floor(remW/24))))*20;
+      ctx.fillStyle=i===0?'#f4a261':'#c0392b';
+      ctx.beginPath();ctx.roundRect(rx,ry,20,16,3);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='bold 8px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillText(v,rx+10,ry+11);
+    });
+  }
+}
+
+function buildSteps(){
+  steps=[];
+  const a=[...arr];
+  const piles=[];
+  // phase 1: deal into piles
+  for(let i=0;i<N;i++){
+    const card=a[i];
+    let placed=false;
+    for(let p=0;p<piles.length;p++){
+      if(piles[p][piles[p].length-1]>=card){
+        piles[p].push(card);
+        steps.push({type:'place',piles:piles.map(p=>[...p]),remaining:a.slice(i+1),pileIdx:p,
+          msg:`Card ${card}: pile ${p+1} top=${piles[p][piles[p].length-2]}≥${card} → place on pile ${p+1}`});
+        placed=true;break;
+      }
+    }
+    if(!placed){
+      piles.push([card]);
+      steps.push({type:'newpile',piles:piles.map(p=>[...p]),remaining:a.slice(i+1),pileIdx:piles.length-1,
+        msg:`Card ${card}: no pile fits → new pile ${piles.length}`});
+    }
+  }
+  // phase 2: k-way merge
+  const heapPiles=piles.map(p=>[...p]);
+  const result=[];
+  while(heapPiles.some(p=>p.length>0)){
+    let minVal=Infinity,minP=-1;
+    heapPiles.forEach((p,i)=>{if(p.length>0&&p[0]<minVal){minVal=p[0];minP=i;}});
+    heapPiles[minP].shift();result.push(minVal);
+    steps.push({type:'merge',piles:heapPiles.map(p=>[...p]),result:[...result],pileIdx:minP,
+      msg:`Merge: pick ${minVal} from pile ${minP+1} → output [${result}]`});
+  }
+  steps.push({type:'done',result:[...result]});
+}
+
+function drawResult(result){
+  ctx.clearRect(0,0,W,H);
+  const bw=(W-32)/result.length-2;
+  const maxV=Math.max(...result);
+  result.forEach((v,i)=>{
+    const x=16+i*(bw+2);const bh=(v/maxV)*(H-40);const y=H-20-bh;
+    ctx.fillStyle='#27a060';
+    ctx.beginPath();ctx.roundRect(x,y,bw,bh,4);ctx.fill();
+    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';ctx.textAlign='center';
+    ctx.fillText(v,x+bw/2,H-6);
+  });
+}
+
+function execStep(s){
+  if(!s)return true;
+  if(s.type==='done'){drawResult(s.result);addLog(`Done! Sorted: [${s.result}]`);return true;}
+  if(s.type==='place'||s.type==='newpile'){
+    drawPiles(s.piles,s.remaining,0,s.pileIdx);addLog(s.msg);
+  } else if(s.type==='merge'){
+    drawPiles(s.piles,[],0,s.pileIdx);addLog(s.msg);
+  }
+  return false;
+}
+function doStep(){if(stepIdx>=steps.length)return;const done=execStep(steps[stepIdx++]);if(done)stopRun();}
+function startRun(){
+  if(running)return;running=true;
+  function tick(){
+    if(stepIdx>=steps.length){stopRun();return;}
+    const done=execStep(steps[stepIdx++]);
+    if(done){stopRun();return;}
+    const delay=Math.max(30,600-speedEl.value*55);
+    timer=setTimeout(tick,delay);
+  }
+  tick();
+}
+function stopRun(){running=false;if(timer){clearTimeout(timer);timer=null;}}
+document.getElementById('btnNew').onclick=()=>{stopRun();newArray();};
+document.getElementById('btnStep').onclick=()=>{stopRun();doStep();};
+document.getElementById('btnRun').onclick=startRun;
+document.getElementById('btnPause').onclick=stopRun;
+window.addEventListener('resize',()=>{initCanvas();drawPiles([],arr,0,-1);});
+initCanvas();newArray();
+</script>
+</body>
+</html>

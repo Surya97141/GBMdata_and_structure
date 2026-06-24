@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Miller-Rabin Primality Test – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:130px}
+input[type=number]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;margin:.8rem 0}
+th{background:var(--bg);padding:.4rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
+td{padding:.38rem .6rem;border-bottom:1px solid #f0eeea;transition:background .3s}
+tr.pass td{background:#e8f5e9}
+tr.fail td{background:#fde8e2;font-weight:700}
+tr.active td{background:#fff3e0}
+.verdict{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:.8rem 1.2rem;border-radius:8px;margin:.8rem 0;display:inline-block}
+.verdict.prime{background:#e8f5e9;color:#2e7d32;border:2px solid #4caf50}
+.verdict.composite{background:#fde8e2;color:var(--accent);border:2px solid var(--accent)}
+.decomp-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:.5rem 0}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Miller-Rabin Test
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">Mathematical</span>
+    <h1>Miller-Rabin Primality Test</h1>
+    <p class="tagline">Probabilistic primality testing using Fermat's little theorem and witness-based refutation.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>Miller-Rabin tests whether n is prime by checking "witnesses". Write n-1 = 2^r × d (d odd). For a random witness a, compute x = a^d mod n. If x ≡ 1 or x ≡ n-1, n passes for this witness. Otherwise, square x repeatedly up to r-1 times; if we ever reach n-1, n passes. If we exhaust all squarings without reaching ±1, a is a witness to n's compositeness.</p>
+    <p>The probability of a composite fooling all k rounds is at most 4^(-k). With k=10 rounds, the error probability is less than 1 in a million. Using specific deterministic witnesses {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37} makes it deterministic for all n &lt; 3.3 × 10²⁴.</p>
+    <p>Miller-Rabin is the primality test used in OpenSSL, Java's BigInteger.isProbablePrime(), and most cryptographic libraries.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">O(k log²n)</div><div class="lbl">Time per test</div></div>
+    <div class="fact"><div class="val">4^(-k)</div><div class="lbl">Error probability</div></div>
+    <div class="fact"><div class="val">1976</div><div class="lbl">Miller & Rabin</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>N (number to test)</label><input type="number" id="nInput" value="221" min="2"/></div>
+      <div><label>Rounds (k)</label><input type="number" id="kInput" value="5" min="1" max="10"/></div>
+      <button class="btn" onclick="runMR()" style="align-self:flex-end">Test Primality</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div id="decompBox" class="decomp-box" style="display:none"></div>
+    <table>
+      <thead><tr><th>Round</th><th>Witness a</th><th>a^d mod n</th><th>Squarings</th><th>Result</th></tr></thead>
+      <tbody id="mrTable"></tbody>
+    </table>
+    <div id="verdictBox"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter N and K then click "Test Primality"</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  document.getElementById('mrTable').innerHTML='';
+  document.getElementById('verdictBox').innerHTML='';
+  const db=document.getElementById('decompBox');
+  db.style.display='none';db.innerHTML='';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter N and K then click "Test Primality"</div>';
+}
+
+function modpow(base,exp,mod){
+  if(mod===1n) return 0n;
+  let result=1n;base=base%mod;
+  while(exp>0n){
+    if(exp%2n===1n) result=(result*base)%mod;
+    exp=exp/2n;base=(base*base)%mod;
+  }
+  return result;
+}
+
+function runMR(){
+  resetSim();
+  const N=BigInt(parseInt(document.getElementById('nInput').value)||221);
+  const k=Math.min(10,Math.max(1,parseInt(document.getElementById('kInput').value)||5));
+
+  if(N<2n){log('N must be ≥ 2','warn');return;}
+  if(N===2n||N===3n){
+    document.getElementById('verdictBox').innerHTML=`<div class="verdict prime">PRIME (trivially small)</div>`;
+    log(`${N} is trivially prime`,'ok');return;
+  }
+  if(N%2n===0n){
+    document.getElementById('verdictBox').innerHTML=`<div class="verdict composite">COMPOSITE (even)</div>`;
+    log(`${N} is even → composite`,'warn');return;
+  }
+
+  // Write N-1 = 2^r * d
+  let d=N-1n,r=0n;
+  while(d%2n===0n){d/=2n;r++;}
+  const db=document.getElementById('decompBox');
+  db.style.display='block';
+  db.innerHTML=`n-1 = ${N-1n} = 2^${r} × ${d} &nbsp;(r=${r}, d=${d})`;
+  log('=== Miller-Rabin ===','hi');
+  log(`n=${N}: n-1 = 2^${r} × ${d}`);
+
+  // Fixed witnesses for deterministic feel
+  const witnesses=[2n,3n,5n,7n,11n,13n,17n,19n,23n,29n];
+  const usedW=witnesses.filter(w=>w<N).slice(0,k);
+
+  const rows=[];
+  let composite=false,witnessFound=null;
+
+  usedW.forEach(a=>{
+    let x=modpow(a,d,N);
+    let squarings='';
+    let result='PASS';
+    if(x===1n||x===N-1n){squarings='Initial: x='+x+' → pass';}
+    else {
+      let passed=false;
+      const sq=[];
+      let xc=x;
+      for(let i=0;i<r-1n;i++){
+        xc=(xc*xc)%N;
+        sq.push(String(xc));
+        if(xc===N-1n){passed=true;break;}
+      }
+      squarings=sq.join(' → ')||'–';
+      if(!passed){result='FAIL (witness!)';if(!composite){composite=true;witnessFound=a;}}
+    }
+    rows.push({a:String(a),x:String(x),sq:squarings,result});
+  });
+
+  const tbody=document.getElementById('mrTable');
+  rows.forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.id=`mr-${i}`;
+    tr.className='active';
+    tr.innerHTML=`<td>${i+1}</td><td>${r.a}</td><td>${r.x}</td><td style="font-size:.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis">${r.sq}</td><td>${r.result}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Animate rows
+  rows.forEach((r,i)=>setTimeout(()=>{
+    const tr=document.getElementById(`mr-${i}`);
+    if(tr){
+      tr.classList.remove('active');
+      tr.className=r.result.startsWith('PASS')?'pass':'fail';
+    }
+    log(`Round ${i+1}: a=${r.a}, a^d mod n=${r.x} → ${r.result}`);
+  },i*600));
+
+  setTimeout(()=>{
+    const vbox=document.getElementById('verdictBox');
+    if(composite){
+      vbox.innerHTML=`<div class="verdict composite">COMPOSITE — witness a=${witnessFound} proves it</div>`;
+      log(`COMPOSITE! a=${witnessFound} is a witness.`,'warn');
+    } else {
+      vbox.innerHTML=`<div class="verdict prime">PROBABLY PRIME (all ${k} rounds passed)</div>`;
+      log(`All ${k} rounds passed. Probably prime.`,'ok');
+    }
+  },rows.length*600+300);
+}
+</script>
+</body>
+</html>

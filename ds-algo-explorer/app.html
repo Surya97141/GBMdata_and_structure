@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── CYBERPUNK LIGHT TOKENS ──────────────────────────────── */
+:root{
+  --bg:      #f0f2f9;
+  --surf:    #ffffff;
+  --ink:     #080818;
+  --muted:   #4a4a7a;
+  --bdr:     rgba(0,200,255,.16);
+  --nc:      #00c8ff;
+  --nm:      #ff2d78;
+  --np:      #8b5cf6;
+  --ng:      linear-gradient(135deg,#00c8ff,#8b5cf6);
+  --glow-c:  0 0 14px rgba(0,200,255,.3);
+  --glow-m:  0 0 14px rgba(255,45,120,.3);
+  --sidebar: 264px;
+  --topbar:  54px;
+  --mono:    'JetBrains Mono',monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;overflow:hidden;
+  font-family:'Inter',sans-serif;
+  background:var(--bg);color:var(--ink);
+}
+
+/* subtle scanlines on the whole shell */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(
+    0deg,transparent,transparent 3px,rgba(0,0,0,.016) 3px,rgba(0,0,0,.016) 4px
+  );
+}
+
+/* ── TOP BAR ─────────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--topbar);
+  background:var(--surf);
+  border-bottom:1.5px solid var(--bdr);
+  box-shadow:0 2px 20px rgba(0,200,255,.08);
+  display:flex;align-items:center;gap:.65rem;padding:0 1rem;z-index:100;
+}
+/* neon accent line at very bottom of topbar */
+#topbar::after{
+  content:'';position:absolute;bottom:-1.5px;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--nc) 30%,var(--np) 70%,transparent);
+  opacity:.6;
+}
+
+#menuBtn{
+  width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:none;border:1.5px solid var(--bdr);border-radius:6px;
+  cursor:pointer;font-size:1rem;flex-shrink:0;color:var(--muted);
+  font-family:var(--mono);transition:border-color .15s,color .15s,box-shadow .15s;
+}
+#menuBtn:hover{
+  border-color:var(--nc);color:var(--nc);box-shadow:var(--glow-c);
+}
+
+.logo{
+  font-family:'DM Serif Display',serif;
+  font-size:1.15rem;white-space:nowrap;flex-shrink:0;
+  color:var(--ink);
+  letter-spacing:.01em;
+}
+.logo .logo-nc{
+  background:var(--ng);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* search */
+#searchWrap{flex:1;position:relative;max-width:340px;margin-left:auto}
+#searchInput{
+  width:100%;
+  padding:.38rem .85rem .38rem 2rem;
+  border:1.5px solid var(--bdr);border-radius:6px;
+  font-family:var(--mono);font-size:.76rem;
+  background:var(--bg);color:var(--ink);outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+#searchInput::placeholder{color:var(--muted);opacity:.7}
+#searchInput:focus{
+  border-color:var(--nc);
+  box-shadow:var(--glow-c),0 0 0 3px rgba(0,200,255,.06);
+}
+#searchWrap::before{
+  content:'⌕';position:absolute;left:.6rem;top:50%;transform:translateY(-50%);
+  font-size:.9rem;color:var(--muted);pointer-events:none;
+}
+#searchKbd{
+  position:absolute;right:.55rem;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:.58rem;color:var(--muted);
+  border:1px solid rgba(0,200,255,.25);border-radius:3px;padding:.05rem .3rem;
+  background:rgba(0,200,255,.04);pointer-events:none;
+}
+
+/* page title breadcrumb */
+#pageTitle{
+  font-size:.73rem;font-family:var(--mono);color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:200px;flex-shrink:0;display:none;
+}
+#pageTitle::before{content:'// ';color:var(--nc)}
+
+/* home button */
+#homeBtn{
+  padding:.36rem 1rem;border-radius:6px;
+  background:var(--nc);color:#000;font-weight:700;
+  border:none;font-family:var(--mono);font-size:.73rem;
+  cursor:pointer;flex-shrink:0;white-space:nowrap;
+  box-shadow:var(--glow-c);letter-spacing:.03em;
+  transition:box-shadow .18s,filter .15s;
+}
+#homeBtn:hover{filter:brightness(1.1);box-shadow:0 0 22px rgba(0,200,255,.55)}
+
+/* ── SHELL ────────────────────────────────────────────────── */
+#shell{
+  display:flex;
+  height:calc(100vh - var(--topbar));
+  margin-top:var(--topbar);
+  overflow:hidden;
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+#sidebar{
+  width:var(--sidebar);flex-shrink:0;
+  background:var(--surf);
+  border-right:1.5px solid var(--bdr);
+  overflow-y:auto;overflow-x:hidden;
+  transition:width .22s ease,opacity .22s;
+  position:relative;
+}
+#sidebar::before{
+  content:'';position:absolute;top:0;right:-1px;bottom:0;width:1px;
+  background:linear-gradient(180deg,var(--nc),var(--np),transparent);
+  opacity:.25;pointer-events:none;
+}
+#sidebar.collapsed{width:0;opacity:0;pointer-events:none}
+
+/* custom scrollbar */
+#sidebar::-webkit-scrollbar{width:3px}
+#sidebar::-webkit-scrollbar-track{background:transparent}
+#sidebar::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--nc),var(--np));border-radius:4px;opacity:.4;
+}
+
+/* section label */
+.section-label{
+  font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;
+  color:var(--nc);padding:.9rem 1rem .3rem;
+  display:flex;align-items:center;gap:.4rem;
+  font-family:var(--mono);
+}
+.section-label::before{content:'//';color:var(--nm);margin-right:.1rem}
+
+/* group header */
+.group-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.4rem 1rem;cursor:pointer;user-select:none;
+  font-size:.78rem;font-weight:600;color:var(--ink);
+  transition:background .15s;
+}
+.group-header:hover{background:rgba(0,200,255,.05)}
+.group-header .gtag{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-right:.45rem;
+  box-shadow:0 0 6px currentColor;
+}
+.group-header .glabel{flex:1;font-size:.78rem}
+.group-header .gcount{
+  font-size:.58rem;color:var(--muted);
+  background:rgba(0,200,255,.08);
+  border:1px solid rgba(0,200,255,.2);
+  padding:.08rem .35rem;border-radius:100px;margin-right:.3rem;
+  font-family:var(--mono);
+}
+.group-header .garrow{
+  font-size:.55rem;color:var(--muted);transition:transform .18s,color .15s;
+}
+.group-header:hover .garrow{color:var(--nc)}
+.group-header.open .garrow{transform:rotate(90deg);color:var(--nc)}
+
+/* group items */
+.group-items{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.group-items.open{max-height:2000px}
+
+/* nav item */
+.nav-item{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.32rem 1rem .32rem 1.85rem;
+  font-size:.76rem;color:var(--muted);cursor:pointer;
+  transition:background .12s,color .12s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  border-left:2px solid transparent;
+  font-family:'Inter',sans-serif;
+}
+.nav-item:hover{
+  background:rgba(0,200,255,.06);color:var(--ink);
+  border-left-color:rgba(0,200,255,.3);
+}
+.nav-item.active{
+  color:var(--nc);font-weight:600;font-family:var(--mono);font-size:.73rem;
+  background:rgba(0,200,255,.08);
+  border-left-color:var(--nc);
+  text-shadow:0 0 12px rgba(0,200,255,.4);
+}
+.nav-item.active::before{content:'▸ ';font-size:.7rem}
+.nav-item.hidden{display:none}
+
+/* separators */
+.nav-divider{height:1px;background:var(--bdr);margin:.4rem .75rem}
+.nav-home{
+  display:flex;align-items:center;gap:.6rem;padding:.55rem 1rem;
+  font-size:.8rem;font-weight:600;color:var(--ink);cursor:pointer;
+  transition:background .12s;font-family:var(--mono);
+}
+.nav-home:hover{background:rgba(0,200,255,.06);color:var(--nc)}
+.nav-home.active{
+  color:var(--nc);background:rgba(0,200,255,.09);
+  box-shadow:inset 2px 0 0 var(--nc);
+}
+
+/* ── CONTENT AREA ─────────────────────────────────────────── */
+#contentArea{
+  flex:1;overflow:hidden;position:relative;
+  background:var(--bg);
+  background-image:
+    linear-gradient(rgba(0,200,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,200,255,.045) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+#contentFrame{
+  width:100%;height:100%;border:none;display:block;
+  background:var(--surf);
+}
+
+/* ── MOBILE OVERLAY ───────────────────────────────────────── */
+#overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(8,8,24,.55);
+  backdrop-filter:blur(3px);z-index:90;
+}
+@media(max-width:720px){
+  :root{--sidebar:264px}
+  #sidebar{
+    position:fixed;top:var(--topbar);left:0;bottom:0;z-index:95;
+    width:0;opacity:0;pointer-events:none;
+    transition:width .22s ease,opacity .22s;
+  }
+  #sidebar.mobile-open{width:var(--sidebar);opacity:1;pointer-events:auto}
+  #overlay.show{display:block}
+  #pageTitle{display:block}
+  #searchWrap{max-width:180px}
+  #searchKbd{display:none}
+}
+@media(min-width:721px){
+  #overlay{display:none!important}
+}
+
+/* ── NO RESULTS ───────────────────────────────────────────── */
+.no-results{
+  padding:1.2rem 1rem;font-size:.76rem;font-family:var(--mono);
+  color:var(--muted);text-align:center;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header id="topbar">
+  <button id="menuBtn" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+  <div class="logo"><span class="logo-nc">DS/</span>Algo Explorer</div>
+  <div id="searchWrap">
+    <input id="searchInput" type="search" placeholder="search 164 topics…" oninput="filterNav(this.value)" autocomplete="off"/>
+    <span id="searchKbd">Ctrl K</span>
+  </div>
+  <span id="pageTitle"></span>
+  <button id="homeBtn" onclick="goHome()">[ HOME ]</button>
+</header>
+
+<div id="overlay" onclick="closeMobileSidebar()"></div>
+
+<!-- SHELL -->
+<div id="shell">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar"></nav>
+
+  <!-- CONTENT IFRAME -->
+  <div id="contentArea">
+    <iframe id="contentFrame" src="index.html" title="Content"></iframe>
+  </div>
+
+</div>
+
+<script>
+// ── NAVIGATION DATA ───────────────────────────────────────────
+const NAV = [
+  {
+    section: 'Data Structures',
+    icon: '//DS',
+    groups: [
+      {
+        label:'Linear', color:'#ff6b35',
+        items:[
+          {label:'Array',              path:'data-structures/linear/array.html'},
+          {label:'Linked List',        path:'data-structures/linear/linked-list.html'},
+          {label:'Stack',              path:'data-structures/linear/stack.html'},
+          {label:'Queue',              path:'data-structures/linear/queue.html'},
+          {label:'Deque',              path:'data-structures/linear/deque.html'},
+        ]
+      },
+      {
+        label:'Trees', color:'#00c896',
+        items:[
+          {label:'Binary Tree',        path:'data-structures/tree/binary-tree.html'},
+          {label:'BST',                path:'data-structures/tree/bst.html'},
+          {label:'AVL Tree',           path:'data-structures/tree/avl-tree.html'},
+          {label:'Red-Black Tree',     path:'data-structures/tree/red-black-tree.html'},
+          {label:'B-Tree',             path:'data-structures/tree/b-tree.html'},
+          {label:'B+ Tree',            path:'data-structures/tree/b-plus-tree.html'},
+          {label:'Segment Tree',       path:'data-structures/tree/segment-tree.html'},
+          {label:'Fenwick Tree',       path:'data-structures/tree/fenwick-tree.html'},
+          {label:'Heap',               path:'data-structures/tree/heap.html'},
+          {label:'Fibonacci Heap',     path:'data-structures/tree/fibonacci-heap.html'},
+          {label:'Leftist Tree',       path:'data-structures/tree/leftist-tree.html'},
+          {label:'Splay Tree',         path:'data-structures/tree/splay-tree.html'},
+          {label:'Treap',              path:'data-structures/tree/treap.html'},
+          {label:'KD-Tree',            path:'data-structures/tree/kd-tree.html'},
+          {label:'Trie',               path:'data-structures/tree/trie.html'},
+          {label:'Suffix Tree',        path:'data-structures/tree/suffix-tree.html'},
+        ]
+      },
+      {
+        label:'Graph DS', color:'#8b5cf6',
+        items:[
+          {label:'Graph Overview',     path:'data-structures/graph/graph.html'},
+          {label:'Adjacency Matrix',   path:'data-structures/graph/adjacency-matrix.html'},
+          {label:'Adjacency List',     path:'data-structures/graph/adjacency-list.html'},
+          {label:'Incidence Matrix',   path:'data-structures/graph/incidence-matrix.html'},
+        ]
+      },
+      {
+        label:'Hash', color:'#f59e0b',
+        items:[
+          {label:'Hash Table',         path:'data-structures/hash/hash-table.html'},
+          {label:'Hash Set',           path:'data-structures/hash/hash-set.html'},
+          {label:'Bloom Filter',       path:'data-structures/hash/bloom-filter.html'},
+        ]
+      },
+      {
+        label:'Advanced', color:'#ff2d78',
+        items:[
+          {label:'Skip List',          path:'data-structures/advanced/skip-list.html'},
+          {label:'Sparse Table',       path:'data-structures/advanced/sparse-table.html'},
+          {label:'Disjoint Set',       path:'data-structures/advanced/disjoint-set.html'},
+          {label:'Rope',               path:'data-structures/advanced/rope.html'},
+          {label:'Van Emde Boas',      path:'data-structures/advanced/van-emde-boas.html'},
+          {label:'Persistent Seg Tree',path:'data-structures/advanced/persistent-segment-tree.html'},
+          {label:'Cartesian Tree',     path:'data-structures/advanced/cartesian-tree.html'},
+          {label:'Suffix Array',       path:'data-structures/advanced/suffix-array.html'},
+          {label:'Quad Tree',          path:'data-structures/advanced/quad-tree.html'},
+          {label:'Octree',             path:'data-structures/advanced/octree.html'},
+          {label:'R-Tree',             path:'data-structures/advanced/r-tree.html'},
+          {label:'Matrix',             path:'data-structures/advanced/matrix.html'},
+          {label:'Dancing Links',      path:'data-structures/advanced/dancing-links.html'},
+        ]
+      },
+    ]
+  },
+  {
+    section: 'Algorithms',
+    icon: '//ALGO',
+    groups: [
+      {
+        label:'Sorting', color:'#00c8ff',
+        items:[
+          {label:'Bubble Sort',        path:'algorithms/sorting/bubble-sort.html'},
+          {label:'Selection Sort',     path:'algorithms/sorting/selection-sort.html'},
+          {label:'Insertion Sort',     path:'algorithms/sorting/insertion-sort.html'},
+          {label:'Merge Sort',         path:'algorithms/sorting/merge-sort.html'},
+          {label:'Quick Sort',         path:'algorithms/sorting/quick-sort.html'},
+          {label:'Heap Sort',          path:'algorithms/sorting/heap-sort.html'},
+          {label:'Counting Sort',      path:'algorithms/sorting/counting-sort.html'},
+          {label:'Radix Sort',         path:'algorithms/sorting/radix-sort.html'},
+          {label:'Bucket Sort',        path:'algorithms/sorting/bucket-sort.html'},
+          {label:'Shell Sort',         path:'algorithms/sorting/shell-sort.html'},
+          {label:'Tim Sort',           path:'algorithms/sorting/tim-sort.html'},
+          {label:'Cycle Sort',         path:'algorithms/sorting/cycle-sort.html'},
+          {label:'Comb Sort',          path:'algorithms/sorting/comb-sort.html'},
+          {label:'Bitonic Sort',       path:'algorithms/sorting/bitonic-sort.html'},
+          {label:'Patience Sort',      path:'algorithms/sorting/patience-sort.html'},
+          {label:'Pigeonhole Sort',    path:'algorithms/sorting/pigeonhole-sort.html'},
+          {label:'Pancake Sort',       path:'algorithms/sorting/pancake-sort.html'},
+          {label:'Strand Sort',        path:'algorithms/sorting/strand-sort.html'},
+        ]
+      },
+      {
+        label:'Searching', color:'#ff2d78',
+        items:[
+          {label:'Linear Search',      path:'algorithms/searching/linear-search.html'},
+          {label:'Binary Search',      path:'algorithms/searching/binary-search.html'},
+          {label:'Jump Search',        path:'algorithms/searching/jump-search.html'},
+          {label:'Interpolation Search',path:'algorithms/searching/interpolation-search.html'},
+          {label:'Exponential Search', path:'algorithms/searching/exponential-search.html'},
+          {label:'Fibonacci Search',   path:'algorithms/searching/fibonacci-search.html'},
+          {label:'Ternary Search',     path:'algorithms/searching/ternary-search.html'},
+        ]
+      },
+      {
+        label:'Graph', color:'#8b5cf6',
+        items:[
+          {label:'BFS',                path:'algorithms/graph/bfs.html'},
+          {label:'DFS',                path:'algorithms/graph/dfs.html'},
+          {label:'Dijkstra',           path:'algorithms/graph/dijkstra.html'},
+          {label:'Bellman-Ford',       path:'algorithms/graph/bellman-ford.html'},
+          {label:'Floyd-Warshall',     path:'algorithms/graph/floyd-warshall.html'},
+          {label:"Johnson's",          path:'algorithms/graph/johnsons.html'},
+          {label:'A* Search',          path:'algorithms/graph/a-star.html'},
+          {label:'Kruskal MST',        path:'algorithms/graph/kruskal.html'},
+          {label:'Prim MST',           path:'algorithms/graph/prim.html'},
+          {label:"Borůvka MST",        path:'algorithms/graph/boruvka.html'},
+          {label:'Topological Sort',   path:'algorithms/graph/topological-sort.html'},
+          {label:'Tarjan SCC',         path:'algorithms/graph/tarjan-scc.html'},
+          {label:'Kosaraju SCC',       path:'algorithms/graph/kosaraju-scc.html'},
+          {label:'Bridges & Artic.',   path:'algorithms/graph/bridges-articulation.html'},
+          {label:'Ford-Fulkerson',     path:'algorithms/graph/ford-fulkerson.html'},
+          {label:'Edmonds-Karp',       path:'algorithms/graph/edmonds-karp.html'},
+          {label:"Dinic's",            path:'algorithms/graph/dinic.html'},
+          {label:'Hopcroft-Karp',      path:'algorithms/graph/hopcroft-karp.html'},
+          {label:'Hungarian',          path:'algorithms/graph/hungarian.html'},
+          {label:'Hierholzer',         path:'algorithms/graph/hierholzer.html'},
+          {label:'Fleury',             path:'algorithms/graph/fleury.html'},
+          {label:'TSP',                path:'algorithms/graph/tsp.html'},
+        ]
+      },
+      {
+        label:'Dynamic Programming', color:'#ff6b35',
+        items:[
+          {label:'Knapsack 0/1',       path:'algorithms/dynamic-programming/knapsack-01.html'},
+          {label:'Unbounded Knapsack', path:'algorithms/dynamic-programming/knapsack-unbounded.html'},
+          {label:'LCS',                path:'algorithms/dynamic-programming/lcs.html'},
+          {label:'LIS',                path:'algorithms/dynamic-programming/lis.html'},
+          {label:'Edit Distance',      path:'algorithms/dynamic-programming/edit-distance.html'},
+          {label:'Matrix Chain Mult.', path:'algorithms/dynamic-programming/matrix-chain.html'},
+          {label:'Coin Change',        path:'algorithms/dynamic-programming/coin-change.html'},
+          {label:'Rod Cutting',        path:'algorithms/dynamic-programming/rod-cutting.html'},
+          {label:'Subset Sum',         path:'algorithms/dynamic-programming/subset-sum.html'},
+          {label:'Word Break',         path:'algorithms/dynamic-programming/word-break.html'},
+          {label:'Palindrome Partition',path:'algorithms/dynamic-programming/palindrome-partition.html'},
+          {label:'Egg Drop',           path:'algorithms/dynamic-programming/egg-drop.html'},
+          {label:'Catalan DP',         path:'algorithms/dynamic-programming/catalan-dp.html'},
+        ]
+      },
+      {
+        label:'Greedy', color:'#f59e0b',
+        items:[
+          {label:'Activity Selection', path:'algorithms/greedy/activity-selection.html'},
+          {label:'Huffman Coding',     path:'algorithms/greedy/huffman-coding.html'},
+          {label:'Fractional Knapsack',path:'algorithms/greedy/fractional-knapsack.html'},
+          {label:'Job Sequencing',     path:'algorithms/greedy/job-sequencing.html'},
+          {label:'Dijkstra (Greedy)',  path:'algorithms/greedy/dijkstra-greedy.html'},
+          {label:'Prim (Greedy)',      path:'algorithms/greedy/prim-greedy.html'},
+        ]
+      },
+      {
+        label:'Backtracking', color:'#ff2d78',
+        items:[
+          {label:'N-Queens',           path:'algorithms/backtracking/n-queens.html'},
+          {label:'Sudoku Solver',      path:'algorithms/backtracking/sudoku-solver.html'},
+          {label:'Rat in Maze',        path:'algorithms/backtracking/rat-in-maze.html'},
+          {label:'Hamiltonian Path',   path:'algorithms/backtracking/hamiltonian-path.html'},
+          {label:'Graph Coloring',     path:'algorithms/backtracking/graph-coloring.html'},
+          {label:'Subset Generation',  path:'algorithms/backtracking/subset-generation.html'},
+          {label:'Permutations',       path:'algorithms/backtracking/permutation-generation.html'},
+          {label:'Word Search',        path:'algorithms/backtracking/word-search.html'},
+        ]
+      },
+      {
+        label:'Divide & Conquer', color:'#00c896',
+        items:[
+          {label:'Binary Search',      path:'algorithms/divide-and-conquer/binary-search.html'},
+          {label:'Merge Sort',         path:'algorithms/divide-and-conquer/merge-sort.html'},
+          {label:'Quick Sort',         path:'algorithms/divide-and-conquer/quick-sort.html'},
+          {label:'Closest Pair',       path:'algorithms/divide-and-conquer/closest-pair.html'},
+          {label:"Strassen's Matrix",  path:'algorithms/divide-and-conquer/strassen.html'},
+          {label:'Karatsuba',          path:'algorithms/divide-and-conquer/karatsuba.html'},
+          {label:'FFT',                path:'algorithms/divide-and-conquer/fft.html'},
+        ]
+      },
+      {
+        label:'String', color:'#2ac8b0',
+        items:[
+          {label:'KMP',                path:'algorithms/string/kmp.html'},
+          {label:'Rabin-Karp',         path:'algorithms/string/rabin-karp.html'},
+          {label:'Boyer-Moore',        path:'algorithms/string/boyer-moore.html'},
+          {label:'Z-Algorithm',        path:'algorithms/string/z-algorithm.html'},
+          {label:'Aho-Corasick',       path:'algorithms/string/aho-corasick.html'},
+          {label:"Manacher's",         path:'algorithms/string/manacher.html'},
+          {label:'LCP Array',          path:'algorithms/string/lcp.html'},
+          {label:'Suffix Array Constr.',path:'algorithms/string/suffix-array-construction.html'},
+          {label:'Suffix Automaton',   path:'algorithms/string/suffix-automaton.html'},
+        ]
+      },
+      {
+        label:'Mathematical', color:'#e76f51',
+        items:[
+          {label:'Euclidean GCD',      path:'algorithms/mathematical/euclidean-gcd.html'},
+          {label:'Extended Euclidean', path:'algorithms/mathematical/extended-euclidean.html'},
+          {label:'Sieve of Eratosthenes',path:'algorithms/mathematical/sieve-eratosthenes.html'},
+          {label:'Sieve of Sundaram',  path:'algorithms/mathematical/sieve-sundaram.html'},
+          {label:'Fast Power',         path:'algorithms/mathematical/fast-power.html'},
+          {label:'Modular Exponent.',  path:'algorithms/mathematical/modular-exponentiation.html'},
+          {label:"Fermat's Theorem",   path:'algorithms/mathematical/fermat-little-theorem.html'},
+          {label:'Miller-Rabin',       path:'algorithms/mathematical/miller-rabin.html'},
+          {label:'Chinese Remainder',  path:'algorithms/mathematical/chinese-remainder.html'},
+          {label:"Pascal's Triangle",  path:'algorithms/mathematical/pascal-triangle.html'},
+          {label:'Catalan Numbers',    path:'algorithms/mathematical/catalan-numbers.html'},
+        ]
+      },
+      {
+        label:'Bit Manipulation', color:'#7b8cde',
+        items:[
+          {label:'Brian Kernighan',    path:'algorithms/bit-manipulation/brian-kernighan.html'},
+          {label:'Power of Two',       path:'algorithms/bit-manipulation/power-of-two.html'},
+          {label:'XOR Tricks',         path:'algorithms/bit-manipulation/xor-tricks.html'},
+          {label:'Bitmask DP',         path:'algorithms/bit-manipulation/bitmask-dp.html'},
+        ]
+      },
+      {
+        label:'Randomized', color:'#a78bfa',
+        items:[
+          {label:'Randomized QuickSort',path:'algorithms/randomized/randomized-quicksort.html'},
+          {label:'Las Vegas',          path:'algorithms/randomized/las-vegas.html'},
+          {label:'Monte Carlo',        path:'algorithms/randomized/monte-carlo.html'},
+          {label:'Reservoir Sampling', path:'algorithms/randomized/reservoir-sampling.html'},
+        ]
+      },
+      {
+        label:'Tree Algorithms', color:'#00c896',
+        items:[
+          {label:'Tree Traversals',    path:'algorithms/tree-algorithms/tree-traversals.html'},
+          {label:'Level Order',        path:'algorithms/tree-algorithms/level-order.html'},
+          {label:'Binary Lifting',     path:'algorithms/tree-algorithms/binary-lifting.html'},
+          {label:'LCA',                path:'algorithms/tree-algorithms/lca.html'},
+          {label:'Euler Tour',         path:'algorithms/tree-algorithms/euler-tour.html'},
+          {label:'Heavy-Light Decomp.',path:'algorithms/tree-algorithms/heavy-light-decomposition.html'},
+          {label:'Centroid Decomp.',   path:'algorithms/tree-algorithms/centroid-decomposition.html'},
+        ]
+      },
+      {
+        label:'Computational Geometry', color:'#60a5fa',
+        items:[
+          {label:'Convex Hull',        path:'algorithms/computational-geometry/convex-hull.html'},
+          {label:'Line Intersection',  path:'algorithms/computational-geometry/line-intersection.html'},
+          {label:'Point in Polygon',   path:'algorithms/computational-geometry/point-in-polygon.html'},
+          {label:'Sweep Line',         path:'algorithms/computational-geometry/sweep-line.html'},
+        ]
+      },
+    ]
+  }
+];
+
+// ── SIDEBAR RENDER ────────────────────────────────────────────
+let activePath = 'index.html';
+let sidebarOpen = true;
+
+function buildSidebar() {
+  const nav = document.getElementById('sidebar');
+  let html = '';
+
+  html += `<div class="nav-home${activePath==='index.html'?' active':''}" onclick="navigate('index.html')" data-path="index.html">
+    <span style="color:var(--nc);font-family:var(--mono)">></span><span>Home</span>
+  </div>
+  <div class="nav-divider"></div>`;
+
+  NAV.forEach((sec, si) => {
+    html += `<div class="section-label">${sec.section}</div>`;
+    sec.groups.forEach((grp, gi) => {
+      const gid = `g_${si}_${gi}`;
+      html += `<div class="group-header" id="hdr_${gid}" onclick="toggleGroup('${gid}')">
+        <span class="gtag" style="background:${grp.color};box-shadow:0 0 5px ${grp.color}88"></span>
+        <span class="glabel">${grp.label}</span>
+        <span class="gcount">${grp.items.length}</span>
+        <span class="garrow">▶</span>
+      </div>
+      <div class="group-items" id="items_${gid}">`;
+      grp.items.forEach(item => {
+        html += `<div class="nav-item${activePath===item.path?' active':''}"
+          onclick="navigate('${item.path}')"
+          data-path="${item.path}"
+          data-label="${item.label}"
+          title="${item.label}">${item.label}</div>`;
+      });
+      html += `</div>`;
+    });
+    if (si < NAV.length - 1) html += `<div class="nav-divider"></div>`;
+  });
+
+  nav.innerHTML = html;
+}
+
+function toggleGroup(gid) {
+  const hdr = document.getElementById('hdr_' + gid);
+  const items = document.getElementById('items_' + gid);
+  const isOpen = items.classList.contains('open');
+  hdr.classList.toggle('open', !isOpen);
+  items.classList.toggle('open', !isOpen);
+}
+
+function openGroupForPath(path) {
+  NAV.forEach((sec, si) => {
+    sec.groups.forEach((grp, gi) => {
+      const hasPath = grp.items.some(item => item.path === path);
+      if (hasPath) {
+        const gid = `g_${si}_${gi}`;
+        const hdr = document.getElementById('hdr_' + gid);
+        const items = document.getElementById('items_' + gid);
+        if (hdr && items) {
+          hdr.classList.add('open');
+          items.classList.add('open');
+        }
+      }
+    });
+  });
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function navigate(path) {
+  activePath = path;
+  document.getElementById('contentFrame').src = path;
+  updateActiveItem(path);
+  openGroupForPath(path);
+  updateTitle(path);
+  if (window.innerWidth <= 720) closeMobileSidebar();
+}
+
+function goHome() {
+  navigate('index.html');
+}
+
+function updateActiveItem(path) {
+  document.querySelectorAll('.nav-item, .nav-home').forEach(el => {
+    const elPath = el.dataset.path;
+    el.classList.toggle('active', elPath === path);
+  });
+}
+
+function updateTitle(path) {
+  let label = '';
+  if (path === 'index.html') { label = 'Home'; }
+  else {
+    NAV.forEach(sec => sec.groups.forEach(grp => {
+      grp.items.forEach(item => { if (item.path === path) label = item.label; });
+    }));
+  }
+  document.getElementById('pageTitle').textContent = label ? label : '';
+}
+
+// ── SEARCH ────────────────────────────────────────────────────
+function filterNav(query) {
+  const q = query.trim().toLowerCase();
+  let anyVisible = false;
+
+  NAV.forEach((sec, si) => {
+    sec.groups.forEach((grp, gi) => {
+      const gid = `g_${si}_${gi}`;
+      let groupHasMatch = false;
+      grp.items.forEach(item => {
+        const el = document.querySelector(`.nav-item[data-path="${item.path}"]`);
+        if (!el) return;
+        const matches = !q || item.label.toLowerCase().includes(q) || grp.label.toLowerCase().includes(q);
+        el.classList.toggle('hidden', !matches);
+        if (matches) { groupHasMatch = true; anyVisible = true; }
+      });
+      if (q) {
+        if (groupHasMatch) {
+          document.getElementById('hdr_' + gid)?.classList.add('open');
+          document.getElementById('items_' + gid)?.classList.add('open');
+        }
+      }
+    });
+  });
+
+  if (!q) {
+    openGroupForPath(activePath);
+  }
+}
+
+// ── SIDEBAR TOGGLE ────────────────────────────────────────────
+function toggleSidebar() {
+  if (window.innerWidth <= 720) {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('overlay');
+    sb.classList.toggle('mobile-open');
+    ov.classList.toggle('show');
+  } else {
+    sidebarOpen = !sidebarOpen;
+    document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
+  }
+}
+
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── IFRAME LOAD TRACKING ──────────────────────────────────────
+document.getElementById('contentFrame').addEventListener('load', function() {
+  try {
+    const loc = this.contentWindow.location.href;
+    const base = window.location.href.replace('app.html', '');
+    if (loc.startsWith(base)) {
+      const rel = loc.replace(base, '').split('?')[0].split('#')[0];
+      if (rel && rel !== activePath) {
+        activePath = rel;
+        updateActiveItem(rel);
+        openGroupForPath(rel);
+        updateTitle(rel);
+      }
+    }
+  } catch(e) { /* cross-origin guard */ }
+});
+
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('searchInput').value = '';
+    filterNav('');
+    document.getElementById('searchInput').blur();
+    closeMobileSidebar();
+  }
+});
+
+// ── INIT ──────────────────────────────────────────────────────
+buildSidebar();
+openGroupForPath('index.html');
+updateTitle('index.html');
+</script>
+</body>
+</html>

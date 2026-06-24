@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Prim's Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px;color:#c0bdb6}
+.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
+.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
+canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
+.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:140px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
+.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
+.tables{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap}
+.tbl-box{flex:1;min-width:200px}
+.tbl-box table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+.tbl-box th{background:#ede8fa;color:#7b4fd4;padding:5px;border:1px solid #e2e0da}
+.tbl-box td{padding:5px;border:1px solid #e2e0da;text-align:center}
+.tbl-box td.inMST{background:#e8f7f0;color:#27a060;font-weight:700}
+.back-link{margin-top:28px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>Prim's Algorithm
+  </div>
+  <div class="hero-tag">Graph</div>
+  <h1>Prim's Algorithm</h1>
+  <p class="tagline">Grow the MST one vertex at a time — always pick the cheapest frontier edge.</p>
+  <div class="prose">
+    <p>Prim's algorithm builds the Minimum Spanning Tree by starting from a single vertex and greedily expanding. At each step, it picks the minimum-weight edge that connects a vertex already in the MST to one that isn't. Unlike Kruskal's (which sorts all edges globally), Prim's grows the tree incrementally.</p>
+    <p>The algorithm maintains a key[] array (minimum edge weight to connect each vertex to the MST) and a parent[] array (which MST vertex provides that minimum). Using a priority queue, it runs in O(E log V) time. Without a priority queue (simple array scan), it's O(V²) — better for dense graphs.</p>
+    <p>Prim's is conceptually similar to Dijkstra's shortest path algorithm. Both maintain a frontier of vertices and greedily pick the "best" next vertex. The difference: Dijkstra minimizes path length from source, while Prim minimizes edge weight to the growing tree.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(E log V)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
+    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Greedy Frontier</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">7-node weighted graph. Source: <select id="src" style="font-family:'Inter',sans-serif;font-size:.85rem;padding:3px 7px;border:1px solid #e2e0da;border-radius:5px"></select></div>
+    <canvas id="cv" width="700" height="280"></canvas>
+    <div class="tables">
+      <div class="tbl-box"><table id="keyTable"><thead><tr><th>Node</th><th>key[]</th></tr></thead><tbody></tbody></table></div>
+      <div class="tbl-box"><table id="parTable"><thead><tr><th>Node</th><th>parent[]</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="controls">
+      <button id="btnRun">Run Prim</button>
+      <button id="btnStep" class="sec">Step</button>
+      <button id="btnReset" class="sec">Reset</button>
+      <span id="mstw" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+    </div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Step Log</div>
+    <div class="log-box" id="log"></div>
+  </div>
+  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+</div>
+<script>
+const nodes=[
+  {x:80,y:140,l:'0'},{x:200,y:60,l:'1'},{x:200,y:220,l:'2'},
+  {x:350,y:140,l:'3'},{x:470,y:60,l:'4'},{x:470,y:220,l:'5'},{x:600,y:140,l:'6'}
+];
+const adj=[
+  [[1,4],[2,3]],[[0,4],[2,1],[3,5]],[[0,3],[1,1],[3,6],[5,4]],
+  [[1,5],[2,6],[4,2],[5,7]],[[3,2],[6,3]],[[2,4],[3,7],[6,5]],[[4,3],[5,5]]
+];
+const N=7;
+let key_=[],parent_=[],inMST=[],done=false,src=0;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const srcSel=document.getElementById('src');
+for(let i=0;i<N;i++){const o=document.createElement('option');o.value=i;o.textContent='Node '+i;srcSel.appendChild(o);}
+
+function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
+function init(){
+  src=parseInt(srcSel.value);
+  key_=new Array(N).fill(Infinity);parent_=new Array(N).fill(-1);inMST=new Array(N).fill(false);
+  key_[src]=0;done=false;
+  document.getElementById('log').innerHTML='';document.getElementById('mstw').textContent='';
+  addLog(`Source: ${src}. key[${src}]=0. All others=∞`);
+  renderTables();draw();
+}
+function renderTables(){
+  document.getElementById('keyTable').querySelector('tbody').innerHTML=
+    nodes.map((n,i)=>`<tr><td>${n.l}</td><td class="${inMST[i]?'inMST':''}">${key_[i]===Infinity?'∞':key_[i]}</td></tr>`).join('');
+  document.getElementById('parTable').querySelector('tbody').innerHTML=
+    nodes.map((n,i)=>`<tr><td>${n.l}</td><td class="${inMST[i]?'inMST':''}">${parent_[i]===-1?'-':nodes[parent_[i]].l}</td></tr>`).join('');
+}
+function step(){
+  if(done)return;
+  let u=-1,minK=Infinity;
+  for(let i=0;i<N;i++)if(!inMST[i]&&key_[i]<minK){minK=key_[i];u=i;}
+  if(u===-1){done=true;
+    const w=key_.filter((k,i)=>i!==src&&k!==Infinity).reduce((s,k)=>s+k,0);
+    addLog(`MST complete! Total weight: ${w}`);document.getElementById('mstw').textContent=`MST Weight: ${w}`;renderTables();draw();return;
+  }
+  inMST[u]=true;addLog(`Pick min key: node ${u} (key=${key_[u]}). Add to MST.`);
+  adj[u].forEach(([v,w])=>{
+    if(!inMST[v]&&w<key_[v]){
+      addLog(`  Update key[${v}]=${w} via edge(${u},${v})`);
+      parent_[v]=u;key_[v]=w;
+    }
+  });
+  renderTables();draw();
+}
+function draw(){
+  ctx.clearRect(0,0,700,280);
+  adj.forEach((nb,u)=>nb.forEach(([v,w])=>{
+    if(v<=u)return;
+    const isMST=inMST[u]&&inMST[v]&&parent_[v]===u||inMST[v]&&inMST[u]&&parent_[u]===v;
+    const isFrontier=inMST[u]!==inMST[v];
+    ctx.strokeStyle=isMST?'#27a060':isFrontier?'#7b4fd4':'#d0ccc8';
+    ctx.lineWidth=isMST?3.5:isFrontier?2:1.5;
+    ctx.setLineDash(isFrontier&&!isMST?[6,4]:[]);
+    ctx.beginPath();ctx.moveTo(nodes[u].x,nodes[u].y);ctx.lineTo(nodes[v].x,nodes[v].y);ctx.stroke();
+    ctx.setLineDash([]);
+    const mx=(nodes[u].x+nodes[v].x)/2,my=(nodes[u].y+nodes[v].y)/2;
+    ctx.fillStyle=isMST?'#27a060':'#5a5a72';ctx.font=(isMST?'bold ':'')+'11px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(w,mx,my-5);
+  }));
+  nodes.forEach((n,i)=>{
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+    ctx.fillStyle=inMST[i]?'#e8f7f0':'#fff';ctx.fill();
+    ctx.strokeStyle=inMST[i]?'#27a060':'#7b4fd4';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.l,n.x,n.y);
+  });
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+srcSel.onchange=()=>init();
+document.getElementById('btnStep').onclick=()=>step();
+document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},600);};
+document.getElementById('btnReset').onclick=()=>init();
+init();
+</script>
+</body>
+</html>

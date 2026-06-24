@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Strand Sort — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
+.sim-body{padding:1.4rem}
+.arr-section{margin:.8rem 0}
+.arr-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--m);margin-bottom:.4rem}
+.chip-row{display:flex;flex-wrap:wrap;gap:4px;min-height:38px;padding:.3rem .4rem;background:var(--bg);border-radius:8px;border:1.5px solid var(--b)}
+.chip{width:34px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.82rem;border:1.5px solid var(--b);background:var(--s);transition:background .25s,border-color .25s,color .25s}
+.chip.strand{background:#2a7ae8;color:#fff;border-color:#2a7ae8}
+.chip.result{background:#27a060;color:#fff;border-color:#27a060}
+.chip.cur{background:#e8622a;color:#fff;border-color:#e8622a}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+select{padding:.38rem .6rem;border:1.5px solid var(--b);border-radius:8px;font-size:.8rem;background:var(--s);color:var(--ink);outline:none}
+select:focus{border-color:var(--a)}
+.result-box{background:var(--bg);border-radius:10px;padding:.8rem 1.2rem;margin-top:.6rem;font-family:'JetBrains Mono',monospace;font-size:.85rem}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Strand Sort</span></nav>
+  <div class="hero">
+    <span class="tag">Sorting</span>
+    <h1>Strand Sort</h1>
+    <p class="tagline">Extract naturally sorted subsequences (strands) from the input and merge them — adaptive and excellent for nearly-sorted data.</p>
+  </div>
+  <div class="explain">
+    <p>Strand sort works by repeatedly pulling out the longest ascending subsequence starting from the beginning of the remaining input. Each extracted "strand" is already sorted. These strands are then merged into the growing output list, similar to merge sort's merge step.</p>
+    <p>The algorithm is adaptive: if the input is already nearly sorted, very few large strands are needed and it approaches O(n) performance. In the worst case (reverse-sorted input), each strand has length 1 and the algorithm degrades to O(n²). This makes it ideal for real-world datasets that often have partially-sorted structure.</p>
+    <p>Implementation-wise it's elegant: walk left-to-right keeping an element if it's greater than the last kept element, otherwise skip. After extraction, merge the strand with the output using the standard sorted-list merge.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Best Case</div><div class="fval">O(n)</div><div class="fsub">Already sorted input</div></div>
+    <div class="fact"><div class="flabel">Worst Case</div><div class="fval">O(n²)</div><div class="fsub">Reverse-sorted input</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div><div class="fsub">Output + strand lists</div></div>
+  </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Strand Sort Simulation</div>
+    <div class="sim-body">
+      <div class="controls">
+        <select id="spd"><option value="700">Slow</option><option value="400" selected>Medium</option><option value="180">Fast</option></select>
+        <button class="btn btn-p" onclick="runStrand()">Sort</button>
+        <button class="btn btn-o" onclick="resetArr()">New Array</button>
+      </div>
+      <div class="arr-section">
+        <div class="arr-label">Input (remaining)</div>
+        <div class="chip-row" id="inputRow"></div>
+      </div>
+      <div class="arr-section">
+        <div class="arr-label">Current Strand</div>
+        <div class="chip-row" id="strandRow"></div>
+      </div>
+      <div class="arr-section">
+        <div class="arr-label">Sorted Output</div>
+        <div class="chip-row" id="outputRow"></div>
+      </div>
+      <div class="result-box" id="result">Click Sort to start.</div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Ready.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let origArr=[],running=false;
+
+function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){document.getElementById('log').innerHTML=''}
+
+function renderRow(id,vals,cls=''){
+  const row=document.getElementById(id);row.innerHTML='';
+  vals.forEach(v=>{
+    const d=document.createElement('div');d.className='chip '+cls;d.textContent=v;row.appendChild(d);
+  });
+}
+
+function resetArr(){
+  const n=12;
+  origArr=Array.from({length:n},()=>Math.floor(Math.random()*90)+10);
+  running=false;
+  renderRow('inputRow',origArr);renderRow('strandRow',[]);renderRow('outputRow',[]);
+  clearLog();document.getElementById('result').textContent='Click Sort to start.';
+}
+
+function merge(a,b){
+  const res=[];let i=0,j=0;
+  while(i<a.length&&j<b.length){
+    if(a[i]<=b[j]) res.push(a[i++]); else res.push(b[j++]);
+  }
+  return res.concat(a.slice(i)).concat(b.slice(j));
+}
+
+async function runStrand(){
+  if(running)return;running=true;clearLog();
+  const spd=parseInt(document.getElementById('spd').value)||400;
+  let input=[...origArr];
+  let output=[];
+  let pass=0;
+  log('Input: ['+input.join(', ')+']','li');
+  renderRow('outputRow',output,'result');
+  while(input.length>0){
+    pass++;
+    const strand=[];
+    const remaining=[];
+    for(let i=0;i<input.length;i++){
+      if(strand.length===0||input[i]>strand[strand.length-1]){
+        strand.push(input[i]);
+      } else {
+        remaining.push(input[i]);
+      }
+      renderRow('inputRow',input.slice(i+1));
+      renderRow('strandRow',strand,'strand');
+      await new Promise(r=>setTimeout(r,spd/2));
+    }
+    log('Pass '+pass+': strand=['+strand.join(',')+']  remaining=['+remaining.join(',')+']','ls');
+    renderRow('inputRow',remaining);renderRow('strandRow',strand,'strand');
+    await new Promise(r=>setTimeout(r,spd));
+    output=merge(output,strand);
+    renderRow('outputRow',output,'result');
+    renderRow('strandRow',[],'strand');
+    log('Merged → output=['+output.join(',')+']','ls');
+    input=remaining;
+    await new Promise(r=>setTimeout(r,spd));
+  }
+  renderRow('outputRow',output,'result');
+  document.getElementById('result').innerHTML='Sorted: ['+output.join(', ')+']  —  <strong>'+pass+'</strong> strand pass'+(pass!==1?'es':'');
+  log('✓ Done in '+pass+' pass'+(pass!==1?'es':'')+'. Result: ['+output.join(',')+']','ld');
+  running=false;
+}
+
+resetArr();
+</script>
+</body>
+</html>

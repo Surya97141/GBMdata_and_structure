@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Topological Sort — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
+.sim-body{padding:1.4rem}
+canvas{display:block;border-radius:10px;background:#fff;border:1px solid var(--b);max-width:100%}
+.order-row{display:flex;gap:.4rem;flex-wrap:wrap;margin:1rem 0}
+.onode{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--b);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem;background:var(--bg);transition:background .3s,border-color .3s,color .3s}
+.onode.done{background:var(--a);color:#fff;border-color:var(--a)}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.result-box{background:var(--bg);border-radius:10px;padding:.8rem 1.2rem;margin-top:.8rem;font-family:'JetBrains Mono',monospace;font-size:.85rem}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.lw{color:#d4a017}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Topological Sort</span></nav>
+  <div class="hero">
+    <span class="tag">Graph</span>
+    <h1>Topological Sort</h1>
+    <p class="tagline">Order DAG vertices so every edge u→v has u before v — the foundation of build systems, task scheduling, and course planning.</p>
+  </div>
+  <div class="explain">
+    <p>Imagine a list of tasks where some must be completed before others: you can't compile before writing code, can't install before downloading. Topological sort produces a linear ordering of vertices in a Directed Acyclic Graph (DAG) that respects all "must come before" constraints. If there's a cycle, no such ordering exists.</p>
+    <p>Kahn's algorithm (BFS-based) maintains in-degrees for each vertex. Start with all vertices of in-degree 0 (no prerequisites), process them one by one, decrement neighbors' in-degrees, and add any that reach zero to the queue. This naturally detects cycles: if some vertices are never processed, a cycle must exist.</p>
+    <p>DFS-based topological sort completes a node only after all its descendants are finished, then prepends it to the result — naturally reversing the DFS finish order into a valid topological order.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(V + E)</div><div class="fsub">Visit each vertex/edge once</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V)</div><div class="fsub">Queue + in-degrees array</div></div>
+    <div class="fact"><div class="flabel">Requires</div><div class="fsub">DAG only — cycle → no valid ordering</div></div>
+  </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Kahn's Algorithm — BFS Topological Sort</div>
+    <div class="sim-body">
+      <canvas id="cv" width="820" height="280" style="width:100%;max-width:820px"></canvas>
+      <div style="font-size:.78rem;font-weight:700;color:var(--m);margin:.8rem 0 .3rem">TOPOLOGICAL ORDER (built left to right)</div>
+      <div class="order-row" id="orderRow"></div>
+      <div class="controls">
+        <button class="btn btn-p" onclick="runKahn()">Run Kahn's Algorithm</button>
+        <button class="btn btn-o" onclick="resetGraph()">Reset</button>
+      </div>
+      <div class="result-box" id="result">Click "Run Kahn's Algorithm" to start.</div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Ready.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const NODES=['A','B','C','D','E','F','G'];
+const EDGES=[['A','C'],['A','D'],['B','C'],['B','E'],['C','F'],['D','F'],['E','G'],['F','G']];
+const POS={A:{x:0.1,y:0.5},B:{x:0.1,y:0.82},C:{x:0.35,y:0.27},D:{x:0.35,y:0.65},E:{x:0.35,y:0.93},F:{x:0.6,y:0.46},G:{x:0.85,y:0.65}};
+
+let running=false;
+
+function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){document.getElementById('log').innerHTML=''}
+
+function drawGraph(active=null, done=new Set(), queue=new Set()){
+  const canvas=document.getElementById('cv');
+  const W=canvas.offsetWidth||820,H=280;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+
+  const px=n=>POS[n].x*W, py=n=>POS[n].y*H, R=20;
+
+  EDGES.forEach(([u,v])=>{
+    const sx=px(u),sy=py(u),ex=px(v),ey=py(v);
+    const dx=ex-sx,dy=ey-sy,len=Math.hypot(dx,dy);
+    const ux=dx/len,uy=dy/len;
+    const fade=done.has(u)&&done.has(v);
+    ctx.beginPath();
+    ctx.moveTo(sx+ux*R,sy+uy*R);
+    ctx.lineTo(ex-ux*(R+9),ey-uy*(R+9));
+    ctx.strokeStyle=fade?'#7b4fd4bb':'#ccc';ctx.lineWidth=fade?2:1.5;ctx.stroke();
+    const ax=ex-ux*(R+9),ay=ey-uy*(R+9);
+    const nx=-uy,ny=ux;
+    ctx.beginPath();ctx.moveTo(ax,ay);
+    ctx.lineTo(ax-ux*8+nx*4,ay-uy*8+ny*4);
+    ctx.lineTo(ax-ux*8-nx*4,ay-uy*8-ny*4);
+    ctx.closePath();ctx.fillStyle=fade?'#7b4fd4bb':'#ccc';ctx.fill();
+  });
+
+  NODES.forEach(n=>{
+    const x=px(n),y=py(n);
+    let fill='#f7f6f2',stroke='#ccc',lw=1.5,fc='#1a1a2e';
+    if(done.has(n)){fill='#7b4fd4';stroke='#7b4fd4';fc='#fff';}
+    else if(n===active){fill='#e8622a';stroke='#e8622a';lw=2.5;fc='#fff';}
+    else if(queue.has(n)){fill='#fff0ea';stroke='#e8622a';lw=2;}
+    ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);
+    ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke();
+    ctx.fillStyle=fc;ctx.font='bold 13px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n,x,y);
+  });
+}
+
+function initOrderRow(){
+  const r=document.getElementById('orderRow');r.innerHTML='';
+  NODES.forEach(n=>{
+    const d=document.createElement('div');d.className='onode';d.id='on_'+n;d.textContent=n;
+    r.appendChild(d);
+  });
+}
+
+async function runKahn(){
+  if(running)return;running=true;clearLog();
+  const indeg={};NODES.forEach(n=>indeg[n]=0);
+  EDGES.forEach(([u,v])=>indeg[v]++);
+  const queue=NODES.filter(n=>indeg[n]===0);
+  const order=[];const done=new Set();
+  log('In-degrees: '+NODES.map(n=>n+':'+indeg[n]).join('  '),'li');
+  log('Initial queue (in-deg=0): ['+queue.join(', ')+']','ls');
+  drawGraph(null,done,new Set(queue));
+  await new Promise(r=>setTimeout(r,600));
+  while(queue.length){
+    const u=queue.shift();
+    order.push(u);done.add(u);
+    log('Dequeue '+u+'  order: ['+order.join(', ')+']','ls');
+    drawGraph(u,done,new Set(queue));
+    document.getElementById('on_'+u).className='onode done';
+    await new Promise(r=>setTimeout(r,700));
+    for(const [a,b] of EDGES){
+      if(a===u){
+        indeg[b]--;
+        log('  in-deg['+b+']='+indeg[b]+(indeg[b]===0?' → enqueue':''),'li');
+        if(indeg[b]===0)queue.push(b);
+      }
+    }
+    drawGraph(null,done,new Set(queue));
+    await new Promise(r=>setTimeout(r,400));
+  }
+  document.getElementById('result').innerHTML='Topological order: <strong>'+order.join(' → ')+'</strong>';
+  log('✓ Complete: '+order.join('→'),'ld');
+  running=false;
+}
+
+function resetGraph(){
+  clearLog();initOrderRow();drawGraph();running=false;
+  document.getElementById('result').textContent='Click "Run Kahn\'s Algorithm" to start.';
+}
+
+initOrderRow();drawGraph();
+</script>
+</body>
+</html>

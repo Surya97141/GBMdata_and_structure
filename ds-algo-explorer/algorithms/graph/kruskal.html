@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Kruskal's Algorithm – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px;color:#c0bdb6}
+.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
+.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
+.layout{display:grid;grid-template-columns:1fr 260px;gap:16px}
+canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
+.edge-list{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.8;max-height:320px;overflow-y:auto}
+.edge-item{padding:3px 8px;border-radius:4px;display:flex;justify-content:space-between}
+.edge-item.accepted{background:#e8f7f0;color:#27a060;font-weight:700}
+.edge-item.rejected{background:#fff0f0;color:#e84393;text-decoration:line-through}
+.edge-item.current{background:#ede8fa;color:#7b4fd4;font-weight:700}
+.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:140px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
+.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
+.back-link{margin-top:28px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>Kruskal's Algorithm
+  </div>
+  <div class="hero-tag">Graph</div>
+  <h1>Kruskal's Algorithm</h1>
+  <p class="tagline">Sort edges by weight, greedily pick the cheapest non-cycle edge — MST in O(E log E).</p>
+  <div class="prose">
+    <p>Kruskal's algorithm builds a Minimum Spanning Tree by always adding the cheapest available edge that doesn't form a cycle. It starts by sorting all edges by weight, then processes them one by one, using a Union-Find data structure to efficiently detect cycles.</p>
+    <p>The Union-Find (Disjoint Set Union) structure is the key enabler: find(u) gives the component root of u, and union(u,v) merges two components. If edge (u,v) connects two different components (find(u) ≠ find(v)), add it to the MST. Otherwise skip it — adding it would create a cycle.</p>
+    <p>Kruskal's is preferred for sparse graphs where E is small relative to V². It's used in network design, clustering algorithms, and approximation algorithms for NP-hard problems. The MST weight equals the minimum cost to connect all nodes.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(E log E)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
+    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Union-Find DSU</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">7-node weighted graph — edges sorted by weight on the right.</div>
+    <div class="layout">
+      <canvas id="cv" width="420" height="310"></canvas>
+      <div>
+        <div style="font-size:.8rem;color:#5a5a72;margin-bottom:6px;font-weight:600">SORTED EDGES</div>
+        <div class="edge-list" id="edgeList"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnRun">Run Kruskal</button>
+      <button id="btnStep" class="sec">Step</button>
+      <button id="btnReset" class="sec">Reset</button>
+      <span id="mstw" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+    </div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Step Log</div>
+    <div class="log-box" id="log"></div>
+  </div>
+  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+</div>
+<script>
+const nodes=[
+  {x:60,y:155,l:'0'},{x:150,y:55,l:'1'},{x:150,y:255,l:'2'},
+  {x:250,y:155,l:'3'},{x:340,y:55,l:'4'},{x:340,y:255,l:'5'},{x:400,y:155,l:'6'}
+];
+const edgesDef=[
+  {u:1,v:2,w:1},{u:3,v:4,w:2},{u:2,v:3,w:2},{u:0,v:2,w:3},{u:4,v:6,w:3},
+  {u:0,v:1,w:4},{u:3,v:5,w:4},{u:1,v:3,w:5},{u:5,v:6,w:5},{u:2,v:5,w:6},{u:3,v:6,w:7}
+];
+const sorted=[...edgesDef].sort((a,b)=>a.w-b.w);
+let parent=[],rnk=[],mstEdges=[],rejEdges=[],edgeIdx=0,done=false;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+function find(x){while(parent[x]!==x){parent[x]=parent[parent[x]];x=parent[x];}return x;}
+function union(a,b){a=find(a);b=find(b);if(a===b)return false;if(rnk[a]<rnk[b])[a,b]=[b,a];parent[b]=a;if(rnk[a]===rnk[b])rnk[a]++;return true;}
+function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
+function init(){
+  parent=nodes.map((_,i)=>i);rnk=new Array(7).fill(0);
+  mstEdges=[];rejEdges=[];edgeIdx=0;done=false;
+  document.getElementById('log').innerHTML='';document.getElementById('mstw').textContent='';
+  renderEdgeList(-1);draw();addLog('Edges sorted by weight. Ready.');
+}
+function renderEdgeList(cur){
+  const el=document.getElementById('edgeList');
+  el.innerHTML=sorted.map((e,i)=>{
+    let cls=mstEdges.includes(i)?'accepted':rejEdges.includes(i)?'rejected':i===cur?'current':'';
+    return`<div class="edge-item ${cls}">(${e.u},${e.v}) w=${e.w} ${mstEdges.includes(i)?'✓':rejEdges.includes(i)?'✗':''}</div>`;
+  }).join('');
+}
+function step(){
+  if(done||edgeIdx>=sorted.length){
+    done=true;const w=mstEdges.reduce((s,i)=>s+sorted[i].w,0);
+    addLog(`MST complete! Weight: ${w}`);document.getElementById('mstw').textContent=`MST Weight: ${w}`;
+    renderEdgeList(-1);draw();return;
+  }
+  const e=sorted[edgeIdx];
+  const cu=find(e.u),cv2=find(e.v);
+  if(cu!==cv2){union(e.u,e.v);mstEdges.push(edgeIdx);
+    addLog(`Edge(${e.u},${e.v},w=${e.w}): sets {${cu}} and {${cv2}} → UNION. MST+=${e.w}`);}
+  else{rejEdges.push(edgeIdx);addLog(`Edge(${e.u},${e.v},w=${e.w}): same component → CYCLE skip`);}
+  renderEdgeList(edgeIdx);edgeIdx++;draw();
+  if(mstEdges.length===6){done=true;const w=mstEdges.reduce((s,i)=>s+sorted[i].w,0);
+    addLog(`MST complete! Weight: ${w}`);document.getElementById('mstw').textContent=`MST Weight: ${w}`;}
+}
+function draw(){
+  ctx.clearRect(0,0,420,310);
+  edgesDef.forEach((e,origIdx)=>{
+    const sortedIdx=sorted.findIndex(s=>s.u===e.u&&s.v===e.v);
+    const isMST=mstEdges.includes(sortedIdx);
+    const isRej=rejEdges.includes(sortedIdx);
+    ctx.strokeStyle=isMST?'#27a060':isRej?'#e84393':'#d0ccc8';
+    ctx.lineWidth=isMST?3.5:1.5;
+    ctx.setLineDash(isRej?[5,4]:[]);
+    ctx.beginPath();ctx.moveTo(nodes[e.u].x,nodes[e.u].y);ctx.lineTo(nodes[e.v].x,nodes[e.v].y);ctx.stroke();
+    ctx.setLineDash([]);
+    const mx=(nodes[e.u].x+nodes[e.v].x)/2,my=(nodes[e.u].y+nodes[e.v].y)/2;
+    ctx.fillStyle=isMST?'#27a060':'#5a5a72';ctx.font=(isMST?'bold ':'')+'11px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(e.w,mx,my-5);
+  });
+  nodes.forEach((n,i)=>{
+    ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
+    ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.l,n.x,n.y);
+    ctx.font='9px JetBrains Mono';ctx.fillStyle='#5a5a72';ctx.fillText('C'+find(i),n.x,n.y+29);
+  });
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+document.getElementById('btnStep').onclick=()=>step();
+document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},600);};
+document.getElementById('btnReset').onclick=()=>init();
+init();
+</script>
+</body>
+</html>

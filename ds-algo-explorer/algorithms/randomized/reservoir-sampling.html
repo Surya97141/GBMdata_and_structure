@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Reservoir Sampling — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#6d6875;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
+.sim-body{padding:1.4rem}
+.stream-row{display:flex;flex-wrap:wrap;gap:4px;margin:.6rem 0}
+.sc{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:7px;border:1.5px solid var(--b);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.82rem;background:var(--bg);transition:background .25s,border-color .25s,color .25s}
+.sc.cur{background:#e8622a;color:#fff;border-color:#e8622a}
+.sc.past{background:var(--bg);color:var(--m);border-color:var(--b)}
+.sc.selected{background:var(--a);color:#fff;border-color:var(--a)}
+.reservoir{display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0;padding:.8rem;background:var(--bg);border-radius:10px;border:1.5px solid var(--b);min-height:54px}
+.rc{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:2px solid var(--a);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;background:var(--s);color:var(--a);transition:background .3s,color .3s}
+.rc.replaced{background:var(--a);color:#fff;border-color:var(--a)}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+input[type=number]{padding:.38rem .6rem;border:1.5px solid var(--b);border-radius:8px;font-size:.8rem;background:var(--s);color:var(--ink);outline:none;width:70px}
+input:focus{border-color:var(--a)}
+.result-box{background:var(--bg);border-radius:10px;padding:.8rem 1.2rem;margin-top:.6rem;font-family:'JetBrains Mono',monospace;font-size:.85rem}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Reservoir Sampling</span></nav>
+  <div class="hero">
+    <span class="tag">Randomized</span>
+    <h1>Reservoir Sampling</h1>
+    <p class="tagline">Sample k items uniformly at random from a stream of unknown length — using only O(k) memory.</p>
+  </div>
+  <div class="explain">
+    <p>Imagine you're reading a massive log file and need to select 5 random lines — but you don't know how long the file is, and you can only see one line at a time. Reservoir sampling (Algorithm R) solves this: fill the "reservoir" with the first k items, then for each subsequent item i, keep it with probability k/i, replacing a random existing item if kept.</p>
+    <p>The algorithm guarantees that at any point during processing, each of the items seen so far has an equal probability of being in the reservoir. It's beautifully self-correcting: the early items' probability decreases over time exactly right to maintain uniformity.</p>
+    <p>This is essential for stream processing, database sampling without replacement, A/B testing, and any application that needs to sample from big data without loading it all into memory. Vitter's Algorithm Z extends it with better performance for very large streams.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n)</div><div class="fsub">One pass over stream</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(k)</div><div class="fsub">Only reservoir stored</div></div>
+    <div class="fact"><div class="flabel">Guarantee</div><div class="fsub">Uniform probability for all items</div></div>
+  </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Algorithm R — Reservoir Sampling</div>
+    <div class="sim-body">
+      <div class="controls">
+        <label>Stream n:</label>
+        <input type="number" id="nstream" value="20" min="8" max="40"/>
+        <label>Reservoir k:</label>
+        <input type="number" id="kres" value="4" min="2" max="8"/>
+        <button class="btn btn-p" onclick="runRS()">Run Sampling</button>
+        <button class="btn btn-o" onclick="resetRS()">New Stream</button>
+      </div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--m);margin:.6rem 0 .2rem">STREAM (processing left to right)</div>
+      <div class="stream-row" id="streamRow"></div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--m);margin:.6rem 0 .2rem">RESERVOIR (k items)</div>
+      <div class="reservoir" id="reservoirRow"></div>
+      <div class="result-box" id="result">Click "Run Sampling" to start.</div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Ready.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let stream=[],reservoir=[],running=false;
+
+function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){document.getElementById('log').innerHTML=''}
+
+function genStream(){
+  const n=parseInt(document.getElementById('nstream').value)||20;
+  stream=Array.from({length:n},()=>Math.floor(Math.random()*90)+10);
+  reservoir=[];
+  renderStream(-1,new Set());renderReservoir([]);
+  clearLog();document.getElementById('result').textContent='Click "Run Sampling" to start.';
+}
+
+function renderStream(cur,selected){
+  const row=document.getElementById('streamRow');row.innerHTML='';
+  stream.forEach((v,i)=>{
+    const d=document.createElement('div');
+    let cls='sc';
+    if(i===cur) cls+=' cur';
+    else if(i<cur) cls+=' past';
+    if(selected.has(i)) cls+=' selected';
+    d.className=cls;d.textContent=v;row.appendChild(d);
+  });
+}
+
+function renderReservoir(replaced){
+  const row=document.getElementById('reservoirRow');row.innerHTML='';
+  reservoir.forEach((v,i)=>{
+    const d=document.createElement('div');
+    d.className='rc'+(replaced&&replaced.has(i)?' replaced':'');
+    d.textContent=v;row.appendChild(d);
+  });
+}
+
+async function runRS(){
+  if(running)return;running=true;clearLog();
+  const k=parseInt(document.getElementById('kres').value)||4;
+  reservoir=[];
+  const selected=new Set();
+
+  for(let i=0;i<k&&i<stream.length;i++){
+    reservoir.push(stream[i]);selected.add(i);
+    log('Fill reservoir['+i+'] = '+stream[i],'ls');
+    renderStream(i,new Set(selected));renderReservoir(new Set([i]));
+    await new Promise(r=>setTimeout(r,300));
+  }
+  renderReservoir(new Set());
+  log('Reservoir filled: ['+reservoir.join(', ')+']','li');
+  await new Promise(r=>setTimeout(r,400));
+
+  for(let i=k;i<stream.length;i++){
+    const j=Math.floor(Math.random()*(i+1));
+    renderStream(i,new Set(selected));
+    if(j<k){
+      const old=reservoir[j];
+      reservoir[j]=stream[i];
+      selected.delete(stream.indexOf(old));
+      selected.add(i);
+      log('Item '+stream[i]+' (i='+i+'): rand j='+j+' < k='+k+' → replace reservoir['+j+']='+old+' with '+stream[i],'ls');
+      renderReservoir(new Set([j]));
+    } else {
+      log('Item '+stream[i]+' (i='+i+'): rand j='+j+' ≥ k='+k+' → discard','li');
+      renderReservoir(new Set());
+    }
+    await new Promise(r=>setTimeout(r,280));
+  }
+  renderStream(stream.length,new Set(selected));renderReservoir(new Set());
+  document.getElementById('result').innerHTML='Final sample (k='+k+' from n='+stream.length+'): <strong>['+reservoir.join(', ')+']</strong>';
+  log('✓ Final reservoir: ['+reservoir.join(', ')+']','ld');running=false;
+}
+
+function resetRS(){genStream();running=false;}
+
+genStream();
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Brian Kernighan's Algorithm — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#264653;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
+.sim-body{padding:1.4rem}
+.bit-display{display:flex;flex-wrap:wrap;gap:4px;margin:1rem 0;font-family:'JetBrains Mono',monospace}
+.bit{width:32px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;border:1.5px solid var(--b);font-size:.78rem;font-weight:700;transition:background .3s,border-color .3s}
+.bit .bv{font-size:1rem}
+.bit .bi{font-size:.6rem;color:var(--m);margin-top:1px}
+.bit.on{background:var(--a);color:#fff;border-color:var(--a)}
+.bit.on .bi{color:rgba(255,255,255,.7)}
+.bit.active{background:#e8622a;color:#fff;border-color:#e8622a}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+input[type=number],input[type=text]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:100px}
+input:focus{border-color:var(--a)}
+.result-box{background:var(--bg);border-radius:10px;padding:1rem 1.2rem;margin-top:1rem;font-family:'JetBrains Mono',monospace;font-size:.9rem}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.lw{color:#d4a017}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Brian Kernighan's Algorithm</span></nav>
+  <div class="hero">
+    <span class="tag">Bit Manipulation</span>
+    <h1>Brian Kernighan's Algorithm</h1>
+    <p class="tagline">Count set bits in O(set bits) using n &amp; (n−1) to clear the lowest set bit each step.</p>
+  </div>
+  <div class="explain">
+    <p>Imagine counting how many lights are on in a row of switches, but you can only turn off the rightmost lit switch at each step. Brian Kernighan's algorithm does exactly that at the bit level: the expression <code>n &amp; (n−1)</code> clears the lowest set bit of <code>n</code> in one operation, because subtracting 1 flips all bits from the lowest set bit downward.</p>
+    <p>Instead of checking every bit (which would require 32 iterations for a 32-bit integer), this algorithm only iterates once per set bit. If a number has only 3 set bits, it performs exactly 3 iterations — much faster for sparse integers.</p>
+    <p>The trick generalizes: you can use <code>n &amp; (n−1)</code> to check if n is a power of 2 (result is 0), find the position of the lowest set bit, or clear it. It's a fundamental building block of efficient bit-manipulation code.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time Complexity</div><div class="fval">O(k)</div><div class="fsub">k = number of set bits</div></div>
+    <div class="fact"><div class="flabel">vs Naive</div><div class="fval">O(log n)</div><div class="fsub">Naive checks every bit</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fsub">Hamming weight, popcount, power-of-2 check, bit tricks</div></div>
+  </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="controls">
+        <label>Number:</label>
+        <input type="number" id="ninput" value="52" min="0" max="65535"/>
+        <button class="btn btn-p" onclick="runKernighan()">Count Set Bits</button>
+        <button class="btn btn-o" onclick="randomN()">Random</button>
+      </div>
+      <div style="margin-top:1rem;font-size:.82rem;font-weight:600;color:var(--m)">Binary Representation (16-bit)</div>
+      <div class="bit-display" id="bits"></div>
+      <div class="result-box" id="result">Enter a number and click "Count Set Bits".</div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Ready — enter a number above.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function log(msg, cls='ls') {
+  const el = document.getElementById('log');
+  const d = document.createElement('div');
+  d.className = `le ${cls}`;
+  d.textContent = msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+  const empty = el.querySelector('.li');
+  if (empty && empty.textContent.includes('Ready')) empty.remove();
+}
+
+function clearLog() { document.getElementById('log').innerHTML = ''; }
+
+function renderBits(n, highlight = -1, active = -1) {
+  const c = document.getElementById('bits');
+  c.innerHTML = '';
+  for (let i = 15; i >= 0; i--) {
+    const b = document.createElement('div');
+    const val = (n >> i) & 1;
+    b.className = 'bit' + (val ? ' on' : '') + (i === active ? ' active' : '');
+    b.innerHTML = `<span class="bv">${val}</span><span class="bi">${i}</span>`;
+    c.appendChild(b);
+  }
+}
+
+async function runKernighan() {
+  const n0 = parseInt(document.getElementById('ninput').value) || 0;
+  clearLog();
+  renderBits(n0);
+  log(`n = ${n0} = ${toBin(n0)}`, 'ls');
+
+  let n = n0, count = 0;
+  const steps = [];
+  while (n > 0) {
+    const nm1 = n - 1;
+    const and = n & nm1;
+    const lsb = n & (-n);
+    const lsbPos = Math.log2(lsb);
+    steps.push({ n, nm1, and, lsbPos });
+    n = and;
+    count++;
+  }
+
+  for (const s of steps) {
+    await sleep(600);
+    renderBits(s.n, -1, Math.round(s.lsbPos));
+    log(`n = ${s.n} = ${toBin(s.n)}`, 'ls');
+    log(`n-1 = ${s.nm1} = ${toBin(s.nm1)}`, 'li');
+    log(`n & (n-1) = ${s.and} = ${toBin(s.and)}   ← cleared bit ${Math.round(s.lsbPos)}`, 'ls');
+    log('─'.repeat(40), 'li');
+    await sleep(400);
+    renderBits(s.and);
+  }
+
+  await sleep(400);
+  document.getElementById('result').innerHTML =
+    `Set bits in <strong>${n0}</strong> = <strong style="color:var(--a);font-size:1.2rem">${count}</strong>  (${count} iteration${count!==1?'s':''})`;
+  log(`✓ Total set bits = ${count}`, 'ld');
+}
+
+function toBin(n) {
+  return (n >>> 0).toString(2).padStart(16, '0').replace(/(.{4})/g, '$1 ').trim();
+}
+
+function randomN() {
+  document.getElementById('ninput').value = Math.floor(Math.random() * 65535);
+}
+
+renderBits(52);
+</script>
+</body>
+</html>

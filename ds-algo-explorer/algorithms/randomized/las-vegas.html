@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Las Vegas Algorithms — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#6d6875;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
+.sim-body{padding:1.4rem}
+.arr-row{display:flex;flex-wrap:wrap;gap:4px;margin:.6rem 0;font-family:'JetBrains Mono',monospace}
+.cell{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:7px;border:1.5px solid var(--b);font-weight:700;font-size:.82rem;background:var(--bg);transition:background .2s,border-color .2s,color .2s}
+.cell.pivot{background:#e8622a;color:#fff;border-color:#e8622a}
+.cell.lo{background:#e6f7ee;border-color:#27a060;color:#27a060}
+.cell.hi{background:#fdecea;border-color:#c0392b;color:#c0392b}
+.cell.done{background:var(--a);color:#fff;border-color:var(--a)}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+input[type=number]{padding:.38rem .6rem;border:1.5px solid var(--b);border-radius:8px;font-size:.8rem;background:var(--s);color:var(--ink);outline:none;width:70px}
+input:focus{border-color:var(--a)}
+.stats{display:flex;gap:1rem;flex-wrap:wrap;margin:.6rem 0}
+.sbox{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:.5rem .9rem;text-align:center}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--a)}
+.sl{font-size:.7rem;color:var(--m);margin-top:.1rem}
+.result-box{background:var(--bg);border-radius:10px;padding:.8rem 1.2rem;margin-top:.6rem;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Las Vegas Algorithms</span></nav>
+  <div class="hero">
+    <span class="tag">Randomized</span>
+    <h1>Las Vegas Algorithms</h1>
+    <p class="tagline">Always correct, randomly fast — randomness speeds up work while guaranteeing exact answers.</p>
+  </div>
+  <div class="explain">
+    <p>A Las Vegas algorithm uses randomness but always produces a correct result. The randomness affects only the <em>running time</em>, not the answer. Randomized QuickSort is the canonical example: pick a random pivot at each step. In the worst case it's O(n²), but in expectation it's O(n log n) — and no adversarial input can force worst-case behavior consistently.</p>
+    <p>Contrast with Monte Carlo algorithms, which can produce wrong answers but have bounded runtime. Las Vegas is "always correct, sometimes slow"; Monte Carlo is "sometimes wrong, always fast." Las Vegas is preferable when correctness is non-negotiable.</p>
+    <p>Other examples include randomized binary search trees (treaps), random hashing, and randomized median-of-medians. The key insight: randomization prevents adversarial inputs from consistently triggering worst-case behavior.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Correctness</div><div class="fval">Always</div><div class="fsub">Output is always exact</div></div>
+    <div class="fact"><div class="flabel">Expected Time</div><div class="fval">O(n log n)</div><div class="fsub">Randomized QuickSort</div></div>
+    <div class="fact"><div class="flabel">Worst Case</div><div class="fval">O(n²)</div><div class="fsub">Extremely rare with random pivots</div></div>
+  </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Randomized QuickSort (Las Vegas)</div>
+    <div class="sim-body">
+      <div class="controls">
+        <label>Size:</label>
+        <input type="number" id="nsz" value="12" min="4" max="18"/>
+        <button class="btn btn-p" onclick="runRQS()">Run Randomized QuickSort</button>
+        <button class="btn btn-o" onclick="resetArr()">New Array</button>
+      </div>
+      <div style="font-size:.72rem;color:var(--m);margin:.5rem 0">orange=pivot  green=≤pivot  red=>pivot  purple=sorted</div>
+      <div class="arr-row" id="arrRow"></div>
+      <div class="stats">
+        <div class="sbox"><div class="sv" id="sc">0</div><div class="sl">Comparisons</div></div>
+        <div class="sbox"><div class="sv" id="ss">0</div><div class="sl">Swaps</div></div>
+        <div class="sbox"><div class="sv" id="sd">0</div><div class="sl">Max Depth</div></div>
+      </div>
+      <div class="result-box" id="result">Click Run to start.</div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Ready.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+let arr=[],comps=0,swaps=0,maxDepth=0,running=false;
+const doneSet=new Set();
+
+function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){document.getElementById('log').innerHTML=''}
+
+function render(state={}){
+  const row=document.getElementById('arrRow');row.innerHTML='';
+  arr.forEach((v,i)=>{
+    const d=document.createElement('div');
+    let cls='cell';
+    if(state.pivot===i) cls+=' pivot';
+    else if(state.lo&&state.lo.has(i)) cls+=' lo';
+    else if(state.hi&&state.hi.has(i)) cls+=' hi';
+    else if(doneSet.has(i)) cls+=' done';
+    d.className=cls;d.textContent=v;row.appendChild(d);
+  });
+  document.getElementById('sc').textContent=comps;
+  document.getElementById('ss').textContent=swaps;
+  document.getElementById('sd').textContent=maxDepth;
+}
+
+function resetArr(){
+  const n=parseInt(document.getElementById('nsz').value)||12;
+  arr=Array.from({length:n},()=>Math.floor(Math.random()*99)+1);
+  comps=0;swaps=0;maxDepth=0;running=false;doneSet.clear();
+  render();clearLog();
+  document.getElementById('result').textContent='Click Run to start.';
+}
+
+async function qsort(lo,hi,depth){
+  if(lo>=hi){if(lo===hi&&lo>=0)doneSet.add(lo);return}
+  maxDepth=Math.max(maxDepth,depth);
+  const pi=lo+Math.floor(Math.random()*(hi-lo+1));
+  [arr[pi],arr[hi]]=[arr[hi],arr[pi]];swaps++;
+  const pivot=arr[hi];
+  log('Partition ['+lo+'..'+hi+'] depth='+depth+'  pivot='+pivot,'ls');
+  let store=lo;
+  for(let k=lo;k<hi;k++){
+    comps++;
+    if(arr[k]<=pivot){
+      [arr[store],arr[k]]=[arr[k],arr[store]];swaps++;store++;
+    }
+    render({pivot:hi});
+  }
+  [arr[store],arr[hi]]=[arr[hi],arr[store]];swaps++;
+  doneSet.add(store);
+  render({});
+  await new Promise(r=>setTimeout(r,200));
+  await qsort(lo,store-1,depth+1);
+  await qsort(store+1,hi,depth+1);
+}
+
+async function runRQS(){
+  if(running)return;running=true;comps=0;swaps=0;maxDepth=0;doneSet.clear();clearLog();
+  log('Input: ['+arr.join(',')+']','li');
+  await qsort(0,arr.length-1,1);
+  arr.forEach((_,i)=>doneSet.add(i));render();
+  document.getElementById('result').innerHTML='Sorted: ['+arr.join(', ')+']  comparisons='+comps+'  swaps='+swaps+'  depth='+maxDepth;
+  log('✓ Sorted: ['+arr.join(',')+']','ld');running=false;
+}
+
+resetArr();
+</script>
+</body>
+</html>

@@ -2,259 +2,437 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>DS/Algo Explorer — Every structure. Every algorithm. One place.</title>
-<link rel="stylesheet" href="assets/style.css"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
-  .landing-hero {
-    text-align: center;
-    padding: 5rem 1.5rem 3rem;
-  }
-  .landing-hero h1 {
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    line-height: 1.1;
-    max-width: 18ch;
-    margin: 0 auto 1.2rem;
-    color: var(--ink);
-  }
-  .landing-hero p {
-    font-size: 1.15rem;
-    margin: 0 auto 2.5rem;
-    max-width: 52ch;
-    text-align: center;
-  }
-  .hub-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin: 3rem 0 5rem;
-  }
-  @media (max-width: 700px) { .hub-grid { grid-template-columns: 1fr; } }
-  .hub-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2rem;
-    box-shadow: var(--shadow);
-    text-decoration: none;
-    color: inherit;
-    transition: box-shadow .2s, transform .2s;
-    display: block;
-  }
-  .hub-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
-  .hub-card-icon {
-    width: 52px; height: 52px;
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem;
-    margin-bottom: 1.2rem;
-  }
-  .hub-card h2 { font-size: 1.6rem; margin-bottom: .4rem; }
-  .hub-card p { font-size: .9rem; margin: 0 0 1.5rem; }
-  .pill-cloud { display: flex; flex-wrap: wrap; gap: .5rem; }
-  .pill-sm {
-    display: inline-block;
-    padding: .18rem .65rem;
-    border-radius: 100px;
-    font-size: .72rem;
-    font-weight: 600;
-    border: 1.5px solid transparent;
-    color: #fff;
-  }
-  .stat-row {
-    display: flex;
-    gap: 2.5rem;
-    justify-content: center;
-    margin: 0 0 3rem;
-    flex-wrap: wrap;
-  }
-  .stat { text-align: center; }
-  .stat-num { font-family: var(--font-display); font-size: 2.8rem; color: var(--ink); display: block; }
-  .stat-label { font-size: .8rem; color: var(--ink-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem 0;
-    text-align: center;
-    font-size: .82rem;
-    color: var(--ink-muted);
-  }
+/* ── CYBERPUNK LIGHT TOKENS ──────────────────────────────── */
+:root{
+  --bg:      #f2f4fb;
+  --surf:    #ffffff;
+  --ink:     #080818;
+  --muted:   #4a4a7a;
+  --bdr:     rgba(0,200,255,.14);
+  --bdr2:    rgba(255,45,120,.14);
+  --nc:      #00c8ff;   /* neon cyan   */
+  --nm:      #ff2d78;   /* neon magenta*/
+  --np:      #8b5cf6;   /* neon purple */
+  --ng:      linear-gradient(135deg,#00c8ff,#8b5cf6);
+  --glow-c:  0 0 18px rgba(0,200,255,.35);
+  --glow-m:  0 0 18px rgba(255,45,120,.35);
+  --r:       12px;
+  --font-mono:'JetBrains Mono',monospace;
+}
+
+/* ── RESET & BASE ────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(rgba(0,200,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,200,255,.055) 1px,transparent 1px);
+  background-size:36px 36px;
+  color:var(--ink);
+  line-height:1.7;
+  min-height:100vh;
+}
+
+/* subtle scanlines overlay */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(
+    0deg,transparent,transparent 3px,rgba(0,0,0,.018) 3px,rgba(0,0,0,.018) 4px
+  );
+}
+
+.container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero{
+  text-align:center;
+  padding:5rem 1.5rem 3rem;
+  position:relative;
+}
+.hero-kicker{
+  display:inline-block;
+  font-family:var(--font-mono);font-size:.75rem;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--nc);
+  border:1.5px solid rgba(0,200,255,.35);
+  padding:.25rem .85rem;border-radius:4px;
+  margin-bottom:1.6rem;
+  box-shadow:var(--glow-c);
+  position:relative;
+}
+.hero-kicker::before{content:'> '}
+
+.glitch-wrap{position:relative;display:inline-block}
+.hero h1{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2.4rem,6.5vw,4.2rem);
+  line-height:1.08;
+  color:var(--ink);
+  max-width:20ch;margin:0 auto .3rem;
+}
+/* glitch pseudo-layers */
+.hero h1::before,.hero h1::after{
+  content:attr(data-text);
+  position:absolute;left:0;top:0;width:100%;
+  font-family:'DM Serif Display',serif;
+  font-size:inherit;line-height:inherit;
+  pointer-events:none;
+}
+.hero h1::before{
+  color:var(--nm);
+  animation:glitch1 5s infinite;
+}
+.hero h1::after{
+  color:var(--nc);
+  animation:glitch2 5s infinite;
+}
+@keyframes glitch1{
+  0%,88%,100%{opacity:0;transform:none;clip-path:none}
+  89%{opacity:.65;transform:translate(-3px,0);clip-path:polygon(0 10%,100% 10%,100% 35%,0 35%)}
+  90%{opacity:.65;transform:translate(3px,0);clip-path:polygon(0 60%,100% 60%,100% 82%,0 82%)}
+  91%{opacity:0}
+}
+@keyframes glitch2{
+  0%,91%,100%{opacity:0;transform:none;clip-path:none}
+  92%{opacity:.55;transform:translate(2px,0);clip-path:polygon(0 40%,100% 40%,100% 58%,0 58%)}
+  93%{opacity:0}
+}
+
+.hero-accent{
+  background:var(--ng);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.hero-tagline{
+  font-size:1.05rem;color:var(--muted);
+  max-width:52ch;margin:1.2rem auto 0;
+  line-height:1.75;
+}
+.cursor{
+  display:inline-block;width:2px;height:.9em;
+  background:var(--nc);vertical-align:middle;margin-left:2px;
+  animation:blink .85s step-start infinite;box-shadow:var(--glow-c);
+}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* ── STAT ROW ────────────────────────────────────────────── */
+.stat-row{
+  display:flex;gap:0;justify-content:center;
+  margin:3rem 0;flex-wrap:wrap;
+  background:var(--surf);
+  border:1.5px solid var(--bdr);
+  border-radius:var(--r);
+  overflow:hidden;
+  box-shadow:0 0 0 1px var(--bdr),var(--glow-c);
+}
+.stat{
+  flex:1;min-width:130px;
+  text-align:center;padding:1.4rem 1rem;
+  border-right:1px solid var(--bdr);
+  position:relative;
+}
+.stat:last-child{border-right:none}
+.stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--ng);opacity:.7;
+}
+.stat-num{
+  font-family:var(--font-mono);font-size:2.4rem;font-weight:700;
+  display:block;
+  background:var(--ng);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1.1;margin-bottom:.3rem;
+}
+.stat-label{
+  font-family:var(--font-mono);
+  font-size:.62rem;color:var(--muted);
+  font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+}
+
+/* ── HUB CARDS ───────────────────────────────────────────── */
+.hub-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;
+  margin:0 0 3rem;
+}
+@media(max-width:640px){.hub-grid{grid-template-columns:1fr}}
+.hub-card{
+  background:var(--surf);
+  border:1.5px solid var(--bdr);
+  border-radius:var(--r);
+  padding:1.8rem;
+  text-decoration:none;color:inherit;
+  display:block;
+  position:relative;overflow:hidden;
+  transition:box-shadow .25s,transform .2s,border-color .25s;
+}
+.hub-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--ng);
+}
+.hub-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 0% 0%,rgba(0,200,255,.07),transparent 60%);
+  pointer-events:none;
+}
+.hub-card:hover{
+  box-shadow:0 0 0 1.5px rgba(0,200,255,.45),var(--glow-c),0 12px 40px rgba(0,0,0,.07);
+  border-color:rgba(0,200,255,.4);
+  transform:translateY(-3px);
+}
+.hub-card-icon{
+  font-family:var(--font-mono);font-size:.68rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--nc);border:1.5px solid rgba(0,200,255,.4);
+  display:inline-flex;align-items:center;padding:.3rem .7rem;
+  border-radius:4px;margin-bottom:1rem;
+  box-shadow:var(--glow-c);
+}
+.hub-card h2{
+  font-family:'DM Serif Display',serif;
+  font-size:1.7rem;margin-bottom:.4rem;color:var(--ink);
+}
+.hub-card p{font-size:.88rem;color:var(--muted);margin-bottom:1.2rem}
+
+/* ── PILLS ───────────────────────────────────────────────── */
+.pill-cloud{display:flex;flex-wrap:wrap;gap:.4rem}
+.pill-sm{
+  font-family:var(--font-mono);
+  font-size:.65rem;font-weight:700;
+  padding:.2rem .6rem;border-radius:4px;
+  border:1.5px solid;
+  transition:background .15s,color .15s;
+}
+.pill{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:.72rem;font-weight:600;
+  padding:.22rem .7rem;border-radius:4px;
+  border:1.5px solid var(--accent,#00c8ff);
+  color:var(--accent,#00c8ff);
+  text-decoration:none;
+  background:rgba(0,200,255,.05);
+  transition:background .15s,color .15s,box-shadow .15s;
+}
+.pill:hover{
+  background:var(--accent,#00c8ff);
+  color:#fff;
+  box-shadow:0 0 10px var(--accent,#00c8ff);
+}
+
+/* ── SECTION ─────────────────────────────────────────────── */
+.section{margin:2rem 0 3rem}
+.section-title{
+  font-family:var(--font-mono);font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.14em;
+  color:var(--nc);
+  margin-bottom:1.4rem;display:flex;align-items:center;gap:.6rem;
+}
+.section-title::before{content:'//';color:var(--nm);margin-right:.15rem}
+.section-title::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(0,200,255,.35),transparent);
+}
+.sub-label{
+  font-family:var(--font-mono);
+  font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--muted);margin-bottom:.5rem;margin-top:1rem;
+  display:flex;align-items:center;gap:.4rem;
+}
+.sub-label::before{content:'·';color:var(--nc)}
+
+.divider{
+  border:none;border-top:1px solid var(--bdr);
+  margin:2rem 0;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer{
+  border-top:1.5px solid rgba(0,200,255,.2);
+  padding:1.8rem 0;text-align:center;
+  font-family:var(--font-mono);
+  font-size:.72rem;color:var(--muted);
+  background:var(--surf);
+  margin-top:2rem;
+}
+footer span{color:var(--nc)}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="landing-hero">
-    <h1>Every structure. Every algorithm. One place.</h1>
-    <p>An interactive, visual reference for data structures and algorithms — with plain-English explanations, complexity facts, and live simulations.</p>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-kicker">DS/Algo Explorer v2.0</div>
+    <h1 data-text="Every structure. Every algorithm. One place.">
+      Every structure.<br>Every <span class="hero-accent">algorithm.</span><br>One place.
+    </h1>
+    <p class="hero-tagline">
+      An interactive, visual reference for data structures &amp; algorithms —
+      plain-English explanations, complexity facts, and live simulations.<span class="cursor"></span>
+    </p>
   </div>
 
+  <!-- STATS -->
   <div class="stat-row">
-    <div class="stat"><span class="stat-num">40+</span><span class="stat-label">Data Structures</span></div>
-    <div class="stat"><span class="stat-num">120+</span><span class="stat-label">Algorithms</span></div>
-    <div class="stat"><span class="stat-num">160+</span><span class="stat-label">Interactive Pages</span></div>
-    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Dependencies</span></div>
+    <div class="stat">
+      <span class="stat-num">40+</span>
+      <span class="stat-label">Data Structures</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">120+</span>
+      <span class="stat-label">Algorithms</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">160+</span>
+      <span class="stat-label">Interactive Pages</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">0</span>
+      <span class="stat-label">Dependencies</span>
+    </div>
   </div>
 
+  <!-- HUB CARDS -->
   <div class="hub-grid">
-    <!-- Data Structures card -->
     <a class="hub-card" href="data-structures/index.html">
-      <div class="hub-card-icon" style="background:#fff0ea;">🗂️</div>
+      <div class="hub-card-icon">[ DS ]</div>
       <h2>Data Structures</h2>
       <p>Linear, trees, graphs, hash structures, and advanced exotic containers.</p>
       <div class="pill-cloud">
-        <span class="pill-sm" style="background:#e8622a;">Linear</span>
-        <span class="pill-sm" style="background:#27a060;">Trees</span>
-        <span class="pill-sm" style="background:#7b4fd4;">Graphs</span>
-        <span class="pill-sm" style="background:#d4a017;">Hash</span>
-        <span class="pill-sm" style="background:#c0392b;">Advanced</span>
+        <span class="pill-sm" style="color:#ff6b35;border-color:#ff6b35;background:rgba(255,107,53,.08)">Linear</span>
+        <span class="pill-sm" style="color:#00c896;border-color:#00c896;background:rgba(0,200,150,.08)">Trees</span>
+        <span class="pill-sm" style="color:#8b5cf6;border-color:#8b5cf6;background:rgba(139,92,246,.08)">Graphs</span>
+        <span class="pill-sm" style="color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,.08)">Hash</span>
+        <span class="pill-sm" style="color:#ff2d78;border-color:#ff2d78;background:rgba(255,45,120,.08)">Advanced</span>
       </div>
     </a>
-
-    <!-- Algorithms card -->
     <a class="hub-card" href="algorithms/index.html">
-      <div class="hub-card-icon" style="background:#eaf3ff;">⚡</div>
+      <div class="hub-card-icon" style="color:var(--nm);border-color:rgba(255,45,120,.4);box-shadow:var(--glow-m)">[ ALGO ]</div>
       <h2>Algorithms</h2>
-      <p>Sorting, searching, graph traversal, DP, backtracking, string processing, and more.</p>
+      <p>Sorting, searching, graph traversal, DP, backtracking, strings, and more.</p>
       <div class="pill-cloud">
-        <span class="pill-sm" style="background:#2a7ae8;">Sorting</span>
-        <span class="pill-sm" style="background:#e84393;">Searching</span>
-        <span class="pill-sm" style="background:#7b4fd4;">Graphs</span>
-        <span class="pill-sm" style="background:#e8622a;">DP</span>
-        <span class="pill-sm" style="background:#c0392b;">Backtracking</span>
-        <span class="pill-sm" style="background:#2a9d8f;">Strings</span>
-        <span class="pill-sm" style="background:#e76f51;">Math</span>
+        <span class="pill-sm" style="color:#00c8ff;border-color:#00c8ff;background:rgba(0,200,255,.08)">Sorting</span>
+        <span class="pill-sm" style="color:#ff2d78;border-color:#ff2d78;background:rgba(255,45,120,.08)">Searching</span>
+        <span class="pill-sm" style="color:#8b5cf6;border-color:#8b5cf6;background:rgba(139,92,246,.08)">Graphs</span>
+        <span class="pill-sm" style="color:#ff6b35;border-color:#ff6b35;background:rgba(255,107,53,.08)">DP</span>
+        <span class="pill-sm" style="color:#00c896;border-color:#00c896;background:rgba(0,200,150,.08)">Greedy</span>
+        <span class="pill-sm" style="color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,.08)">Math</span>
       </div>
     </a>
   </div>
 
-  <!-- Quick-jump: Data Structures -->
+  <!-- QUICK JUMP: DS -->
   <div class="section">
     <div class="section-title">Data Structures — Quick Jump</div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Linear</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/array.html">Array</a>
-        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/linked-list.html">Linked List</a>
-        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/stack.html">Stack</a>
-        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/queue.html">Queue</a>
-        <a class="pill" style="--accent:#e8622a" href="data-structures/linear/deque.html">Deque</a>
-      </div>
+    <div class="sub-label">Linear</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#ff6b35" href="data-structures/linear/array.html">Array</a>
+      <a class="pill" style="--accent:#ff6b35" href="data-structures/linear/linked-list.html">Linked List</a>
+      <a class="pill" style="--accent:#ff6b35" href="data-structures/linear/stack.html">Stack</a>
+      <a class="pill" style="--accent:#ff6b35" href="data-structures/linear/queue.html">Queue</a>
+      <a class="pill" style="--accent:#ff6b35" href="data-structures/linear/deque.html">Deque</a>
     </div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Trees</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/binary-tree.html">Binary Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/bst.html">BST</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/avl-tree.html">AVL Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/red-black-tree.html">Red-Black Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/heap.html">Heap</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/trie.html">Trie</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/segment-tree.html">Segment Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/fenwick-tree.html">Fenwick Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/b-tree.html">B-Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/b-plus-tree.html">B+ Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/kd-tree.html">KD-Tree</a>
-        <a class="pill" style="--accent:#27a060" href="data-structures/tree/treap.html">Treap</a>
-      </div>
+    <div class="sub-label">Trees</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/binary-tree.html">Binary Tree</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/bst.html">BST</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/avl-tree.html">AVL Tree</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/red-black-tree.html">Red-Black Tree</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/heap.html">Heap</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/trie.html">Trie</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/segment-tree.html">Segment Tree</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/fenwick-tree.html">Fenwick Tree</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/b-tree.html">B-Tree</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/kd-tree.html">KD-Tree</a>
+      <a class="pill" style="--accent:#00c896" href="data-structures/tree/treap.html">Treap</a>
     </div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Graphs</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/graph.html">Graph</a>
-        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/adjacency-matrix.html">Adjacency Matrix</a>
-        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/adjacency-list.html">Adjacency List</a>
-        <a class="pill" style="--accent:#7b4fd4" href="data-structures/graph/incidence-matrix.html">Incidence Matrix</a>
-      </div>
+    <div class="sub-label">Graphs</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#8b5cf6" href="data-structures/graph/graph.html">Graph</a>
+      <a class="pill" style="--accent:#8b5cf6" href="data-structures/graph/adjacency-matrix.html">Adjacency Matrix</a>
+      <a class="pill" style="--accent:#8b5cf6" href="data-structures/graph/adjacency-list.html">Adjacency List</a>
+      <a class="pill" style="--accent:#8b5cf6" href="data-structures/graph/incidence-matrix.html">Incidence Matrix</a>
     </div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Hash</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#d4a017" href="data-structures/hash/hash-table.html">Hash Table</a>
-        <a class="pill" style="--accent:#d4a017" href="data-structures/hash/hash-set.html">Hash Set</a>
-        <a class="pill" style="--accent:#d4a017" href="data-structures/hash/bloom-filter.html">Bloom Filter</a>
-      </div>
+    <div class="sub-label">Hash</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#f59e0b" href="data-structures/hash/hash-table.html">Hash Table</a>
+      <a class="pill" style="--accent:#f59e0b" href="data-structures/hash/hash-set.html">Hash Set</a>
+      <a class="pill" style="--accent:#f59e0b" href="data-structures/hash/bloom-filter.html">Bloom Filter</a>
     </div>
-    <div>
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Advanced</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/disjoint-set.html">Disjoint Set</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/skip-list.html">Skip List</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/segment-tree.html">Segment Tree</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/suffix-array.html">Suffix Array</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/rope.html">Rope</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/sparse-table.html">Sparse Table</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/quad-tree.html">Quad Tree</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/r-tree.html">R-Tree</a>
-        <a class="pill" style="--accent:#c0392b" href="data-structures/advanced/van-emde-boas.html">Van Emde Boas</a>
-      </div>
+    <div class="sub-label">Advanced</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/disjoint-set.html">Disjoint Set</a>
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/skip-list.html">Skip List</a>
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/suffix-array.html">Suffix Array</a>
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/rope.html">Rope</a>
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/sparse-table.html">Sparse Table</a>
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/quad-tree.html">Quad Tree</a>
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/r-tree.html">R-Tree</a>
+      <a class="pill" style="--accent:#ff2d78" href="data-structures/advanced/van-emde-boas.html">Van Emde Boas</a>
     </div>
   </div>
 
   <hr class="divider"/>
 
-  <!-- Quick-jump: Algorithms -->
+  <!-- QUICK JUMP: ALGORITHMS -->
   <div class="section">
     <div class="section-title">Algorithms — Quick Jump</div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Sorting</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/bubble-sort.html">Bubble Sort</a>
-        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/merge-sort.html">Merge Sort</a>
-        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/quick-sort.html">Quick Sort</a>
-        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/heap-sort.html">Heap Sort</a>
-        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/counting-sort.html">Counting Sort</a>
-        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/radix-sort.html">Radix Sort</a>
-        <a class="pill" style="--accent:#2a7ae8" href="algorithms/sorting/tim-sort.html">Tim Sort</a>
-      </div>
+    <div class="sub-label">Sorting</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/sorting/bubble-sort.html">Bubble Sort</a>
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/sorting/merge-sort.html">Merge Sort</a>
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/sorting/quick-sort.html">Quick Sort</a>
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/sorting/heap-sort.html">Heap Sort</a>
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/sorting/counting-sort.html">Counting Sort</a>
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/sorting/radix-sort.html">Radix Sort</a>
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/sorting/tim-sort.html">Tim Sort</a>
     </div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Searching</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#e84393" href="algorithms/searching/binary-search.html">Binary Search</a>
-        <a class="pill" style="--accent:#e84393" href="algorithms/searching/linear-search.html">Linear Search</a>
-        <a class="pill" style="--accent:#e84393" href="algorithms/searching/jump-search.html">Jump Search</a>
-        <a class="pill" style="--accent:#e84393" href="algorithms/searching/interpolation-search.html">Interpolation Search</a>
-      </div>
+    <div class="sub-label">Searching</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#ff2d78" href="algorithms/searching/binary-search.html">Binary Search</a>
+      <a class="pill" style="--accent:#ff2d78" href="algorithms/searching/linear-search.html">Linear Search</a>
+      <a class="pill" style="--accent:#ff2d78" href="algorithms/searching/jump-search.html">Jump Search</a>
+      <a class="pill" style="--accent:#ff2d78" href="algorithms/searching/interpolation-search.html">Interpolation</a>
     </div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Graph Algorithms</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/bfs.html">BFS</a>
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/dfs.html">DFS</a>
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/dijkstra.html">Dijkstra</a>
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/bellman-ford.html">Bellman-Ford</a>
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/floyd-warshall.html">Floyd-Warshall</a>
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/kruskal.html">Kruskal</a>
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/prim.html">Prim</a>
-        <a class="pill" style="--accent:#7b4fd4" href="algorithms/graph/a-star.html">A*</a>
-      </div>
+    <div class="sub-label">Graph Algorithms</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/bfs.html">BFS</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/dfs.html">DFS</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/dijkstra.html">Dijkstra</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/bellman-ford.html">Bellman-Ford</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/floyd-warshall.html">Floyd-Warshall</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/kruskal.html">Kruskal</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/prim.html">Prim</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/graph/a-star.html">A*</a>
     </div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Dynamic Programming</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/knapsack-01.html">0/1 Knapsack</a>
-        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/lcs.html">LCS</a>
-        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/lis.html">LIS</a>
-        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/coin-change.html">Coin Change</a>
-        <a class="pill" style="--accent:#e8622a" href="algorithms/dynamic-programming/edit-distance.html">Edit Distance</a>
-      </div>
+    <div class="sub-label">Dynamic Programming</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#ff6b35" href="algorithms/dynamic-programming/knapsack-01.html">0/1 Knapsack</a>
+      <a class="pill" style="--accent:#ff6b35" href="algorithms/dynamic-programming/lcs.html">LCS</a>
+      <a class="pill" style="--accent:#ff6b35" href="algorithms/dynamic-programming/lis.html">LIS</a>
+      <a class="pill" style="--accent:#ff6b35" href="algorithms/dynamic-programming/coin-change.html">Coin Change</a>
+      <a class="pill" style="--accent:#ff6b35" href="algorithms/dynamic-programming/edit-distance.html">Edit Distance</a>
     </div>
-    <div style="margin-bottom:1.2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:.6rem;">Backtracking &amp; More</div>
-      <div class="pill-cloud">
-        <a class="pill" style="--accent:#c0392b" href="algorithms/backtracking/n-queens.html">N-Queens</a>
-        <a class="pill" style="--accent:#c0392b" href="algorithms/backtracking/sudoku-solver.html">Sudoku Solver</a>
-        <a class="pill" style="--accent:#27a060" href="algorithms/greedy/huffman-coding.html">Huffman Coding</a>
-        <a class="pill" style="--accent:#2a9d8f" href="algorithms/string/kmp.html">KMP</a>
-        <a class="pill" style="--accent:#e76f51" href="algorithms/mathematical/sieve-eratosthenes.html">Sieve</a>
-        <a class="pill" style="--accent:#264653" href="algorithms/bit-manipulation/xor-tricks.html">XOR Tricks</a>
-      </div>
+    <div class="sub-label">Backtracking &amp; More</div>
+    <div class="pill-cloud">
+      <a class="pill" style="--accent:#ff2d78" href="algorithms/backtracking/n-queens.html">N-Queens</a>
+      <a class="pill" style="--accent:#ff2d78" href="algorithms/backtracking/sudoku-solver.html">Sudoku Solver</a>
+      <a class="pill" style="--accent:#00c896" href="algorithms/greedy/huffman-coding.html">Huffman Coding</a>
+      <a class="pill" style="--accent:#00c8ff" href="algorithms/string/kmp.html">KMP</a>
+      <a class="pill" style="--accent:#f59e0b" href="algorithms/mathematical/sieve-eratosthenes.html">Sieve</a>
+      <a class="pill" style="--accent:#8b5cf6" href="algorithms/bit-manipulation/xor-tricks.html">XOR Tricks</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="container">
-    DS/Algo Explorer &mdash; Visual, interactive, light-themed. No frameworks. No dependencies.
+    <span>//</span> DS/Algo Explorer &mdash; Visual · Interactive · Zero Dependencies &mdash; <span>v2.0</span>
   </div>
 </footer>
 </body>

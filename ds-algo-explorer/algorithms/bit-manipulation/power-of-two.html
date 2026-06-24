@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Power of Two — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#264653;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
+.demos{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+@media(max-width:600px){.demos{grid-template-columns:1fr}}
+.demo-card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.2rem}
+.demo-title{font-family:'DM Serif Display',serif;font-size:1rem;margin-bottom:.6rem}
+.bit-row{display:flex;gap:3px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:.7rem;margin:.4rem 0}
+.bt{width:28px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--b);font-weight:700;transition:background .25s}
+.bt.on{background:var(--a);color:#fff;border-color:var(--a)}
+.bt.hi{background:#e8622a;color:#fff;border-color:#e8622a}
+.bt.gr{background:#27a060;color:#fff;border-color:#27a060}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0;align-items:center}
+.btn{padding:.38rem .9rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+input[type=number]{padding:.38rem .6rem;border:1.5px solid var(--b);border-radius:8px;font-size:.8rem;background:var(--s);color:var(--ink);outline:none;width:90px}
+input:focus{border-color:var(--a)}
+.res{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.5rem .8rem;border-radius:8px;margin-top:.5rem}
+.res.yes{background:#e6f7ee;color:#27a060;border:1px solid #27a060}
+.res.no{background:#fdecea;color:#c0392b;border:1px solid #c0392b}
+.res.info{background:var(--bg);border:1px solid var(--b)}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Power of Two</span></nav>
+  <div class="hero">
+    <span class="tag">Bit Manipulation</span>
+    <h1>Power of Two</h1>
+    <p class="tagline">O(1) power-of-2 checks, next-power-of-2, and highest-set-bit using bitwise tricks.</p>
+  </div>
+  <div class="explain">
+    <p>A number is a power of 2 if and only if it has exactly one set bit in its binary representation — like 1 (0001), 2 (0010), 4 (0100), 8 (1000). The trick <code>n &amp; (n−1)</code> clears the lowest set bit. If the result is zero, there was only one set bit: it's a power of 2.</p>
+    <p>Finding the next power of 2 ≥ n uses a sequence of OR-and-shift operations to "smear" the highest set bit downward, then adds 1. This is useful for sizing hash tables and buffers to the nearest power of 2.</p>
+    <p>The highest set bit (floor of log₂) tells you the bit-length of a number — useful in prefix-free codes, segment trees, and binary lifting.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Is Power of 2</div><div class="fval">O(1)</div><div class="fsub">n &amp; (n-1) == 0</div></div>
+    <div class="fact"><div class="flabel">Next Power of 2</div><div class="fval">O(log log n)</div><div class="fsub">5 shifts for 32-bit</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div><div class="fsub">No extra memory</div></div>
+  </div>
+
+  <div class="demos">
+    <!-- Demo 1: Is power of 2 -->
+    <div class="demo-card">
+      <div class="demo-title">Is Power of 2?</div>
+      <div class="controls">
+        <input type="number" id="p2n" value="64" min="1" max="65535"/>
+        <button class="btn btn-p" onclick="checkPow2()">Check</button>
+      </div>
+      <div style="font-size:.75rem;color:var(--m);margin:.3rem 0">n :</div>
+      <div class="bit-row" id="p2bits"></div>
+      <div style="font-size:.75rem;color:var(--m);margin:.3rem 0">n−1 :</div>
+      <div class="bit-row" id="p2bitsm1"></div>
+      <div style="font-size:.75rem;color:var(--m);margin:.3rem 0">n &amp; (n−1) :</div>
+      <div class="bit-row" id="p2and"></div>
+      <div class="res info" id="p2res">Enter n and click Check.</div>
+    </div>
+    <!-- Demo 2: Next power of 2 -->
+    <div class="demo-card">
+      <div class="demo-title">Next Power of 2 ≥ n</div>
+      <div class="controls">
+        <input type="number" id="np2n" value="50" min="1" max="32768"/>
+        <button class="btn btn-p" onclick="nextPow2()">Compute</button>
+      </div>
+      <div style="font-size:.75rem;color:var(--m);margin:.3rem 0">Steps:</div>
+      <div id="np2steps" style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--m);line-height:1.9"></div>
+      <div class="res info" id="np2res">Enter n and click Compute.</div>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Use the demos above.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){document.getElementById('log').innerHTML=''}
+
+function renderBitRow(elId, n, hiPat = 0) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  for (let i = 15; i >= 0; i--) {
+    const v = (n >> i) & 1;
+    const d = document.createElement('div');
+    const hi = (hiPat >> i) & 1;
+    d.className = 'bt' + (hi ? ' hi' : (v ? ' on' : ''));
+    d.textContent = v;
+    el.appendChild(d);
+  }
+}
+
+function checkPow2() {
+  const n = parseInt(document.getElementById('p2n').value) || 0;
+  if (n <= 0) return;
+  const nm1 = n - 1;
+  const and = n & nm1;
+  renderBitRow('p2bits', n);
+  renderBitRow('p2bitsm1', nm1);
+  renderBitRow('p2and', and, and);
+  const isPow = and === 0 && n > 0;
+  const res = document.getElementById('p2res');
+  res.className = 'res ' + (isPow ? 'yes' : 'no');
+  res.textContent = isPow ? `${n} IS a power of 2  (n&(n-1) = 0)` : `${n} is NOT a power of 2  (n&(n-1) = ${and})`;
+  log(`n=${n}=${n.toString(2)}  n-1=${nm1}=${nm1.toString(2)}  AND=${and}`, 'ls');
+  log(isPow ? `✓ ${n} is a power of 2` : `✗ ${n} is not a power of 2`, isPow?'ld':'ls');
+}
+
+function nextPow2() {
+  let n = parseInt(document.getElementById('np2n').value) || 1;
+  const orig = n;
+  const stepsEl = document.getElementById('np2steps');
+  stepsEl.innerHTML = '';
+  function addStep(label, val) {
+    const d = document.createElement('div');
+    d.textContent = `${label}: ${val} = ${val.toString(2).padStart(16,'0')}`;
+    stepsEl.appendChild(d);
+  }
+  n--;
+  addStep('n-1', n);
+  n |= n >> 1;  addStep('|= >>1', n);
+  n |= n >> 2;  addStep('|= >>2', n);
+  n |= n >> 4;  addStep('|= >>4', n);
+  n |= n >> 8;  addStep('|= >>8', n);
+  n++;
+  addStep('n+1 (result)', n);
+  const res = document.getElementById('np2res');
+  res.className = 'res yes';
+  res.textContent = `Next power of 2 ≥ ${orig} = ${n}`;
+  log(`nextPow2(${orig}) = ${n}`, 'ld');
+}
+
+checkPow2();
+</script>
+</body>
+</html>

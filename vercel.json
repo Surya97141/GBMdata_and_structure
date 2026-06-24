@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/",           "destination": "/ds-algo-explorer/app.html" },
+    { "source": "/((?!ds-algo-explorer/).*)", "destination": "/ds-algo-explorer/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*\\.html)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Cache-Control",   "value": "public, max-age=3600, stale-while-revalidate=86400" }
+      ]
+    }
+  ]
+}

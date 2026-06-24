@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Catalan Numbers – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:100px}
+input[type=number]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+.catalan-row{display:flex;flex-wrap:wrap;gap:6px;margin:.8rem 0}
+.cat-cell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.cat-n{font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.cat-val{padding:.4rem .7rem;border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;border:2px solid var(--border);background:var(--bg);transition:all .3s;text-align:center}
+.cat-val.active{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.1)}
+.cat-val.done{background:#fde8e2;border-color:var(--accent);color:var(--accent)}
+.interp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:.8rem 0}
+.interp{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.8rem;font-size:.82rem}
+.interp h4{font-size:.8rem;font-weight:600;color:var(--accent);margin-bottom:.4rem}
+.interp .examples{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#555;margin-top:.3rem;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.83rem;margin:.5rem 0}
+th{background:var(--bg);padding:.4rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
+td{padding:.35rem .6rem;border-bottom:1px solid #f0eeea}
+tr.highlight td{background:#fde8e2;font-weight:700}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Catalan Numbers
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">Mathematical</span>
+    <h1>Catalan Numbers</h1>
+    <p class="tagline">A sequence counting valid bracket arrangements, binary trees, polygon triangulations, and dozens more combinatorial structures.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>Catalan numbers C(n) = (2n choose n) / (n+1) = 1, 1, 2, 5, 14, 42, 132, 429, ... They appear in an extraordinary range of counting problems — all equivalent but superficially different. This "universality" makes them one of the most ubiquitous sequences in combinatorics.</p>
+    <p>The recurrence is C(0)=1, C(n+1) = Σ C(i)×C(n-i) for i=0..n. This is the convolution of the sequence with itself — reflecting how a structure of size n+1 splits into a left part of size i and a right part of size n-i.</p>
+    <p>Applications include: counting valid parenthesizations of n+1 factors, number of distinct BSTs with n keys, triangulations of a convex polygon with n+2 vertices, and monotonic lattice paths from (0,0) to (n,n) that don't cross the diagonal.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">C(2n choose n)/(n+1)</div><div class="lbl">Closed form</div></div>
+    <div class="fact"><div class="val">4^n / n^(3/2)</div><div class="lbl">Asymptotic growth</div></div>
+    <div class="fact"><div class="val">200+</div><div class="lbl">Known interpretations</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>n (0–10)</label><input type="number" id="nInput" value="6" min="0" max="10"/></div>
+      <button class="btn" onclick="computeCatalan()" style="align-self:flex-end">Compute</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);margin:.4rem 0">Catalan numbers C[0..n]:</div>
+    <div id="catRow" class="catalan-row"></div>
+    <table style="margin-top:.8rem">
+      <thead><tr><th>n</th><th>C(n)</th><th>Formula C(n-1)×(4n-2)/(n+1)</th><th>Interp: valid parenthesizations</th></tr></thead>
+      <tbody id="catTable"></tbody>
+    </table>
+    <div class="interp-grid">
+      <div class="interp">
+        <h4>Valid Parentheses (n pairs)</h4>
+        <div id="parenEx" class="examples">–</div>
+      </div>
+      <div class="interp">
+        <h4>BST Structures (n keys)</h4>
+        <div id="bstEx" class="examples">–</div>
+      </div>
+      <div class="interp">
+        <h4>Polygon Triangulations</h4>
+        <div id="polyEx" class="examples">–</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter n and click Compute</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  document.getElementById('catRow').innerHTML='';
+  document.getElementById('catTable').innerHTML='';
+  document.getElementById('parenEx').textContent='–';
+  document.getElementById('bstEx').textContent='–';
+  document.getElementById('polyEx').textContent='–';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter n and click Compute</div>';
+}
+
+function genParens(n){
+  if(n===0) return [''];
+  if(n===1) return ['()'];
+  const res=[];
+  function bt(s,open,close){
+    if(s.length===2*n){res.push(s);return;}
+    if(open<n) bt(s+'(',open+1,close);
+    if(close<open) bt(s+')',open,close+1);
+  }
+  bt('',0,0);
+  return res;
+}
+
+function computeCatalan(){
+  resetSim();
+  const n=Math.min(10,Math.max(0,parseInt(document.getElementById('nInput').value)||6));
+  log('=== Catalan Numbers ===','hi');
+  log(`Computing C[0..${n}]`);
+
+  const C=[1];
+  for(let i=1;i<=n;i++) C.push(C[i-1]*2*(2*i-1)/(i+1));
+
+  // Render cells
+  const catRow=document.getElementById('catRow');
+  const cells=[];
+  for(let i=0;i<=n;i++){
+    const wrap=document.createElement('div');wrap.className='cat-cell';
+    const lbl=document.createElement('div');lbl.className='cat-n';lbl.textContent=`C[${i}]`;
+    const val=document.createElement('div');val.className='cat-val';val.id=`cv-${i}`;val.textContent=Math.round(C[i]);
+    wrap.appendChild(lbl);wrap.appendChild(val);
+    catRow.appendChild(wrap);cells.push(val);
+  }
+
+  // Animate
+  cells.forEach((el,i)=>setTimeout(()=>{
+    cells.forEach(e=>e.classList.remove('active'));
+    el.classList.add('active');
+    setTimeout(()=>el.classList.replace('active','done'),350);
+    log(`C[${i}] = ${Math.round(C[i])}${i>0?` (C[${i-1}]×${4*i-2}/(${i}+1) = ${Math.round(C[i-1])}×${4*i-2}/${i+1})`:'= 1 (base case)'}`);
+  },i*300));
+
+  // Table
+  const tbody=document.getElementById('catTable');
+  for(let i=0;i<=n;i++){
+    const tr=document.createElement('tr');
+    if(i===n) tr.className='highlight';
+    const formula=i>0?`C[${i-1}]×${4*i-2}/${i+1} = ${Math.round(C[i-1])}×${4*i-2}/${i+1}`:'base';
+    tr.innerHTML=`<td>${i}</td><td>${Math.round(C[i])}</td><td>${formula}</td><td>${i===0?'1 (empty)':i===1?'1: ()':i===2?'2: ()(), (())':i===3?'5: ()()(), ()(()),  ...':'C['+i+']='+Math.round(C[i])}</td>`;
+    tbody.appendChild(tr);
+  }
+
+  // Interpretations
+  const showN=Math.min(n,3);
+  if(showN>=0){
+    const parens=genParens(showN);
+    document.getElementById('parenEx').textContent=`n=${showN} (C[${showN}]=${Math.round(C[showN])}):\n`+parens.slice(0,6).join('  ')+(parens.length>6?'  ...':'');
+    document.getElementById('bstEx').textContent=`n=${showN} keys:\n${Math.round(C[showN])} distinct BST shapes`;
+    document.getElementById('polyEx').textContent=`${showN+2}-gon:\n${Math.round(C[showN])} triangulations`;
+  }
+  setTimeout(()=>log(`C[${n}] = ${Math.round(C[n])}`,'ok'),n*300+400);
+}
+</script>
+</body>
+</html>

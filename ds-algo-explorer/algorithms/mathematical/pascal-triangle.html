@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pascal's Triangle – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:100px}
+input[type=number]:focus{outline:none;border-color:var(--accent)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+.triangle{display:flex;flex-direction:column;align-items:center;gap:4px;margin:.8rem 0;overflow-x:auto}
+.tri-row{display:flex;gap:4px}
+.tri-cell{width:44px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;border:2px solid var(--border);background:var(--bg);transition:all .4s;cursor:default}
+.tri-cell.edge{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tri-cell.pow2{background:#ffe0b2;border-color:#ff9800;color:#e65100}
+.tri-cell.fib{background:#e8f5e9;border-color:#4caf50;color:#1b5e20}
+.tri-cell.catalan-cell{background:#e3f2fd;border-color:#2196f3;color:#0d47a1}
+.tri-cell.new-row{background:#fde8e2;border-color:var(--accent);animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0;font-size:.78rem}
+.leg{display:flex;align-items:center;gap:.25rem}
+.leg-dot{width:14px;height:14px;border-radius:3px;border:2px solid}
+.row-info{font-family:'JetBrains Mono',monospace;font-size:.82rem;margin:.5rem 0;color:var(--ink);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.5rem .8rem}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Pascal's Triangle
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">Mathematical</span>
+    <h1>Pascal's Triangle</h1>
+    <p class="tagline">An arithmetic triangle hiding Fibonacci numbers, powers of 2, Catalan numbers, and binomial coefficients.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>Pascal's Triangle places 1's on the edges and fills each interior cell with the sum of the two cells above it. Row n contains the binomial coefficients C(n,0), C(n,1), ..., C(n,n). The triangle was known in China (Yang Hui, 1261) long before Pascal.</p>
+    <p>Hidden patterns abound: row sums are powers of 2 (Σ C(n,k) = 2^n); the shallow diagonals sum to Fibonacci numbers; the central column contains Catalan numbers (adjusted); coloring cells divisible by a prime p produces the Sierpinski triangle fractal.</p>
+    <p>Computationally, Pascal's triangle enables O(1) binomial coefficient queries after O(n²) preprocessing. Essential for dynamic programming (counting paths, coin change combinations) and probability theory (binomial distribution).</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">C(n,k)</div><div class="lbl">Each cell = choose</div></div>
+    <div class="fact"><div class="val">2^n</div><div class="lbl">Row n sum</div></div>
+    <div class="fact"><div class="val">Sierpinski</div><div class="lbl">Fractal via mod 2</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <div class="controls">
+      <div><label>Rows (1–12)</label><input type="number" id="nInput" value="8" min="1" max="12"/></div>
+      <button class="btn" onclick="buildTriangle()" style="align-self:flex-end">Build</button>
+      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--accent);border-color:var(--accent)"></div> Edge (=1)</div>
+      <div class="leg"><div class="leg-dot" style="background:#ffe0b2;border-color:#ff9800"></div> Row sum = 2^n</div>
+      <div class="leg"><div class="leg-dot" style="background:#e8f5e9;border-color:#4caf50"></div> Fibonacci diagonal</div>
+      <div class="leg"><div class="leg-dot" style="background:#e3f2fd;border-color:#2196f3"></div> Catalan-related</div>
+    </div>
+    <div id="triangleViz" class="triangle"></div>
+    <div id="rowInfo" class="row-info" style="display:none"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Set rows and click Build to animate Pascal's Triangle</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  document.getElementById('triangleViz').innerHTML='';
+  document.getElementById('rowInfo').style.display='none';
+  document.getElementById('log').innerHTML='<div class="hi">// Set rows and click Build</div>';
+}
+
+// Fibonacci up to some limit for diagonal detection
+const fibs=new Set([1,2,3,5,8,13,21,34,55,89,144,233,377,610,987]);
+
+// Catalan numbers
+function catalan(n){let c=1;for(let i=0;i<n;i++) c=c*2*(2*i+1)/(i+2);return Math.round(c);}
+const catalans=new Set([1,2,5,14,42,132,429]);
+
+function buildTriangle(){
+  resetSim();
+  const rows=Math.min(12,Math.max(1,parseInt(document.getElementById('nInput').value)||8));
+  log('=== Pascal\'s Triangle ===','hi');
+  log(`Building ${rows} rows`);
+
+  // Compute triangle
+  const tri=[[1]];
+  for(let i=1;i<rows;i++){
+    const prev=tri[i-1];
+    const row=[1];
+    for(let j=1;j<i;j++) row.push(prev[j-1]+prev[j]);
+    row.push(1);
+    tri.push(row);
+  }
+
+  const viz=document.getElementById('triangleViz');
+  const rowEls=[];
+
+  tri.forEach((row,ri)=>{
+    const rowDiv=document.createElement('div');
+    rowDiv.className='tri-row';rowDiv.style.opacity='0';
+    const cells=row.map((val,ci)=>{
+      const cell=document.createElement('div');
+      const isEdge=ci===0||ci===row.length-1;
+      const isFib=fibs.has(val)&&!isEdge;
+      const isCat=catalans.has(val)&&!isEdge;
+      cell.className='tri-cell'+(isEdge?' edge':isCat?' catalan-cell':isFib?' fib':'');
+      cell.textContent=val;
+      cell.title=`C(${ri},${ci}) = ${val}`;
+      rowDiv.appendChild(cell);
+      return cell;
+    });
+    viz.appendChild(rowDiv);
+    rowEls.push({rowDiv,row,cells});
+  });
+
+  // Animate row by row
+  rowEls.forEach(({rowDiv,row},ri)=>{
+    setTimeout(()=>{
+      rowDiv.style.opacity='1';
+      rowDiv.querySelectorAll('.tri-cell').forEach(c=>c.classList.add('new-row'));
+      setTimeout(()=>rowDiv.querySelectorAll('.tri-cell').forEach(c=>c.classList.remove('new-row')),400);
+      const sum=row.reduce((a,b)=>a+b,0);
+      log(`Row ${ri}: [${row.join(', ')}] | Sum=${sum}=2^${ri}`);
+      // Update info box on last row
+      if(ri===rowEls.length-1){
+        const info=document.getElementById('rowInfo');
+        info.style.display='block';
+        const fibDiag=[];
+        for(let d=0;d<rows;d++) if(d<tri[d].length) fibDiag.push(tri[d][0]);// shallow diagonal sums
+        // Actual Fibonacci diagonal: sum diagonal entries
+        const diagSums=[];
+        for(let diag=0;diag<rows;diag++){
+          let s=0,r=diag,c=0;
+          while(r>=0&&c<tri[r].length){s+=tri[r][c];r--;c++;}
+          diagSums.push(s);
+        }
+        info.innerHTML=`Row ${ri}: [${row.join(', ')}]<br>Sum = ${sum} = 2^${ri}<br>Shallow diagonal sums (Fibonacci): ${diagSums.slice(0,8).join(', ')}...`;
+        log(`Row sums are powers of 2. Diagonal sums: ${diagSums.slice(0,6).join(',')} (Fibonacci!)`,'ok');
+      }
+    },ri*350);
+  });
+}
+</script>
+</body>
+</html>

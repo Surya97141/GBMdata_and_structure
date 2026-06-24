@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Travelling Salesman Problem — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
+.sim-body{padding:1.4rem}
+canvas{display:block;border-radius:10px;background:#fff;border:1px solid var(--b);max-width:100%}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+.tab{padding:.3rem .9rem;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;border:1.5px solid var(--b);background:var(--bg);color:var(--m)}
+.tab.active{background:var(--a);color:#fff;border-color:var(--a)}
+.result-box{background:var(--bg);border-radius:10px;padding:.8rem 1.2rem;margin-top:.8rem;font-family:'JetBrains Mono',monospace;font-size:.85rem}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.lw{color:#d4a017}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>TSP</span></nav>
+  <div class="hero">
+    <span class="tag">Graph</span>
+    <h1>Travelling Salesman Problem</h1>
+    <p class="tagline">Find the shortest tour visiting all cities exactly once — an NP-hard problem with exact DP and practical heuristics.</p>
+  </div>
+  <div class="explain">
+    <p>A travelling salesman must visit n cities and return home, covering the minimum total distance. This sounds simple but is NP-hard: there are (n−1)!/2 distinct tours, so brute force becomes infeasible around n=15. The problem models PCB drilling, delivery routing, genome sequencing, and telescope scheduling.</p>
+    <p>The Held-Karp algorithm solves TSP exactly using dynamic programming with bitmasks in O(n²·2ⁿ) — exponential but vastly better than O(n!). The 2-opt heuristic starts with any tour and repeatedly swaps two edges if doing so reduces total distance, converging to a local optimum quickly.</p>
+    <p>This simulation shows Nearest Neighbor (greedy heuristic) — always go to the nearest unvisited city — followed by optional 2-opt improvement. It's fast and typically within 20–25% of optimal.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Exact (DP)</div><div class="fval">O(n²·2ⁿ)</div><div class="fsub">Held-Karp algorithm</div></div>
+    <div class="fact"><div class="flabel">2-Opt</div><div class="fval">O(n²)/iter</div><div class="fsub">Good local optimum</div></div>
+    <div class="fact"><div class="flabel">Complexity</div><div class="fval">NP-hard</div><div class="fsub">No poly-time exact algorithm known</div></div>
+  </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> Nearest Neighbor + 2-Opt Improvement</div>
+    <div class="sim-body">
+      <div class="tabs">
+        <button class="tab active" id="tab1" onclick="setMode('nn')">Nearest Neighbor</button>
+        <button class="tab" id="tab2" onclick="setMode('2opt')">2-Opt Improve</button>
+      </div>
+      <canvas id="cv" width="820" height="340" style="width:100%;max-width:820px"></canvas>
+      <div class="controls">
+        <button class="btn btn-p" onclick="runCurrent()">Run</button>
+        <button class="btn btn-o" onclick="newCities()">New Cities</button>
+      </div>
+      <div class="result-box" id="result">Click Run to start.</div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Ready.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const N=8;
+let cities=[], tour=[], mode='nn', running=false;
+
+function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){document.getElementById('log').innerHTML=''}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('tab1').className='tab'+(m==='nn'?' active':'');
+  document.getElementById('tab2').className='tab'+(m==='2opt'?' active':'');
+}
+
+function newCities(){
+  cities=[];
+  for(let i=0;i<N;i++)
+    cities.push({x:0.08+Math.random()*0.84,y:0.08+Math.random()*0.84,name:String.fromCharCode(65+i)});
+  tour=cities.map((_,i)=>i);
+  drawTour(tour,[]);
+  clearLog();document.getElementById('result').textContent='Click Run to start.';running=false;
+}
+
+function dist(a,b){const dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+function tourCost(t){let c=0;for(let i=0;i<t.length;i++)c+=dist(cities[t[i]],cities[t[(i+1)%t.length]]);return c}
+
+function drawTour(t,hl=[]){
+  const canvas=document.getElementById('cv');
+  const W=canvas.offsetWidth||820,H=340;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  const cx=i=>cities[i].x*W,cy=i=>cities[i].y*H;
+  if(t.length>1){
+    ctx.beginPath();ctx.moveTo(cx(t[0]),cy(t[0]));
+    for(let i=1;i<t.length;i++)ctx.lineTo(cx(t[i]),cy(t[i]));
+    ctx.closePath();ctx.strokeStyle='#7b4fd4aa';ctx.lineWidth=2;ctx.stroke();
+  }
+  hl.forEach(([a,b])=>{
+    ctx.beginPath();ctx.moveTo(cx(a),cy(a));ctx.lineTo(cx(b),cy(b));
+    ctx.strokeStyle='#e8622a';ctx.lineWidth=3;ctx.stroke();
+  });
+  cities.forEach((c,i)=>{
+    const x=c.x*W,y=c.y*H;
+    ctx.beginPath();ctx.arc(x,y,17,0,Math.PI*2);
+    ctx.fillStyle='#7b4fd4';ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(c.name,x,y);
+  });
+  if(t.length===N){
+    const cost=(tourCost(t)*1000).toFixed(1);
+    ctx.fillStyle='#1a1a2e';ctx.font='13px Inter,sans-serif';ctx.textAlign='right';
+    ctx.fillText('Cost: '+cost,W-10,H-10);
+  }
+}
+
+async function runCurrent(){
+  if(running)return;
+  if(mode==='nn')await runNN(); else await run2opt();
+}
+
+async function runNN(){
+  running=true;clearLog();
+  const visited=new Set([0]);
+  tour=[0];
+  log('Start at '+cities[0].name,'ls');
+  drawTour(tour,[]);
+  await new Promise(r=>setTimeout(r,400));
+  while(tour.length<N){
+    const cur=tour[tour.length-1];let best=-1,bd=Infinity;
+    for(let i=0;i<N;i++){
+      if(!visited.has(i)){const d=dist(cities[cur],cities[i]);if(d<bd){bd=d;best=i}}
+    }
+    visited.add(best);tour.push(best);
+    log('From '+cities[cur].name+' → '+cities[best].name+' (dist='+(bd*1000).toFixed(1)+')','ls');
+    drawTour(tour,[[cur,best]]);
+    await new Promise(r=>setTimeout(r,500));
+  }
+  drawTour(tour,[]);
+  const cost=(tourCost(tour)*1000).toFixed(1);
+  document.getElementById('result').innerHTML='NN tour cost: <strong>'+cost+'</strong>  Order: '+tour.map(i=>cities[i].name).join('→');
+  log('✓ NN cost = '+cost,'ld');running=false;
+}
+
+async function run2opt(){
+  if(tour.length<N){await runNN();return}
+  running=true;clearLog();
+  let improved=true,iter=0;let best=tourCost(tour);
+  while(improved&&iter<200){
+    improved=false;iter++;
+    outer:for(let i=0;i<N-1;i++){
+      for(let j=i+2;j<N;j++){
+        const nt=[...tour.slice(0,i+1),...tour.slice(i+1,j+1).reverse(),...tour.slice(j+1)];
+        const nc=tourCost(nt);
+        if(nc<best-1e-9){
+          tour=nt;best=nc;improved=true;
+          log('2-opt swap ('+i+','+j+'): cost='+(best*1000).toFixed(1),'ls');
+          drawTour(tour,[]);
+          await new Promise(r=>setTimeout(r,280));
+          break outer;
+        }
+      }
+    }
+  }
+  document.getElementById('result').innerHTML='2-opt cost: <strong>'+(best*1000).toFixed(1)+'</strong>  ('+iter+' passes)';
+  log('✓ 2-opt done. Cost='+(best*1000).toFixed(1),'ld');running=false;
+}
+
+newCities();
+</script>
+</body>
+</html>

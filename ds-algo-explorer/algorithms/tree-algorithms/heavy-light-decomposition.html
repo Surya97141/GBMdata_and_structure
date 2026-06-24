@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Heavy-Light Decomposition – DS·Algo Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
+.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
+.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
+.bc span{margin:0 .35rem;}
+.hero{padding:2.2rem 0 1.6rem;}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
+.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
+.prose{margin-bottom:2rem;}
+.prose p{margin-bottom:1rem;color:#2e2e42;}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
+.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
+canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
+.chain-list{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem;}
+.chain-chip{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.3rem .7rem;border-radius:8px;color:#fff;font-weight:600;}
+.controls{display:flex;gap:.6rem;margin-top:.8rem;align-items:center;}
+.controls select{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.4rem .7rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);}
+.controls label{font-size:.9rem;font-weight:500;color:var(--m);}
+.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
+.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
+.result-box{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--ink);background:#f0fbf5;border:1px solid #b6e3ca;border-radius:8px;padding:.5rem .8rem;margin-top:.6rem;min-height:1.8rem;}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
+.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
+.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
+.log-entry:last-child{border-bottom:none;}
+.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    Heavy-Light Decomposition
+  </nav>
+  <header class="hero">
+    <span class="tag">Tree Algorithm</span>
+    <h1>Heavy-Light Decomposition</h1>
+    <p>Partition a tree into O(log n) chains so any root-to-leaf path crosses at most O(log n) chain boundaries — enabling O(log² n) path queries.</p>
+  </header>
+  <section class="prose">
+    <p><strong>Heavy-Light Decomposition (HLD)</strong> partitions a tree's edges into "heavy" and "light" edges. For each node, the child with the largest subtree is connected by a <em>heavy edge</em>; all other children get <em>light edges</em>. Heavy edges form contiguous <em>chains</em> from the root. The key theorem: any root-to-leaf path passes through at most O(log n) light edges (and thus O(log n) chain switches).</p>
+    <p>Imagine a highway system. The main highway (heavy chain) runs through the most populated corridor. Side roads (light edges) branch off into smaller regions. Any journey from city to city crosses at most O(log n) side-road junctions before reaching a highway again. HLD formalizes this intuition, guaranteeing path queries on heavy chains can be batched into a segment tree for O(log n) each — total O(log² n) per path query.</p>
+    <p>HLD is the go-to technique in competitive programming for path queries on trees: "sum/min/max of node values on the path from u to v." It reduces this to O(log n) segment tree range queries on the linearized chain array.</p>
+  </section>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Preprocessing</div><div class="fact-val">O(n)</div></div>
+    <div class="fact"><div class="fact-label">Path Query</div><div class="fact-val">O(log² n)</div></div>
+    <div class="fact"><div class="fact-label">Chain Switches</div><div class="fact-val">O(log n) per path</div></div>
+    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Path sums/min/max, LCT</div></div>
+  </div>
+
+  <div class="sim-panel">
+    <div class="sim-title">HLD Visualization — Heavy Chains on 10-node Tree</div>
+    <canvas id="cv" height="320"></canvas>
+    <div class="chain-list" id="chainList"></div>
+    <div class="controls" style="margin-top:.8rem;">
+      <label>Path Query u=</label>
+      <select id="selU"><option>8</option><option>9</option><option>10</option><option>5</option><option>6</option><option>7</option><option>4</option></select>
+      <label>to v=</label>
+      <select id="selV"><option>10</option><option>6</option><option>8</option><option>7</option><option>9</option><option>5</option><option>4</option></select>
+      <button class="btn btn-pri" onclick="doPathQuery()">Show Path Chains</button>
+      <button class="btn btn-sec" onclick="doReset()">Reset</button>
+    </div>
+    <div class="result-box" id="resultBox">Click Decompose or use path query controls.</div>
+  </div>
+
+  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+// 10-node tree
+//          1
+//        /   \
+//       2     3
+//      / \     \
+//     4   5     6
+//    / \       /
+//   7   8     10
+//   |
+//   9
+const PAR={1:0,2:1,3:1,4:2,5:2,6:3,7:4,8:4,9:7,10:6};
+const CHILDREN={1:[2,3],2:[4,5],3:[6],4:[7,8],5:[],6:[10],7:[9],8:[],9:[],10:[]};
+const NODES=[1,2,3,4,5,6,7,8,9,10];
+const POS={
+  1:[0.5,0.04],
+  2:[0.27,0.2],3:[0.73,0.2],
+  4:[0.16,0.38],5:[0.38,0.38],6:[0.73,0.38],
+  7:[0.10,0.56],8:[0.23,0.56],10:[0.73,0.56],
+  9:[0.10,0.74]
+};
+const PAD=24;
+
+// Subtree sizes
+const sz={};
+function calcSz(v){ sz[v]=1; for(const c of CHILDREN[v]){calcSz(c);sz[v]+=sz[c];} }
+calcSz(1);
+
+// HLD
+const chain={},chainHead={};
+let chainId=0;
+const chains=[];
+function dfs(v,head){
+  chain[v]=chainId; chainHead[v]=head;
+  if(!chains[chainId]) chains[chainId]=[];
+  chains[chainId].push(v);
+  // Heavy child = child with max subtree
+  let heavy=-1,heavySz=0;
+  for(const c of CHILDREN[v]){ if(sz[c]>heavySz){heavySz=sz[c];heavy=c;} }
+  if(heavy!==-1) dfs(heavy,head);
+  for(const c of CHILDREN[v]){ if(c!==heavy){ chainId++; dfs(c,c); } }
+}
+dfs(1,1);
+const totalChains=chainId+1;
+
+const CHAIN_COLORS=['#27a060','#2980b9','#8e44ad','#e67e22','#c0392b','#16a085'];
+
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+let W,H;
+let hiNodes=new Set();
+
+function resize(){
+  W=canvas.parentElement.clientWidth-2.8*16;
+  H=320; canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr); buildChainList(); render();
+}
+window.addEventListener('resize',resize);
+
+function toXY(v){ const [rx,ry]=POS[v]; return [PAD+rx*(W-2*PAD),16+ry*(H-36)]; }
+
+function isHeavyEdge(u,v){
+  // Heavy child of u is the child with max sz
+  let heavy=-1,mx=0;
+  for(const c of CHILDREN[u]) if(sz[c]>mx){mx=sz[c];heavy=c;}
+  return heavy===v;
+}
+
+function buildChainList(){
+  const el=document.getElementById('chainList');
+  el.innerHTML='';
+  for(let i=0;i<totalChains;i++){
+    const div=document.createElement('span');
+    div.className='chain-chip';
+    div.style.background=CHAIN_COLORS[i%CHAIN_COLORS.length];
+    div.textContent=`C${i}: [${chains[i].join('→')}]`;
+    el.appendChild(div);
+  }
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  const edges=Object.entries(CHILDREN).flatMap(([u,cs])=>cs.map(c=>[+u,c]));
+  for(const [u,v] of edges){
+    const [ux,uy]=toXY(u),[vx,vy]=toXY(v);
+    const heavy=isHeavyEdge(u,v);
+    const onPath=hiNodes.has(u)&&hiNodes.has(v);
+    ctx.beginPath(); ctx.moveTo(ux,uy); ctx.lineTo(vx,vy);
+    if(onPath){ ctx.strokeStyle='#f0a500';ctx.lineWidth=4; }
+    else if(heavy){ ctx.strokeStyle=CHAIN_COLORS[chain[v]%CHAIN_COLORS.length];ctx.lineWidth=3; }
+    else { ctx.strokeStyle='#c8c6be';ctx.lineWidth=1.5;ctx.setLineDash([4,3]); }
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  for(const v of NODES){
+    const [x,y]=toXY(v);
+    const col=CHAIN_COLORS[chain[v]%CHAIN_COLORS.length];
+    const isHi=hiNodes.has(v);
+    ctx.beginPath();ctx.arc(x,y,17,0,Math.PI*2);
+    ctx.fillStyle=isHi?'#f0a500':col;
+    ctx.fill(); ctx.strokeStyle=isHi?'#c87800':'rgba(0,0,0,.15)';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';
+    ctx.font="bold 12px 'JetBrains Mono',monospace";ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(v,x,y);
+    ctx.fillStyle='rgba(255,255,255,.8)';ctx.font="8px 'Inter',sans-serif";
+    ctx.fillText('C'+chain[v],x,y+20);
+  }
+  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('Solid color edges = heavy (same chain)  |  Dashed = light  |  Yellow = path query',8,H-18);
+}
+
+function log(msg){
+  const p=document.getElementById('logPanel');
+  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
+  p.scrollTop=p.scrollHeight;
+}
+
+// Get path from v to root
+function pathToRoot(v){ const p=[]; while(v){ p.push(v); v=PAR[v]||0; } return p; }
+
+function doPathQuery(){
+  let u=parseInt(document.getElementById('selU').value);
+  let v=parseInt(document.getElementById('selV').value);
+  // Find path using LCA approach with chains
+  const pathNodes=[]; let chainSwitches=0;
+  const seenChains=new Set();
+  let a=u,b=v;
+  const visitedA=[],visitedB=[];
+  while(a!==b){
+    if(chain[a]===chain[b]){
+      // same chain, walk to LCA
+      if(sz[a]<sz[b]){ // a is deeper or same; walk b up
+        let tmp=a;while(tmp!==b){visitedA.push(tmp);pathNodes.push(tmp);tmp=PAR[tmp];}
+      }
+      // simplified: just walk a up if deeper
+      if(sz[a]<sz[b]){break;}else if(sz[b]<sz[a]){break;}else{break;}
+    }
+    if(sz[chainHead[a]]<sz[chainHead[b]]) [a,b]=[b,a];
+    const head=chainHead[a];
+    let tmp=a;
+    while(tmp!==PAR[head]){ pathNodes.push(tmp); seenChains.add(chain[tmp]); tmp=PAR[tmp]; }
+    a=PAR[head]; chainSwitches++;
+  }
+  pathNodes.push(a); pathNodes.push(b);
+  // Build simple path via LCA for visualization
+  const pa=pathToRoot(u), pb=pathToRoot(v);
+  const setB=new Set(pb);
+  const lcaV=pa.find(x=>setB.has(x));
+  const fullPath=[];
+  let cur=u; while(cur!==lcaV){fullPath.push(cur);cur=PAR[cur];}
+  fullPath.push(lcaV);
+  cur=v; const pathB=[]; while(cur!==lcaV){pathB.push(cur);cur=PAR[cur];}
+  fullPath.push(...pathB.reverse());
+  hiNodes=new Set(fullPath);
+  const chainsSeen=new Set(fullPath.map(x=>chain[x]));
+  document.getElementById('resultBox').textContent=`Path ${u}→${v}: [${fullPath.join('→')}] | Chains touched: ${[...chainsSeen].map(c=>'C'+c).join(', ')} (${chainsSeen.size} chain segment${chainsSeen.size!==1?'s':''})`;
+  log(`Path query(${u},${v}): visits ${fullPath.length} nodes across ${chainsSeen.size} chain segment(s). O(log n) chain boundary crossings.`);
+  render();
+}
+
+function doReset(){ hiNodes=new Set(); document.getElementById('resultBox').textContent=''; render(); }
+
+resize();
+log(`HLD complete. ${totalChains} chains. Heavy edges = solid colored, light = dashed.`);
+for(let i=0;i<totalChains;i++) log(`Chain ${i}: [${chains[i].join('→')}] (head=${chains[i][0]})`);
+</script>
+</body>
+</html>

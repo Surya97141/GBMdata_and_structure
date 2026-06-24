@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Bitmask DP — DS/Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#264653;--r:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m);margin-bottom:1.5rem}
+.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
+.sim-body{padding:1.4rem}
+canvas{display:block;border-radius:10px;background:var(--bg);max-width:100%}
+.dist-matrix{display:inline-grid;gap:3px;margin:.8rem 0}
+.dm-cell{width:44px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;border:1.5px solid var(--b);background:var(--s);transition:background .3s}
+.dm-cell.hdr{background:var(--bg);color:var(--m);font-size:.7rem}
+.dm-cell.diag{background:var(--bg);color:var(--m)}
+.dp-table-wrap{overflow-x:auto;margin:1rem 0}
+.dp-table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.72rem}
+.dp-table th,.dp-table td{border:1px solid var(--b);padding:.3rem .5rem;text-align:center;min-width:52px}
+.dp-table th{background:var(--bg);color:var(--m);font-size:.68rem}
+.dp-table td.active{background:var(--a);color:#fff}
+.dp-table td.filled{background:#e6f7ee;color:#27a060}
+.dp-table td.path{background:#fff0ea;border-color:#e8622a}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.result-box{background:var(--bg);border-radius:10px;padding:1rem 1.2rem;margin-top:1rem;font-family:'JetBrains Mono',monospace;font-size:.9rem}
+.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
+.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:220px;overflow-y:auto;line-height:1.9}
+.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
+.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Bitmask DP</span></nav>
+  <div class="hero">
+    <span class="tag">Bit Manipulation</span>
+    <h1>Bitmask DP</h1>
+    <p class="tagline">Use integers as compact sets to solve subset-state DP — the classic TSP bitmask approach runs in O(n²·2ⁿ).</p>
+  </div>
+  <div class="explain">
+    <p>In many combinatorial problems, the state includes a <em>subset</em> of items — which cities have been visited, which tasks are assigned. Storing each subset as a bitmask (a single integer where bit i = 1 means item i is included) lets you represent all 2ⁿ subsets efficiently and look up/modify them in O(1).</p>
+    <p>The Travelling Salesman Problem (TSP) with bitmask DP: <code>dp[mask][i]</code> = minimum cost to visit exactly the cities in <code>mask</code>, ending at city <code>i</code>. Transitions add one more unvisited city. With n cities this is O(n²·2ⁿ) — exponential, but exact and far better than O(n!).</p>
+    <p>Bitmask tricks: <code>mask | (1&lt;&lt;i)</code> adds city i, <code>mask &amp; ~(1&lt;&lt;i)</code> removes it, <code>(mask &gt;&gt; i) &amp; 1</code> checks membership. The full set is <code>(1&lt;&lt;n)-1</code>.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n²·2ⁿ)</div><div class="fsub">TSP exact solution</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n·2ⁿ)</div><div class="fsub">DP table</div></div>
+    <div class="fact"><div class="flabel">Use Cases</div><div class="fsub">TSP, assignment, set-cover, matching with states ≤20</div></div>
+  </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span> TSP Bitmask DP (4 Cities)</div>
+    <div class="sim-body">
+      <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:flex-start">
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--m);margin-bottom:.5rem">CITIES ON MAP</div>
+          <canvas id="cv" width="300" height="260"></canvas>
+        </div>
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--m);margin-bottom:.5rem">DISTANCE MATRIX</div>
+          <div class="dist-matrix" id="distmat"></div>
+        </div>
+      </div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--m);margin:1rem 0 .4rem">DP TABLE  dp[mask][city]</div>
+      <div class="dp-table-wrap"><table class="dp-table" id="dptable"></table></div>
+      <div class="controls">
+        <button class="btn btn-p" onclick="runTSP()">Run Bitmask DP</button>
+        <button class="btn btn-o" onclick="resetTSP()">Reset</button>
+      </div>
+      <div class="result-box" id="result">Click "Run Bitmask DP" to solve.</div>
+    </div>
+  </div>
+  <div class="log-panel">
+    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
+    <div class="log-body" id="log"><div class="le li">Click Run to start.</div></div>
+  </div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+const N=4;
+const cities=[{x:60,y:50,name:'A'},{x:220,y:60,name:'B'},{x:240,y:200,name:'C'},{x:50,y:190,name:'D'}];
+const dist=[[0,10,15,20],[10,0,35,25],[15,35,0,30],[20,25,30,0]];
+const INF=1e9;
+let dp,parent;
+
+function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){document.getElementById('log').innerHTML=''}
+
+function initDistMatrix(){
+  const g=document.getElementById('distmat');
+  const cols=N+1;
+  g.style.gridTemplateColumns=`repeat(${cols},44px)`;
+  g.innerHTML='';
+  const hdr=document.createElement('div');hdr.className='dm-cell hdr';hdr.textContent='';g.appendChild(hdr);
+  cities.forEach(c=>{const d=document.createElement('div');d.className='dm-cell hdr';d.textContent=c.name;g.appendChild(d)});
+  for(let i=0;i<N;i++){
+    const lbl=document.createElement('div');lbl.className='dm-cell hdr';lbl.textContent=cities[i].name;g.appendChild(lbl);
+    for(let j=0;j<N;j++){
+      const d=document.createElement('div');
+      d.className='dm-cell'+(i===j?' diag':'');
+      d.textContent=i===j?'—':dist[i][j];
+      g.appendChild(d);
+    }
+  }
+}
+
+function initDPTable(){
+  const t=document.getElementById('dptable');
+  t.innerHTML='';
+  const masks=1<<N;
+  const hrow=document.createElement('tr');
+  const e=document.createElement('th');e.textContent='mask\\city';hrow.appendChild(e);
+  cities.forEach(c=>{const th=document.createElement('th');th.textContent=c.name;hrow.appendChild(th)});
+  t.appendChild(hrow);
+  for(let m=0;m<masks;m++){
+    const row=document.createElement('tr');
+    const th=document.createElement('th');
+    th.textContent=m.toString(2).padStart(N,'0');
+    row.appendChild(th);
+    for(let i=0;i<N;i++){
+      const td=document.createElement('td');
+      td.id=`dp_${m}_${i}`;
+      td.textContent='∞';
+      row.appendChild(td);
+    }
+    t.appendChild(row);
+  }
+}
+
+function drawCities(tourPath=[]){
+  const canvas=document.getElementById('cv');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f7f6f2';ctx.fillRect(0,0,300,260);
+  if(tourPath.length>1){
+    ctx.beginPath();ctx.strokeStyle='#e8622a';ctx.lineWidth=2.5;ctx.setLineDash([]);
+    ctx.moveTo(cities[tourPath[0]].x,cities[tourPath[0]].y);
+    for(let i=1;i<tourPath.length;i++)ctx.lineTo(cities[tourPath[i]].x,cities[tourPath[i]].y);
+    ctx.closePath();ctx.stroke();
+  }
+  cities.forEach((c,i)=>{
+    ctx.beginPath();ctx.arc(c.x,c.y,18,0,Math.PI*2);
+    ctx.fillStyle='#264653';ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 13px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(c.name,c.x,c.y);
+  });
+}
+
+async function runTSP(){
+  clearLog();
+  const masks=1<<N;
+  dp=Array.from({length:masks},()=>Array(N).fill(INF));
+  parent=Array.from({length:masks},()=>Array(N).fill(-1));
+  dp[1][0]=0;
+  document.getElementById('dp_1_0').textContent='0';
+  document.getElementById('dp_1_0').className='filled';
+  log('Base case: dp[0001][A]=0 (start at A)','ls');
+  await new Promise(r=>setTimeout(r,400));
+
+  for(let mask=1;mask<masks;mask++){
+    for(let u=0;u<N;u++){
+      if(dp[mask][u]===INF) continue;
+      if(!((mask>>u)&1)) continue;
+      for(let v=0;v<N;v++){
+        if((mask>>v)&1) continue;
+        const nm=mask|(1<<v);
+        const nc=dp[mask][u]+dist[u][v];
+        const cell=document.getElementById(`dp_${nm}_${v}`);
+        cell.className='active';
+        if(nc<dp[nm][v]){
+          dp[nm][v]=nc;
+          parent[nm][v]=u;
+          cell.textContent=nc;
+          log(`dp[${nm.toString(2).padStart(N,'0')}][${cities[v].name}] = dp[${mask.toString(2).padStart(N,'0')}][${cities[u].name}]+dist(${cities[u].name},${cities[v].name}) = ${dp[mask][u]}+${dist[u][v]} = ${nc}`,'ls');
+        }
+        await new Promise(r=>setTimeout(r,60));
+        cell.className='filled';
+      }
+    }
+  }
+
+  const fullMask=(1<<N)-1;
+  let best=INF,bestEnd=0;
+  for(let i=1;i<N;i++){
+    const cost=dp[fullMask][i]+dist[i][0];
+    if(cost<best){best=cost;bestEnd=i}
+  }
+
+  // Reconstruct path
+  const tour=[0];
+  let mask=fullMask,cur=bestEnd;
+  while(cur!==0){const prev=parent[mask][cur];tour.unshift(cur);mask=mask^(1<<cur);cur=prev}
+  tour.push(0);
+
+  // highlight path cells
+  let m=1<<0,pc=0;
+  for(let i=1;i<tour.length-1;i++){
+    const nc2=tour[i];m=m|(1<<nc2);
+    document.getElementById(`dp_${m}_${nc2}`).className='path';
+    pc=nc2;
+  }
+
+  drawCities(tour);
+  document.getElementById('result').innerHTML=`Optimal tour: <strong>${tour.map(i=>cities[i].name).join(' → ')}</strong>  Cost = <strong>${best}</strong>`;
+  log(`✓ Optimal tour cost = ${best}. Path: ${tour.map(i=>cities[i].name).join('→')}`,'ld');
+}
+
+function resetTSP(){
+  initDPTable();drawCities();
+  document.getElementById('result').textContent='Click "Run Bitmask DP" to solve.';
+  clearLog();
+}
+
+initDistMatrix();initDPTable();drawCities();
+</script>
+</body>
+</html>

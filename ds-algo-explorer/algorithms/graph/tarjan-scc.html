@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Tarjan's SCC – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
+a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
+.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
+.breadcrumb span{margin:0 6px;color:#c0bdb6}
+.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
+.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
+.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
+.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
+.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
+.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
+.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
+canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
+.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
+.stack-display{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#5a5a72;margin-top:8px}
+.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
+.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
+.back-link{margin-top:28px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="../../index.html">Home</a><span>›</span>
+    <a href="../index.html">Algorithms</a><span>›</span>Tarjan's SCC
+  </div>
+  <div class="hero-tag">Graph</div>
+  <h1>Tarjan's SCC Algorithm</h1>
+  <p class="tagline">Single-pass DFS with a stack — disc[] and low[] values reveal SCCs on the fly.</p>
+  <div class="prose">
+    <p>Tarjan's algorithm finds all Strongly Connected Components (SCCs) in a directed graph using a single DFS pass in O(V+E) time. It's more efficient than Kosaraju's (which needs two passes) and reveals SCCs as they're completed during the DFS.</p>
+    <p>Each node gets a discovery time disc[u] and a "low link" low[u] — the lowest discovery time reachable from the subtree rooted at u (including back edges). A node u is an SCC root if low[u] = disc[u], meaning no node in its subtree can reach an ancestor of u. When an SCC root is found, pop all nodes above it from the stack — they form the SCC.</p>
+    <p>Tarjan's algorithm outputs SCCs in reverse topological order, which is extremely useful. It's used in 2-SAT problem solving, finding feedback vertex sets, and computing the condensation graph of a directed graph for simplified analysis.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(V + E)</div></div>
+    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V)</div></div>
+    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">disc[] + low[]</div></div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Directed graph with 3 SCCs. Node labels show disc/low values during DFS.</div>
+    <canvas id="cv" width="700" height="300"></canvas>
+    <div class="stack-display">Stack: <span id="stackDisp">[]</span></div>
+    <div class="controls">
+      <button id="btnRun">Run Tarjan</button>
+      <button id="btnStep" class="sec">Step</button>
+      <button id="btnReset" class="sec">Reset</button>
+    </div>
+  </div>
+  <div class="sim-box">
+    <div class="sim-title">Step Log</div>
+    <div class="log-box" id="log"></div>
+  </div>
+  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+</div>
+<script>
+const nodes=[
+  {x:100,y:80,l:'0'},{x:260,y:80,l:'1'},{x:420,y:80,l:'2'},
+  {x:100,y:220,l:'3'},{x:260,y:220,l:'4'},{x:420,y:220,l:'5'},
+  {x:580,y:80,l:'6'},{x:580,y:220,l:'7'}
+];
+const N=8;
+// Directed edges: 3 SCCs: {0,1,3},{2,4,5},{6,7}
+const adj=[[1],[3,4],[4,5],[0],[2],[4,6],[7],[6]];
+const SCC_COLORS=['#7b4fd4','#27a060','#e8622a','#e84393'];
+let disc=[],low=[],onStack=[],sccId=[],timer__=0,stkArr=[];
+let steps=[],stepIdx=0,done=false;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+
+function buildSteps(){
+  const d=new Array(N).fill(-1),lo=new Array(N).fill(0),os=new Array(N).fill(false),sc=new Array(N).fill(-1);
+  const stk=[],stepList=[];let t=0,sccC=0;
+  function dfs(u){
+    d[u]=lo[u]=t++;stk.push(u);os[u]=true;
+    stepList.push({type:'visit',node:u,disc:d[u],low:lo[u],stack:[...stk],disc_all:[...d],low_all:[...lo]});
+    adj[u].forEach(v=>{
+      if(d[v]===-1){dfs(v);lo[u]=Math.min(lo[u],lo[v]);
+        stepList.push({type:'update',node:u,via:v,disc:d[u],low:lo[u],disc_all:[...d],low_all:[...lo],stack:[...stk]});}
+      else if(os[v]){lo[u]=Math.min(lo[u],d[v]);
+        stepList.push({type:'backedge',node:u,to:v,low:lo[u],disc_all:[...d],low_all:[...lo],stack:[...stk]});}
+    });
+    if(lo[u]===d[u]){
+      const scc=[];while(true){const w=stk.pop();os[w]=false;sc[w]=sccC;scc.push(w);if(w===u)break;}
+      stepList.push({type:'scc',id:sccC,nodes:[...scc],sccArr:[...sc],disc_all:[...d],low_all:[...lo],stack:[...stk]});
+      sccC++;
+    }
+  }
+  for(let i=0;i<N;i++)if(d[i]===-1)dfs(i);
+  stepList.push({type:'done'});
+  return stepList;
+}
+let allSteps=[],currentDisc=[],currentLow=[],currentSCC=[],currentStack=[];
+function init(){
+  allSteps=buildSteps();stepIdx=0;done=false;
+  currentDisc=new Array(N).fill(-1);currentLow=new Array(N).fill(0);
+  currentSCC=new Array(N).fill(-1);currentStack=[];
+  document.getElementById('log').innerHTML='';document.getElementById('stackDisp').textContent='[]';
+  addLog('Directed graph ready. DFS will compute disc[] and low[] values.');draw();
+}
+function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
+function advance(){
+  if(stepIdx>=allSteps.length||done)return;
+  const s=allSteps[stepIdx++];
+  if(s.type==='visit'){
+    currentDisc=s.disc_all;currentLow=s.low_all;currentStack=s.stack;
+    addLog(`Visit ${s.node}: disc=${s.disc}, low=${s.low}. Push to stack.`);
+    document.getElementById('stackDisp').textContent='['+s.stack.join(',')+']';
+  }else if(s.type==='update'){
+    currentLow=s.low_all;currentStack=s.stack;
+    addLog(`Return to ${s.node}: low[${s.node}]=min(${s.low},low[${s.via}])=${s.low}`);
+  }else if(s.type==='backedge'){
+    currentLow=s.low_all;
+    addLog(`Back-edge ${s.node}→${s.to}: low[${s.node}]=min(...)=${s.low}`);
+  }else if(s.type==='scc'){
+    currentSCC=s.sccArr;currentStack=s.stack;
+    addLog(`SCC #${s.id} found: {${s.nodes.join(',')}}. Pop from stack.`);
+    document.getElementById('stackDisp').textContent='['+s.stack.join(',')+']';
+  }else if(s.type==='done'){done=true;addLog('All SCCs found!');}
+  draw();
+}
+function drawArrow(u,v){
+  const n1=nodes[u],n2=nodes[v];
+  const dx=n2.x-n1.x,dy=n2.y-n1.y,len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len;
+  const sx=n1.x+ux*24,sy=n1.y+uy*24,ex=n2.x-ux*24,ey=n2.y-uy*24;
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();
+  ctx.fillStyle=ctx.strokeStyle;
+  ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex-uy*5-ux*9,ey+ux*5-uy*9);ctx.lineTo(ex+uy*5-ux*9,ey-ux*5-uy*9);
+  ctx.closePath();ctx.fill();
+}
+function draw(){
+  ctx.clearRect(0,0,700,300);
+  adj.forEach((nb,u)=>nb.forEach(v=>{ctx.strokeStyle='#b0aec8';ctx.lineWidth=1.8;drawArrow(u,v);}));
+  nodes.forEach((n,i)=>{
+    const scc=currentSCC[i];
+    ctx.beginPath();ctx.arc(n.x,n.y,24,0,Math.PI*2);
+    ctx.fillStyle=scc>=0?SCC_COLORS[scc%SCC_COLORS.length]+'44':'#fff';ctx.fill();
+    ctx.strokeStyle=scc>=0?SCC_COLORS[scc%SCC_COLORS.length]:currentStack.includes(i)?'#e8622a':'#7b4fd4';
+    ctx.lineWidth=currentStack.includes(i)?3:2;ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.l,n.x,n.y);
+    if(currentDisc[i]>=0){
+      ctx.font='8px JetBrains Mono';ctx.fillStyle='#5a5a72';
+      ctx.fillText(`d${currentDisc[i]}`,n.x-16,n.y-30);
+      ctx.fillText(`l${currentLow[i]}`,n.x+4,n.y-30);
+    }
+    if(scc>=0){ctx.font='9px JetBrains Mono';ctx.fillStyle=SCC_COLORS[scc%SCC_COLORS.length];ctx.fillText('S'+scc,n.x,n.y+32);}
+  });
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+document.getElementById('btnStep').onclick=()=>advance();
+document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done||stepIdx>=allSteps.length)clearInterval(iv);else advance();},350);};
+document.getElementById('btnReset').onclick=()=>init();
+init();
+</script>
+</body>
+</html>

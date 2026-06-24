@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Chinese Remainder Theorem – DS-Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
+.breadcrumb span{margin:0 .4rem}
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
+.hero p.tagline{color:var(--muted);font-size:1.05rem}
+.content{max-width:860px;margin:0 auto;padding:2rem}
+.explain p{margin-bottom:1rem;color:#333}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
+.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
+.cong-row{display:flex;gap:.5rem;align-items:center;margin:.4rem 0;font-family:'JetBrains Mono',monospace;font-size:.9rem}
+.cong-row label{min-width:30px;color:var(--muted);font-size:.8rem;font-family:'Inter',sans-serif}
+.cong-row input{width:80px;font-family:'JetBrains Mono',monospace;padding:.4rem .5rem;border:1.5px solid var(--border);border-radius:6px;font-size:.9rem;background:var(--bg)}
+.cong-row input:focus{outline:none;border-color:var(--accent)}
+.cong-row span{color:var(--muted)}
+.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s;margin-top:.5rem}
+.btn:hover{opacity:.85}
+.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
+.step-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.8rem;margin:.5rem 0;font-family:'JetBrains Mono',monospace;font-size:.83rem}
+.step-box .hl{color:var(--accent);font-weight:700}
+.step-box .num{font-size:.75rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.83rem;margin:.5rem 0}
+th{background:var(--bg);padding:.4rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
+td{padding:.38rem .6rem;border-bottom:1px solid #f0eeea}
+tr.active td{background:#fff3e0}
+.result-box{background:#fde8e2;border:2px solid var(--accent);border-radius:8px;padding:1rem;margin:.8rem 0;font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent)}
+#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
+#log div{margin-bottom:.3rem}
+#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
+.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+  <a href="../../index.html">Home</a><span>›</span>
+  <a href="../index.html">Algorithms</a><span>›</span>
+  Chinese Remainder Theorem
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="tag">Mathematical</span>
+    <h1>Chinese Remainder Theorem</h1>
+    <p class="tagline">Reconstruct a number from its remainders modulo pairwise coprime moduli — uniquely in O(n log n).</p>
+  </div>
+</div>
+<div class="content">
+  <div class="explain">
+    <p>CRT says: if m₁, m₂, ..., mₖ are pairwise coprime, then for any remainders a₁, ..., aₖ, there exists a unique x (mod M = m₁×m₂×...×mₖ) satisfying all congruences simultaneously. The Sun Tzu algorithm (3rd century) first described this for troops counting.</p>
+    <p>The construction: M = product of all moduli. For each i, compute Mᵢ = M/mᵢ, then find yᵢ = Mᵢ⁻¹ mod mᵢ (using extended Euclidean). The solution is x = Σ(aᵢ × Mᵢ × yᵢ) mod M.</p>
+    <p>Used in RSA to speed up private key operations (working mod p and q separately), in error-correcting codes (Reed-Solomon), and in computer arithmetic for large integer multiplication.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="val">Unique</div><div class="lbl">Solution mod M</div></div>
+    <div class="fact"><div class="val">O(n log n)</div><div class="lbl">Construction</div></div>
+    <div class="fact"><div class="val">~3rd c.</div><div class="lbl">Sun Tzu's theorem</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Interactive Simulation</h2>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Enter up to 3 congruences: x ≡ aᵢ (mod mᵢ). Moduli must be pairwise coprime.</p>
+    <div class="cong-row">
+      <label>1:</label><span>x ≡</span>
+      <input type="number" id="a1" value="2" min="0"/>
+      <span>(mod</span><input type="number" id="m1" value="3" min="2"/><span>)</span>
+    </div>
+    <div class="cong-row">
+      <label>2:</label><span>x ≡</span>
+      <input type="number" id="a2" value="3" min="0"/>
+      <span>(mod</span><input type="number" id="m2" value="5" min="2"/><span>)</span>
+    </div>
+    <div class="cong-row">
+      <label>3:</label><span>x ≡</span>
+      <input type="number" id="a3" value="2" min="0"/>
+      <span>(mod</span><input type="number" id="m3" value="7" min="2"/><span>)</span>
+    </div>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn" onclick="solveCRT()">Solve</button>
+      <button class="btn sec" onclick="resetSim()">Reset</button>
+    </div>
+    <div id="stepsViz" style="margin-top:1rem"></div>
+    <div id="resultBox"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Step Log</h2>
+    <div id="log"><div class="hi">// Enter congruences and click "Solve"</div></div>
+  </div>
+
+  <a class="back" href="../index.html">← Back to Algorithms</a>
+</div>
+<script>
+function log(msg,cls=''){
+  const d=document.getElementById('log');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=msg;
+  d.appendChild(div);
+  d.scrollTop=d.scrollHeight;
+}
+
+function resetSim(){
+  document.getElementById('stepsViz').innerHTML='';
+  document.getElementById('resultBox').innerHTML='';
+  document.getElementById('log').innerHTML='<div class="hi">// Enter congruences and click "Solve"</div>';
+}
+
+function extGCD(a,b){
+  if(b===0) return {g:a,x:1,y:0};
+  const {g,x,y}=extGCD(b,a%b);
+  return {g,x:y,y:x-Math.floor(a/b)*y};
+}
+
+function modInverse(a,m){
+  const {g,x}=extGCD(a%m,m);
+  if(g!==1) return null;
+  return ((x%m)+m)%m;
+}
+
+function gcd(a,b){return b===0?a:gcd(b,a%b);}
+
+function solveCRT(){
+  resetSim();
+  const congruences=[
+    {a:parseInt(document.getElementById('a1').value)||2,m:parseInt(document.getElementById('m1').value)||3},
+    {a:parseInt(document.getElementById('a2').value)||3,m:parseInt(document.getElementById('m2').value)||5},
+    {a:parseInt(document.getElementById('a3').value)||2,m:parseInt(document.getElementById('m3').value)||7},
+  ];
+  // Validate pairwise coprime
+  for(let i=0;i<3;i++) for(let j=i+1;j<3;j++){
+    if(gcd(congruences[i].m,congruences[j].m)!==1){
+      log(`m${i+1}=${congruences[i].m} and m${j+1}=${congruences[j].m} are NOT coprime! CRT requires pairwise coprime moduli.`,'warn');
+      return;
+    }
+  }
+  log('=== Chinese Remainder Theorem ===','hi');
+  congruences.forEach((c,i)=>log(`x ≡ ${c.a} (mod ${c.m})`));
+  const M=congruences.reduce((p,c)=>p*c.m,1);
+  log(`M = ${congruences.map(c=>c.m).join(' × ')} = ${M}`);
+
+  const viz=document.getElementById('stepsViz');
+  let x=0;
+  const rowData=[];
+
+  congruences.forEach((c,i)=>{
+    const Mi=M/c.m;
+    const yi=modInverse(Mi,c.m);
+    const term=c.a*Mi*yi;
+    x+=term;
+    rowData.push({i,a:c.a,m:c.m,Mi,yi,term});
+    const box=document.createElement('div');box.className='step-box';
+    box.innerHTML=`<div class="num">Congruence ${i+1}: x ≡ ${c.a} (mod ${c.m})</div>
+<div>M<sub>${i+1}</sub> = M/${c.m} = ${M}/${c.m} = <span class="hl">${Mi}</span></div>
+<div>y<sub>${i+1}</sub> = ${Mi}<sup>-1</sup> mod ${c.m} = <span class="hl">${yi}</span> (verify: ${Mi}×${yi} mod ${c.m} = ${(Mi*yi)%c.m})</div>
+<div>term${i+1} = ${c.a} × ${Mi} × ${yi} = <span class="hl">${term}</span></div>`;
+    viz.appendChild(box);
+    log(`i=${i+1}: M${i+1}=${Mi}, y${i+1}=${yi}, term=${term}`);
+  });
+
+  const xFinal=((x%M)+M)%M;
+  const rb=document.getElementById('resultBox');
+  rb.innerHTML=`<div class="result-box">x = ${rowData.map(r=>r.term).join(' + ')} = ${x}<br>x mod M = ${x} mod ${M} = <span style="font-size:1.3rem">${xFinal}</span></div>`;
+  log(`x = ${rowData.map(r=>r.term).join(' + ')} = ${x}`);
+  log(`x mod ${M} = ${xFinal}`,'ok');
+  // Verify
+  const ok=congruences.every(c=>xFinal%c.m===c.a%c.m);
+  log(`Verification: ${congruences.map(c=>`${xFinal}%${c.m}=${xFinal%c.m}=${c.a%c.m}?`).join(', ')} → ${ok?'✓ All correct':'✗ Error'}`);
+}
+</script>
+</body>
+</html>
