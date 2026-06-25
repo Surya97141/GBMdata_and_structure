@@ -55,8 +55,8 @@ nav{
 .brk{position:fixed;z-index:7;width:36px;height:36px;opacity:.28}
 .brk.tl{top:74px;left:42px;border-top:1px solid var(--neon);border-left:1px solid var(--neon)}
 .brk.tr{top:74px;right:42px;border-top:1px solid var(--neon);border-right:1px solid var(--neon)}
-.brk.bl{bottom:90px;left:42px;border-bottom:1px solid var(--neon);border-left:1px solid var(--neon)}
-.brk.br{bottom:90px;right:42px;border-bottom:1px solid var(--neon);border-right:1px solid var(--neon)}
+.brk.bl{bottom:24px;left:42px;border-bottom:1px solid var(--neon);border-left:1px solid var(--neon)}
+.brk.br{bottom:24px;right:42px;border-bottom:1px solid var(--neon);border-right:1px solid var(--neon)}
 
 /* ── HERO ── */
 #hero{
@@ -104,7 +104,7 @@ nav{
 
 /* ── SCROLL HINT ── */
 .scroll-hint{
-  position:fixed;bottom:92px;left:50%;transform:translateX(-50%);
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
   z-index:7;display:flex;flex-direction:column;align-items:center;gap:7px;
   font-family:"Share Tech Mono",monospace;
   font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;
@@ -120,29 +120,7 @@ nav{
   50%{opacity:.85;transform:translateX(-50%) translateY(5px)}
 }
 
-/* ── STATS BAR ── */
-#stats{
-  position:fixed;bottom:0;left:0;right:0;z-index:6;
-  display:flex;justify-content:center;
-  border-top:1px solid rgba(255,255,255,.07);
-  background:rgba(8,9,4,.78);backdrop-filter:blur(10px)
-}
-.stat{
-  padding:22px 56px;text-align:center;
-  border-right:1px solid rgba(255,255,255,.06);
-  cursor:default;transition:background .2s
-}
-.stat:last-child{border-right:none}
-.stat:hover{background:rgba(212,255,0,.04)}
-.stat-n{
-  font-size:2.1rem;font-weight:900;color:var(--neon);
-  display:block;line-height:1;text-shadow:0 0 24px rgba(212,255,0,.38)
-}
-.stat-l{
-  font-family:"Share Tech Mono",monospace;
-  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
-  color:rgba(255,255,255,.26);margin-top:7px;display:block
-}
+
 
 /* ── SCANLINES ── */
 body::after{
@@ -156,8 +134,6 @@ body::after{
 @media(max-width:680px){
   nav{padding:16px 20px}
   .nav-links{display:none}
-  .stat{padding:18px 22px}
-  .stat-n{font-size:1.55rem}
   .brk{display:none}
   .hero-sub{font-size:.74rem}
 }
@@ -200,12 +176,6 @@ body::after{
 
 <div class="scroll-hint">Scroll</div>
 
-<div id="stats">
-  <div class="stat"><span class="stat-n" data-t="40">0</span><span class="stat-l">Data Structures</span></div>
-  <div class="stat"><span class="stat-n" data-t="120">0</span><span class="stat-l">Algorithms</span></div>
-  <div class="stat"><span class="stat-n" data-t="8">0</span><span class="stat-l">Categories</span></div>
-  <div class="stat"><span class="stat-n" data-t="130">0</span><span class="stat-l">Interactive Pages</span></div>
-</div>
 
 <script>
 /*
@@ -429,22 +399,7 @@ body::after{
   setInterval(draw, 38);
 }());
 
-/* ══════════════════════════════════════════════
-   COUNTER ANIMATION
-══════════════════════════════════════════════ */
-function runCounters() {
-  document.querySelectorAll('[data-t]').forEach(function (el) {
-    var target = parseInt(el.getAttribute('data-t'));
-    var n      = 0;
-    var step   = target / (1600 / 16);
-    var tm = setInterval(function () {
-      n = Math.min(n + step, target);
-      el.textContent = Math.floor(n) + (target >= 100 ? '+' : '');
-      if (n >= target) clearInterval(tm);
-    }, 16);
-  });
-}
-setTimeout(runCounters, 320);
+
 
 /* ══════════════════════════════════════════════
    NAV SCROLL TINT
