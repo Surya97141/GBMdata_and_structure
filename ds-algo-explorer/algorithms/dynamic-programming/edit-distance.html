@@ -2,146 +2,144 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Edit Distance – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Edit Distance – Dynamic Programming</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem}
-.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
-.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
-.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
-label{font-size:14px;color:#5a5a72;font-weight:500}
-input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:160px}
-button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
-button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
-.dp-wrap{overflow-x:auto;margin-bottom:16px}
-table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px}
-table.dp th{background:#fdf0ea;color:#e8622a;padding:6px 12px;border:1px solid #f5c4a8;text-align:center;min-width:34px}
-table.dp td{padding:6px 12px;border:1px solid #e2e0da;text-align:center;min-width:34px;transition:background .3s}
-td.cur{background:#e8622a!important;color:#fff}
-td.path{background:#fdf0ea;border-color:#e8622a!important;font-weight:700;color:#e8622a}
-.ops-list{margin-top:12px;font-size:13px;font-family:'JetBrains Mono',monospace;background:#f7f6f2;border-radius:8px;padding:12px;line-height:1.8}
-.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
-.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto}
-.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
-.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.matrix-wrap{overflow-x:auto}
+table.mat{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.75rem;margin:0 auto}
+table.mat td,table.mat th{border:1px solid var(--b);padding:.28rem .55rem;text-align:center;min-width:36px;min-height:28px}
+table.mat th{background:var(--bg);font-weight:700;color:var(--m)}
+table.mat td.cur{background:#fff176;font-weight:700;outline:2px solid #c8c000}
+table.mat td.dep{background:#c3b1e1}
+table.mat td.match{background:#a8e6a3}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:160px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Edit Distance
-  </div>
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Edit Distance (Levenshtein)</h1>
-    <p class="tagline">Minimum insertions, deletions, and substitutions to transform one string to another.</p>
-  </div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Edit Distance</span>
+  </nav>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Edit Distance (Levenshtein)</h1>
+  <p class="tagline">Minimum insert, delete, replace operations to transform one string to another.</p>
   <div class="prose">
-    <p>Spell checkers, DNA alignment, and autocorrect all rely on edit distance. Given two strings, what is the fewest single-character edits (insert, delete, or replace) needed to turn one into the other? This is the Levenshtein distance.</p>
-    <p>DP recurrence: <code>dp[i][j]</code> = edit distance between the first i characters of word1 and first j characters of word2. If characters match, <code>dp[i][j] = dp[i-1][j-1]</code>. Otherwise, <code>dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])</code> — the three options are delete, insert, and replace respectively.</p>
-    <p>After filling the table, backtracing from <code>dp[m][n]</code> reconstructs the sequence of operations. Time O(m·n), space O(m·n). This same table is used for diff algorithms and bioinformatics sequence alignment.</p>
+    <p>Edit distance (Levenshtein distance) between two strings is the minimum number of single-character operations — insert, delete, or replace — needed to transform one string into the other. DP: dp[i][j] = edit distance between s1[0..i-1] and s2[0..j-1]. If s1[i-1]==s2[j-1]: dp[i][j]=dp[i-1][j-1]. Else: dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) for delete/insert/replace.</p>
+    <p>Used in spell checkers, DNA sequence alignment, diff tools, and autocorrect. The DP table is filled row by row.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-val">O(m·n)</div><div class="fact-lbl">Time Complexity</div></div>
-    <div class="fact"><div class="fact-val">O(m·n)</div><div class="fact-lbl">Space Complexity</div></div>
-    <div class="fact"><div class="fact-val">3 ops</div><div class="fact-lbl">Insert / Delete / Replace</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(m × n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(m × n)</div></div>
+    <div class="fact"><div class="flabel">Ops</div><div class="fval">Insert, Delete, Replace</div></div>
+    <div class="fact"><div class="flabel">Applications</div><div class="fval">Spell check, DNA</div></div>
   </div>
-
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>From: <input type="text" id="w1" value="sunday"/></label>
-      <label>To: <input type="text" id="w2" value="saturday"/></label>
-      <button id="solveBtn" onclick="solve()">Solve</button>
-      <button onclick="reset()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="matrix-wrap"><div id="matBox"></div></div>
+      <div class="info-bar" id="infoBar">DP table above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>String 1:</label>
+        <input type="text" id="s1" value="kitten"/>
+        <label>String 2:</label>
+        <input type="text" id="s2" value="sitting"/>
+        <button class="btn btn-p" onclick="rebuild()">Compute Edit Distance</button>
+      </div>
     </div>
-    <div class="dp-wrap"><div id="dpWrap"></div></div>
-    <div class="ops-list" id="opsList" style="display:none"></div>
-    <div class="result" id="result"></div>
-  </div>
-
-  <div class="card">
-    <h2>Step Log</h2>
-    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
   </div>
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-let dp=[];let running=false;
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
-function reset(){document.getElementById('dpWrap').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('opsList').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('solveBtn').disabled=false;running=false;}
-function buildTable(A,B){
-  const m=A.length,n=B.length;
-  let html='<table class="dp"><tr><th></th><th>ε</th>';
-  for(let j=0;j<n;j++) html+=`<th>${B[j]}</th>`;
-  html+='</tr>';
-  for(let i=0;i<=m;i++){
-    html+=`<tr><th>${i===0?'ε':A[i-1]}</th>`;
-    for(let j=0;j<=n;j++) html+=`<td id="e${i}_${j}">${i===0?j:(j===0?i:'')}</td>`;
-    html+='</tr>';
-  }
-  html+='</table>';
-  document.getElementById('dpWrap').innerHTML=html;
-}
-function setCell(i,j,v,cls){const el=document.getElementById(`e${i}_${j}`);if(!el)return;el.textContent=v;el.className=cls||'';}
-async function solve(){
-  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
-  document.getElementById('log').innerHTML='';
-  const A=document.getElementById('w1').value.toLowerCase();
-  const B=document.getElementById('w2').value.toLowerCase();
-  const m=A.length,n=B.length;
-  buildTable(A,B);
-  dp=[];for(let i=0;i<=m;i++){dp.push(new Array(n+1).fill(0));}
-  for(let i=0;i<=m;i++) dp[i][0]=i;
-  for(let j=0;j<=n;j++) dp[0][j]=j;
-  log(`<span class="hi">Edit distance: "${A}" → "${B}"</span>`);
-  await sleep(300);
+let player=null;
+function generateSteps(s1,s2){
+  const steps=[], m=s1.length, n=s2.length;
+  const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  function snap(r,c){ return { dp:dp.map(row=>[...row]), cur:[r,c] }; }
+  steps.push({ title:`Edit distance: "${s1}" → "${s2}"`,
+    what:`dp[i][j] = min operations to transform s1[0..i-1] to s2[0..j-1]. Initialize row 0 and col 0.`,
+    why:'Base cases: empty string needs i deletions or j insertions.',
+    ...snap(0,0) });
   for(let i=1;i<=m;i++){
     for(let j=1;j<=n;j++){
-      setCell(i,j,'…','cur');await sleep(60);
-      if(A[i-1]===B[j-1]){dp[i][j]=dp[i-1][j-1];setCell(i,j,dp[i][j],'');log(`dp[${i}][${j}]=dp[${i-1}][${j-1}]=${dp[i][j]} (match ${A[i-1]})`)}
-      else{
-        const del=dp[i-1][j]+1,ins=dp[i][j-1]+1,rep=dp[i-1][j-1]+1;
-        dp[i][j]=Math.min(del,ins,rep);
-        const op=dp[i][j]===rep?'replace':dp[i][j]===del?'delete':'insert';
-        setCell(i,j,dp[i][j],'');
-        log(`dp[${i}][${j}]=min(del=${del},ins=${ins},rep=${rep})=${dp[i][j]} [${op}]`);
+      if(s1[i-1]===s2[j-1]){ dp[i][j]=dp[i-1][j-1];
+        steps.push({ title:`dp[${i}][${j}]: s1[${i-1}]='${s1[i-1]}' == s2[${j-1}]='${s2[j-1]}' — match`,
+          what:`Characters match → dp[${i}][${j}]=dp[${i-1}][${j-1}]=${dp[i][j]}. No operation needed.`,
+          why:'Matching characters require no edit — copy diagonal.',
+          ...snap(i,j) });
+      } else {
+        const ins=dp[i][j-1]+1,del=dp[i-1][j]+1,rep=dp[i-1][j-1]+1;
+        dp[i][j]=Math.min(ins,del,rep);
+        const op=dp[i][j]===rep?'replace':dp[i][j]===ins?'insert':'delete';
+        steps.push({ title:`dp[${i}][${j}]: '${s1[i-1]}' ≠ '${s2[j-1]}' — ${op}`,
+          what:`Insert:${ins}, Delete:${del}, Replace:${rep}. Best=${dp[i][j]} (${op}).`,
+          why:`${op==='replace'?'Replace s1[i] with s2[j]':op==='insert'?'Insert s2[j] into s1':''Delete s1[i] from s1''}.`,
+          ...snap(i,j) });
       }
     }
   }
-  // backtrace ops
-  let i=m,j=n;const ops=[];
-  while(i>0||j>0){
-    if(i>0&&j>0&&A[i-1]===B[j-1]){setCell(i,j,dp[i][j],'path');i--;j--;}
-    else if(i>0&&j>0&&dp[i][j]===dp[i-1][j-1]+1){ops.unshift(`Replace '${A[i-1]}' with '${B[j-1]}'`);setCell(i,j,dp[i][j],'path');i--;j--;}
-    else if(i>0&&dp[i][j]===dp[i-1][j]+1){ops.unshift(`Delete '${A[i-1]}'`);setCell(i,j,dp[i][j],'path');i--;}
-    else{ops.unshift(`Insert '${B[j-1]}'`);setCell(i,j,dp[i][j],'path');j--;}
-  }
-  const ol=document.getElementById('opsList');ol.style.display='block';
-  ol.innerHTML='<b>Operations:</b><br>'+ops.map((o,i)=>`${i+1}. ${o}`).join('<br>');
-  const res=document.getElementById('result');res.style.display='block';
-  res.innerHTML=`<b>Edit Distance: ${dp[m][n]}</b> &nbsp;(${ops.length} operation${ops.length!==1?'s':''})`;
-  log(`✓ Distance = ${dp[m][n]}`);running=false;
+  steps.push({ title:`Edit distance = ${dp[m][n]}`,
+    what:`Minimum operations to transform "${s1}" → "${s2}": ${dp[m][n]}.`,
+    why:'dp[m][n] = answer for full strings.',
+    ...snap(m,n) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
+function renderStep(step,s1,s2){
+  const mb=document.getElementById('matBox'); if(!mb) return;
+  const m=s1.length, n=s2.length;
+  let html=`<table class="mat"><tr><th></th><th>""</th>${[...s2].map(c=>`<th>${c}</th>`).join('')}</tr>`;
+  step.dp.forEach((row,i)=>{
+    html+=`<tr><th>${i===0?'""':s1[i-1]}</th>`;
+    row.forEach((v,j)=>{
+      const isCur=step.cur&&step.cur[0]===i&&step.cur[1]===j;
+      const isDep=step.cur&&(step.cur[0]-1===i||step.cur[1]-1===j)&&(step.cur[0]-1===i||step.cur[0]===i)&&(step.cur[1]-1===j||step.cur[1]===j);
+      html+=`<td class="${isCur?'cur':''}">${v}</td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</table>'; mb.innerHTML=html;
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Current: dp[${step.cur[0]}][${step.cur[1]}]=${step.dp[step.cur[0]][step.cur[1]]}  |  Edit distance: ${step.dp[m][n]}`;
+}
+function rebuild(){
+  const s1=document.getElementById('s1').value.slice(0,8);
+  const s2=document.getElementById('s2').value.slice(0,8);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(s1,s2),(s)=>renderStep(s,s1,s2),'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

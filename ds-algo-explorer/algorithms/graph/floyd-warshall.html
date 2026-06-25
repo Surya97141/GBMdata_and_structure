@@ -1,179 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Floyd-Warshall – Graph Algorithms</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#7b4fd4;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:32px}
-.prose p{line-height:1.75;margin-bottom:16px;font-size:0.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#7b4fd4}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
-canvas{border:1px solid #e2e0da;border-radius:8px;display:block;margin:0 auto}
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-button{font-family:'Inter',sans-serif;font-size:14px;padding:7px 16px;border-radius:7px;border:1px solid #e2e0da;cursor:pointer;background:#7b4fd4;color:#fff;border-color:#7b4fd4;font-weight:600}
-button:hover{background:#6a3fc0}
-button.secondary{background:#fff;color:#1a1a2e}button.secondary:hover{background:#f0eef9}
-.matrix-wrap{overflow-x:auto;margin-top:12px}
-table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:13px}
-th,td{border:1px solid #e2e0da;padding:7px 14px;text-align:center;min-width:52px}
-th{background:#f7f6f2;font-weight:600}
-td.updated{background:#7b4fd4;color:#fff;font-weight:600}
-td.k-row{background:#e8f5e9}
-td.k-col{background:#e8f5e9}
-#log{height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:12px;background:#f7f6f2;border-radius:7px;padding:10px}
-.le{padding:3px 0;border-bottom:1px solid #e2e0da}.les{color:#7b4fd4}.lei{color:#27a060;font-weight:600}.lew{color:#e8622a}
-.back-link{display:inline-block;margin-top:24px;color:#7b4fd4;font-weight:600}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.matrix-display{overflow-x:auto;margin-top:.75rem}
+.matrix-display table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.7rem}
+.matrix-display td,.matrix-display th{border:1px solid var(--b);padding:.2rem .4rem;text-align:center;min-width:28px}
+.matrix-display th{background:var(--bg);color:var(--m);font-weight:700}
+.matrix-display td.hi{background:#fff176}
+.matrix-display td.src{background:#c3b1e1}
+.matrix-display td.imp{background:#a8e6a3}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb"><a href="../../index.html">Home</a><span>›</span><a href="../index.html">Algorithms</a><span>›</span>Floyd-Warshall</div>
-  <div class="tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    <span>Floyd-Warshall</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>Floyd-Warshall Algorithm</h1>
-  <p class="tagline">All-pairs shortest paths in one elegant dynamic programming sweep through intermediate nodes.</p>
+  <p class="tagline">All-pairs shortest paths via dynamic programming on intermediate vertices.</p>
   <div class="prose">
-    <p>Floyd-Warshall computes the shortest path between every pair of vertices. The key insight: for each intermediate node k, check whether routing through k improves the path from i to j. Repeat for all k from 0 to V-1.</p>
-    <p>Real-world analogy: a flight connection matrix. For each hub airport k, we check every pair (i, j): is it cheaper to fly i→k→j than the direct route? After considering all hubs, we have the globally optimal connection for every pair.</p>
-    <p>The algorithm is beautifully simple: three nested loops. The outermost loop picks the intermediate node k. D[i][j] = min(D[i][j], D[i][k] + D[k][j]). Watch the matrix update as k increases.</p>
+    <p>Floyd-Warshall finds shortest paths between every pair of nodes using DP. For each intermediate node k, it checks if routing through k shortens the path from i to j: dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]). After considering all k, the matrix contains all-pairs shortest paths.</p>
+    <p>O(V³) time — slower than running Dijkstra from each vertex (O(VE log V)) for sparse graphs, but simpler and handles negative weights. Also detects negative cycles (dist[i][i] < 0).</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-value">O(V³)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-value">O(V²)</div></div>
-    <div class="fact"><div class="fact-label">Output</div><div class="fact-value">All-Pairs SP</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(V³)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V²)</div></div>
+    <div class="fact"><div class="flabel">Negative weights?</div><div class="fval">Yes</div></div>
+    <div class="fact"><div class="flabel">All pairs?</div><div class="fval">Yes</div></div>
   </div>
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button onclick="runFW()">Run Floyd-Warshall</button>
-      <button class="secondary" onclick="stepFW()">Step (k)</button>
-      <button class="secondary" onclick="resetAll()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="260"></canvas>
+      <div class="matrix-display"><table id="matTable"></table></div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Floyd-Warshall</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#c3b1e1"></span>Intermediate k (row/col)</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176"></span>Current cell (i,j)</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3"></span>Improved!</span>
+      </div>
     </div>
-    <canvas id="c" width="700" height="240"></canvas>
-    <div style="margin-top:14px;font-size:13px;font-weight:600" id="kLabel">Distance Matrix D (k=–):</div>
-    <div class="matrix-wrap"><table id="matrix"></table></div>
   </div>
-  <div class="card"><h2>Step Log</h2><div id="log"></div></div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const DPR=window.devicePixelRatio||1;
-canvas.width=700*DPR;canvas.height=240*DPR;
-canvas.style.width='700px';canvas.style.height='240px';
-ctx.scale(DPR,DPR);
+// Smaller 5-node graph for Floyd-Warshall (matrix gets large)
+const N=5;
+const NODES=[{x:110,y:130,label:'0'},{x:240,y:50,label:'1'},{x:370,y:130,label:'2'},{x:240,y:210,label:'3'},{x:480,y:80,label:'4'}];
+const GRAPH_EDGES=[[0,1,3],[0,3,5],[1,2,2],[1,3,4],[2,4,6],[3,2,1],[3,4,8]];
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null, DPR=window.devicePixelRatio||1, SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1;
+  const w=canvas.parentElement.clientWidth-26; SCALE=w/600;
+  canvas.width=w*DPR; canvas.height=260*DPR;
+  canvas.style.width=w+'px'; canvas.style.height='260px'; ctx.scale(DPR,DPR);
+}
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-const N=4;
-const nodes=[{x:180,y:80},{x:520,y:80},{x:180,y:200},{x:520,y:200}];
-const INF=Infinity;
-const initAdj=[[0,3,INF,7],[8,0,2,INF],[5,INF,0,1],[2,INF,INF,0]];
+function generateSteps(){
+  const INF=Infinity;
+  const dist=Array.from({length:N},(_,i)=>Array.from({length:N},(_,j)=>i===j?0:INF));
+  GRAPH_EDGES.forEach(([a,b,w])=>{ dist[a][b]=w; }); // directed
+  const steps=[], snapDist=()=>dist.map(r=>[...r]);
+  steps.push({ title:'Initial distance matrix',
+    what:`${N}×${N} matrix. Direct edge weights on direct connections, ∞ for no direct edge, 0 on diagonal.`,
+    why:'Floyd-Warshall builds shortest-path matrix bottom-up through intermediate vertices.',
+    state:`k=none`, dist:snapDist(), k:-1, ci:-1, cj:-1, improved:false });
 
-let D=[],stepGen=null,running=false,currentK=-1,lastUpdated=[];
-
-function resetAll(){
-  D=initAdj.map(r=>[...r]);currentK=-1;lastUpdated=[];stepGen=null;running=false;
-  document.getElementById('log').innerHTML='';
-  document.getElementById('kLabel').textContent='Distance Matrix D (k=–):';
-  renderMatrix();draw();
+  for(let k=0;k<N;k++){
+    steps.push({ title:`Intermediate vertex k=${k}`,
+      what:`Now considering all paths that route through vertex ${k}.`,
+      why:'For each pair (i,j), check if dist[i][k]+dist[k][j] < dist[i][j].',
+      state:`k=${k}`, dist:snapDist(), k, ci:-1, cj:-1, improved:false });
+    for(let i=0;i<N;i++){
+      for(let j=0;j<N;j++){
+        if(i===j) continue;
+        const via=dist[i][k]===INF||dist[k][j]===INF?INF:dist[i][k]+dist[k][j];
+        const improved=via<dist[i][j];
+        const oldVal=dist[i][j];
+        if(improved) dist[i][j]=via;
+        if(Math.abs(via-oldVal)<0.001&&!improved) continue; // skip non-interesting
+        steps.push({ title:`k=${k}: dist[${i}][${j}] = min(${oldVal===INF?'∞':oldVal}, ${dist[i][k]===INF?'∞':dist[i][k]}+${dist[k][j]===INF?'∞':dist[k][j]})`,
+          what:`Route i=${i}→k=${k}→j=${j}: ${dist[i][k]===INF?'∞':dist[i][k]}+${dist[k][j]===INF?'∞':dist[k][j]}=${via===INF?'∞':via}. Old=${oldVal===INF?'∞':oldVal}. ${improved?'IMPROVED!':'No change.'}`,
+          why:improved?`Routing through ${k} gives a shorter path.`:`Direct/existing path is shorter.`,
+          state:`dist[${i}][${j}]: ${oldVal===INF?'∞':oldVal} → ${dist[i][j]===INF?'∞':dist[i][j]}`,
+          dist:snapDist(), k, ci:i, cj:j, improved });
+      }
+    }
+  }
+  steps.push({ title:'Floyd-Warshall complete!',
+    what:`All-pairs shortest distances computed for ${N} nodes.`,
+    why:'After V iterations of k, every shortest path has been found.',
+    state:`All pairs computed`, dist:snapDist(), k:-1, ci:-1, cj:-1, improved:false });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
 
-function logStep(msg,type='step'){
-  const log=document.getElementById('log');const el=document.createElement('div');
-  el.className='le l'+type[0];el.textContent=msg;log.appendChild(el);log.scrollTop=log.scrollHeight;
-}
-
-function renderMatrix(){
-  const tbl=document.getElementById('matrix');
-  let html='<tr><th>i\\j</th>'+[0,1,2,3].map(j=>`<th>${j}</th>`).join('')+'</tr>';
+function renderStep(step){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  GRAPH_EDGES.forEach(([a,b,w])=>{
+    const dx=NODES[b].x-NODES[a].x,dy=NODES[b].y-NODES[a].y,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len,r=18*sc;
+    const sx=(NODES[a].x+ux*r)*sc,sy=(NODES[a].y+uy*r)*sc;
+    const ex=(NODES[b].x-ux*r)*sc,ey=(NODES[b].y-uy*r)*sc;
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey);
+    ctx.strokeStyle='#c5c0d0'; ctx.lineWidth=1.5; ctx.stroke();
+    // arrowhead
+    const ax=ex-ux*8*sc-uy*5*sc,ay=ey-uy*8*sc+ux*5*sc;
+    const bx=ex-ux*8*sc+uy*5*sc,by=ey-uy*8*sc-ux*5*sc;
+    ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ax,ay); ctx.lineTo(bx,by); ctx.closePath();
+    ctx.fillStyle='#c5c0d0'; ctx.fill();
+    const mx=(NODES[a].x+NODES[b].x)/2*sc,my=(NODES[a].y+NODES[b].y)/2*sc;
+    ctx.fillStyle='#5a5a72'; ctx.font=`${Math.round(10*sc)}px JetBrains Mono`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(w,mx,my-8*sc);
+  });
+  NODES.forEach((node,i)=>{
+    const r=18*sc;
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=i===step.k?'#c3b1e1':'#e0e0e0'; ctx.fill();
+    ctx.strokeStyle=i===step.k?'#8b5cf6':'#bbb'; ctx.lineWidth=i===step.k?3:1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(12*sc)}px Inter,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(node.label,node.x*sc,node.y*sc);
+  });
+  // Render matrix
+  const INF=Infinity;
+  const t=document.getElementById('matTable');
+  if(!t) return;
+  let html='<tr><th></th>';
+  for(let j=0;j<N;j++) html+=`<th>${j}</th>`;
+  html+='</tr>';
   for(let i=0;i<N;i++){
     html+=`<tr><th>${i}</th>`;
     for(let j=0;j<N;j++){
-      const isK=i===currentK||j===currentK;
-      const isUp=lastUpdated.some(([a,b])=>a===i&&b===j);
-      const cls=isUp?'updated':isK?'k-row':'';
-      html+=`<td class="${cls}">${D[i][j]===INF?'∞':D[i][j]}</td>`;
+      let cls='';
+      if(i===step.ci&&j===step.cj) cls=step.improved?'imp':'hi';
+      else if(i===step.k||j===step.k) cls='src';
+      const v=step.dist[i][j];
+      html+=`<td class="${cls}">${v===INF?'∞':v}</td>`;
     }
     html+='</tr>';
   }
-  tbl.innerHTML=html;
+  t.innerHTML=html;
 }
 
-function drawArrow(x1,y1,x2,y2,w){
-  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
-  const ux=dx/len,uy=dy/len;
-  const sx=x1+ux*22,sy=y1+uy*22,ex=x2-ux*24,ey=y2-uy*24;
-  const mx=(sx+ex)/2-uy*12,my=(sy+ey)/2+ux*12;
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);
-  ctx.strokeStyle='#c5c0d0';ctx.lineWidth=1.5;ctx.stroke();
-  const ang=Math.atan2(ey-sy,ex-sx);
-  ctx.beginPath();ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-8*Math.cos(ang-0.4),ey-8*Math.sin(ang-0.4));
-  ctx.lineTo(ex-8*Math.cos(ang+0.4),ey-8*Math.sin(ang+0.4));
-  ctx.closePath();ctx.fillStyle='#c5c0d0';ctx.fill();
-  if(w!==INF){ctx.fillStyle='#5a5a72';ctx.font="11px 'JetBrains Mono'";ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(w,mx,my);}
+function rebuild(){
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-function draw(){
-  ctx.clearRect(0,0,700,240);
-  for(let i=0;i<N;i++) for(let j=0;j<N;j++)
-    if(i!==j&&initAdj[i][j]!==INF) drawArrow(nodes[i].x,nodes[i].y,nodes[j].x,nodes[j].y,initAdj[i][j]);
-  nodes.forEach((n,i)=>{
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=i===currentK?'#e8622a':'#ffffff';
-    ctx.fill();ctx.strokeStyle='#1a1a2e';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=i===currentK?'#fff':'#1a1a2e';
-    ctx.font="bold 14px 'Inter'";ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(i,n.x,n.y);
-  });
-}
-
-function* fwGen(){
-  logStep('Initial distance matrix set from edge list.','info');
-  for(let k=0;k<N;k++){
-    currentK=k;lastUpdated=[];
-    logStep(`k=${k}: using node ${k} as intermediate.`,'step');
-    document.getElementById('kLabel').textContent=`Distance Matrix D (k=${k}):`;
-    draw();renderMatrix();yield;
-    for(let i=0;i<N;i++) for(let j=0;j<N;j++){
-      if(D[i][k]!==INF&&D[k][j]!==INF){
-        const nd=D[i][k]+D[k][j];
-        if(nd<D[i][j]){
-          logStep(`  D[${i}][${j}] = min(${D[i][j]===INF?'∞':D[i][j]}, ${D[i][k]}+${D[k][j]}) = ${nd}.`,'step');
-          D[i][j]=nd;lastUpdated.push([i,j]);
-        }
-      }
-    }
-    renderMatrix();draw();yield;
-  }
-  currentK=-1;lastUpdated=[];renderMatrix();draw();
-  logStep('Floyd-Warshall complete! All-pairs shortest paths computed.','info');
-}
-
-function stepFW(){
-  if(!stepGen){resetAll();stepGen=fwGen();}
-  const r=stepGen.next();if(r.done)stepGen=null;
-}
-
-async function runFW(){
-  if(running)return;running=true;resetAll();stepGen=fwGen();
-  while(true){const r=stepGen.next();renderMatrix();draw();if(r.done)break;await new Promise(r=>setTimeout(r,800));}
-  running=false;stepGen=null;
-}
-
-resetAll();
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

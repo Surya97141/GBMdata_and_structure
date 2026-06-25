@@ -1,167 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Jump Search – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
-.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.controls label{font-size:14px;font-weight:500}
-.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
-.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:200px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#059669}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.input-row input.arr{width:280px}
+.input-row input.tgt{width:80px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Jump Search
-  </nav>
-
-  <div class="hero">
-    <div class="category-tag">Searching</div>
-    <h1>Jump Search</h1>
-    <p class="tagline">Skip ahead in blocks of √n, then scan backward linearly.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Jump Search</span></nav>
+  <span class="tag">Searching</span>
+  <h1>Jump Search</h1>
+  <p class="tagline">Jump √n steps ahead, then do a linear scan backwards.</p>
+  <div class="prose">
+    <p>Jump Search works on sorted arrays by jumping ahead in fixed steps of size √n. When we overshoot (current element > target), we step back and do a linear search in the previous block. The optimal jump size √n gives O(√n) comparisons.</p>
+    <p>It sits between Linear Search O(n) and Binary Search O(log n) in complexity, but unlike Binary Search, it benefits from sequential (forward-only) access — useful on systems where backwards access is costly (magnetic tapes, block storage).</p>
   </div>
-
-  <div class="explanation">
-    <p>Jump search is designed for sorted arrays. It divides the array into blocks of size √n and jumps from one block boundary to the next until it finds a block where the target could reside (i.e., arr[block end] ≥ target). It then performs a linear search backward through that block.</p>
-    <p>Think of looking for a page in a textbook. Rather than reading every page or opening randomly, you jump forward by chapter breaks (say 40 pages at a time). Once you find the chapter that contains your topic, you scan linearly within it. The block size √n optimally balances the two phases — too large means too many linear steps, too small means too many jumps.</p>
-    <p>Jump search offers O(√n) time complexity, which lies between linear O(n) and binary O(log n). Its advantage over binary search is better cache performance in some hardware architectures due to sequential memory access patterns.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(√n)</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(1)</div></div>
-    <div class="fact-card"><div class="label">Sorted Required</div><div class="value">Yes</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(√n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Sorted?</div><div class="fval">Yes</div><div class="fsub">required</div></div>
+    <div class="fact"><div class="flabel">Access</div><div class="fval">Forward only</div></div>
   </div>
-
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Target:</label>
-      <input type="number" id="targetInput" value="42">
-      <button class="btn btn-primary" onclick="startSearch()">Search</button>
-      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
-    </div>
-    <canvas id="cvs" width="820" height="200"></canvas>
-    <div class="log">
-      <h3>Step Log</h3>
-      <div id="logEntries"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="220"></canvas>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" class="arr" type="text" value="1,3,5,7,9,11,13,15,17,19"/>
+        <input id="tgtIn" class="tgt" type="number" value="11" placeholder="Target"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Unchecked</span>
+        <span class="leg"><span class="leg-dot" style="background:#ff9800;border:1px solid #e65100"></span>Jump checkpoint</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Linear scan</span>
+        <span class="leg"><span class="leg-dot" style="background:#d0d0d0"></span>Skipped block</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Found!</span>
+      </div>
     </div>
   </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
-
 <script>
-const ARR=[3,7,12,18,25,31,42,56,63,78,85,92,97];
-const ACCENT='#e84393',GREEN='#27a060',GRAY='#d0cec8',ORANGE='#f59e0b';
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-const n=ARR.length,step=Math.floor(Math.sqrt(n));
-let state=ARR.map(()=>'default'),running=false;
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w*DPR; canvas.height = 220*DPR;
+  canvas.style.width = w+'px'; canvas.style.height = '220px';
+  ctx.scale(DPR, DPR);
+}
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function drawArray(activeIdx=-1){
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  const cellW=58,cellH=58;
-  const startX=(cvs.width-n*cellW)/2,startY=20;
-  // Draw block boundaries
-  for(let b=0;b<=n;b+=step){
-    if(b>0&&b<n){
-      const bx=startX+b*cellW;
-      ctx.strokeStyle='#e84393';ctx.lineWidth=2;ctx.setLineDash([4,3]);
-      ctx.beginPath();ctx.moveTo(bx,startY-8);ctx.lineTo(bx,startY+cellH+8);ctx.stroke();
-      ctx.setLineDash([]);
+function generateSteps(arr, target) {
+  const steps = [], n = arr.length;
+  const step = Math.floor(Math.sqrt(n));
+  const state = new Array(n).fill('unchecked'); // unchecked|skipped|jump|scan|found|notfound
+
+  steps.push({ title:`Jump Search for ${target} — step = √${n} ≈ ${step}`,
+    what:`Array (sorted): [${arr.join(', ')}]. Jump size = ⌊√${n}⌋ = ${step}.`,
+    why:'Jump size √n balances jump phase and linear scan phase for optimal O(√n) total.',
+    state:`Looking for ${target} with step=${step}`, phase:'start', arr:[...arr], cellState:[...state], target });
+
+  let prev = 0, curr = step;
+  while (curr < n && arr[Math.min(curr,n-1)] < target) {
+    const s2 = [...state];
+    for(let i=prev;i<Math.min(curr,n);i++) s2[i]='skipped';
+    s2[Math.min(curr,n-1)]='jump';
+    steps.push({ title:`Jump to index ${Math.min(curr,n-1)} — a[${Math.min(curr,n-1)}]=${arr[Math.min(curr,n-1)]} < ${target}`,
+      what:`a[${Math.min(curr,n-1)}]=${arr[Math.min(curr,n-1)]} < target ${target}. Jump further.`,
+      why:`Block [${prev},${Math.min(curr,n-1)}] is entirely below target. Advance by step=${step}.`,
+      state:`Block [${prev},${Math.min(curr,n-1)}] skipped`, phase:'jump', arr:[...arr], cellState:[...s2], target });
+    for(let i=prev;i<Math.min(curr,n);i++) state[i]='skipped';
+    prev = curr; curr += step;
+  }
+  state[Math.min(curr,n-1)]='jump';
+  steps.push({ title:`a[${Math.min(curr,n-1)}]=${arr[Math.min(curr,n-1)]} ≥ ${target} — stop jumping, scan back`,
+    what:`Current block [${prev},${Math.min(curr,n-1)}]. Target may be in this block. Begin linear scan.`,
+    why:'Overshot the target block. Linear scan backward from prev.',
+    state:`Scanning block [${prev},${Math.min(curr,n-1)}]`, phase:'jump-stop', arr:[...arr], cellState:[...state], target });
+
+  // Linear scan in the block
+  for (let i=prev; i<=Math.min(curr,n-1); i++) {
+    const s2=[...state]; s2[i]='scan';
+    steps.push({ title:`Linear scan: a[${i}]=${arr[i]} ${arr[i]===target?'= TARGET!':'≠ '+target}`,
+      what:`Checking a[${i}]=${arr[i]}.`,
+      why:arr[i]===target?`Found!`:`Continue scanning.`,
+      state:`Scanning index ${i}`, phase:arr[i]===target?'found':'scan', arr:[...arr], cellState:[...s2], target });
+    if (arr[i]===target) {
+      const sf=[...state]; sf[i]='found';
+      steps.push({ title:`Target ${target} found at index ${i}!`, what:`a[${i}]=${target}.`,
+        why:`Jump Search found element after ${Math.ceil(n/step)+i-prev} comparisons.`,
+        state:`Found ${target} at index ${i}`, phase:'done-found', arr:[...arr], cellState:[...sf], target });
+      steps.forEach((s,j)=>{ s.stepNumber=j+1; s.totalSteps=steps.length; }); return steps;
     }
+    state[i]='scan';
+    if (arr[i]>target) break;
   }
-  ARR.forEach((v,i)=>{
-    const x=startX+i*cellW,y=startY;
-    const s=state[i];
-    let fill='#fff';
-    if(i===activeIdx)fill=ACCENT;
-    else if(s==='found')fill=GREEN;
-    else if(s==='jumped')fill=ORANGE;
-    else if(s==='linear')fill='#fce7f3';
-    else if(s==='eliminated')fill=GRAY;
-    ctx.fillStyle=fill;ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
-    const light=(fill===ORANGE||fill===ACCENT||fill===GREEN);
-    ctx.fillStyle=light?'#fff':(s==='eliminated'?'#aaa':'#1a1a2e');
-    ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(v,x+cellW/2,y+cellH/2);
-    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
-    ctx.fillText(i,x+cellW/2,y+cellH+10);
-  });
-  // Block size label
-  ctx.fillStyle='#5a5a72';ctx.font='12px Inter';ctx.textAlign='left';
-  ctx.fillText(`Block size (√${n}) = ${step}`,startX,startY+cellH+28);
+  steps.push({ title:`Target ${target} not found`, what:`${target} not in array.`,
+    why:'Jump Search exhausted the relevant block.',
+    state:`${target} not in array`, phase:'done-notfound', arr:[...arr], cellState:[...state], target });
+  steps.forEach((s,j)=>{ s.stepNumber=j+1; s.totalSteps=steps.length; }); return steps;
 }
 
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function startSearch(){
-  if(running)return;running=true;
-  state=ARR.map(()=>'default');
-  const target=parseInt(document.getElementById('targetInput').value);
-  log(`Jump search for target = ${target}, block size = ${step}`);
-  let prev=0,curr=step-1;
-  // Jump phase
-  while(curr<n&&ARR[curr]<target){
-    state[curr]='jumped';
-    drawArray(curr);
-    log(`Jump to index ${curr}: arr[${curr}]=${ARR[curr]} < ${target}. Continue jumping.`);
-    await sleep(700);
-    prev=curr+1;curr+=step;
-    if(curr>=n)curr=n-1;
+function renderStep(step) {
+  const W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const { arr, cellState, target } = step;
+  const n=arr.length; if(!n) return;
+  const maxVal=Math.max(...arr,1), padX=14, labelH=36, topPad=14;
+  const availW=W-padX*2, availH=H-labelH-topPad, cellW=availW/n;
+  const cmap={unchecked:'#9ec8f0',skipped:'#d0d0d0',jump:'#ff9800',scan:'#fff176',found:'#a8e6a3',notfound:'#ffb347'};
+  const smap={jump:'#e65100',scan:'#c8c000',found:'#27a060',notfound:'#d4700a'};
+  for(let i=0;i<n;i++){
+    const v=arr[i], h=Math.max(4,(v/maxVal)*availH);
+    const bx=padX+i*cellW+2, by=H-labelH-h, bw=cellW-4;
+    const c=cellState[i]||'unchecked';
+    ctx.fillStyle=cmap[c];
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,h,4); else ctx.rect(bx,by,bw,h); ctx.fill();
+    if(smap[c]){ ctx.strokeStyle=smap[c]; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,h,4); else ctx.rect(bx,by,bw,h); ctx.stroke(); }
+    const fs=Math.max(8,Math.min(12,cellW-6));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(v, padX+i*cellW+cellW/2, H-labelH+14);
+    ctx.fillStyle='#5a5a72'; ctx.font='9px Inter,sans-serif';
+    ctx.fillText(`[${i}]`, padX+i*cellW+cellW/2, H-2);
   }
-  if(curr>=n){drawArray();log(`✗ ${target} not found (jumped past end).`);running=false;return;}
-  state[curr]='jumped';drawArray(curr);
-  log(`Jump to index ${curr}: arr[${curr}]=${ARR[curr]} >= ${target}. Linear scan [${prev}..${curr}].`);
-  await sleep(700);
-  // Linear scan phase
-  for(let i=prev;i<=curr;i++){
-    state[i]='linear';drawArray(i);
-    log(`Linear: check index ${i} → arr[${i}]=${ARR[i]}`);
-    await sleep(600);
-    if(ARR[i]===target){state[i]='found';drawArray();log(`✓ Found ${target} at index ${i}!`);running=false;return;}
-  }
-  drawArray();log(`✗ ${target} not found.`);running=false;
+  ctx.fillStyle='#059669'; ctx.font='bold 11px Inter,sans-serif';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText(`target = ${target}`, padX, 2);
 }
-
-function resetSearch(){
-  running=false;state=ARR.map(()=>'default');drawArray();
-  document.getElementById('logEntries').innerHTML='';
+function parseArr(s){return s.split(',').map(x=>parseInt(x.trim())).filter(x=>!isNaN(x));}
+function rebuild(){
+  let arr=parseArr(document.getElementById('arrIn').value);
+  arr=arr.sort((a,b)=>a-b);
+  document.getElementById('arrIn').value=arr.join(',');
+  const target=parseInt(document.getElementById('tgtIn').value)||0;
+  if(arr.length<2||arr.length>25){alert('Enter 2–25 numbers.');return;}
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr,target),renderStep,'explanation','sim-bar');
 }
-drawArray();
+function randomize(){
+  const n=10+Math.floor(Math.random()*6);
+  const arr=[...new Set(Array.from({length:n+5},()=>1+Math.floor(Math.random()*50)))].slice(0,n).sort((a,b)=>a-b);
+  document.getElementById('arrIn').value=arr.join(',');
+  document.getElementById('tgtIn').value=arr[Math.floor(Math.random()*arr.length)];
+  rebuild();
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

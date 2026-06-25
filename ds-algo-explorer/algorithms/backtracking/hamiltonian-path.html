@@ -2,233 +2,157 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Hamiltonian Path – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Hamiltonian Path – Backtracking</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
-body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
-nav.breadcrumb a{color:var(--muted)}nav.breadcrumb span{margin:0 6px}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
-.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
-.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
-.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
-.section{margin-bottom:36px}
-.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
-.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
-.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
-.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
-.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
-.sim-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
-button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}button:disabled{opacity:.45;cursor:not-allowed}
-button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
-.canvas-wrap{display:flex;justify-content:center;margin-bottom:16px}
-canvas{border:1px solid var(--border);border-radius:12px;background:#fff}
-.path-display{font-family:'JetBrains Mono',monospace;font-size:.95rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:12px;min-height:36px;color:var(--ink)}
-.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)}
-.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
-.log-ok{color:#27ae60}.log-back{color:var(--accent)}.log-done{color:#1a7a40;font-weight:600}
-.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Hamiltonian Path
-</nav>
-<div class="hero">
-  <div style="max-width:900px;margin:0 auto">
-    <span class="hero-tag">Backtracking</span>
-    <h1>Hamiltonian Path</h1>
-    <p class="tagline">Find a path through a graph that visits every vertex exactly once — a classic NP-complete challenge solved with backtracking.</p>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Hamiltonian Path</span>
+  </nav>
+  <span class="tag">Backtracking</span>
+  <h1>Hamiltonian Path</h1>
+  <p class="tagline">Find a path that visits every vertex exactly once.</p>
+  <div class="prose">
+    <p>Hamiltonian Path: find a path in a graph that visits every vertex exactly once. Backtracking: start from vertex 0, try adding adjacent unvisited vertices, recurse, backtrack if stuck. If path length equals N, a Hamiltonian path exists.</p>
+    <p>Green edges = current path. Orange node = current vertex. Gray nodes = unvisited. Blue nodes = visited in path. Red = backtracking. NP-complete — no known polynomial algorithm.</p>
   </div>
-</div>
-<div class="content">
-  <div class="section">
-    <p>A Hamiltonian path is a path in a graph that visits each vertex exactly once. Unlike an Eulerian path (which traverses every edge), the Hamiltonian path focuses on vertices. Deciding whether such a path exists is NP-complete — no polynomial-time algorithm is known.</p>
-    <p>The backtracking approach builds the path one vertex at a time. From the current vertex, it tries each unvisited neighbor. If a dead end is reached (no unvisited neighbors but not all vertices visited), it backtracks — removing the last vertex from the path and trying a different neighbor. This is like a knight's tour problem on a chessboard.</p>
-    <p>The graph below has 6 nodes. Click "Find Path" to animate the backtracking search. The algorithm starts from node 0 and tries to reach all 6 nodes.</p>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Complexity</div><div class="fval">NP-complete</div></div>
+    <div class="fact"><div class="flabel">Worst-case</div><div class="fval">O(n!)</div></div>
+    <div class="fact"><div class="flabel">Graph</div><div class="fval">5 vertices</div></div>
+    <div class="fact"><div class="flabel">Strategy</div><div class="fval">DFS + backtrack</div></div>
   </div>
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(N!)</div><div class="sub">N = number of vertices</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(N)</div><div class="sub">Path array + visited set</div></div>
-    <div class="fact-card"><div class="label">Problem Class</div><div class="value">NP-Complete</div><div class="sub">No known polynomial solution</div></div>
-  </div>
-  <div class="sim-card">
-    <div class="sim-controls">
-      <button id="btn-find" onclick="startSearch()">Find Path</button>
-      <button id="btn-reset" onclick="resetGraph()" class="secondary">Reset</button>
-      <label style="font-size:.85rem;color:var(--muted)">Speed:
-        <select id="spd" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem">
-          <option value="200">Fast</option>
-          <option value="500" selected>Medium</option>
-          <option value="1000">Slow</option>
-        </select>
-      </label>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="300"></canvas>
+      <div class="info-bar" id="infoBar">Graph above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
     </div>
-    <div class="canvas-wrap"><canvas id="graph-canvas" width="480" height="320"></canvas></div>
-    <div class="path-display" id="path-display">Path: —</div>
-    <div class="step-log" id="step-log"><div class="log-line">Press "Find Path" to start backtracking search.</div></div>
   </div>
-  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const NODES=[
-  {x:80,y:160,label:'0'},
-  {x:200,y:60,label:'1'},
-  {x:200,y:260,label:'2'},
-  {x:340,y:60,label:'3'},
-  {x:340,y:260,label:'4'},
-  {x:420,y:160,label:'5'}
+var NODES=[
+  {x:320,y:60,label:'0'},{x:500,y:160,label:'1'},{x:440,y:300,label:'2'},
+  {x:200,y:300,label:'3'},{x:140,y:160,label:'4'}
 ];
-const EDGES=[[0,1],[0,2],[1,3],[1,2],[2,4],[3,5],[4,5],[3,4],[1,4]];
-const ADJ=[
-  [1,2],   // 0
-  [0,2,3,4], // 1
-  [0,1,4], // 2
-  [1,4,5], // 3
-  [1,2,3,5],// 4
-  [3,4]    // 5
-];
-
-let nodeState=new Array(6).fill('idle'); // idle, active, visited, backtrack
-let edgeState={}; // "a-b" -> color
-let path=[];
-let solving=false;
-const N_NODES=6;
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-function spd(){return parseInt(document.getElementById('spd').value)}
-
-const canvas=document.getElementById('graph-canvas');
-const ctx=canvas.getContext('2d');
-
-function edgeKey(a,b){return a<b?`${a}-${b}`:`${b}-${a}`}
-
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  // Draw edges
-  EDGES.forEach(([a,b])=>{
-    const key=edgeKey(a,b);
-    const st=edgeState[key]||'idle';
-    ctx.beginPath();
-    ctx.moveTo(NODES[a].x,NODES[a].y);
-    ctx.lineTo(NODES[b].x,NODES[b].y);
-    if(st==='active'){ctx.strokeStyle='var(--accent)';ctx.lineWidth=3;}
-    else if(st==='done'){ctx.strokeStyle='#27ae60';ctx.lineWidth=3;}
-    else{ctx.strokeStyle='#ccc';ctx.lineWidth=2;}
-    ctx.stroke();
-  });
-  // Draw nodes
-  NODES.forEach((n,i)=>{
-    ctx.beginPath();
-    ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    const st=nodeState[i];
-    if(st==='active'){ctx.fillStyle='var(--accent)';}
-    else if(st==='visited'){ctx.fillStyle='#fde8e8';}
-    else if(st==='done'){ctx.fillStyle='#27ae60';}
-    else if(st==='backtrack'){ctx.fillStyle='#e0e0e0';}
-    else{ctx.fillStyle='#fff';}
-    ctx.fill();
-    ctx.strokeStyle=st==='active'?'var(--accent)':st==='done'?'#1a7a40':'#aaa';
-    ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=st==='active'?'#fff':st==='done'?'#fff':'var(--ink)';
-    ctx.font='bold 15px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.label,n.x,n.y);
-  });
+var ADJ=[[1,4],[0,2,3,4],[1,3],[1,2,4],[0,1,3]];
+var N=NODES.length;
+var canvas=document.getElementById('cvs'), ctx=canvas.getContext('2d');
+var player=null, DPR=window.devicePixelRatio||1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; var w=canvas.parentElement.clientWidth-26;
+  canvas.width=w*DPR; canvas.height=300*DPR; canvas.style.width=w+'px'; canvas.style.height='300px'; ctx.scale(DPR,DPR);
 }
-
-function log(msg,cls=''){
-  const box=document.getElementById('step-log');
-  const d=document.createElement('div');
-  d.className='log-line'+(cls?' '+cls:'');
-  d.textContent=msg;
-  box.appendChild(d);box.scrollTop=box.scrollHeight;
-}
-function clearLog(){document.getElementById('step-log').innerHTML='';}
-
-function updatePathDisplay(){
-  document.getElementById('path-display').textContent='Path: '+(path.length?path.join(' → '):'—');
-}
-
-async function hamiltonianDFS(node, visited){
-  if(!solving) return false;
-  path.push(node);
-  visited[node]=true;
-  nodeState[node]='active';
-  draw();updatePathDisplay();
-  log('Visit node '+node+'. Path so far: '+path.join('→'),'log-ok');
-  await sleep(spd());
-  if(path.length===N_NODES){
-    nodeState[node]='done';
-    path.forEach(n=>nodeState[n]='done');
-    for(let i=0;i<path.length-1;i++) edgeState[edgeKey(path[i],path[i+1])]='done';
-    draw();updatePathDisplay();
-    return true;
+window.addEventListener('resize',function(){ setupCanvas(); if(player) player.renderCurrentStep(); });
+function generateSteps(){
+  var steps=[];
+  var path=[], visited=new Array(N).fill(false);
+  function snap(action,last){
+    return { path:path.slice(), visited:visited.slice(), action:action, last:last };
   }
-  for(const nb of ADJ[node]){
-    if(!visited[nb]){
-      edgeState[edgeKey(node,nb)]='active';
-      draw();
-      log('Try edge '+node+'→'+nb);
-      await sleep(spd()/2);
-      const res=await hamiltonianDFS(nb,visited);
-      if(res) return true;
-      edgeState[edgeKey(node,nb)]='idle';
-      draw();
+  steps.push({ title:'Hamiltonian Path: 5-node graph',
+    what:'Find a path visiting all 5 vertices exactly once. Start from vertex 0.',
+    why:'Backtracking: try each unvisited neighbor, recurse, backtrack if no completion.',
+    ...snap('start',-1) });
+  var found=false;
+  function solve(v){
+    path.push(v); visited[v]=true;
+    steps.push({ title:'Visit vertex '+v+' (path: ['+path.join(',')+'])',
+      what:'Add vertex '+v+' to path. Path length: '+path.length+'/'+N+'.',
+      why:'Explore vertex '+v+' as next in Hamiltonian path.',
+      ...snap('enter',v) });
+    if(path.length===N){ found=true; return true; }
+    for(var i=0;i<ADJ[v].length;i++){
+      var u=ADJ[v][i];
+      if(!visited[u]){ if(solve(u)) return true; }
+    }
+    path.pop(); visited[v]=false;
+    steps.push({ title:'Backtrack from vertex '+v,
+      what:'No Hamiltonian extension from '+v+'. Remove from path.',
+      why:'Dead end: backtrack and try other neighbors.',
+      ...snap('back',v) });
+    return false;
+  }
+  solve(0);
+  steps.push({ title:found?'Hamiltonian Path: ['+path.join('->')+']':'No Hamiltonian path found',
+    what:found?'Path ['+path.join('->')+'] visits all vertices exactly once.':'No Hamiltonian path from vertex 0.',
+    why:'Exhaustive backtracking completed.',
+    ...snap('done',-1) });
+  steps.forEach(function(s,i){ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
+}
+function renderStep(step){
+  var W=canvas.width/DPR, H=canvas.height/DPR, SC=W/640;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  var pathSet=new Set(step.path);
+  for(var i=0;i<N;i++) for(var j=i+1;j<N;j++){
+    if(ADJ[i].indexOf(j)>=0){
+      var inPath=false;
+      for(var k=0;k<step.path.length-1;k++)
+        if((step.path[k]===i&&step.path[k+1]===j)||(step.path[k]===j&&step.path[k+1]===i)) inPath=true;
+      ctx.strokeStyle=inPath?(step.action==='done'?'#22c55e':'#7b4fd4'):'#c5c0d0';
+      ctx.lineWidth=inPath?3:1.5;
+      ctx.beginPath(); ctx.moveTo(NODES[i].x*SC,NODES[i].y); ctx.lineTo(NODES[j].x*SC,NODES[j].y); ctx.stroke();
     }
   }
-  path.pop();
-  visited[node]=false;
-  nodeState[node]='backtrack';
-  draw();updatePathDisplay();
-  log('Dead end at node '+node+'. Backtrack.','log-back');
-  await sleep(spd()/2);
-  nodeState[node]='idle';
-  return false;
+  var r=22*SC;
+  for(var i=0;i<N;i++){
+    var x=NODES[i].x*SC, y=NODES[i].y;
+    var col='#e0e0e0';
+    if(step.path.length>0&&step.path[step.path.length-1]===i){
+      col=step.action==='back'?'#fca5a5':'#ffb347';
+    } else if(step.visited[i]) col='#9ec8f0';
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill(); ctx.strokeStyle='#444'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font='bold '+(14*SC)+'px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(NODES[i].label,x,y);
+    var pos=step.path.indexOf(i);
+    if(pos>=0){
+      ctx.fillStyle='#7b4fd4'; ctx.font=(11*SC)+'px JetBrains Mono'; ctx.textBaseline='top';
+      ctx.fillText('#'+pos,x,y+r+3);
+    }
+    ctx.textBaseline='alphabetic';
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Path: ['+step.path.join('->')+'] ('+step.path.length+'/'+N+')  |  '+
+    (step.action==='done'?'Done!':step.action==='back'?'Backtracking from '+step.last:'Visiting '+step.last);
 }
-
-async function startSearch(){
-  if(solving) return;
-  solving=true;
-  resetState();
-  clearLog();
-  document.getElementById('btn-find').disabled=true;
-  document.getElementById('btn-reset').disabled=true;
-  log('Starting Hamiltonian path search from node 0…');
-  const visited=new Array(N_NODES).fill(false);
-  const found=await hamiltonianDFS(0,visited);
-  if(!found){log('No Hamiltonian path exists from node 0.','log-back');updatePathDisplay();}
-  else{log('Hamiltonian path found: '+path.join('→'),'log-done');}
-  solving=false;
-  document.getElementById('btn-find').disabled=false;
-  document.getElementById('btn-reset').disabled=false;
-}
-
-function resetState(){
-  nodeState=new Array(N_NODES).fill('idle');
-  edgeState={};
-  path=[];
-  draw();updatePathDisplay();
-}
-
-function resetGraph(){
-  solving=false;
-  resetState();
-  clearLog();
-  log('Graph reset. Press "Find Path" to begin.');
-}
-
-draw();
+setupCanvas();
+player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 </script>
 </body>
 </html>

@@ -1,180 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Bellman-Ford – Graph Algorithms</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#7b4fd4;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:32px}
-.prose p{line-height:1.75;margin-bottom:16px;font-size:0.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#7b4fd4}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
-canvas{border:1px solid #e2e0da;border-radius:8px;display:block;margin:0 auto}
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-button{font-family:'Inter',sans-serif;font-size:14px;padding:7px 16px;border-radius:7px;border:1px solid #e2e0da;cursor:pointer;background:#7b4fd4;color:#fff;border-color:#7b4fd4;font-weight:600}
-button:hover{background:#6a3fc0}
-button.secondary{background:#fff;color:#1a1a2e}button.secondary:hover{background:#f0eef9}
-.dist-table{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.dist-cell{background:#f7f6f2;border:1px solid #e2e0da;border-radius:6px;padding:6px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;text-align:center}
-.dist-cell.updated{background:#7b4fd4;color:#fff;border-color:#7b4fd4}
-.neg-cycle{background:#e8622a;color:#fff;padding:8px 16px;border-radius:7px;font-weight:600;margin-top:10px;display:none}
-#log{height:180px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:12px;background:#f7f6f2;border-radius:7px;padding:10px}
-.le{padding:3px 0;border-bottom:1px solid #e2e0da}.les{color:#7b4fd4}.lei{color:#27a060;font-weight:600}.lew{color:#e8622a}
-.back-link{display:inline-block;margin-top:24px;color:#7b4fd4;font-weight:600}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.dist-bar{font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:36px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;
+  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb"><a href="../../index.html">Home</a><span>›</span><a href="../index.html">Algorithms</a><span>›</span>Bellman-Ford</div>
-  <div class="tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span>
+    <span>Bellman-Ford</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>Bellman-Ford Algorithm</h1>
-  <p class="tagline">Shortest paths even with negative edge weights — and detects negative cycles too.</p>
+  <p class="tagline">Shortest paths with negative edges — relax every edge V-1 times.</p>
   <div class="prose">
-    <p>Bellman-Ford extends Dijkstra's idea to handle negative edge weights. It relaxes ALL edges V-1 times. After V-1 passes, if any edge can still be relaxed, a negative-weight cycle exists — meaning shortest paths are undefined.</p>
-    <p>Real-world analogy: currency arbitrage detection. If you can exchange currencies in a cycle and end up with more money, that's a negative-weight cycle in the exchange-rate graph. Bellman-Ford flags this impossibility.</p>
-    <p>The algorithm is simpler than Dijkstra but slower at O(VE). It processes every edge in every pass, making V-1 complete sweeps. This guarantees that after pass k, all shortest paths using at most k edges are correctly computed.</p>
+    <p>Bellman-Ford computes shortest paths from a source by relaxing ALL edges V-1 times. A shortest path can have at most V-1 edges; so V-1 passes guarantee that every shortest path has been found. An additional pass detects negative cycles (if any distance improves, a negative cycle exists).</p>
+    <p>Slower than Dijkstra (O(VE) vs O(E log V)) but handles negative weights. Essential for routing protocols like RIP (Routing Information Protocol).</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-value">O(V · E)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-value">O(V)</div></div>
-    <div class="fact"><div class="fact-label">Handles</div><div class="fact-value">Negative Weights</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(V·E)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V)</div></div>
+    <div class="fact"><div class="flabel">Negative weights?</div><div class="fval">Yes</div></div>
+    <div class="fact"><div class="flabel">Negative cycles?</div><div class="fval">Detects</div></div>
   </div>
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button onclick="runBF()">Run Bellman-Ford</button>
-      <button class="secondary" onclick="stepBF()">Step</button>
-      <button class="secondary" onclick="resetAll()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="320"></canvas>
+      <div class="dist-bar" id="distBar">Distances appear here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Source:</label>
+        <select id="srcSel">
+          <option>0</option><option>1</option><option>2</option>
+          <option>3</option><option>4</option><option>5</option><option>6</option>
+        </select>
+        <button class="btn btn-p" onclick="rebuild()">Run Bellman-Ford</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#e0e0e0;border:1px solid #bbb"></span>Unvisited</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Edge being relaxed</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Distance improved!</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Source node</span>
+      </div>
     </div>
-    <canvas id="c" width="700" height="300"></canvas>
-    <div style="margin-top:12px;font-size:13px;font-weight:600">Distance Table (source=0):</div>
-    <div class="dist-table" id="distTable"></div>
-    <div class="neg-cycle" id="negCycle">Negative Cycle Detected!</div>
   </div>
-  <div class="card"><h2>Step Log</h2><div id="log"></div></div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const DPR=window.devicePixelRatio||1;
-canvas.width=700*DPR;canvas.height=300*DPR;
-canvas.style.width='700px';canvas.style.height='300px';
-ctx.scale(DPR,DPR);
+const NODES = [
+  { x:100, y:170, label:'0' }, { x:220, y:80, label:'1' },
+  { x:220, y:260, label:'2' }, { x:360, y:50, label:'3' },
+  { x:360, y:170, label:'4' }, { x:360, y:290, label:'5' },
+  { x:530, y:170, label:'6' }
+];
+const EDGES = [[0,1,4],[0,2,2],[1,3,3],[1,4,5],[2,4,6],[2,5,8],[4,6,3],[5,6,7]];
 
-const nodes=[{x:100,y:150},{x:260,y:60},{x:260,y:240},{x:450,y:60},{x:450,y:240},{x:610,y:150}];
-// [from, to, weight]
-const edges=[[0,1,4],[0,2,3],[1,3,6],[1,2,-2],[2,4,5],[3,5,1],[4,5,2],[3,4,3]];
-
-let dist=[],updated=[],stepGen=null,running=false,activeEdge=[-1,-1];
-
-function resetAll(){
-  dist=Array(6).fill(Infinity);dist[0]=0;updated=Array(6).fill(false);
-  stepGen=null;running=false;activeEdge=[-1,-1];
-  document.getElementById('log').innerHTML='';
-  document.getElementById('negCycle').style.display='none';
-  updateDistTable();draw();
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player=null, DPR=window.devicePixelRatio||1, SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1;
+  const w=canvas.parentElement.clientWidth-26; SCALE=w/640;
+  canvas.width=w*DPR; canvas.height=320*DPR;
+  canvas.style.width=w+'px'; canvas.style.height='320px'; ctx.scale(DPR,DPR);
 }
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-function logStep(msg,type='step'){
-  const log=document.getElementById('log');const el=document.createElement('div');
-  el.className='le l'+type[0];el.textContent=msg;log.appendChild(el);log.scrollTop=log.scrollHeight;
-}
+function generateSteps(src){
+  const steps=[], n=7, INF=Infinity;
+  const dist=new Array(n).fill(INF);
+  const improved=new Array(n).fill(false);
+  dist[src]=0;
+  steps.push({ title:`Initialize Bellman-Ford from source ${src}`,
+    what:`dist[${src}]=0, all others=∞. Will relax all ${EDGES.length} edges × ${n-1} iterations.`,
+    why:'A shortest path has at most V-1 edges, so V-1 relaxation passes suffice.',
+    state:`dist=[${dist.map(d=>d===INF?'∞':d).join(',')}]`,
+    dist:[...dist], improved:[...improved], activeEdge:null, iteration:0 });
 
-function updateDistTable(){
-  document.getElementById('distTable').innerHTML=dist.map((d,i)=>
-    `<div class="dist-cell${updated[i]?' updated':''}">${i}<br><b>${d===Infinity?'∞':d}</b></div>`).join('');
-}
-
-function drawArrow(x1,y1,x2,y2,col,w){
-  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
-  const ux=dx/len,uy=dy/len;
-  const sx=x1+ux*22,sy=y1+uy*22,ex=x2-ux*24,ey=y2-uy*24;
-  const mx=(sx+ex)/2-uy*14,my=(sy+ey)/2+ux*14;
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);
-  ctx.strokeStyle=col;ctx.lineWidth=col==='#e8622a'?3:1.5;ctx.stroke();
-  const ang=Math.atan2(ey-sy,ex-sx);
-  ctx.beginPath();ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-9*Math.cos(ang-0.4),ey-9*Math.sin(ang-0.4));
-  ctx.lineTo(ex-9*Math.cos(ang+0.4),ey-9*Math.sin(ang+0.4));
-  ctx.closePath();ctx.fillStyle=col;ctx.fill();
-  ctx.fillStyle=w<0?'#e8622a':'#5a5a72';ctx.font="bold 11px 'JetBrains Mono'";
-  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(w,mx,my);
-}
-
-function draw(){
-  ctx.clearRect(0,0,700,300);
-  edges.forEach(([a,b,w])=>{
-    const isActive=a===activeEdge[0]&&b===activeEdge[1];
-    drawArrow(nodes[a].x,nodes[a].y,nodes[b].x,nodes[b].y,isActive?'#e8622a':'#c5c0d0',w);
-  });
-  nodes.forEach((n,i)=>{
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=updated[i]?'#7b4fd4':'#ffffff';
-    ctx.fill();ctx.strokeStyle='#1a1a2e';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=updated[i]?'#fff':'#1a1a2e';
-    ctx.font="bold 13px 'Inter'";ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(i,n.x,n.y);
-    const dv=dist[i]===Infinity?'∞':dist[i];
-    ctx.fillStyle='#5a5a72';ctx.font="11px 'JetBrains Mono'";ctx.fillText(dv,n.x,n.y+32);
-  });
-}
-
-function* bfGen(){
-  const V=6;
-  logStep(`Bellman-Ford from source 0. V=${V}, E=${edges.length}.`,'info');
-  for(let pass=1;pass<=V-1;pass++){
-    logStep(`--- Pass ${pass} ---`,'step');
-    for(const [u,v,w] of edges){
-      activeEdge=[u,v];draw();updateDistTable();yield;
-      if(dist[u]!==Infinity && dist[u]+w<dist[v]){
-        logStep(`  Pass ${pass}, edge (${u},${v}) w=${w}: d[${v}]=min(${dist[v]===Infinity?'∞':dist[v]}, ${dist[u]}+${w})=${dist[u]+w}.`,'step');
-        dist[v]=dist[u]+w;updated[v]=true;
-        updateDistTable();draw();yield;
-      } else {
-        logStep(`  Pass ${pass}, edge (${u},${v}) w=${w}: no update (d[${v}]=${dist[v]===Infinity?'∞':dist[v]}).`,'step');
+  for(let iter=1;iter<=n-1;iter++){
+    let anyImproved=false;
+    for(const [a,b,w] of EDGES){
+      for(const [u,v] of [[a,b],[b,a]]){
+        const nd=dist[u]===INF?INF:dist[u]+w;
+        const didImprove=nd<dist[v];
+        const im2=new Array(n).fill(false);
+        if(didImprove){ dist[v]=nd; improved[v]=true; im2[v]=true; anyImproved=true; }
+        steps.push({ title:`Iter ${iter}: Relax (${u}→${v}) w=${w}`,
+          what:`dist[${u}]=${dist[u]===INF?'∞':dist[u]-(!didImprove?0:0)}+${w}=${nd===INF?'∞':nd}. dist[${v}]=${dist[v]===INF?'∞':dist[v]}. ${didImprove?'IMPROVED!':'No change.'}`,
+          why:didImprove?`Found shorter path to ${v} through ${u}.`:`Current distance to ${v} is already optimal via this edge.`,
+          state:`Iter ${iter}/${n-1} · dist[${v}]=${dist[v]===INF?'∞':dist[v]}`,
+          dist:[...dist], improved:[...im2], activeEdge:[u,v], iteration:iter });
       }
     }
-    updated=Array(6).fill(false);
-  }
-  activeEdge=[-1,-1];
-  logStep('--- Checking for negative cycles ---','info');
-  let negCycle=false;
-  for(const [u,v,w] of edges){
-    if(dist[u]!==Infinity && dist[u]+w<dist[v]){
-      negCycle=true;
-      logStep(`Negative cycle found via edge (${u},${v})!`,'warn');
+    if(!anyImproved){
+      steps.push({ title:`Iteration ${iter}: No improvements — early termination`,
+        what:`No edge relaxation improved any distance in iteration ${iter}. Done early!`,
+        why:'If no improvement in a pass, no improvement is possible in later passes.',
+        state:`Converged after ${iter} iterations`,
+        dist:[...dist], improved:new Array(n).fill(false), activeEdge:null, iteration:iter });
+      break;
     }
   }
-  if(!negCycle) logStep('No negative cycle. Shortest paths are valid.','info');
-  else document.getElementById('negCycle').style.display='block';
-  draw();
+  steps.push({ title:'Bellman-Ford complete!',
+    what:`Final shortest distances from ${src}: [${dist.map((d,i)=>`${i}:${d===INF?'∞':d}`).join(', ')}].`,
+    why:'No negative cycle detected (no improvement in extra pass).',
+    state:`All distances finalized`,
+    dist:[...dist], improved:new Array(n).fill(false), activeEdge:null, iteration:n-1 });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
 
-function stepBF(){
-  if(!stepGen){resetAll();stepGen=bfGen();}
-  const r=stepGen.next();if(r.done)stepGen=null;
+function renderStep(step){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  const aeKey=step.activeEdge?`${step.activeEdge[0]}-${step.activeEdge[1]}`:null;
+  EDGES.forEach(([a,b,w])=>{
+    const k1=`${a}-${b}`,k2=`${b}-${a}`;
+    const isAct=aeKey===k1||aeKey===k2;
+    const mx=(NODES[a].x+NODES[b].x)/2*sc, my=(NODES[a].y+NODES[b].y)/2*sc;
+    ctx.beginPath(); ctx.moveTo(NODES[a].x*sc,NODES[a].y*sc); ctx.lineTo(NODES[b].x*sc,NODES[b].y*sc);
+    ctx.strokeStyle=isAct?'#f59e0b':'#c5c0d0'; ctx.lineWidth=isAct?3:1.5; ctx.stroke();
+    ctx.fillStyle='#5a5a72'; ctx.font=`${Math.round(10*sc)}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(w,mx,my-8*sc);
+  });
+  NODES.forEach((node,i)=>{
+    const r=22*sc, isSrc=step.dist[i]===0&&i===step.dist.indexOf(0);
+    let fill='#e0e0e0',stroke='#bbb';
+    if(step.improved[i]){ fill='#a8e6a3'; stroke='#27a060'; }
+    if(step.activeEdge&&step.activeEdge[0]===i){ fill='#ffb347'; stroke='#d4700a'; }
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=fill; ctx.fill(); ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(13*sc)}px Inter,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(node.label,node.x*sc,node.y*sc);
+    const d=step.dist[i];
+    ctx.fillStyle='#7b4fd4'; ctx.font=`${Math.round(10*sc)}px JetBrains Mono,monospace`;
+    ctx.fillText(d===Infinity?'∞':d,node.x*sc,node.y*sc+r+10*sc);
+  });
+  const db=document.getElementById('distBar');
+  if(db) db.textContent=`Iter ${step.iteration}  dist: [${step.dist.map((d,i)=>`${i}=${d===Infinity?'∞':d}`).join('  ')}]`;
 }
 
-async function runBF(){
-  if(running)return;running=true;resetAll();stepGen=bfGen();
-  while(true){const r=stepGen.next();draw();updateDistTable();if(r.done)break;await new Promise(r=>setTimeout(r,400));}
-  running=false;stepGen=null;
+function rebuild(){
+  const src=parseInt(document.getElementById('srcSel').value);
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(src),renderStep,'explanation','sim-bar');
 }
-
-resetAll();
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

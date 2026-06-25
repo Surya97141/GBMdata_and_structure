@@ -1,188 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalan Numbers – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Catalan Numbers – Dynamic Programming</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-  .container{max-width:900px;margin:0 auto;padding:0 24px;}
-  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
-  .breadcrumb span{margin:0 6px;}
-  .hero{padding:48px 0 32px;}
-  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
-  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
-  .explanation{padding:24px 0;}
-  .explanation p{margin-bottom:14px;}
-  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
-  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
-  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
-  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
-  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
-  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
-  .input-group{display:flex;flex-direction:column;gap:4px;}
-  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
-  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;width:80px;background:var(--bg);}
-  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
-  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
-  /* catalan table */
-  .cat-table-wrap{display:flex;gap:0;margin:18px 0;overflow-x:auto;}
-  .cat-cell{display:flex;flex-direction:column;align-items:center;min-width:64px;}
-  .cat-cell .idx{font-size:.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:3px 0;}
-  .cat-cell .val{width:58px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;transition:background .35s,color .35s;background:var(--surface);color:#888;}
-  .cat-cell .val.done{background:#fff3ed;color:var(--accent);}
-  .cat-cell .val.active{background:var(--accent);color:#fff;}
-  /* applications */
-  .apps-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px;}
-  .app-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px;}
-  .app-card h3{font-size:.95rem;font-weight:600;margin-bottom:10px;color:var(--ink);}
-  .app-card .app-val{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent);}
-  .paren-list{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);margin-top:6px;line-height:1.8;}
-  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
-  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
-  .log-box p.highlight{color:#e8a87c;}
-  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:80px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Catalan Numbers (DP)
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Catalan Numbers</span>
   </nav>
-
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Catalan Numbers</h1>
-    <p class="tagline">A sequence that secretly governs parentheses, trees, and triangulations.</p>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Catalan Numbers (DP)</h1>
+  <p class="tagline">Counting balanced parentheses, BSTs, triangulations — Catalan DP.</p>
+  <div class="prose">
+    <p>The n-th Catalan number C(n) counts: ways to parenthesize n+1 factors, BSTs with n nodes, triangulations of (n+2)-gon, paths that don't cross the diagonal, and many more. DP: C(0)=1, C(1)=1. C(n) = sum over i from 0 to n-1 of C(i)*C(n-1-i). Alternatively C(n) = C(2n,n)/(n+1).</p>
+    <p>The recurrence splits at each possible "root": left subtree has i nodes, right has n-1-i nodes. The simulation shows the DP array filling and for each new value, which pairs C(i)*C(j) contribute.</p>
   </div>
-
-  <div class="explanation">
-    <p>The Catalan numbers are a sequence of natural numbers that appear in many combinatorial problems: the number of valid bracket sequences with n pairs, the number of distinct Binary Search Trees with n nodes, the number of ways to triangulate a polygon, and many more.</p>
-    <p>The recurrence is elegant: <code>C(0) = 1</code> and <code>C(n) = Σ C(i) · C(n-1-i)</code> for i from 0 to n-1. It mirrors the structure of dividing problems at a "root": everything to the left is one subproblem, everything to the right is another. DP lets us compute this bottom-up in O(n²).</p>
-    <p>The first few values are 1, 1, 2, 5, 14, 42, 132 — they grow exponentially, yet each is built from exactly those that came before.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Time Complexity</div></div>
-    <div class="fact-card"><div class="val">O(n)</div><div class="label">Space Complexity</div></div>
-    <div class="fact-card"><div class="val">Combinatorial</div><div class="label">Application Class</div></div>
+    <div class="fact"><div class="flabel">C(0)</div><div class="fval">1</div></div>
+    <div class="fact"><div class="flabel">C(5)</div><div class="fval">42</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n2)</div></div>
+    <div class="fact"><div class="flabel">Growth</div><div class="fval">4^n / (n^1.5)</div></div>
   </div>
-
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <div class="input-row">
-      <div class="input-group">
-        <label>Compute C(0)..C(n)</label>
-        <input type="number" id="nInput" value="7" min="1" max="10">
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="220"></canvas>
+      <div class="info-bar" id="infoBar">Catalan DP array.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Compute up to C(n): n =</label>
+        <input type="number" id="nval" value="8" min="1" max="12"/>
+        <button class="btn btn-p" onclick="rebuild()">Compute Catalan</button>
       </div>
-      <button class="btn" id="solveBtn" onclick="startSolve()">Compute</button>
     </div>
-
-    <div class="cat-table-wrap" id="catTable"></div>
-
-    <div class="apps-grid" id="appsGrid"></div>
   </div>
-
-  <div class="sim-box" style="padding:20px;">
-    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
-    <div class="log-box" id="logBox"></div>
-  </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-function log(msg,h=false){
-  const lb=document.getElementById('logBox');
-  const p=document.createElement('p');
-  if(h)p.classList.add('highlight');
-  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
+var canvas=document.getElementById('cvs');
+var ctx=canvas.getContext('2d');
+var player=null, DPR=window.devicePixelRatio||1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1;
+  var w=canvas.parentElement.clientWidth-26;
+  canvas.width=w*DPR; canvas.height=220*DPR;
+  canvas.style.width=w+'px'; canvas.style.height='220px';
+  ctx.scale(DPR,DPR);
 }
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+window.addEventListener('resize',function(){ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-function genParens(n){
-  const res=[];
-  function bt(s,open,close){
-    if(s.length===2*n){res.push(s);return;}
-    if(open<n) bt(s+'(',open+1,close);
-    if(close<open) bt(s+')',open,close+1);
+function generateSteps(N){
+  var steps=[];
+  var C=new Array(N+1).fill(0); C[0]=1;
+  function snap(cur,dep){ return { C:C.slice(), cur:cur, dep:dep }; }
+  steps.push({ title:'Catalan Numbers: compute C(0) to C('+N+')',
+    what:'C(0)=1 (base). C(n) = sum of C(i)*C(n-1-i) for i=0..n-1.',
+    why:'C(n) counts BSTs with n nodes, balanced parenthesizations, etc.',
+    ...snap(-1,-1) });
+  if(N>=1){
+    C[1]=1;
+    steps.push({ title:'C(1) = 1 (base case)',
+      what:'C(1)=1: exactly 1 BST with 1 node, 1 way to write ().',
+      why:'Base case.',
+      ...snap(1,-1) });
   }
-  bt('',0,0);
-  return res;
-}
-
-async function startSolve(){
-  const btn=document.getElementById('solveBtn');
-  btn.disabled=true;
-  document.getElementById('logBox').innerHTML='';
-
-  const n=Math.max(1,Math.min(10,parseInt(document.getElementById('nInput').value)||7));
-  const C=new Array(n+1).fill(0);
-  C[0]=1;
-
-  // Build table UI
-  const ct=document.getElementById('catTable');
-  ct.innerHTML='';
-  const cells=[];
-  for(let i=0;i<=n;i++){
-    const cell=document.createElement('div');cell.className='cat-cell';
-    const idx=document.createElement('div');idx.className='idx';idx.textContent=`C(${i})`;
-    const val=document.createElement('div');val.className='val';val.textContent='–';
-    cell.appendChild(idx);cell.appendChild(val);ct.appendChild(cell);
-    cells.push(val);
-  }
-
-  // C(0)=1
-  cells[0].textContent='1';cells[0].classList.add('done');
-  log('C(0) = 1  (base case)');
-  await sleep(300);
-
-  for(let i=1;i<=n;i++){
-    cells[i].classList.add('active');
-    const terms=[];
-    for(let j=0;j<i;j++){
-      C[i]+=C[j]*C[i-1-j];
-      terms.push(`C(${j})·C(${i-1-j})=${C[j]*C[i-1-j]}`);
+  for(var n=2;n<=N;n++){
+    C[n]=0;
+    for(var i=0;i<n;i++){
+      var contrib=C[i]*C[n-1-i];
+      C[n]+=contrib;
+      steps.push({ title:'C('+n+'): add C('+i+')*C('+(n-1-i)+')='+C[i]+'*'+C[n-1-i]+'='+contrib,
+        what:'Root splits tree: left '+i+' nodes, right '+(n-1-i)+' nodes. Product: '+contrib+'. Running sum: '+C[n]+'.',
+        why:'Catalan recurrence: sum over all split points of left*right subtree counts.',
+        ...snap(n,i) });
     }
-    log(`C(${i}) = ${terms.join(' + ')} = ${C[i]}`, i===n);
-    await sleep(400);
-    cells[i].textContent=C[i];
-    cells[i].classList.remove('active');
-    cells[i].classList.add('done');
+    steps.push({ title:'C('+n+') = '+C[n],
+      what:'All '+n+' splits summed. C('+n+')='+C[n]+'.',
+      why:'C('+n+') counts the structures of size '+n+'.',
+      ...snap(n,-1) });
   }
-
-  // Applications panel
-  const ag=document.getElementById('appsGrid');
-  ag.innerHTML='';
-
-  // Valid parens
-  const parens=genParens(Math.min(n,4));
-  const pc=document.createElement('div');pc.className='app-card';
-  pc.innerHTML=`<h3>Valid Parentheses for ${Math.min(n,4)} pairs</h3>
-    <div class="app-val">${C[Math.min(n,4)]}</div>
-    <div class="paren-list">${parens.slice(0,10).join('  ')}${parens.length>10?'...':''}</div>`;
-  ag.appendChild(pc);
-
-  // BSTs
-  const bc=document.createElement('div');bc.className='app-card';
-  bc.innerHTML=`<h3>Distinct BSTs with ${n} nodes</h3>
-    <div class="app-val">${C[n]}</div>
-    <div class="paren-list" style="margin-top:8px;color:var(--muted);font-size:.82rem;">Each BST structure corresponds to a unique way of inserting ${n} keys. C(${n}) = ${C[n]} such structures exist.</div>`;
-  ag.appendChild(bc);
-
-  btn.disabled=false;
+  steps.push({ title:'Catalan sequence: '+C.join(', '),
+    what:'C(0) through C('+N+'): ['+C.join(', ')+'].',
+    why:'Each value encodes massive combinatorial quantities.',
+    ...snap(N,-1) });
+  steps.forEach(function(s,i){ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-
-window.onload=()=>startSolve();
+function renderStep(step){
+  var N=step.C.length-1;
+  var W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  var pad=36, maxV=Math.max.apply(null,step.C.slice(0,step.cur+1).filter(function(v){return v>0;}));
+  if(maxV<=0) maxV=1;
+  var bsp=(W-pad*2)/(N+1), bw=bsp*0.7;
+  for(var i=0;i<=N;i++){
+    if(step.C[i]===0&&i>0) continue;
+    var h=Math.max(4,(step.C[i]/maxV)*(H-80));
+    var x=pad+i*bsp+bsp*0.15, y=H-50-h;
+    var col='#9ec8f0';
+    if(step.cur===i) col='#fff176';
+    else if(step.dep===i) col='#c3b1e1';
+    else if(step.cur>i) col='#a8e6a3';
+    ctx.fillStyle=col; ctx.fillRect(x,y,bw,h);
+    ctx.strokeStyle='#5a5a72'; ctx.lineWidth=1; ctx.strokeRect(x,y,bw,h);
+    ctx.fillStyle='#1a1a2e'; ctx.font='bold 9px Inter'; ctx.textAlign='center';
+    ctx.fillText(step.C[i],x+bw/2,y-5);
+    ctx.fillStyle='#888'; ctx.font='9px JetBrains Mono';
+    ctx.fillText('C('+i+')',x+bw/2,H-28);
+  }
+  if(step.dep>=0&&step.cur>0){
+    var j=step.cur-1-step.dep;
+    var x1=pad+step.dep*bsp+bsp*0.5, x2=pad+j*bsp+bsp*0.5, xc=pad+step.cur*bsp+bsp*0.5;
+    ctx.strokeStyle='#7b4fd4'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(x1,H-55); ctx.lineTo(xc,H-70); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2,H-55); ctx.lineTo(xc,H-70); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='C('+step.cur+')='+step.C[Math.max(0,step.cur)]+'  |  Sequence: '+step.C.slice(0,Math.max(1,step.cur+1)).join(', ');
+}
+function rebuild(){
+  var N=Math.min(parseInt(document.getElementById('nval').value),12);
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(N),renderStep,'explanation','sim-bar');
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

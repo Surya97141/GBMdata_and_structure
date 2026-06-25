@@ -1,208 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Johnson's Algorithm – Graph Algorithms</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#7b4fd4;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:32px}
-.prose p{line-height:1.75;margin-bottom:16px;font-size:0.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#7b4fd4}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
-canvas{border:1px solid #e2e0da;border-radius:8px;display:block;margin:0 auto}
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-button{font-family:'Inter',sans-serif;font-size:14px;padding:7px 16px;border-radius:7px;border:1px solid #e2e0da;cursor:pointer;background:#7b4fd4;color:#fff;border-color:#7b4fd4;font-weight:600}
-button:hover{background:#6a3fc0}
-button.secondary{background:#fff;color:#1a1a2e}button.secondary:hover{background:#f0eef9}
-.phase-box{border:1px solid #e2e0da;border-radius:8px;padding:12px 16px;margin:8px 0;font-family:'JetBrains Mono',monospace;font-size:13px}
-.phase-box.active{border-color:#7b4fd4;background:#f3effd}
-.phase-box h3{font-size:13px;font-weight:700;margin-bottom:6px}
-.h-vals{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.h-cell{background:#f7f6f2;border:1px solid #e2e0da;border-radius:5px;padding:4px 10px;font-family:'JetBrains Mono',monospace;font-size:12px}
-.h-cell.set{background:#7b4fd4;color:#fff}
-#log{height:180px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:12px;background:#f7f6f2;border-radius:7px;padding:10px}
-.le{padding:3px 0;border-bottom:1px solid #e2e0da}.les{color:#7b4fd4}.lei{color:#27a060;font-weight:600}.lew{color:#e8622a}
-.back-link{display:inline-block;margin-top:24px;color:#7b4fd4;font-weight:600}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.matrix-wrap{overflow-x:auto;margin-top:.6rem}
+table.mat{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.72rem;margin:0 auto}
+table.mat td,table.mat th{border:1px solid var(--b);padding:.28rem .55rem;text-align:center;min-width:40px}
+table.mat th{background:var(--bg);font-weight:700;color:var(--m)}
+table.mat td.hi{background:#fff176}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb"><a href="../../index.html">Home</a><span>›</span><a href="../index.html">Algorithms</a><span>›</span>Johnson's Algorithm</div>
-  <div class="tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Johnson's Algorithm</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>Johnson's Algorithm</h1>
-  <p class="tagline">All-pairs shortest paths for sparse graphs — smarter than Floyd-Warshall by reweighting edges.</p>
+  <p class="tagline">All-pairs shortest paths — Bellman-Ford reweighting + Dijkstra for each source.</p>
   <div class="prose">
-    <p>Johnson's algorithm cleverly combines Bellman-Ford and Dijkstra to compute all-pairs shortest paths efficiently for sparse graphs. It reweights edges to eliminate negative weights, then runs Dijkstra from every vertex.</p>
-    <p>The trick: add a virtual source node q with zero-weight edges to all vertices. Run Bellman-Ford from q to get potentials h[v]. Reweight each edge (u,v,w) to w + h[u] - h[v] (always non-negative). Then Dijkstra runs safely from each vertex.</p>
-    <p>For sparse graphs, Johnson's O(VE + V² log V) beats Floyd-Warshall's O(V³). The reweighting does not change which path is shortest — it only ensures all weights are non-negative so Dijkstra can work.</p>
+    <p>Johnson's algorithm finds shortest paths between all pairs of vertices in O(V²log V + VE). Step 1: Add a virtual node q with zero-weight edges to every vertex. Run Bellman-Ford from q to get potentials h[v]. Step 2: Reweight edges: w'(u,v) = w(u,v) + h[u] - h[v] ≥ 0. Step 3: Run Dijkstra from every node on the reweighted graph. Step 4: Recover actual distances: d(u,v) = dijkstra_dist + h[v] - h[u].</p>
+    <p>More efficient than Floyd-Warshall on sparse graphs. Works on graphs with negative edges (but not negative cycles). Red edges in the demo have negative weights.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-value">O(VE + V²logV)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-value">O(V²)</div></div>
-    <div class="fact"><div class="fact-label">Output</div><div class="fact-value">All-Pairs SP</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(V²logV+VE)</div></div>
+    <div class="fact"><div class="flabel">Negative edges?</div><div class="fval">Yes (no -cycle)</div></div>
+    <div class="fact"><div class="flabel">vs Floyd</div><div class="fval">Sparse faster</div></div>
+    <div class="fact"><div class="flabel">Phase 1</div><div class="fval">Bellman-Ford</div></div>
   </div>
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button onclick="runJohnson()">Run Johnson's</button>
-      <button class="secondary" onclick="stepJohnson()">Step</button>
-      <button class="secondary" onclick="resetAll()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="260"></canvas>
+      <div class="info-bar" id="infoBar">Phase info appears here.</div>
+      <div class="matrix-wrap"><div id="matBox"></div></div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Johnson's</button>
+      </div>
     </div>
-    <canvas id="c" width="700" height="280"></canvas>
-    <div id="phases" style="margin-top:12px"></div>
-    <div class="h-vals" id="hvals"></div>
   </div>
-  <div class="card"><h2>Step Log</h2><div id="log"></div></div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const DPR=window.devicePixelRatio||1;
-canvas.width=700*DPR;canvas.height=280*DPR;
-canvas.style.width='700px';canvas.style.height='280px';
-ctx.scale(DPR,DPR);
-
-const N=4;
-const nodes=[{x:180,y:80,label:'0'},{x:520,y:80,label:'1'},{x:180,y:220,label:'2'},{x:520,y:220,label:'3'}];
-const qNode={x:350,y:150,label:'q'};
-const edges=[[0,1,3],[0,2,6],[1,3,2],[2,0,-4],[2,3,5],[3,1,-3]];
-
-let h=[],reweighted=[],phase=0,stepGen=null,running=false,showQ=false,highlighted=[];
-
-function resetAll(){
-  h=Array(N).fill(null);reweighted=[];phase=0;stepGen=null;running=false;showQ=false;highlighted=[];
-  document.getElementById('log').innerHTML='';
-  document.getElementById('phases').innerHTML='';
-  document.getElementById('hvals').innerHTML='';
-  draw();
+const NODES=[{x:80,y:130,label:'0'},{x:220,y:60,label:'1'},{x:220,y:200,label:'2'},
+  {x:380,y:130,label:'3'},{x:520,y:130,label:'4'}];
+const EDGES=[[0,1,3],[0,2,8],[1,3,1],[1,2,-4],[2,4,2],[3,4,4],[4,3,-5],[3,0,2]];
+const n=5;
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/620;
+  canvas.width=w*DPR; canvas.height=260*DPR; canvas.style.width=w+'px'; canvas.style.height='260px'; ctx.scale(DPR,DPR);
 }
-
-function logStep(msg,type='step'){
-  const log=document.getElementById('log');const el=document.createElement('div');
-  el.className='le l'+type[0];el.textContent=msg;log.appendChild(el);log.scrollTop=log.scrollHeight;
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
+const INF=1e9;
+function bf(src,edges,sz){
+  const dist=new Array(sz).fill(INF); dist[src]=0;
+  for(let i=0;i<sz-1;i++) for(const[a,b,w] of edges) if(dist[a]<INF&&dist[a]+w<dist[b]) dist[b]=dist[a]+w;
+  return dist;
 }
-
-function updatePhases(activePhase){
-  document.getElementById('phases').innerHTML=[
-    ['Phase 1','Add virtual source q with edges q→0, q→1, q→2, q→3 (weight 0).'],
-    ['Phase 2','Run Bellman-Ford from q to get h[] potentials.'],
-    ['Phase 3','Reweight: w\'(u,v) = w(u,v) + h[u] – h[v] (all ≥ 0).'],
-    ['Phase 4','Run Dijkstra from each node. Adjust results.']
-  ].map(([title,desc],i)=>`<div class="phase-box${i===activePhase?' active':''}"><h3>Phase ${i+1}: ${title}</h3>${desc}</div>`).join('');
-}
-
-function updateHVals(){
-  document.getElementById('hvals').innerHTML='<b style="font-size:13px">h[] values: </b>'+
-    Array.from({length:N},(_,i)=>`<div class="h-cell${h[i]!==null?' set':''}">h[${i}]=${h[i]!==null?h[i]:'?'}</div>`).join('');
-}
-
-function drawArrow(x1,y1,x2,y2,w,col,dashed){
-  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
-  const ux=dx/len,uy=dy/len;
-  const sx=x1+ux*22,sy=y1+uy*22,ex=x2-ux*24,ey=y2-uy*24;
-  const mx=(sx+ex)/2-uy*14,my=(sy+ey)/2+ux*14;
-  ctx.setLineDash(dashed?[5,3]:[]);
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);
-  ctx.strokeStyle=col||'#c5c0d0';ctx.lineWidth=dashed?1.5:2;ctx.stroke();
-  ctx.setLineDash([]);
-  const ang=Math.atan2(ey-sy,ex-sx);
-  ctx.beginPath();ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-8*Math.cos(ang-0.4),ey-8*Math.sin(ang-0.4));
-  ctx.lineTo(ex-8*Math.cos(ang+0.4),ey-8*Math.sin(ang+0.4));
-  ctx.closePath();ctx.fillStyle=col||'#c5c0d0';ctx.fill();
-  ctx.fillStyle='#5a5a72';ctx.font="11px 'JetBrains Mono'";ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(w,mx,my);
-}
-
-function draw(){
-  ctx.clearRect(0,0,700,280);
-  edges.forEach(([a,b,w],i)=>drawArrow(nodes[a].x,nodes[a].y,nodes[b].x,nodes[b].y,
-    reweighted[i]!=null?reweighted[i]:w,
-    reweighted[i]!=null?'#27a060':'#c5c0d0'));
-  if(showQ){
-    nodes.forEach((n,i)=>drawArrow(qNode.x,qNode.y,n.x,n.y,0,'#b39ddb',true));
-    ctx.beginPath();ctx.arc(qNode.x,qNode.y,18,0,Math.PI*2);
-    ctx.fillStyle='#b39ddb';ctx.fill();ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#fff';ctx.font="bold 13px 'Inter'";ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('q',qNode.x,qNode.y);
+function dijkstra(src,adj,sz){
+  const dist=new Array(sz).fill(INF); dist[src]=0; const done=new Array(sz).fill(false);
+  for(let i=0;i<sz;i++){
+    let u=-1; for(let j=0;j<sz;j++) if(!done[j]&&(u===-1||dist[j]<dist[u])) u=j;
+    if(u===-1||dist[u]===INF) break; done[u]=true;
+    for(const{to:v,w} of adj[u]) if(dist[u]+w<dist[v]) dist[v]=dist[u]+w;
   }
-  nodes.forEach((n,i)=>{
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=highlighted.includes(i)?'#7b4fd4':'#ffffff';
-    ctx.fill();ctx.strokeStyle='#1a1a2e';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=highlighted.includes(i)?'#fff':'#1a1a2e';
-    ctx.font="bold 13px 'Inter'";ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.label,n.x,n.y);
-    if(h[i]!==null){ctx.fillStyle='#5a5a72';ctx.font="10px 'JetBrains Mono'";ctx.fillText('h='+h[i],n.x,n.y+32);}
+  return dist;
+}
+
+function generateSteps(){
+  const steps=[];
+  const bfEdges=[...EDGES];
+  for(let i=0;i<n;i++) bfEdges.push([n,i,0]);
+  const hFull=bf(n,bfEdges,n+1);
+  const h=hFull.slice(0,n);
+  steps.push({ title:'Phase 1: Bellman-Ford from virtual source q',
+    what:`Add virtual node q with 0-weight edges to all nodes. h=[${h.join(',')}].`,
+    why:'Potentials h[v] = shortest distance from q to v allow non-negative reweighting.',
+    phase:'BF', nodeState:new Array(n).fill('done'), mat:null, activeEdge:null, h:[...h] });
+  const rewEdges=EDGES.map(([a,b,w])=>[a,b,w+h[a]-h[b]]);
+  steps.push({ title:'Phase 2: Reweight edges',
+    what:`w'(u,v)=w(u,v)+h[u]-h[v]. New weights: ${rewEdges.map(([a,b,w])=>`(${a}→${b}:${w})`).join(', ')}.`,
+    why:'Reweighted graph has all non-negative weights — Dijkstra now applicable.',
+    phase:'Reweight', nodeState:new Array(n).fill('done'), mat:null, activeEdge:null, h:[...h] });
+  const ADJ=Array.from({length:n},()=>[]);
+  rewEdges.forEach(([a,b,w])=>ADJ[a].push({to:b,w}));
+  const dist=Array.from({length:n},()=>new Array(n).fill('∞'));
+  for(let s=0;s<n;s++){
+    const d=dijkstra(s,ADJ,n);
+    for(let t=0;t<n;t++) dist[s][t]=d[t]<INF?d[t]+h[t]-h[s]:'∞';
+    const ns=new Array(n).fill('unvisited'); ns[s]='done';
+    steps.push({ title:`Phase 3: Dijkstra from node ${s}`,
+      what:`Run Dijkstra on reweighted graph from ${s}. Subtract potentials for actual distances: [${dist[s].join(',')}].`,
+      why:'Dijkstra correct on non-negative weights. h[t]-h[s] reverses the reweighting.',
+      phase:`Dijkstra(${s})`, nodeState:ns, mat:dist.map(r=>[...r]), activeEdge:null, h:[...h] });
+  }
+  steps.push({ title:"Johnson's complete — all-pairs distances computed",
+    what:`Full distance matrix: O(V²logV+VE) total.`,
+    why:'Bellman-Ford reweighting enables efficient Dijkstra for all sources.',
+    phase:'Done', nodeState:new Array(n).fill('done'), mat:dist.map(r=>[...r]), activeEdge:null, h:[...h] });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
+}
+
+function renderStep(step){
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  EDGES.forEach(([a,b,w])=>{
+    const dx=NODES[b].x-NODES[a].x,dy=NODES[b].y-NODES[a].y,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len,r=20*sc;
+    const sx=(NODES[a].x+ux*r)*sc,sy=(NODES[a].y+uy*r)*sc;
+    const ex=(NODES[b].x-ux*r)*sc,ey=(NODES[b].y-uy*r)*sc;
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey);
+    ctx.strokeStyle=w<0?'#ef4444':'#c5c0d0'; ctx.lineWidth=1.5; ctx.stroke();
+    const mx=(sx+ex)/2,my=(sy+ey)/2;
+    ctx.fillStyle=w<0?'#ef4444':'#555'; ctx.font=`${Math.round(9*sc)}px JetBrains Mono`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(w,mx-uy*12*sc,my+ux*12*sc);
+    const ax=ex-ux*8*sc-uy*5*sc,ay=ey-uy*8*sc+ux*5*sc;
+    const bx2=ex-ux*8*sc+uy*5*sc,by2=ey-uy*8*sc-ux*5*sc;
+    ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ax,ay); ctx.lineTo(bx2,by2); ctx.closePath();
+    ctx.fillStyle=w<0?'#ef4444':'#c5c0d0'; ctx.fill();
   });
-}
-
-function* johnsonGen(){
-  updatePhases(0);
-  logStep('Phase 1: Add virtual source node q with zero-weight edges to all nodes.','info');
-  showQ=true;draw();yield;
-
-  updatePhases(1);
-  logStep('Phase 2: Run Bellman-Ford from q to compute h[] potentials.','info');
-  const dist=Array(N).fill(Infinity);dist.fill(0);
-  const allEdges=[...edges,...Array.from({length:N},(_,i)=>['q',i,0])];
-  for(let pass=0;pass<N;pass++){
-    for(let i=0;i<N;i++){
-      for(const [u,v,w] of edges){
-        if(dist[u]+w<dist[v]){dist[v]=dist[u]+w;logStep(`  h[${v}] updated to ${dist[v]}.`,'step');}
-      }
-    }
-    yield;
-  }
-  h=[...dist];highlighted=[0,1,2,3];
-  logStep(`h[] = [${h.join(', ')}]`,'info');
-  updateHVals();draw();yield;
-
-  updatePhases(2);
-  logStep('Phase 3: Reweight all edges: w\'(u,v) = w + h[u] - h[v].','info');
-  reweighted=edges.map(([u,v,w])=>{
-    const rw=w+h[u]-h[v];
-    logStep(`  edge (${u},${v}): ${w}+${h[u]}-${h[v]}=${rw}.`,'step');
-    return rw;
+  const fc={unvisited:'#e0e0e0',done:'#a8e6a3'};
+  NODES.forEach((node,i)=>{
+    const r=20*sc,st=step.nodeState[i]||'done';
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=fc[st]; ctx.fill(); ctx.strokeStyle='#555'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(12*sc)}px Inter`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(node.label,node.x*sc,node.y*sc);
+    if(step.h){ ctx.fillStyle='#7b4fd4'; ctx.font=`${Math.round(8*sc)}px JetBrains Mono`;
+      ctx.fillText(`h${step.h[i]}`,node.x*sc,node.y*sc+r+10*sc); }
   });
-  showQ=false;highlighted=[];draw();yield;
-
-  updatePhases(3);
-  logStep('Phase 4: Run Dijkstra from each node on reweighted graph.','info');
-  for(let src=0;src<N;src++){
-    highlighted=[src];draw();
-    logStep(`  Dijkstra from node ${src}... (Dijkstra details omitted for brevity)`, 'step');
-    yield;
-  }
-  highlighted=[];draw();
-  logStep('Johnson\'s complete! All-pairs shortest paths computed.','info');
+  const ib=document.getElementById('infoBar'); if(ib) ib.textContent=`Phase: ${step.phase}  |  h=[${step.h?step.h.join(','):'—'}]`;
+  const mb=document.getElementById('matBox');
+  if(mb&&step.mat){
+    let html=`<table class="mat"><tr><th>from\\to</th>${Array.from({length:n},(_,i)=>`<th>${i}</th>`).join('')}</tr>`;
+    step.mat.forEach((row,r2)=>{ html+=`<tr><th>${r2}</th>${row.map(v=>`<td>${v}</td>`).join('')}</tr>`; });
+    html+='</table>'; mb.innerHTML=html;
+  } else if(mb) mb.innerHTML='';
 }
-
-function stepJohnson(){
-  if(!stepGen){resetAll();stepGen=johnsonGen();}
-  const r=stepGen.next();if(r.done)stepGen=null;
-}
-
-async function runJohnson(){
-  if(running)return;running=true;resetAll();stepGen=johnsonGen();
-  while(true){const r=stepGen.next();draw();if(r.done)break;await new Promise(r=>setTimeout(r,800));}
-  running=false;stepGen=null;
-}
-
-resetAll();
+function rebuild(){ setupCanvas(); if(player) player.destroy(); player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar'); }
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

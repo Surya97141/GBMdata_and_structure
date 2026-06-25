@@ -2,136 +2,134 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Coin Change – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Coin Change – Dynamic Programming</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem}
-.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
-.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
-.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
-label{font-size:14px;color:#5a5a72;font-weight:500}
-input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:180px}
-input[type=number]{width:80px;padding:8px 10px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2}
-button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
-button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
-.dp-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
-.dp-cell{min-width:44px;padding:8px 4px;background:#fff;border:2px solid #e2e0da;border-radius:6px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;transition:all .3s}
-.dp-cell .idx{font-size:10px;color:#5a5a72;display:block}
-.dp-cell.cur{background:#e8622a;color:#fff;border-color:#e8622a}
-.dp-cell.cur .idx{color:#fdebd7}
-.dp-cell.done{background:#fdf0ea;border-color:#f5c4a8}
-.dp-cell.done .idx{color:#e8622a}
-.dp-cell.inf{color:#c8c6c0}
-.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
-.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto}
-.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
-.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.dp-row{display:flex;flex-wrap:wrap;gap:6px;margin:.6rem 0;font-family:'JetBrains Mono',monospace;font-size:.75rem}
+.dp-cell{width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--b);border-radius:6px;background:var(--bg)}
+.dp-cell.cur{background:#fff176;border-color:#c8c000;font-weight:700}
+.dp-cell.dep{background:#c3b1e1;border-color:#8b5cf6}
+.dp-cell.done{background:#a8e6a3;border-color:#27a060}
+.dp-cell.inf{background:#ffe0e0}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:200px;background:var(--bg);color:var(--ink)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:80px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Coin Change
-  </div>
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Coin Change</h1>
-    <p class="tagline">Find the minimum number of coins needed to make a target amount.</p>
-  </div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Coin Change</span>
+  </nav>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Coin Change (Min Coins)</h1>
+  <p class="tagline">Minimum number of coins to make amount — classic unbounded DP.</p>
   <div class="prose">
-    <p>You're at a vending machine that needs exact change. Given coin denominations and a target amount, what is the fewest coins needed? Greedy fails for unusual coin sets (e.g., coins [1,3,4] and target 6 — greedy picks 4+1+1=3 coins, but 3+3=2 coins is optimal).</p>
-    <p>DP solves this cleanly: <code>dp[w]</code> = minimum coins to make amount w. Base case: dp[0]=0. For each amount from 1 to target, try every coin c: if c ≤ w and dp[w-c]+1 &lt; dp[w], update dp[w]. Start with dp[w]=∞ for w&gt;0.</p>
-    <p>After computing dp[target], backtrack through the choice array to find which coins were used. Time O(n·W), space O(W). A classic problem in competitive programming and a great interview question.</p>
+    <p>Coin Change: given coin denominations and a target amount, find the minimum number of coins to make that amount (unlimited coins of each denomination). DP recurrence: dp[a] = min over all coins c of (dp[a-c] + 1) where a ≥ c. Initialize dp[0]=0, dp[1..amount]=∞.</p>
+    <p>This is the dual of unbounded knapsack (minimize coins instead of maximize value). The dp array fills left to right. Red cells are impossible amounts. Green shows the final result at the target amount.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-val">O(n·W)</div><div class="fact-lbl">Time Complexity</div></div>
-    <div class="fact"><div class="fact-val">O(W)</div><div class="fact-lbl">Space Complexity</div></div>
-    <div class="fact"><div class="fact-val">Unbounded</div><div class="fact-lbl">Coin Reuse</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(amount × coins)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(amount)</div></div>
+    <div class="fact"><div class="flabel">Coins</div><div class="fval">Unlimited</div></div>
+    <div class="fact"><div class="flabel">Goal</div><div class="fval">Minimize count</div></div>
   </div>
-
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Coins: <input type="text" id="coins" value="1,2,5"/></label>
-      <label>Amount: <input type="number" id="amount" value="11" min="1" max="30"/></label>
-      <button id="solveBtn" onclick="solve()">Solve</button>
-      <button onclick="reset()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div id="dpRow" class="dp-row"></div>
+      <div class="info-bar" id="infoBar">DP array appears above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Coins:</label>
+        <input type="text" id="coins" value="1,5,6,9"/>
+        <label>Amount:</label>
+        <input type="number" id="amt" value="11" min="1" max="25"/>
+        <button class="btn btn-p" onclick="rebuild()">Solve</button>
+      </div>
     </div>
-    <div class="dp-row" id="dpRow"></div>
-    <div class="result" id="result"></div>
-  </div>
-
-  <div class="card">
-    <h2>Step Log</h2>
-    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
   </div>
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-let running=false;
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
-function reset(){document.getElementById('dpRow').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('solveBtn').disabled=false;running=false;}
-function buildCells(W){
-  const wrap=document.getElementById('dpRow');wrap.innerHTML='';
-  for(let w=0;w<=W;w++){
-    const div=document.createElement('div');div.className='dp-cell';div.id=`dc${w}`;
-    div.innerHTML=`<span class="idx">w=${w}</span><span class="val">${w===0?0:'∞'}</span>`;wrap.appendChild(div);
-  }
-}
-function setCell(w,v,cls){
-  const el=document.getElementById(`dc${w}`);if(!el)return;
-  el.querySelector('.val').textContent=v===Infinity?'∞':v;
-  el.className='dp-cell '+(cls||'');
-}
-async function solve(){
-  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
-  document.getElementById('log').innerHTML='';
-  const coins=document.getElementById('coins').value.split(',').map(s=>parseInt(s.trim())).filter(x=>!isNaN(x)&&x>0);
-  const W=parseInt(document.getElementById('amount').value)||11;
-  buildCells(W);
-  const dp=new Array(W+1).fill(Infinity);
-  const from=new Array(W+1).fill(-1);
-  dp[0]=0;
-  log(`<span class="hi">Coins: [${coins.join(',')}], Amount: ${W}</span>`);
-  await sleep(300);
-  for(let w=1;w<=W;w++){
-    setCell(w,Infinity,'cur');await sleep(80);
-    let parts=[];
+let player=null;
+const INF=1e6;
+function generateSteps(coins,amount){
+  const steps=[], n=coins.length;
+  const dp=new Array(amount+1).fill(INF); dp[0]=0;
+  function snap(c,dep){ return { dp:[...dp], cur:c, dep }; }
+  steps.push({ title:`Coin Change: coins=[${coins.join(',')}], amount=${amount}`,
+    what:`dp[0]=0 (base). dp[1..${amount}]=∞. For each amount, try all coins.`,
+    why:'Optimal substructure: dp[a]=min coins for amount a, built from smaller amounts.',
+    ...snap(-1,-1) });
+  for(let a=1;a<=amount;a++){
+    let bestCoin=-1,bestDep=-1;
     for(const c of coins){
-      if(c<=w&&dp[w-c]+1<dp[w]){dp[w]=dp[w-c]+1;from[w]=c;}
-      if(c<=w) parts.push(`dp[${w-c}]+1=${dp[w-c]===Infinity?'∞':dp[w-c]+1}`);
+      if(a>=c&&dp[a-c]+1<dp[a]){ dp[a]=dp[a-c]+1; bestCoin=c; bestDep=a-c; }
+      steps.push({ title:`dp[${a}]: try coin ${c}`,
+        what:`${a>=c?`dp[${a-c}]+1=${dp[a-c]===INF?'∞':dp[a-c]+1} vs dp[${a}]=${dp[a]===INF?'∞':dp[a]}. ${dp[a-c]+1<dp[a]?'IMPROVE!':'No improvement.'}`:'Cannot use: amount < coin'}`,
+        why:`Using coin ${c}: need dp[${a-c}] more coins for remaining ${a-c}.`,
+        ...snap(a,a>=c?a-c:-1) });
     }
-    setCell(w,dp[w],'done');
-    log(`dp[${w}] = min(${parts.join(', ')}) = ${dp[w]===Infinity?'∞':dp[w]}`);
   }
-  // trace coins
-  const used=[];let w=W;
-  while(w>0&&from[w]>0){used.push(from[w]);w-=from[w];}
-  const res=document.getElementById('result');res.style.display='block';
-  if(dp[W]===Infinity) res.innerHTML=`<b>No solution</b> — cannot make ${W} with given coins.`;
-  else res.innerHTML=`<b>Min coins: ${dp[W]}</b> &nbsp;|&nbsp; Coins used: [${used.join(', ')}]`;
-  log(`✓ Min coins = ${dp[W]===Infinity?'impossible':dp[W]}`);
-  running=false;
+  steps.push({ title:`Min coins for ${amount}: ${dp[amount]===INF?'impossible':dp[amount]}`,
+    what:`dp[${amount}]=${dp[amount]===INF?'∞ (impossible)':dp[amount]}.`,
+    why:'Each cell optimally built from smaller amounts.',
+    ...snap(amount,-1) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
+function renderStep(step,amount){
+  const dr=document.getElementById('dpRow'); if(!dr) return;
+  let html='';
+  for(let i=0;i<=amount;i++){
+    const isCur=step.cur===i,isDep=step.dep===i,isInf=step.dp[i]>=INF;
+    html+=`<div class="dp-cell ${isCur?'cur':isDep?'dep':isInf?'inf':step.cur>i?'done':''}">
+      <span style="font-size:.6rem;color:#888">a=${i}</span>
+      <span>${isInf?'∞':step.dp[i]}</span>
+    </div>`;
+  }
+  dr.innerHTML=html;
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Amount ${step.cur>=0?step.cur:'—'}: dp[${step.cur>=0?step.cur:'—'}]=${step.cur>=0?(step.dp[step.cur]>=INF?'∞':step.dp[step.cur]):'—'}  |  Answer: ${step.dp[amount]>=INF?'impossible':step.dp[amount]} coins`;
+}
+function rebuild(){
+  const coins=document.getElementById('coins').value.split(',').map(Number).filter(v=>v>0);
+  const amount=Math.min(parseInt(document.getElementById('amt').value),25);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(coins,amount),(s)=>renderStep(s,amount),'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

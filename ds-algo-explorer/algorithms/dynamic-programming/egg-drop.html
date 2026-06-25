@@ -1,180 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Egg Drop – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Egg Drop Problem – Dynamic Programming</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-  .container{max-width:900px;margin:0 auto;padding:0 24px;}
-  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
-  .breadcrumb span{margin:0 6px;}
-  .hero{padding:48px 0 32px;}
-  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
-  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
-  .explanation{padding:24px 0;}
-  .explanation p{margin-bottom:14px;}
-  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
-  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
-  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
-  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
-  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
-  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
-  .input-group{display:flex;flex-direction:column;gap:4px;}
-  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
-  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;width:100px;background:var(--bg);}
-  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
-  .btn:hover{opacity:.85;} .btn:disabled{opacity:.4;cursor:not-allowed;}
-  .dp-scroll{overflow-x:auto;margin:18px 0;}
-  table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;}
-  table.dp th,table.dp td{border:1px solid var(--border);padding:7px 12px;text-align:center;min-width:42px;transition:background .3s,color .3s;}
-  table.dp th{background:var(--bg);font-weight:600;color:var(--muted);}
-  table.dp td{background:var(--surface);}
-  table.dp td.active{background:var(--accent);color:#fff;}
-  table.dp td.done{background:#fff3ed;}
-  .result-note{margin-top:12px;font-size:.95rem;color:var(--ink);}
-  .result-note strong{color:var(--accent);}
-  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
-  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
-  .log-box p.highlight{color:#e8a87c;}
-  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.matrix-wrap{overflow-x:auto}
+table.mat{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.75rem;margin:0 auto}
+table.mat td,table.mat th{border:1px solid var(--b);padding:.28rem .55rem;text-align:center;min-width:40px}
+table.mat th{background:var(--bg);font-weight:700;color:var(--m)}
+table.mat td.cur{background:#fff176;font-weight:700}
+table.mat td.opt{background:#a8e6a3}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:80px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Egg Drop
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Egg Drop</span>
   </nav>
-
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Egg Drop Problem</h1>
-    <p class="tagline">Find the critical floor using the fewest trials — even with limited eggs.</p>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Egg Drop Problem</h1>
+  <p class="tagline">Minimum trials needed in the worst case to find the critical floor.</p>
+  <div class="prose">
+    <p>Given e eggs and n floors, find the minimum number of trials (in the worst case) to determine the critical floor above which eggs break. dp[e][f] = minimum trials needed with e eggs and f floors. Try each floor k: dp[e][f] = 1 + min over k of max(dp[e-1][k-1], dp[e][f-k]). The max captures worst case (egg breaks vs doesn't break).</p>
+    <p>If the egg breaks: look below (dp[e-1][k-1]). If it doesn't: look above (dp[e][f-k]). We minimize the worst case over all choices of k. With 1 egg: always dp[1][f]=f (must test every floor). With ∞ eggs: dp[∞][f]=⌈log₂(f+1)⌉ (binary search).</p>
   </div>
-
-  <div class="explanation">
-    <p>You have <em>e</em> eggs and a building with <em>f</em> floors. There is some critical floor <em>F</em>: eggs dropped from above <em>F</em> break; below or at <em>F</em>, they survive. You want to find <em>F</em> in the <strong>worst case</strong> using the fewest possible trials.</p>
-    <p>If you had infinite eggs, binary search (log₂ f trials) is optimal. But with limited eggs, breakage is costly. DP gives us: <code>dp[e][k]</code> = minimum trials needed with <em>e</em> eggs and <em>k</em> floors. We try every floor <em>j</em>: if it breaks we check below with <em>e−1</em> eggs, if it survives we check above with <em>e</em> eggs — take the max (worst case), then minimize over all <em>j</em>.</p>
-    <p>The recurrence is <code>dp[e][k] = 1 + min over j of max(dp[e-1][j-1], dp[e][k-j])</code>. This classic puzzle builds intuition for adversarial worst-case reasoning combined with optimal substructure.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="val">O(ef²)</div><div class="label">Time Complexity</div></div>
-    <div class="fact-card"><div class="val">O(ef)</div><div class="label">Space Complexity</div></div>
-    <div class="fact-card"><div class="val">Minimax</div><div class="label">DP Strategy</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(e · n²)</div></div>
+    <div class="fact"><div class="flabel">1 egg</div><div class="fval">n trials</div></div>
+    <div class="fact"><div class="flabel">∞ eggs</div><div class="fval">log₂n trials</div></div>
+    <div class="fact"><div class="flabel">Worst case</div><div class="fval">Minimax</div></div>
   </div>
-
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <div class="input-row">
-      <div class="input-group">
-        <label>Eggs (e)</label>
-        <input type="number" id="eggs" value="2" min="1" max="5">
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="matrix-wrap"><div id="matBox"></div></div>
+      <div class="info-bar" id="infoBar">DP table (rows=eggs, cols=floors).</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Eggs:</label>
+        <input type="number" id="eggs" value="3" min="1" max="5"/>
+        <label>Floors:</label>
+        <input type="number" id="floors" value="8" min="1" max="12"/>
+        <button class="btn btn-p" onclick="rebuild()">Solve Egg Drop</button>
       </div>
-      <div class="input-group">
-        <label>Floors (f)</label>
-        <input type="number" id="floors" value="10" min="1" max="15">
-      </div>
-      <button class="btn" id="solveBtn" onclick="startSolve()">Solve</button>
     </div>
-    <div class="dp-scroll"><table class="dp" id="dpTable"></table></div>
-    <div class="result-note" id="resultNote"></div>
   </div>
-
-  <div class="sim-box" style="padding:20px;">
-    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
-    <div class="log-box" id="logBox"></div>
-  </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
-
 <script>
-function log(msg,h=false){
-  const lb=document.getElementById('logBox');
-  const p=document.createElement('p');
-  if(h)p.classList.add('highlight');
-  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
-}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function startSolve(){
-  const btn=document.getElementById('solveBtn');
-  btn.disabled=true;
-  document.getElementById('logBox').innerHTML='';
-  document.getElementById('resultNote').innerHTML='';
-
-  const e=parseInt(document.getElementById('eggs').value)||2;
-  const f=parseInt(document.getElementById('floors').value)||10;
-
-  // dp[i][j] = min trials with i eggs, j floors
-  const dp=Array.from({length:e+1},()=>new Array(f+1).fill(0));
-
-  // Base cases
-  for(let j=1;j<=f;j++) dp[1][j]=j;          // 1 egg: linear scan
-  for(let i=1;i<=e;i++) dp[i][0]=0,dp[i][1]=1;// 0 floors=0, 1 floor=1
-
-  // Build table
-  const tbl=document.getElementById('dpTable');
-  tbl.innerHTML='';
-  const thead=tbl.createTHead();
-  const hrow=thead.insertRow();
-  hrow.insertCell().textContent='eggs \\ floors';
-  for(let j=0;j<=f;j++){const th=document.createElement('th');th.textContent=j;hrow.appendChild(th);}
-
-  const tbody=tbl.createTBody();
-  const cells=[];
-  for(let i=1;i<=e;i++){
-    const row=tbody.insertRow();
-    const lbl=row.insertCell();lbl.textContent=`e=${i}`;lbl.style.fontWeight='600';lbl.style.color='var(--muted)';
-    cells[i]=[];
-    for(let j=0;j<=f;j++){
-      const td=row.insertCell();
-      td.textContent=(j===0)?'0':(i===1)?j:( j===1?'1':'–');
-      if(j===0||i===1||j===1) td.classList.add('done');
-      cells[i][j]=td;
-    }
-  }
-
-  await sleep(400);
-
-  // Fill DP
-  for(let i=2;i<=e;i++){
-    for(let j=2;j<=f;j++){
-      cells[i][j].classList.add('active');
-      let best=Infinity,bestK=1;
-      const tried=[];
-      for(let k=1;k<=j;k++){
-        const worst=1+Math.max(dp[i-1][k-1],dp[i][j-k]);
-        tried.push(`k=${k}:max(dp[${i-1}][${k-1}],dp[${i}][${j-k}])+1=${worst}`);
-        if(worst<best){best=worst;bestK=k;}
+let player=null;
+function generateSteps(E,F){
+  const steps=[];
+  const dp=Array.from({length:E+1},(_,e)=>Array.from({length:F+1},(_,f)=>e===0?Infinity:e===1?f:f<=1?f:Infinity));
+  function snap(r,c){ return { dp:dp.map(row=>[...row]), cur:[r,c] }; }
+  steps.push({ title:`Egg Drop: ${E} eggs, ${F} floors`,
+    what:`dp[e][f]=min trials (worst case) with e eggs, f floors. Base: dp[1][f]=f, dp[e][0]=0, dp[e][1]=1.`,
+    why:'dp[e][f]=1+min_k(max(dp[e-1][k-1],dp[e][f-k])): try floor k — egg breaks (e-1 eggs, k-1 floors below) or survives (e eggs, f-k floors above).',
+    ...snap(0,0) });
+  for(let e=2;e<=E;e++){
+    for(let f=2;f<=F;f++){
+      let best=Infinity, bestK=-1;
+      for(let k=1;k<=f;k++){
+        const worst=1+Math.max(dp[e-1][k-1],dp[e][f-k]);
+        if(worst<best){ best=worst; bestK=k; }
       }
-      dp[i][j]=best;
-      const shortLog=tried.slice(0,3).join('; ')+(tried.length>3?` ... min=${best}`:'');
-      log(`dp[${i}][${j}]: ${shortLog} → min=${best} (try floor ${bestK})`);
-      await sleep(120);
-      cells[i][j].textContent=best;
-      cells[i][j].classList.remove('active');
-      cells[i][j].classList.add('done');
+      dp[e][f]=best;
+      steps.push({ title:`dp[${e}][${f}] = ${dp[e][f]} (try floor ${bestK})`,
+        what:`Optimal: try floor ${bestK}. Worst case: max(dp[${e-1}][${bestK-1}],dp[${e}][${f-bestK}])=${Math.max(dp[e-1][bestK-1],dp[e][f-bestK])}. +1 = ${dp[e][f]}.`,
+        why:`Floor ${bestK}: if egg breaks → dp[${e-1}][${bestK-1}]. If survives → dp[${e}][${f-bestK}]. Worst case is the max.`,
+        ...snap(e,f) });
     }
   }
-
-  document.getElementById('resultNote').innerHTML=
-    `<strong>Answer: ${dp[e][f]} trials</strong> needed in the worst case with ${e} egg(s) and ${f} floor(s).`;
-  log(`Done. With ${e} eggs and ${f} floors: worst-case minimum trials = ${dp[e][f]}`,true);
-  btn.disabled=false;
+  steps.push({ title:`Answer: ${dp[E][F]} trials with ${E} eggs and ${F} floors`,
+    what:`Minimum worst-case trials: ${dp[E][F]}.`,
+    why:'Minimax: minimizes the worst-case over all floor choices.',
+    ...snap(E,F) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-
-window.onload=()=>startSolve();
+function renderStep(step,E,F){
+  const mb=document.getElementById('matBox'); if(!mb) return;
+  let html=`<table class="mat"><tr><th>eggs\\floors</th>${Array.from({length:F+1},(_,f)=>`<th>${f}</th>`).join('')}</tr>`;
+  step.dp.forEach((row,e)=>{
+    if(e===0) return;
+    html+=`<tr><th>${e} egg${e>1?'s':''}</th>`;
+    row.forEach((v,f)=>{
+      const isCur=step.cur[0]===e&&step.cur[1]===f;
+      html+=`<td class="${isCur?'cur':v<Infinity&&step.cur[0]>=e&&step.cur[1]>=f?'opt':''}">${v>=1e6?'∞':v}</td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</table>'; mb.innerHTML=html;
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Current: dp[${step.cur[0]}][${step.cur[1]}]=${step.dp[step.cur[0]][step.cur[1]]>=1e6?'∞':step.dp[step.cur[0]][step.cur[1]]}  |  Answer dp[${E}][${F}]=${step.dp[E][F]>=1e6?'∞':step.dp[E][F]}`;
+}
+function rebuild(){
+  const E=Math.min(parseInt(document.getElementById('eggs').value),5);
+  const F=Math.min(parseInt(document.getElementById('floors').value),12);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(E,F),(s)=>renderStep(s,E,F),'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

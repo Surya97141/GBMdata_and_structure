@@ -2,197 +2,152 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Subset Generation – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Subset Generation – Backtracking</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
-body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
-nav.breadcrumb a{color:var(--muted)}nav.breadcrumb span{margin:0 6px}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
-.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
-.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
-.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
-.section{margin-bottom:36px}
-.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
-.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
-.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
-.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
-.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
-.sim-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
-button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}button:disabled{opacity:.45;cursor:not-allowed}
-button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
-input[type=text]{border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:.9rem;background:var(--bg);color:var(--ink);width:180px}
-.tree-display{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:180px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--muted);margin-bottom:12px}
-.tree-line{padding:1px 0;white-space:pre}
-.tree-line.include{color:var(--accent)}
-.tree-line.exclude{color:#888}
-.tree-line.subset{color:#1a7a40;font-weight:600}
-.subset-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:44px}
-.subset-chip{background:#fde8e8;border:1px solid #f5c6c6;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:4px 10px;border-radius:20px;animation:popIn .2s ease}
-@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
-.subset-chip.empty-set{background:#f0ede5;border-color:#ddd;color:var(--muted)}
-.counter-row{font-size:.88rem;color:var(--muted);margin-bottom:8px;font-family:'JetBrains Mono',monospace}
-.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)}
-.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
-.log-ok{color:#27ae60}.log-done{color:#1a7a40;font-weight:600}
-.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.item-row{display:flex;gap:6px;margin:.8rem 0;justify-content:center}
+.item-cell{width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:2px solid var(--b);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;background:var(--bg)}
+.item-cell.in{background:#a8e6a3;border-color:#27a060}
+.item-cell.cur{background:#fff176;border-color:#f59e0b}
+.item-cell.excl{background:#ffe0e0;border-color:#ef4444}
+.subset-list{display:flex;flex-wrap:wrap;gap:6px;margin:.6rem 0;font-family:'JetBrains Mono',monospace;font-size:.75rem}
+.subset-tag{background:#c3b1e1;border:1px solid #8b5cf6;padding:2px 8px;border-radius:5px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:140px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Subset Generation
-</nav>
-<div class="hero">
-  <div style="max-width:900px;margin:0 auto">
-    <span class="hero-tag">Backtracking</span>
-    <h1>Subset Generation</h1>
-    <p class="tagline">Generate all 2ⁿ subsets of a set by recursively including or excluding each element — the power set via backtracking.</p>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Subset Generation</span>
+  </nav>
+  <span class="tag">Backtracking</span>
+  <h1>Subset Generation (Power Set)</h1>
+  <p class="tagline">Generate all 2^n subsets via include/exclude backtracking.</p>
+  <div class="prose">
+    <p>Power Set: generate all 2^n subsets of a set. Backtracking: for each element at position i, make two recursive calls — one including it in the current subset and one excluding it. The recursion tree has 2^n leaves, each a distinct subset.</p>
+    <p>Green = included in current subset. Yellow = currently deciding. Red = excluded. Each subset is recorded when all elements are decided (leaf of recursion tree).</p>
   </div>
-</div>
-<div class="content">
-  <div class="section">
-    <p>The power set of a set with n elements contains exactly 2ⁿ subsets (including the empty set and the full set). Backtracking generates them naturally by making a binary decision at each element: include it in the current subset, or exclude it.</p>
-    <p>Visualize a binary tree: at each level you branch left (include) or right (exclude). The leaf nodes at depth n each represent a unique subset. This is sometimes called a "decision tree" or "include-exclude" recursion, and it underpins the Subset Sum problem and the Knapsack problem.</p>
-    <p>Enter comma-separated values (e.g., 1,2,3,4) and press "Generate All Subsets" to watch every subset appear. The include/exclude decision tree is shown on the left; the found subsets appear as chips on the right.</p>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Subsets</div><div class="fval">2^n</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(2^n)</div></div>
+    <div class="fact"><div class="flabel">Pattern</div><div class="fval">Include / exclude</div></div>
+    <div class="fact"><div class="flabel">Empty set</div><div class="fval">Always included</div></div>
   </div>
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Total Subsets</div><div class="value">2ⁿ</div><div class="sub">n = number of elements</div></div>
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n · 2ⁿ)</div><div class="sub">Each subset takes O(n) to output</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(n)</div><div class="sub">Recursion depth = n</div></div>
-  </div>
-  <div class="sim-card">
-    <div class="sim-controls">
-      <label style="font-size:.9rem;font-weight:500;color:var(--muted)">Array:</label>
-      <input type="text" id="arr-input" value="1,2,3,4" placeholder="e.g. 1,2,3,4"/>
-      <button id="btn-gen" onclick="startGenerate()">Generate All Subsets</button>
-      <button id="btn-reset" onclick="resetAll()" class="secondary">Reset</button>
-      <label style="font-size:.85rem;color:var(--muted)">Speed:
-        <select id="spd" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem">
-          <option value="80">Fast</option>
-          <option value="200" selected>Medium</option>
-          <option value="500">Slow</option>
-        </select>
-      </label>
-    </div>
-    <div class="counter-row" id="counter-row">Subsets found: 0 / 0 &nbsp;|&nbsp; Expected: 2ⁿ = 0</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div>
-        <div style="font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Include / Exclude Tree</div>
-        <div class="tree-display" id="tree-display"><div style="color:var(--muted)">Tree will appear here…</div></div>
-      </div>
-      <div>
-        <div style="font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Found Subsets</div>
-        <div class="subset-grid" id="subset-grid"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div id="itemRow" class="item-row"></div>
+      <div id="subsetList" class="subset-list"></div>
+      <div class="info-bar" id="infoBar">Subsets appear above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Elements (comma-sep, max 4):</label>
+        <input type="text" id="elems" value="1,2,3"/>
+        <button class="btn btn-p" onclick="rebuild()">Generate Subsets</button>
       </div>
     </div>
-    <div class="step-log" id="step-log"><div class="log-line">Press "Generate All Subsets" to begin.</div></div>
   </div>
-  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-let solving=false, subsetCount=0, arr=[];
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-function spd(){return parseInt(document.getElementById('spd').value)}
-
-function parseArr(){
-  return document.getElementById('arr-input').value.split(',').map(s=>s.trim()).filter(s=>s!=='');
-}
-
-function log(msg,cls=''){
-  const box=document.getElementById('step-log');
-  const d=document.createElement('div');d.className='log-line'+(cls?' '+cls:'');d.textContent=msg;
-  box.appendChild(d);box.scrollTop=box.scrollHeight;
-}
-function clearLog(){document.getElementById('step-log').innerHTML='';}
-
-function addTreeLine(msg,cls=''){
-  const box=document.getElementById('tree-display');
-  if(box.querySelector('[style]')) box.innerHTML='';
-  const d=document.createElement('div');d.className='tree-line '+(cls||'');d.textContent=msg;
-  box.appendChild(d);box.scrollTop=box.scrollHeight;
-}
-
-function addSubsetChip(subset){
-  const grid=document.getElementById('subset-grid');
-  const chip=document.createElement('div');
-  chip.className='subset-chip'+(subset.length===0?' empty-set':'');
-  chip.textContent=subset.length===0?'∅':'{'+subset.join(',')+'}';
-  grid.appendChild(chip);
-}
-
-function updateCounter(){
-  const n=arr.length;
-  document.getElementById('counter-row').textContent=
-    'Subsets found: '+subsetCount+' / '+(Math.pow(2,n))+'  |  Expected: 2ⁿ = '+(Math.pow(2,n));
-}
-
-async function generate(idx, current, depth){
-  if(!solving) return;
-  if(idx===arr.length){
-    subsetCount++;
-    addSubsetChip([...current]);
-    const label='  '.repeat(depth)+'→ Subset: {'+(current.length?current.join(','):'∅')+'}';
-    addTreeLine(label,'subset');
-    log('Found subset: {'+(current.length?current.join(','):'empty set')+'}','log-ok');
-    updateCounter();
-    await sleep(spd());
-    return;
+var player=null;
+function generateSteps(arr){
+  var steps=[], found=[];
+  var chosen=new Array(arr.length).fill(0);
+  function snap(pos,action){
+    return { chosen:chosen.slice(), found:found.slice(), pos:pos, action:action };
   }
-  // Include arr[idx]
-  addTreeLine('  '.repeat(depth)+'Include '+arr[idx]+' → current=['+(current.concat(arr[idx])).join(',')+']','include');
-  await sleep(spd()/3);
-  current.push(arr[idx]);
-  await generate(idx+1,current,depth+1);
-  current.pop();
-  // Exclude arr[idx]
-  if(!solving) return;
-  addTreeLine('  '.repeat(depth)+'Exclude '+arr[idx]+' → current=['+(current.join(','))+']','exclude');
-  await sleep(spd()/3);
-  await generate(idx+1,current,depth+1);
+  steps.push({ title:'Subset Generation: ['+arr.join(',')+']',
+    what:'Generate all 2^'+arr.length+'='+Math.pow(2,arr.length)+' subsets via include/exclude.',
+    why:'For each element: include it (recurse) or exclude it (recurse).',
+    ...snap(0,'start') });
+  function generate(i){
+    if(i===arr.length){
+      var sub=arr.filter(function(_,k){return chosen[k]===1;});
+      found.push('{'+sub.join(',')+'}');
+      steps.push({ title:'Subset found: {'+sub.join(',')+'}',
+        what:'All decisions made. Subset: {'+sub.join(',')+'} ('+sub.length+' elements).',
+        why:'Leaf of recursion tree — record this subset.',
+        ...snap(i,'found') });
+      return;
+    }
+    chosen[i]=1;
+    steps.push({ title:'Include '+arr[i]+' (pos '+i+')',
+      what:'Decision: include arr['+i+']="'+arr[i]+'". Recurse to position '+(i+1)+'.',
+      why:'Explore branch with arr['+i+'] in subset.',
+      ...snap(i,'include') });
+    generate(i+1);
+    chosen[i]=0;
+    steps.push({ title:'Exclude '+arr[i]+' (pos '+i+')',
+      what:'Decision: exclude arr['+i+']="'+arr[i]+'". Recurse to position '+(i+1)+'.',
+      why:'Explore branch without arr['+i+'] in subset.',
+      ...snap(i,'exclude') });
+    generate(i+1);
+  }
+  generate(0);
+  steps.push({ title:'All '+found.length+' subsets generated',
+    what:'Power set: ['+found.join(', ')+'].',
+    why:'Recursion tree fully explored: 2^n='+found.length+' subsets.',
+    ...snap(arr.length,'done') });
+  steps.forEach(function(s,i){ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-
-async function startGenerate(){
-  if(solving) return;
-  arr=parseArr();
-  if(arr.length===0){log('Please enter at least one element.');return;}
-  if(arr.length>6){log('Maximum 6 elements for animation performance.');return;}
-  solving=true;subsetCount=0;
-  clearLog();
-  document.getElementById('subset-grid').innerHTML='';
-  document.getElementById('tree-display').innerHTML='';
-  document.getElementById('btn-gen').disabled=true;
-  document.getElementById('btn-reset').disabled=true;
-  updateCounter();
-  log('Generating all subsets of ['+arr.join(',')+']… (2^'+arr.length+'='+Math.pow(2,arr.length)+' expected)');
-  await generate(0,[],0);
-  log('Done! '+subsetCount+' subsets generated.','log-done');
-  solving=false;
-  document.getElementById('btn-gen').disabled=false;
-  document.getElementById('btn-reset').disabled=false;
+function renderStep(step,arr){
+  var ir=document.getElementById('itemRow');
+  if(ir){
+    var h='';
+    for(var i=0;i<arr.length;i++){
+      var cl=step.pos===i?'cur':step.chosen[i]===1?'in':step.chosen[i]===0&&step.pos>i?'excl':'';
+      h+='<div class="item-cell '+cl+'"><span style="font-size:.6rem;color:#888">'+i+'</span>'+arr[i]+'</div>';
+    }
+    ir.innerHTML=h;
+  }
+  var sl=document.getElementById('subsetList');
+  if(sl) sl.innerHTML=step.found.map(function(s){return '<span class="subset-tag">'+s+'</span>';}).join('');
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Found: '+step.found.length+'/'+Math.pow(2,arr.length)+'  |  Current: {'+arr.filter(function(_,k){return step.chosen[k]===1;}).join(',')+'}  |  '+
+    (step.action==='found'?'Subset recorded!':step.action==='include'?'Include '+arr[Math.min(step.pos,arr.length-1)]:
+     step.action==='exclude'?'Exclude '+arr[Math.min(step.pos,arr.length-1)]:'Done!');
 }
-
-function resetAll(){
-  solving=false;subsetCount=0;
-  clearLog();
-  document.getElementById('subset-grid').innerHTML='';
-  document.getElementById('tree-display').innerHTML='<div style="color:var(--muted)">Tree will appear here…</div>';
-  document.getElementById('counter-row').textContent='Subsets found: 0 / 0  |  Expected: 2ⁿ = 0';
-  document.getElementById('btn-gen').disabled=false;
-  document.getElementById('btn-reset').disabled=false;
-  log('Reset. Edit array and press "Generate All Subsets".');
+function rebuild(){
+  var arr=document.getElementById('elems').value.split(',').map(function(s){return s.trim();}).filter(Boolean).slice(0,4);
+  if(arr.length<1) arr=['1','2','3'];
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),function(s){renderStep(s,arr);},'explanation','sim-bar');
 }
+rebuild();
 </script>
 </body>
 </html>

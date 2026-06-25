@@ -2,154 +2,170 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Kruskal's Algorithm – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kruskal's Algorithm – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-.layout{display:grid;grid-template-columns:1fr 260px;gap:16px}
-canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
-.edge-list{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.8;max-height:320px;overflow-y:auto}
-.edge-item{padding:3px 8px;border-radius:4px;display:flex;justify-content:space-between}
-.edge-item.accepted{background:#e8f7f0;color:#27a060;font-weight:700}
-.edge-item.rejected{background:#fff0f0;color:#e84393;text-decoration:line-through}
-.edge-item.current{background:#ede8fa;color:#7b4fd4;font-weight:700}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:140px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.back-link{margin-top:28px;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>Kruskal's Algorithm
-  </div>
-  <div class="hero-tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Kruskal's Algorithm</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>Kruskal's Algorithm</h1>
-  <p class="tagline">Sort edges by weight, greedily pick the cheapest non-cycle edge — MST in O(E log E).</p>
+  <p class="tagline">Build MST by greedily adding the cheapest edge that doesn't create a cycle.</p>
   <div class="prose">
-    <p>Kruskal's algorithm builds a Minimum Spanning Tree by always adding the cheapest available edge that doesn't form a cycle. It starts by sorting all edges by weight, then processes them one by one, using a Union-Find data structure to efficiently detect cycles.</p>
-    <p>The Union-Find (Disjoint Set Union) structure is the key enabler: find(u) gives the component root of u, and union(u,v) merges two components. If edge (u,v) connects two different components (find(u) ≠ find(v)), add it to the MST. Otherwise skip it — adding it would create a cycle.</p>
-    <p>Kruskal's is preferred for sparse graphs where E is small relative to V². It's used in network design, clustering algorithms, and approximation algorithms for NP-hard problems. The MST weight equals the minimum cost to connect all nodes.</p>
+    <p>Kruskal's builds a Minimum Spanning Tree (MST) by sorting all edges by weight, then greedily adding the cheapest edge that doesn't form a cycle. Cycle detection uses a Union-Find (Disjoint Set Union) data structure: if both endpoints of an edge are already in the same component, adding it would form a cycle.</p>
+    <p>Excellent for sparse graphs. The Union-Find with path compression achieves near-O(1) per operation, making the overall algorithm O(E log E) dominated by sorting.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(E log E)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Union-Find DSU</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(E log E)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V + E)</div></div>
+    <div class="fact"><div class="flabel">Structure</div><div class="fval">Union-Find</div></div>
+    <div class="fact"><div class="flabel">Greedy?</div><div class="fval">Yes</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">7-node weighted graph — edges sorted by weight on the right.</div>
-    <div class="layout">
-      <canvas id="cv" width="420" height="310"></canvas>
-      <div>
-        <div style="font-size:.8rem;color:#5a5a72;margin-bottom:6px;font-weight:600">SORTED EDGES</div>
-        <div class="edge-list" id="edgeList"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="320"></canvas>
+      <div class="info-bar" id="infoBar">MST edges and total weight appear here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Kruskal's</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#c5c0d0;height:3px;border-radius:2px"></span>Candidate edge</span>
+        <span class="leg"><span class="leg-dot" style="background:#f59e0b;height:3px;border-radius:2px"></span>Currently examining</span>
+        <span class="leg"><span class="leg-dot" style="background:#22c55e;height:3px;border-radius:2px"></span>Added to MST</span>
+        <span class="leg"><span class="leg-dot" style="background:#ef4444;height:3px;border-radius:2px"></span>Rejected (cycle)</span>
       </div>
     </div>
-    <div class="controls">
-      <button id="btnRun">Run Kruskal</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnReset" class="sec">Reset</button>
-      <span id="mstw" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
-    </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const nodes=[
-  {x:60,y:155,l:'0'},{x:150,y:55,l:'1'},{x:150,y:255,l:'2'},
-  {x:250,y:155,l:'3'},{x:340,y:55,l:'4'},{x:340,y:255,l:'5'},{x:400,y:155,l:'6'}
-];
-const edgesDef=[
-  {u:1,v:2,w:1},{u:3,v:4,w:2},{u:2,v:3,w:2},{u:0,v:2,w:3},{u:4,v:6,w:3},
-  {u:0,v:1,w:4},{u:3,v:5,w:4},{u:1,v:3,w:5},{u:5,v:6,w:5},{u:2,v:5,w:6},{u:3,v:6,w:7}
-];
-const sorted=[...edgesDef].sort((a,b)=>a.w-b.w);
-let parent=[],rnk=[],mstEdges=[],rejEdges=[],edgeIdx=0,done=false;
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-function find(x){while(parent[x]!==x){parent[x]=parent[parent[x]];x=parent[x];}return x;}
-function union(a,b){a=find(a);b=find(b);if(a===b)return false;if(rnk[a]<rnk[b])[a,b]=[b,a];parent[b]=a;if(rnk[a]===rnk[b])rnk[a]++;return true;}
-function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
-function init(){
-  parent=nodes.map((_,i)=>i);rnk=new Array(7).fill(0);
-  mstEdges=[];rejEdges=[];edgeIdx=0;done=false;
-  document.getElementById('log').innerHTML='';document.getElementById('mstw').textContent='';
-  renderEdgeList(-1);draw();addLog('Edges sorted by weight. Ready.');
+const NODES=[{x:100,y:170,label:'0'},{x:220,y:80,label:'1'},{x:220,y:260,label:'2'},
+  {x:360,y:50,label:'3'},{x:360,y:170,label:'4'},{x:360,y:290,label:'5'},{x:530,y:170,label:'6'}];
+const ALL_EDGES=[[0,1,4],[0,2,2],[1,3,3],[1,4,5],[2,4,6],[2,5,8],[4,6,3],[5,6,7]];
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/640;
+  canvas.width=w*DPR; canvas.height=320*DPR; canvas.style.width=w+'px'; canvas.style.height='320px'; ctx.scale(DPR,DPR);
 }
-function renderEdgeList(cur){
-  const el=document.getElementById('edgeList');
-  el.innerHTML=sorted.map((e,i)=>{
-    let cls=mstEdges.includes(i)?'accepted':rejEdges.includes(i)?'rejected':i===cur?'current':'';
-    return`<div class="edge-item ${cls}">(${e.u},${e.v}) w=${e.w} ${mstEdges.includes(i)?'✓':rejEdges.includes(i)?'✗':''}</div>`;
-  }).join('');
-}
-function step(){
-  if(done||edgeIdx>=sorted.length){
-    done=true;const w=mstEdges.reduce((s,i)=>s+sorted[i].w,0);
-    addLog(`MST complete! Weight: ${w}`);document.getElementById('mstw').textContent=`MST Weight: ${w}`;
-    renderEdgeList(-1);draw();return;
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
+
+function generateSteps(){
+  const steps=[];
+  const sorted=[...ALL_EDGES].sort((a,b)=>a[2]-b[2]);
+  const parent=Array.from({length:7},(_,i)=>i);
+  const rank=new Array(7).fill(0);
+  function find(x){ return parent[x]===x?x:parent[x]=find(parent[x]); }
+  function union(a,b){ const ra=find(a),rb=find(b); if(ra===rb) return false;
+    if(rank[ra]<rank[rb]) parent[ra]=rb; else if(rank[ra]>rank[rb]) parent[rb]=ra;
+    else{ parent[rb]=ra; rank[ra]++; } return true; }
+  const edgeState={}; // edge key -> 'candidate'|'current'|'mst'|'rejected'
+  ALL_EDGES.forEach(([a,b])=>{ edgeState[`${a}-${b}`]='candidate'; edgeState[`${b}-${a}`]='candidate'; });
+  const mstEdges=[], snapEdgeState=()=>({...edgeState});
+  let mstWeight=0;
+  steps.push({ title:'Sort edges by weight',
+    what:`Sorted edges: ${sorted.map(([a,b,w])=>`(${a}-${b},${w})`).join(', ')}.`,
+    why:'Kruskal greedily picks cheapest edge — sort first.',
+    state:`7 nodes · ${ALL_EDGES.length} edges sorted`, edgeState:snapEdgeState(), mstEdges:[], mstWeight:0 });
+  for(const [a,b,w] of sorted){
+    const k1=`${a}-${b}`,k2=`${b}-${a}`;
+    edgeState[k1]=edgeState[k2]='current';
+    steps.push({ title:`Consider edge (${a}-${b}) weight ${w}`,
+      what:`Checking if nodes ${a} and ${b} are in different components. Component[${a}]=${find(a)}, Component[${b}]=${find(b)}.`,
+      why:'Use Union-Find to check if adding this edge creates a cycle.',
+      state:`Examining (${a}-${b}) w=${w}`, edgeState:snapEdgeState(), mstEdges:[...mstEdges], mstWeight });
+    const fa=find(a),fb=find(b);
+    if(fa!==fb){
+      union(a,b); mstEdges.push([a,b,w]); mstWeight+=w;
+      edgeState[k1]=edgeState[k2]='mst';
+      steps.push({ title:`Add edge (${a}-${b}) w=${w} to MST`,
+        what:`Nodes ${a} and ${b} in different components (${fa},${fb}). Add edge! MST weight so far: ${mstWeight}.`,
+        why:'Different components means no cycle. Greedy pick is safe.',
+        state:`MST weight: ${mstWeight} · MST edges: ${mstEdges.length}`, edgeState:snapEdgeState(), mstEdges:[...mstEdges], mstWeight });
+    } else {
+      edgeState[k1]=edgeState[k2]='rejected';
+      steps.push({ title:`Reject edge (${a}-${b}) w=${w} — cycle!`,
+        what:`Nodes ${a} and ${b} already in same component (${fa}). Adding would create cycle.`,
+        why:'Kruskal skips edges whose endpoints are already connected.',
+        state:`Rejected · MST edges: ${mstEdges.length}`, edgeState:snapEdgeState(), mstEdges:[...mstEdges], mstWeight });
+    }
+    if(mstEdges.length===6) break;
   }
-  const e=sorted[edgeIdx];
-  const cu=find(e.u),cv2=find(e.v);
-  if(cu!==cv2){union(e.u,e.v);mstEdges.push(edgeIdx);
-    addLog(`Edge(${e.u},${e.v},w=${e.w}): sets {${cu}} and {${cv2}} → UNION. MST+=${e.w}`);}
-  else{rejEdges.push(edgeIdx);addLog(`Edge(${e.u},${e.v},w=${e.w}): same component → CYCLE skip`);}
-  renderEdgeList(edgeIdx);edgeIdx++;draw();
-  if(mstEdges.length===6){done=true;const w=mstEdges.reduce((s,i)=>s+sorted[i].w,0);
-    addLog(`MST complete! Weight: ${w}`);document.getElementById('mstw').textContent=`MST Weight: ${w}`;}
+  steps.push({ title:`Kruskal's MST complete — total weight ${mstWeight}`,
+    what:`MST edges: ${mstEdges.map(([a,b,w])=>`(${a}-${b},${w})`).join(', ')}.`,
+    why:'V-1=6 edges added without cycles = spanning tree with minimum weight.',
+    state:`MST weight: ${mstWeight}`, edgeState:snapEdgeState(), mstEdges:[...mstEdges], mstWeight });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function draw(){
-  ctx.clearRect(0,0,420,310);
-  edgesDef.forEach((e,origIdx)=>{
-    const sortedIdx=sorted.findIndex(s=>s.u===e.u&&s.v===e.v);
-    const isMST=mstEdges.includes(sortedIdx);
-    const isRej=rejEdges.includes(sortedIdx);
-    ctx.strokeStyle=isMST?'#27a060':isRej?'#e84393':'#d0ccc8';
-    ctx.lineWidth=isMST?3.5:1.5;
-    ctx.setLineDash(isRej?[5,4]:[]);
-    ctx.beginPath();ctx.moveTo(nodes[e.u].x,nodes[e.u].y);ctx.lineTo(nodes[e.v].x,nodes[e.v].y);ctx.stroke();
-    ctx.setLineDash([]);
-    const mx=(nodes[e.u].x+nodes[e.v].x)/2,my=(nodes[e.u].y+nodes[e.v].y)/2;
-    ctx.fillStyle=isMST?'#27a060':'#5a5a72';ctx.font=(isMST?'bold ':'')+'11px JetBrains Mono';ctx.textAlign='center';
-    ctx.fillText(e.w,mx,my-5);
+
+function renderStep(step){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  const ecol={candidate:'#c5c0d0',current:'#f59e0b',mst:'#22c55e',rejected:'#ef4444'};
+  ALL_EDGES.forEach(([a,b,w])=>{
+    const k=`${a}-${b}`, col=ecol[step.edgeState[k]]||'#c5c0d0';
+    const mx=(NODES[a].x+NODES[b].x)/2*sc,my=(NODES[a].y+NODES[b].y)/2*sc;
+    ctx.beginPath(); ctx.moveTo(NODES[a].x*sc,NODES[a].y*sc); ctx.lineTo(NODES[b].x*sc,NODES[b].y*sc);
+    ctx.strokeStyle=col; ctx.lineWidth=step.edgeState[k]==='mst'?4:step.edgeState[k]==='current'?3:2; ctx.stroke();
+    ctx.fillStyle='#555'; ctx.font=`${Math.round(10*sc)}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(w,mx,my-8*sc);
   });
-  nodes.forEach((n,i)=>{
-    ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
-    ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.l,n.x,n.y);
-    ctx.font='9px JetBrains Mono';ctx.fillStyle='#5a5a72';ctx.fillText('C'+find(i),n.x,n.y+29);
+  NODES.forEach((node,i)=>{
+    const r=20*sc;
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle='#e0e0e0'; ctx.fill(); ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(13*sc)}px Inter,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(node.label,node.x*sc,node.y*sc);
   });
-  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`MST weight: ${step.mstWeight}  |  MST edges: ${step.mstEdges.map(([a,b,w])=>`(${a}-${b},${w})`).join(', ')||'none yet'}`;
 }
-document.getElementById('btnStep').onclick=()=>step();
-document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},600);};
-document.getElementById('btnReset').onclick=()=>init();
-init();
+function rebuild(){ setupCanvas(); if(player) player.destroy(); player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar'); }
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

@@ -2,184 +2,196 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>A* Search – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>A* Search – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-canvas{display:block;border:1px solid #e2e0da;border-radius:8px;cursor:pointer}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.back-link{margin-top:28px;font-size:.9rem}
-.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.8rem;color:#5a5a72}
-.leg{display:flex;align-items:center;gap:5px}
-.leg-sq{width:14px;height:14px;border-radius:3px;border:1px solid #e2e0da}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>A* Search
-  </div>
-  <div class="hero-tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>A* Search</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>A* Search Algorithm</h1>
-  <p class="tagline">Heuristic-guided shortest-path finding — faster than Dijkstra when you know the direction.</p>
+  <p class="tagline">Informed shortest path — combines actual cost g(n) with heuristic estimate h(n).</p>
   <div class="prose">
-    <p>A* (pronounced "A-star") is a best-first search algorithm that finds the shortest path from a start node to a goal node. It combines the guarantee of Dijkstra's algorithm (optimal path) with the speed of greedy best-first search by using a heuristic function h(n) that estimates how close node n is to the goal.</p>
-    <p>The key insight is the evaluation function f(n) = g(n) + h(n), where g(n) is the actual cost from start to n, and h(n) is the heuristic estimate from n to goal. By always expanding the node with the lowest f value, A* efficiently navigates toward the goal. Think of it like GPS navigation: you know your current distance traveled (g) and estimate remaining distance (h) to pick the best route.</p>
-    <p>A* is admissible (finds optimal path) when the heuristic never overestimates. Manhattan distance works perfectly for grid navigation where diagonal moves aren't allowed — it always underestimates or exactly matches the true distance.</p>
+    <p>A* expands nodes in order of f(n) = g(n) + h(n), where g(n) is the actual cost from start to n, and h(n) is an admissible heuristic estimate of cost from n to goal. With an admissible heuristic (never overestimates), A* guarantees the optimal path and is more efficient than Dijkstra by focusing toward the goal.</p>
+    <p>The heuristic used here is the straight-line (Euclidean) distance to the goal. A* is the cornerstone of pathfinding in games, robotics, and map navigation (Google Maps uses A*-family algorithms).</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(b^d)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(b^d)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Admissible & Optimal</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(E log V)</div></div>
+    <div class="fact"><div class="flabel">Optimal?</div><div class="fval">Yes (admissible h)</div></div>
+    <div class="fact"><div class="flabel">vs Dijkstra</div><div class="fval">Goal-directed</div></div>
+    <div class="fact"><div class="flabel">Heuristic</div><div class="fval">Euclidean dist</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Interactive Grid — Click cells to toggle walls, then Run A*</div>
-    <canvas id="cv" width="700" height="320"></canvas>
-    <div class="legend">
-      <div class="leg"><div class="leg-sq" style="background:#fff"></div>Empty</div>
-      <div class="leg"><div class="leg-sq" style="background:#1a1a2e"></div>Wall</div>
-      <div class="leg"><div class="leg-sq" style="background:#27a060"></div>Start (S)</div>
-      <div class="leg"><div class="leg-sq" style="background:#e8622a"></div>Goal (G)</div>
-      <div class="leg"><div class="leg-sq" style="background:#ede8fa"></div>Open</div>
-      <div class="leg"><div class="leg-sq" style="background:#c4b0f0"></div>Closed</div>
-      <div class="leg"><div class="leg-sq" style="background:#e8622a;opacity:.7"></div>Path</div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="320"></canvas>
+      <div class="info-bar" id="infoBar">f, g, h values appear here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Start:</label>
+        <select id="startSel"><option>0</option><option>1</option><option>2</option><option>3</option></select>
+        <label>Goal:</label>
+        <select id="goalSel"><option value="6">6</option><option value="5">5</option><option value="4">4</option></select>
+        <button class="btn btn-p" onclick="rebuild()">Run A*</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#e0e0e0;border:1px solid #bbb"></span>Unvisited</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Open (frontier)</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Expanding</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Closed / Goal reached</span>
+      </div>
     </div>
-    <div class="controls">
-      <button id="btnRun">Run A*</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnReset" class="sec">Reset</button>
-      <span id="status" style="font-size:.85rem;color:#5a5a72"></span>
-    </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const COLS=14,ROWS=10,CW=700/COLS,CH=320/ROWS;
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-let grid=[];// 0=empty,1=wall
-let open=[],closed=new Set(),cameFrom={},gScore={},fScore={};
-let path=[],found=false,running=false,timer=null,done=false;
-const START={r:1,c:1},GOAL={r:8,c:12};
-function key(r,c){return r+','+c;}
-function h(r,c){return Math.abs(r-GOAL.r)+Math.abs(c-GOAL.c);}
-function initGrid(){
-  grid=[];for(let r=0;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++)grid[r][c]=0;}
-  // walls preset
-  [[2,3],[3,3],[4,3],[5,3],[6,3],[3,7],[4,7],[5,7],[6,7],[7,7],[2,10],[3,10],[4,10]].forEach(([r,c])=>grid[r][c]=1);
-  resetAlgo();
+const NODES=[{x:100,y:170,label:'0'},{x:220,y:80,label:'1'},{x:220,y:260,label:'2'},
+  {x:360,y:50,label:'3'},{x:360,y:170,label:'4'},{x:360,y:290,label:'5'},{x:530,y:170,label:'6'}];
+const EDGES=[[0,1,4],[0,2,2],[1,3,3],[1,4,5],[2,4,6],[2,5,8],[4,6,3],[5,6,7]];
+const ADJ=Array.from({length:7},()=>[]);
+EDGES.forEach(([a,b,w])=>{ ADJ[a].push({to:b,w}); ADJ[b].push({to:a,w}); });
+function heuristic(a,goal){
+  const dx=NODES[a].x-NODES[goal].x,dy=NODES[a].y-NODES[goal].y;
+  return Math.round(Math.sqrt(dx*dx+dy*dy)/30);
 }
-function resetAlgo(){
-  open=[];closed=new Set();cameFrom={};gScore={};fScore={};path=[];found=false;done=false;
-  const sk=key(START.r,START.c);gScore[sk]=0;fScore[sk]=h(START.r,START.c);
-  open.push({r:START.r,c:START.c,f:fScore[sk]});
-  document.getElementById('log').innerHTML='';
-  addLog('Grid ready. Click "Run A*" or "Step".');
-  draw();
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/640;
+  canvas.width=w*DPR; canvas.height=320*DPR; canvas.style.width=w+'px'; canvas.style.height='320px'; ctx.scale(DPR,DPR);
 }
-function addLog(msg){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${msg}</div>`;d.scrollTop=d.scrollHeight;}
-function reconstructPath(r,c){
-  path=[];let k=key(r,c);
-  while(k){path.push(k);k=cameFrom[k]||null;}
-  path.reverse();
-}
-function stepAlgo(){
-  if(done)return;
-  if(open.length===0){addLog('No path found.');done=true;return;}
-  open.sort((a,b)=>a.f-b.f);
-  const cur=open.shift();
-  const k=key(cur.r,cur.c);
-  if(cur.r===GOAL.r&&cur.c===GOAL.c){
-    found=true;done=true;reconstructPath(cur.r,cur.c);
-    addLog(`Goal reached! Path length: ${path.length-1} cells.`);draw();return;
-  }
-  closed.add(k);
-  const nb=[[-1,0],[1,0],[0,-1],[0,1]];
-  const added=[];
-  nb.forEach(([dr,dc])=>{
-    const nr=cur.r+dr,nc=cur.c+dc;
-    if(nr<0||nr>=ROWS||nc<0||nc>=COLS)return;
-    if(grid[nr][nc]===1)return;
-    const nk=key(nr,nc);
-    if(closed.has(nk))return;
-    const ng=(gScore[k]||0)+1;
-    if(ng<(gScore[nk]??Infinity)){
-      cameFrom[nk]=k;gScore[nk]=ng;
-      const f=ng+h(nr,nc);fScore[nk]=f;
-      open=open.filter(o=>key(o.r,o.c)!==nk);
-      open.push({r:nr,c:nc,f});added.push(`(${nr},${nc}) f=${f} g=${ng} h=${h(nr,nc)}`);
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
+
+function generateSteps(start,goal){
+  const steps=[], n=7, INF=Infinity;
+  const gArr=new Array(n).fill(INF), fArr=new Array(n).fill(INF);
+  const nodeState=new Array(n).fill('unvisited');
+  const pathEdges=[];
+  gArr[start]=0; fArr[start]=heuristic(start,goal);
+  nodeState[start]='open';
+  const open=[start];
+  steps.push({ title:`Initialize A* from ${start} to ${goal}`,
+    what:`g[${start}]=0, h=${heuristic(start,goal)}, f=${fArr[start]}. Add start to open list.`,
+    why:'f(n) = g(n) + h(n). h is Euclidean distance to goal.',
+    state:`Open: [${start}]`, nodeState:[...nodeState], gArr:[...gArr], fArr:[...fArr], activeEdge:null, pathEdges:[...pathEdges] });
+
+  while(open.length){
+    open.sort((a,b)=>fArr[a]-fArr[b]);
+    const u=open.shift();
+    nodeState[u]='expanding';
+    steps.push({ title:`Expand node ${u}: f=${fArr[u]}, g=${gArr[u]}, h=${heuristic(u,goal)}`,
+      what:`Extract ${u} (smallest f). Check all neighbours.`,
+      why:'A* always expands the most promising node (lowest f).',
+      state:`Expanding ${u} · f=${fArr[u]}`, nodeState:[...nodeState], gArr:[...gArr], fArr:[...fArr], activeEdge:null, pathEdges:[...pathEdges] });
+    if(u===goal){
+      nodeState[u]='done';
+      steps.push({ title:`Goal ${goal} reached! g=${gArr[goal]}`,
+        what:`Optimal cost from ${start} to ${goal} is ${gArr[goal]}.`,
+        why:'A* with admissible heuristic guarantees optimal path on first extraction of goal.',
+        state:`GOAL REACHED · cost=${gArr[goal]}`, nodeState:[...nodeState], gArr:[...gArr], fArr:[...fArr], activeEdge:null, pathEdges:[...pathEdges] });
+      break;
     }
-  });
-  addLog(`Expand (${cur.r},${cur.c}) f=${fScore[k]?.toFixed(0)} g=${gScore[k]}. Added: ${added.join(', ')||'none'}`);
-  draw();
-}
-function draw(){
-  ctx.clearRect(0,0,700,320);
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const k=key(r,c);
-      let fill='#f7f6f2';
-      if(grid[r][c]===1)fill='#1a1a2e';
-      else if(r===START.r&&c===START.c)fill='#27a060';
-      else if(r===GOAL.r&&c===GOAL.c)fill='#e8622a';
-      else if(found&&path.includes(k))fill='rgba(232,98,42,.55)';
-      else if(closed.has(k))fill='#c4b0f0';
-      else if(open.find(o=>key(o.r,o.c)===k))fill='#ede8fa';
-      ctx.fillStyle=fill;
-      ctx.fillRect(c*CW,r*CH,CW-1,CH-1);
-      ctx.strokeStyle='#e2e0da';ctx.strokeRect(c*CW,r*CH,CW-1,CH-1);
-      if(fill!=='#1a1a2e'&&fill!=='#f7f6f2'&&gScore[k]!==undefined&&CW>30){
-        ctx.fillStyle='#1a1a2e';ctx.font='8px JetBrains Mono';
-        ctx.fillText(`g${gScore[k]}`,c*CW+2,r*CH+10);
-        ctx.fillText(`h${h(r,c)}`,c*CW+2,r*CH+20);
+    nodeState[u]='done';
+    for(const {to:v,w} of ADJ[u]){
+      if(nodeState[v]==='done') continue;
+      const ng=gArr[u]+w, nh=heuristic(v,goal), nf=ng+nh;
+      steps.push({ title:`Check neighbour ${v}: g=${ng}, h=${nh}, f=${nf}`,
+        what:`Via ${u}: g[${v}]=${gArr[v]===INF?'∞':gArr[v]} → ${ng}. f=${nf}. ${ng<gArr[v]?'IMPROVE!':'No improvement.'}`,
+        why:`h(${v})=Euclidean to goal. ${ng<gArr[v]?'Better path found.':'Current is better.'}`,
+        state:`f[${v}]=${nf}`, nodeState:[...nodeState], gArr:[...gArr], fArr:[...fArr], activeEdge:[u,v], pathEdges:[...pathEdges] });
+      if(ng<gArr[v]){
+        gArr[v]=ng; fArr[v]=nf;
+        if(nodeState[v]==='unvisited'){ nodeState[v]='open'; open.push(v); }
+        pathEdges.push([u,v]);
       }
     }
   }
-  // labels
-  ctx.fillStyle='#fff';ctx.font='bold 11px Inter';
-  ctx.fillText('S',START.c*CW+CW/2-4,START.r*CH+CH/2+4);
-  ctx.fillText('G',GOAL.c*CW+CW/2-4,GOAL.r*CH+CH/2+4);
+  steps.push({ title:'A* complete',
+    what:`Shortest path cost from ${start} to ${goal}: ${gArr[goal]===INF?'unreachable':gArr[goal]}.`,
+    why:'A* explored fewer nodes than Dijkstra by using heuristic guidance.',
+    state:`Done · cost=${gArr[goal]}`, nodeState:[...nodeState], gArr:[...gArr], fArr:[...fArr], activeEdge:null, pathEdges:[...pathEdges] });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-cv.addEventListener('click',e=>{
-  const rect=cv.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
-  const c=Math.floor(x/CW),r=Math.floor(y/CH);
-  if((r===START.r&&c===START.c)||(r===GOAL.r&&c===GOAL.c))return;
-  grid[r][c]=grid[r][c]===1?0:1;
-  resetAlgo();
-});
-document.getElementById('btnStep').onclick=()=>{if(!done)stepAlgo();};
-document.getElementById('btnRun').onclick=()=>{
-  if(done)return;
-  if(timer)clearInterval(timer);
-  timer=setInterval(()=>{if(done){clearInterval(timer);timer=null;}else stepAlgo();},120);
-};
-document.getElementById('btnReset').onclick=()=>{if(timer){clearInterval(timer);timer=null;}initGrid();};
-initGrid();
+
+function renderStep(step){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE, INF=Infinity;
+  const aeKey=step.activeEdge?`${Math.min(...step.activeEdge)}-${Math.max(...step.activeEdge)}`:null;
+  const peSet=new Set(step.pathEdges.map(([a,b])=>`${Math.min(a,b)}-${Math.max(a,b)}`));
+  EDGES.forEach(([a,b,w])=>{
+    const key=`${Math.min(a,b)}-${Math.max(a,b)}`,isAct=key===aeKey,isPe=peSet.has(key);
+    const mx=(NODES[a].x+NODES[b].x)/2*sc,my=(NODES[a].y+NODES[b].y)/2*sc;
+    ctx.beginPath(); ctx.moveTo(NODES[a].x*sc,NODES[a].y*sc); ctx.lineTo(NODES[b].x*sc,NODES[b].y*sc);
+    ctx.strokeStyle=isAct?'#f59e0b':isPe?'#22c55e':'#c5c0d0'; ctx.lineWidth=isAct||isPe?3:1.5; ctx.stroke();
+    ctx.fillStyle='#555'; ctx.font=`${Math.round(10*sc)}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(w,mx,my-8*sc);
+  });
+  const sc2={unvisited:'#e0e0e0',open:'#fff176',expanding:'#ffb347',done:'#a8e6a3'};
+  const ss2={unvisited:'#bbb',open:'#c8c000',expanding:'#d4700a',done:'#27a060'};
+  NODES.forEach((node,i)=>{
+    const st=step.nodeState[i]||'unvisited',r=20*sc;
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=sc2[st]; ctx.fill(); ctx.strokeStyle=ss2[st]; ctx.lineWidth=st==='expanding'?3:1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(12*sc)}px Inter,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(node.label,node.x*sc,node.y*sc);
+    if(step.gArr[i]<Infinity){
+      ctx.fillStyle='#7b4fd4'; ctx.font=`${Math.round(8*sc)}px JetBrains Mono`;
+      ctx.fillText(`f${step.fArr[i]}`,node.x*sc,node.y*sc+r+10*sc);
+    }
+  });
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`g: [${step.gArr.map((v,i)=>`${i}=${v===INF?'∞':v}`).join('  ')}]  |  f: [${step.fArr.map((v,i)=>`${i}=${v===INF?'∞':v}`).join('  ')}]`;
+}
+function rebuild(){
+  const start=parseInt(document.getElementById('startSel').value);
+  const goal=parseInt(document.getElementById('goalSel').value);
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(start,goal),renderStep,'explanation','sim-bar');
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

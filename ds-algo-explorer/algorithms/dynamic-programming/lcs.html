@@ -3,71 +3,42 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Longest Common Subsequence – DS Algo Explorer</title>
+<title>Longest Common Subsequence – Dynamic Programming</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#e8622a}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
 .bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
 .bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
 h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
-.tag{display:inline-block;background:#fdf0ea;color:var(--a);border:1px solid #f5c4a8;
-  border-radius:20px;padding:.2rem .8rem;font-size:.72rem;font-weight:600;letter-spacing:.05em;
-  text-transform:uppercase;margin-bottom:.8rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
 .tagline{color:var(--m)}
 .prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin:1.5rem 0}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
 .fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
 .flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;color:var(--a)}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
 .sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
-.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
-  display:flex;align-items:center;gap:.5rem}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
 .sim-body{padding:1.3rem}
-/* Table */
-.dp-wrap{overflow-x:auto;margin-bottom:.75rem}
-table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem}
-table.dp th{
-  background:#fdf0ea;color:var(--a);padding:5px 10px;
-  border:1.5px solid #f5c4a8;text-align:center;min-width:34px;font-weight:700;
-}
-table.dp td{
-  padding:5px 10px;border:1.5px solid var(--b);text-align:center;min-width:34px;
-  transition:background .1s,color .1s;font-weight:500;
-}
-/* Cell states via class */
-.dp-cur { background:#fff176 !important; color:#2a2a1a !important; font-weight:700 !important; }
-.dp-dep { background:#dbeafe !important; color:#1e3a8a !important; }
-.dp-match { background:#fde68a !important; }
-.dp-trace { background:#a8e6a3 !important; color:#1a3a1a !important; font-weight:700 !important; }
-.dp-done { background:#fff; }
-/* LCS result bar */
-.result-bar{
-  background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;
-  padding:.6rem 1rem;font-size:.88rem;margin-bottom:.75rem;display:none;
-}
-.result-bar b{color:var(--a)}
-code{font-family:'JetBrains Mono',monospace;background:#f0ede5;border-radius:4px;padding:.1rem .35rem}
-/* Controls */
-.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem;align-items:center}
+.matrix-wrap{overflow-x:auto}
+table.mat{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem;margin:0 auto}
+table.mat td,table.mat th{border:1px solid var(--b);padding:.32rem .6rem;text-align:center;min-width:34px}
+table.mat th{background:var(--bg);font-weight:700;color:var(--m)}
+table.mat td.cur{background:#fff176;font-weight:700;outline:2px solid #f59e0b}
+table.mat td.match{background:#a8e6a3;font-weight:700}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
 .input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
-.input-row input{
-  font-family:'JetBrains Mono',monospace;font-size:.85rem;
-  padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;
-  background:var(--bg);color:var(--ink);width:180px;text-transform:uppercase;
-}
-.input-row input:focus{outline:none;border-color:var(--a)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:160px;background:var(--bg);color:var(--ink)}
 .btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
 .btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
-/* Legend */
-.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
-.leg{display:flex;align-items:center;gap:.35rem}
-.leg-dot{width:12px;height:10px;border-radius:2px;flex-shrink:0}
 .back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
 .back:hover{color:var(--ink)}
 </style>
@@ -76,210 +47,97 @@ code{font-family:'JetBrains Mono',monospace;background:#f0ede5;border-radius:4px
 <div class="wrap">
   <nav class="bc">
     <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Algorithms</a><span>/</span>LCS
+    <a href="../index.html">Algorithms</a><span>/</span><span>Longest Common Subsequence</span>
   </nav>
-
   <span class="tag">Dynamic Programming</span>
   <h1>Longest Common Subsequence</h1>
-  <p class="tagline">Find the longest sequence of characters that appears in both strings in order.</p>
-
+  <p class="tagline">Longest subsequence common to both strings — a DP classic.</p>
   <div class="prose">
-    <p>LCS is the backbone of diff tools (<code>git diff</code>), DNA alignment, and plagiarism detectors. The DP recurrence: if <code>X[i]==Y[j]</code> then <code>dp[i][j] = dp[i-1][j-1]+1</code>; else <code>dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code>.</p>
-    <p>Each cell fill is one step. After the table is complete, a traceback from <code>dp[m][n]</code> reconstructs the actual subsequence by following diagonal moves (character matches).</p>
+    <p>LCS: given two strings, find the longest sequence of characters that appears in both (not necessarily contiguous). DP: dp[i][j] = LCS length of s1[0..i-1] and s2[0..j-1]. If s1[i-1]==s2[j-1]: dp[i][j]=dp[i-1][j-1]+1. Else: dp[i][j]=max(dp[i-1][j], dp[i][j-1]).</p>
+    <p>Match cells (green) are the cornerstone: each extends the LCS by 1. Traceback: follow from dp[m][n] back to dp[0][0] — diagonal moves are matched characters. Used in diff utilities, file comparison, bioinformatics (DNA/RNA alignment).</p>
   </div>
-
   <div class="facts">
-    <div class="fact"><div class="flabel">Time</div><div class="fval">O(m·n)</div></div>
-    <div class="fact"><div class="flabel">Space</div><div class="fval">O(m·n)</div></div>
-    <div class="fact"><div class="flabel">Reconstruct</div><div class="fval">Traceback</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(m x n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(m x n)</div></div>
+    <div class="fact"><div class="flabel">Output</div><div class="fval">Length + sequence</div></div>
+    <div class="fact"><div class="flabel">Uses</div><div class="fval">diff, DNA align</div></div>
   </div>
-
   <div class="sim-panel">
     <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <div class="result-bar" id="resultBar"></div>
-      <div class="dp-wrap"><div id="dpWrap"></div></div>
-
+      <div class="matrix-wrap"><div id="matBox"></div></div>
+      <div class="info-bar" id="infoBar">DP table (rows=s1, cols=s2).</div>
       <div id="explanation"></div>
       <div id="sim-bar"></div>
-
       <div class="input-row">
-        <label>X:</label>
-        <input id="s1" value="ABCBDAB"/>
-        <label>Y:</label>
-        <input id="s2" value="BDCAB"/>
-        <button class="btn btn-p" onclick="rebuild()">Solve</button>
-        <button class="btn btn-o" onclick="resetUI()">Reset</button>
-      </div>
-      <div class="legend">
-        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Current cell</span>
-        <span class="leg"><span class="leg-dot" style="background:#dbeafe;border:1px solid #93c5fd"></span>Dependency cells</span>
-        <span class="leg"><span class="leg-dot" style="background:#fde68a;border:1px solid #f59e0b"></span>Character match</span>
-        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Traceback path</span>
+        <label>String 1:</label>
+        <input type="text" id="s1" value="ABCBDAB"/>
+        <label>String 2:</label>
+        <input type="text" id="s2" value="BDCAB"/>
+        <button class="btn btn-p" onclick="rebuild()">Find LCS</button>
       </div>
     </div>
   </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-let player  = null;
-let tableEl = null; // current <table>
-
-/* ── Build HTML table ──────────────────────────── */
-function buildTable(X, Y) {
-  const m = X.length, n = Y.length;
-  let html = '<table class="dp"><thead><tr><th></th><th>ε</th>';
-  for (let j = 0; j < n; j++) html += `<th>${Y[j]}</th>`;
-  html += '</tr></thead><tbody>';
-  for (let i = 0; i <= m; i++) {
-    html += `<tr><th>${i === 0 ? 'ε' : X[i - 1]}</th>`;
-    for (let j = 0; j <= n; j++)
-      html += `<td id="dp_${i}_${j}" class="dp-done">0</td>`;
-    html += '</tr>';
-  }
-  html += '</tbody></table>';
-  document.getElementById('dpWrap').innerHTML = html;
-  tableEl = document.getElementById('dpWrap').querySelector('table');
-}
-
-function getCell(i, j) { return document.getElementById(`dp_${i}_${j}`); }
-
-function setCell(i, j, val, cls) {
-  const c = getCell(i, j);
-  if (!c) return;
-  c.className = cls || 'dp-done';
-  if (val !== undefined) c.textContent = val;
-}
-
-/* ── Step generation ───────────────────────────── */
-function generateSteps(X, Y) {
-  const m = X.length, n = Y.length;
-  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
-  const steps = [];
-
-  // Record a deep copy of dp at each step (for scrubbing)
-  const snapDp = () => dp.map(r => [...r]);
-
-  steps.push({
-    title: 'Initial DP table',
-    what: `LCS of "${X}" (len ${m}) and "${Y}" (len ${n}). Table is (${m + 1}) × (${n + 1}).`,
-    why: 'Row 0 and column 0 are base cases: LCS with an empty string is 0.',
-    state: `dp[i][j]: 0 for all i=0 or j=0`,
-    phase: 'init', dp: snapDp(), cur: null, deps: [], tracePath: []
-  });
-
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      const match = X[i - 1] === Y[j - 1];
-      let deps;
-      if (match) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-        deps = [{ i: i - 1, j: j - 1 }];
-        steps.push({
-          title: `dp[${i}][${j}] — match '${X[i-1]}'`,
-          what: `X[${i}]='${X[i-1]}' equals Y[${j}]='${Y[j-1]}' → dp[${i}][${j}] = dp[${i-1}][${j-1}]+1 = ${dp[i][j]}`,
-          why: `Characters match! Diagonal value (${dp[i-1][j-1]}) + 1 = ${dp[i][j]}.`,
-          state: `dp[${i}][${j}] = ${dp[i][j]} (match)`,
-          phase: 'match', dp: snapDp(), cur: { i, j }, deps, tracePath: []
-        });
-      } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-        deps = [{ i: i - 1, j }, { i, j: j - 1 }];
-        steps.push({
-          title: `dp[${i}][${j}] — no match`,
-          what: `X[${i}]='${X[i-1]}' ≠ Y[${j}]='${Y[j-1]}' → dp[${i}][${j}] = max(dp[${i-1}][${j}]=${dp[i-1][j]}, dp[${i}][${j-1}]=${dp[i][j-1]}) = ${dp[i][j]}`,
-          why: `No match: take the maximum of the cell above and the cell to the left.`,
-          state: `dp[${i}][${j}] = ${dp[i][j]} (no match)`,
-          phase: 'fill', dp: snapDp(), cur: { i, j }, deps, tracePath: []
-        });
-      }
+let player=null;
+function generateSteps(s1,s2){
+  var steps=[], m=s1.length, n=s2.length;
+  var dp=Array.from({length:m+1},function(){ return new Array(n+1).fill(0); });
+  function snap(r,c,match){ return { dp:dp.map(function(row){ return row.slice(); }), cur:[r,c], match:match }; }
+  steps.push({ title:'LCS: "'+s1+'" vs "'+s2+'"',
+    what:'dp[i][j] = LCS of s1[0..i-1] and s2[0..j-1]. Borders all 0 (empty string vs anything = 0).',
+    why:'Build table row by row; matching chars extend LCS by 1.',
+    ...snap(0,0,false) });
+  for(var i=1;i<=m;i++){
+    for(var j=1;j<=n;j++){
+      var isMatch=s1[i-1]===s2[j-1];
+      if(isMatch){ dp[i][j]=dp[i-1][j-1]+1; }
+      else { dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]); }
+      steps.push({ title:'dp['+i+']['+j+']: "'+s1[i-1]+'" '+(isMatch?'==':'!=')+' "'+s2[j-1]+'"',
+        what:isMatch?'Match! dp['+i+']['+j+']=dp['+(i-1)+']['+(j-1)+']+1='+dp[i][j]+'.':
+          'No match. dp['+i+']['+j+']=max(dp['+(i-1)+']['+j+'],dp['+i+']['+(j-1)+'])='+dp[i][j]+'.',
+        why:isMatch?'Matching chars always extend the LCS.':'Skip one char from either string, take the best.',
+        ...snap(i,j,isMatch) });
     }
   }
-
-  // Traceback
-  let ti = m, tj = n, lcs = '';
-  const tracePath = [];
-  while (ti > 0 && tj > 0) {
-    if (X[ti - 1] === Y[tj - 1]) {
-      tracePath.push({ i: ti, j: tj });
-      lcs = X[ti - 1] + lcs; ti--; tj--;
-    } else if (dp[ti - 1][tj] > dp[ti][tj - 1]) {
-      tracePath.push({ i: ti, j: tj }); ti--;
-    } else {
-      tracePath.push({ i: ti, j: tj }); tj--;
-    }
-  }
-
-  steps.push({
-    title: `Table complete — traceback to find LCS`,
-    what: `dp[${m}][${n}] = ${dp[m][n]} is the LCS length. Tracing back from dp[${m}][${n}].`,
-    why: 'Follow diagonal arrows (matches) and take max-direction arrows (non-matches) to reconstruct the LCS.',
-    state: `LCS length = ${dp[m][n]}`,
-    phase: 'traceback', dp: snapDp(), cur: null, deps: [], tracePath: [...tracePath]
-  });
-
-  steps.push({
-    title: `LCS = "${lcs}" (length ${dp[m][n]})`,
-    what: `The longest common subsequence of "${X}" and "${Y}" is "${lcs}".`,
-    why: `This sequence appears in both strings in order — not necessarily contiguously.`,
-    state: `LCS: "${lcs}" · length: ${dp[m][n]}`,
-    phase: 'done', dp: snapDp(), cur: null, deps: [], tracePath: [...tracePath],
-    lcs, lcsLen: dp[m][n]
-  });
-
-  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; s.X = X; s.Y = Y; s.m = m; s.n = n; });
+  var lcs='',ii=m,jj=n;
+  while(ii>0&&jj>0){ if(s1[ii-1]===s2[jj-1]){ lcs=s1[ii-1]+lcs; ii--;jj--; } else if(dp[ii-1][jj]>dp[ii][jj-1]) ii--; else jj--; }
+  steps.push({ title:'LCS = "'+lcs+'" (length '+dp[m][n]+')',
+    what:'LCS: "'+lcs+'". Traceback from dp['+m+']['+n+']='+dp[m][n]+' following diagonal (match) moves.',
+    why:'dp[m][n] = length of LCS for full strings.',
+    ...snap(m,n,false) });
+  steps.forEach(function(s,i){ s.stepNumber=i+1; s.totalSteps=steps.length; });
   return steps;
 }
-
-/* ── Render function ───────────────────────────── */
-function renderStep(step) {
-  const { dp, cur, deps, tracePath, phase, lcs, lcsLen, X, Y, m, n } = step;
-
-  // Reset all cells
-  for (let i = 0; i <= m; i++)
-    for (let j = 0; j <= n; j++)
-      setCell(i, j, dp[i][j], 'dp-done');
-
-  // Dependency cells (blue)
-  if (deps) deps.forEach(({ i, j }) => setCell(i, j, dp[i][j], 'dp-dep'));
-
-  // Current cell (yellow or match-yellow)
-  if (cur) setCell(cur.i, cur.j, dp[cur.i][cur.j], phase === 'match' ? 'dp-match' : 'dp-cur');
-
-  // Traceback path (green)
-  if (tracePath) tracePath.forEach(({ i, j }) => setCell(i, j, dp[i][j], 'dp-trace'));
-
-  // Result bar
-  const rb = document.getElementById('resultBar');
-  if (phase === 'done' && lcs !== undefined) {
-    rb.style.display = 'block';
-    rb.innerHTML = `<b>LCS Length: ${lcsLen}</b> &nbsp;|&nbsp; LCS: <code>${lcs}</code>`;
-  } else {
-    rb.style.display = 'none';
-  }
+function renderStep(step,s1,s2){
+  var mb=document.getElementById('matBox'); if(!mb) return;
+  var m=s1.length, n=s2.length;
+  var html='<table class="mat"><tr><th></th><th>""</th>';
+  for(var j=0;j<n;j++) html+='<th>'+s2[j]+'</th>';
+  html+='</tr>';
+  step.dp.forEach(function(row,i){
+    html+='<tr><th>'+(i===0?'""':s1[i-1])+'</th>';
+    row.forEach(function(v,j){
+      var isCur=step.cur[0]===i&&step.cur[1]===j;
+      var isMatch=isCur&&step.match;
+      html+='<td class="'+(isMatch?'match':isCur?'cur':'')+'">'+v+'</td>';
+    });
+    html+='</tr>';
+  });
+  html+='</table>'; mb.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='dp['+step.cur[0]+']['+step.cur[1]+']='+step.dp[step.cur[0]][step.cur[1]]+
+    (step.match?' (MATCH)':'')+
+    '  |  LCS length: '+step.dp[m][n];
 }
-
-/* ── Bootstrap ─────────────────────────────────── */
-function resetUI() {
-  document.getElementById('resultBar').style.display = 'none';
-  document.getElementById('dpWrap').innerHTML = '';
+function rebuild(){
+  var s1=document.getElementById('s1').value.toUpperCase().slice(0,8);
+  var s2=document.getElementById('s2').value.toUpperCase().slice(0,8);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(s1,s2),function(s){renderStep(s,s1,s2);},'explanation','sim-bar');
 }
-
-function rebuild() {
-  const X = document.getElementById('s1').value.trim().toUpperCase().replace(/[^A-Z]/g, '');
-  const Y = document.getElementById('s2').value.trim().toUpperCase().replace(/[^A-Z]/g, '');
-  if (!X || !Y) { alert('Enter two non-empty strings.'); return; }
-  if (X.length > 15 || Y.length > 15) { alert('Keep strings ≤ 15 characters for readable table.'); return; }
-
-  resetUI();
-  buildTable(X, Y);
-  if (player) player.destroy();
-  const steps = generateSteps(X, Y);
-  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
-}
-
 rebuild();
 </script>
 </body>

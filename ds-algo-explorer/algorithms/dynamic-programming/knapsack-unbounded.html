@@ -2,181 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Unbounded Knapsack – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Unbounded Knapsack – Dynamic Programming</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem}
-.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
-.prose p{margin-bottom:14px}
-.prose p:last-child{margin-bottom:0}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
-.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
-label{font-size:14px;color:#5a5a72;font-weight:500}
-input[type=number]{width:80px;padding:8px 10px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2}
-button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
-button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
-.items-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}
-.items-table th{background:#fdf0ea;color:#e8622a;padding:8px 12px;text-align:center;border:1px solid #f5c4a8}
-.items-table td{padding:8px 12px;text-align:center;border:1px solid #e2e0da}
-.dp-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
-.dp-cell{min-width:42px;padding:8px 4px;background:#fff;border:1px solid #e2e0da;border-radius:6px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;transition:background .3s}
-.dp-cell.cur{background:#e8622a;color:#fff;border-color:#e8622a}
-.dp-cell.done{background:#fdf0ea;border-color:#f5c4a8}
-.dp-cell .idx{font-size:10px;color:#5a5a72;display:block}
-.dp-cell.cur .idx{color:#fdebd7}
-.dp-cell.done .idx{color:#e8622a}
-.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
-.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto}
-.log div{margin-bottom:4px;line-height:1.5}
-.log .hi{color:#e8622a}
-.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.dp-row{display:flex;flex-wrap:wrap;gap:6px;margin:.6rem 0;font-family:'JetBrains Mono',monospace;font-size:.75rem}
+.dp-cell{width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--b);border-radius:6px;background:var(--bg)}
+.dp-cell.cur{background:#fff176;border-color:#c8c000;font-weight:700}
+.dp-cell.dep{background:#c3b1e1;border-color:#8b5cf6}
+.dp-cell.done{background:#a8e6a3;border-color:#27a060}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:240px;background:var(--bg);color:var(--ink)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:80px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Unbounded Knapsack
-  </div>
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Unbounded Knapsack</h1>
-    <p class="tagline">Unlimited copies of each item — fill the knapsack to get maximum value.</p>
-  </div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Unbounded Knapsack</span>
+  </nav>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Unbounded Knapsack</h1>
+  <p class="tagline">Maximize value with unlimited copies of each item.</p>
   <div class="prose">
-    <p>Unlike 0/1 Knapsack, here you can take as many copies of an item as you like. Think of a candy machine: you have coins and different candy types with different weights and prices; you want maximum sweetness within your budget.</p>
-    <p>Since items can repeat, a 1-D DP suffices: <code>dp[w]</code> is the maximum value for weight exactly w. For each weight from 1 to W, try every item: if it fits, check if taking it (plus the best for the remaining weight) beats the current best. The key difference from 0/1 Knapsack is we look at <code>dp[w - weight[i]]</code> in the <em>same</em> row, not the previous one.</p>
-    <p>Time complexity O(n·W), space O(W). Practical in cutting-stock problems, memory allocation, and coin-change scenarios.</p>
+    <p>Unbounded Knapsack allows each item to be used unlimited times. Unlike 0/1 knapsack, we use a 1D DP array: dp[w] = maximum value achievable with capacity exactly w. Recurrence: dp[w] = max over all items i of (dp[w - wt[i]] + val[i]), when w ≥ wt[i]. The 1D array works because we can reuse items in the same capacity sweep.</p>
+    <p>This is also the basis for the Coin Change problem (minimize coins = same structure but minimize instead of maximize). The 1D approach uses O(W) space vs O(N×W) for the 2D table.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-val">O(n·W)</div><div class="fact-lbl">Time Complexity</div></div>
-    <div class="fact"><div class="fact-val">O(W)</div><div class="fact-lbl">Space Complexity</div></div>
-    <div class="fact"><div class="fact-val">Unbounded</div><div class="fact-lbl">Item Usage</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(N × W)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(W)</div></div>
+    <div class="fact"><div class="flabel">Items</div><div class="fval">Unlimited copies</div></div>
+    <div class="fact"><div class="flabel">vs 0/1</div><div class="fval">1D DP, no row copy</div></div>
   </div>
-
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <table class="items-table">
-      <thead><tr><th>Item</th><th>Weight</th><th>Value</th></tr></thead>
-      <tbody>
-        <tr><td>A</td><td>2</td><td>5</td></tr>
-        <tr><td>B</td><td>3</td><td>8</td></tr>
-        <tr><td>C</td><td>4</td><td>9</td></tr>
-        <tr><td>D</td><td>5</td><td>10</td></tr>
-      </tbody>
-    </table>
-    <div class="controls">
-      <label>Capacity: <input type="number" id="cap" value="12" min="1" max="20"/></label>
-      <button id="solveBtn" onclick="solve()">Solve</button>
-      <button onclick="reset()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div id="dpRow" class="dp-row"></div>
+      <div class="info-bar" id="infoBar">DP array appears above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Weights:</label>
+        <input type="text" id="wts" value="2,3,5"/>
+        <label>Values:</label>
+        <input type="text" id="vals" value="6,7,12"/>
+        <label>Capacity:</label>
+        <input type="number" id="cap" value="10" min="1" max="20"/>
+        <button class="btn btn-p" onclick="rebuild()">Solve</button>
+      </div>
     </div>
-    <div id="dpRowWrap" class="dp-row"></div>
-    <div class="result" id="result"></div>
   </div>
-
-  <div class="card">
-    <h2>Step Log</h2>
-    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
-  </div>
-
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const weights=[2,3,4,5];
-const values=[5,8,9,10];
-const names=['A','B','C','D'];
-let dp=[];
-let running=false;
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function log(msg){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  div.innerHTML=msg;
-  d.appendChild(div);d.scrollTop=d.scrollHeight;
-}
-function reset(){
-  document.getElementById('dpRowWrap').innerHTML='';
-  document.getElementById('result').style.display='none';
-  document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';
-  document.getElementById('solveBtn').disabled=false;
-  running=false;
-}
-function buildCells(W){
-  const wrap=document.getElementById('dpRowWrap');
-  wrap.innerHTML='';
-  for(let w=0;w<=W;w++){
-    const div=document.createElement('div');
-    div.className='dp-cell';
-    div.id=`c${w}`;
-    div.innerHTML=`<span class="idx">w=${w}</span><span class="val">0</span>`;
-    wrap.appendChild(div);
-  }
-}
-function setCell(w,val,cls){
-  const el=document.getElementById(`c${w}`);
-  if(!el)return;
-  el.querySelector('.val').textContent=val;
-  el.className='dp-cell '+(cls||'');
-}
-async function solve(){
-  if(running)return;
-  running=true;
-  document.getElementById('solveBtn').disabled=true;
-  document.getElementById('log').innerHTML='';
-  const W=parseInt(document.getElementById('cap').value)||12;
-  buildCells(W);
-  dp=new Array(W+1).fill(0);
-  const choice=new Array(W+1).fill(-1);
-  log(`<span class="hi">Unbounded Knapsack: capacity=${W}</span>`);
-  await sleep(300);
-  for(let w=1;w<=W;w++){
-    setCell(w,0,'cur');
-    await sleep(80);
+let player=null;
+function generateSteps(weights,values,W){
+  const steps=[], n=weights.length;
+  const dp=new Array(W+1).fill(0);
+  function snap(c,depC){ return { dp:[...dp], cur:c, dep:depC }; }
+  steps.push({ title:`Unbounded Knapsack: ${n} items, capacity ${W}`,
+    what:`Items: ${weights.map((w,i)=>`(w=${w},v=${values[i]})`).join(', ')}. dp[w] = max value with capacity w.`,
+    why:'1D array: each capacity can reuse any item unlimited times.',
+    ...snap(-1,-1) });
+  for(let c=1;c<=W;c++){
     let best=0,bestItem=-1;
-    for(let i=0;i<weights.length;i++){
-      if(weights[i]<=w){
-        const cand=dp[w-weights[i]]+values[i];
-        if(cand>best){best=cand;bestItem=i;}
+    for(let i=0;i<n;i++){
+      if(c>=weights[i]&&dp[c-weights[i]]+values[i]>best){
+        best=dp[c-weights[i]]+values[i]; bestItem=i;
       }
     }
-    dp[w]=best;
-    choice[w]=bestItem;
-    setCell(w,best,'done');
-    if(bestItem>=0){
-      log(`dp[${w}] = dp[${w-weights[bestItem]}]+${values[bestItem]} (item ${names[bestItem]}) = ${best}`);
-    } else {
-      log(`dp[${w}] = 0 (no item fits)`);
-    }
+    dp[c]=best;
+    steps.push({ title:`dp[${c}] = ${dp[c]}`,
+      what:`Try all items at capacity ${c}. Best: ${bestItem>=0?`item ${bestItem+1} (w=${weights[bestItem]},v=${values[bestItem]}): dp[${c-weights[bestItem]}]+${values[bestItem]}=${dp[c]}`:'no item fits'}.`,
+      why:'Unbounded: can pick same item again — read dp[c-wt] from current (not previous) row.',
+      ...snap(c,bestItem>=0?c-weights[bestItem]:-1) });
   }
-  // trace items
-  let w=W,used=[];
-  while(w>0&&choice[w]>=0){
-    used.push(names[choice[w]]);
-    w-=weights[choice[w]];
-  }
-  const res=document.getElementById('result');
-  res.style.display='block';
-  res.innerHTML=`<b>Max Value: ${dp[W]}</b> &nbsp;|&nbsp; Items used: ${used.reverse().join(', ')||'none'}`;
-  running=false;
+  steps.push({ title:`Maximum value: ${dp[W]}`,
+    what:`dp[${W}] = ${dp[W]}. Optimal value with unlimited copies.`,
+    why:'Each capacity built on smaller sub-problems, items reused freely.',
+    ...snap(W,-1) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
+function renderStep(step,W){
+  const dr=document.getElementById('dpRow'); if(!dr) return;
+  let html='';
+  for(let i=0;i<=W;i++){
+    const isCur=step.cur===i,isDep=step.dep===i;
+    html+=`<div class="dp-cell ${isCur?'cur':isDep?'dep':step.cur>i?'done':''}"><span style="font-size:.6rem;color:#888">c=${i}</span><span>${step.dp[i]}</span></div>`;
+  }
+  dr.innerHTML=html;
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Capacity ${step.cur>=0?step.cur:'—'}: dp[${step.cur>=0?step.cur:'—'}]=${step.cur>=0?step.dp[step.cur]:'—'}  |  Max value: ${step.dp[W]}`;
+}
+function rebuild(){
+  const weights=document.getElementById('wts').value.split(',').map(Number).filter(v=>v>0);
+  const values=document.getElementById('vals').value.split(',').map(Number).filter(v=>v>0);
+  const W=Math.min(parseInt(document.getElementById('cap').value),20);
+  const len=Math.min(weights.length,values.length,6);
+  const wts=weights.slice(0,len),vals=values.slice(0,len);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(wts,vals,W),(s)=>renderStep(s,W),'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

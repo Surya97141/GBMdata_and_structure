@@ -2,249 +2,162 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Word Search – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Word Search – Backtracking</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
-body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
-nav.breadcrumb a{color:var(--muted)}nav.breadcrumb span{margin:0 6px}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
-.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
-.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
-.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
-.section{margin-bottom:36px}
-.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
-.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
-.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
-.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
-.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
-.sim-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
-button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}button:disabled{opacity:.45;cursor:not-allowed}
-button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
-input[type=text]{border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:.9rem;background:var(--bg);color:var(--ink)}
-#word-grid{display:inline-grid;grid-template-columns:repeat(5,56px);gap:4px;margin-bottom:16px}
-.grid-cell{width:56px;height:56px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--ink);transition:background .15s,border-color .15s}
-.grid-cell.active{background:#fde8e8;border-color:var(--accent);color:var(--accent)}
-.grid-cell.failed{background:#f0f0f0;border-color:#ccc;color:#aaa}
-.grid-cell.found{background:#eafaf1;border-color:#27ae60;color:#1a7a40}
-.grid-wrap{display:flex;justify-content:center;margin-bottom:12px}
-.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:.8rem;color:var(--muted)}
-.leg-item{display:flex;align-items:center;gap:6px}
-.leg-box{width:16px;height:16px;border-radius:3px;border:1px solid var(--border)}
-.result-banner{font-family:'JetBrains Mono',monospace;font-size:.95rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:12px;min-height:36px}
-.result-banner.found{background:#eafaf1;border-color:#27ae60;color:#1a7a40}
-.result-banner.notfound{background:#fde8e8;border-color:#f5c6c6;color:var(--accent)}
-.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)}
-.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
-.log-ok{color:#27ae60}.log-back{color:var(--accent)}.log-done{color:#1a7a40;font-weight:600}
-.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:140px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Word Search
-</nav>
-<div class="hero">
-  <div style="max-width:900px;margin:0 auto">
-    <span class="hero-tag">Backtracking</span>
-    <h1>Word Search</h1>
-    <p class="tagline">Search for a word in a 2D letter grid using DFS backtracking — exploring all 4 directions and retreating on mismatches.</p>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Word Search</span>
+  </nav>
+  <span class="tag">Backtracking</span>
+  <h1>Word Search</h1>
+  <p class="tagline">Find a word in a letter grid by backtracking in all 4 directions.</p>
+  <div class="prose">
+    <p>Word Search: given a 2D grid of letters and a target word, find if the word exists by navigating adjacent cells (up/down/left/right). Backtracking: mark cell as visited, try all 4 directions for the next letter, unmark (backtrack) if failed. No cell can be reused in the same path.</p>
+    <p>Yellow = current cell being explored. Purple = path so far (matching letters). Red = backtrack. Green = complete word found.</p>
   </div>
-</div>
-<div class="content">
-  <div class="section">
-    <p>The Word Search problem asks whether a given word can be found in a 2D grid of letters by tracing a path of adjacent cells (up, down, left, right) without reusing any cell. It is a direct application of backtracking DFS on a grid.</p>
-    <p>The algorithm starts from every cell that matches the first letter. From each starting point, it explores all four directions, marks the current cell as "in use", and recurses to match the next character. If a direction fails, it unmarks the cell and tries the next direction — classic backtracking.</p>
-    <p>This mirrors how you manually scan a word-search puzzle: you spot the first letter, trace forward in one direction, and when letters stop matching you go back to the start and try a new direction or starting cell.</p>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(N * 4^L)</div></div>
+    <div class="fact"><div class="flabel">Directions</div><div class="fval">4 (UDLR)</div></div>
+    <div class="fact"><div class="flabel">Revisit</div><div class="fval">Not allowed</div></div>
+    <div class="fact"><div class="flabel">Strategy</div><div class="fval">DFS backtrack</div></div>
   </div>
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(N·M·4^L)</div><div class="sub">N×M grid, word length L</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(L)</div><div class="sub">Recursion depth = word length</div></div>
-    <div class="fact-card"><div class="label">Directions</div><div class="value">4</div><div class="sub">Up, Down, Left, Right (no diagonals)</div></div>
-  </div>
-  <div class="sim-card">
-    <div class="sim-controls">
-      <label style="font-size:.9rem;font-weight:500;color:var(--muted)">Word:</label>
-      <input type="text" id="word-input" value="APPLE" style="width:140px" placeholder="e.g. APPLE"/>
-      <button id="btn-search" onclick="startSearch()">Search</button>
-      <button id="btn-reset" onclick="resetGrid()" class="secondary">Reset</button>
-      <button id="btn-shuffle" onclick="shuffleGrid()" class="secondary">New Grid</button>
-      <label style="font-size:.85rem;color:var(--muted)">Speed:
-        <select id="spd" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem">
-          <option value="60">Fast</option>
-          <option value="180" selected>Medium</option>
-          <option value="450">Slow</option>
-        </select>
-      </label>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Letter grid above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Search word:</label>
+        <input type="text" id="word" value="SEE"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
+      </div>
     </div>
-    <div class="legend">
-      <div class="leg-item"><div class="leg-box" style="background:#fde8e8;border-color:var(--accent)"></div> Current Path</div>
-      <div class="leg-item"><div class="leg-box" style="background:#f0f0f0;border-color:#ccc"></div> Tried & Failed</div>
-      <div class="leg-item"><div class="leg-box" style="background:#eafaf1;border-color:#27ae60"></div> Word Found</div>
-    </div>
-    <div class="grid-wrap"><div id="word-grid"></div></div>
-    <div class="result-banner" id="result-banner">Enter a word and press Search.</div>
-    <div class="step-log" id="step-log"><div class="log-line">Press Search to animate DFS backtracking word search.</div></div>
   </div>
-  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const ROWS=5,COLS=5;
-const PRESET_GRID=[
-  ['A','P','P','L','E'],
-  ['B','A','N','A','N'],
-  ['A','R','A','T','A'],
-  ['T','E','P','P','L'],
-  ['S','K','I','P','E']
+var GRID=[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
 ];
-let grid=PRESET_GRID.map(r=>[...r]);
-let cellState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
-let solving=false;
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-function spd(){return parseInt(document.getElementById('spd').value)}
-
-function buildGrid(){
-  const container=document.getElementById('word-grid');
-  container.innerHTML='';
-  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
-    const cell=document.createElement('div');
-    cell.className='grid-cell';
-    cell.id='wc-'+r+'-'+c;
-    cell.textContent=grid[r][c];
-    container.appendChild(cell);
+var canvas=document.getElementById('cvs'), ctx=canvas.getContext('2d');
+var player=null, DPR=window.devicePixelRatio||1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; var w=canvas.parentElement.clientWidth-26;
+  canvas.width=w*DPR; canvas.height=280*DPR; canvas.style.width=w+'px'; canvas.style.height='280px'; ctx.scale(DPR,DPR);
+}
+window.addEventListener('resize',function(){ setupCanvas(); if(player) player.renderCurrentStep(); });
+function generateSteps(word){
+  var steps=[], R=GRID.length, C=GRID[0].length;
+  var visited=Array.from({length:R},function(){return new Array(C).fill(false);});
+  var pathCells=[];
+  var found=false;
+  function snap(r,c,action){
+    return { visited:visited.map(function(row){return row.slice();}), path:pathCells.slice(), cur:[r,c], action:action };
   }
-}
-
-function setCell(r,c,state){
-  const cell=document.getElementById('wc-'+r+'-'+c);
-  if(!cell) return;
-  cell.className='grid-cell'+(state?' '+state:'');
-  cell.textContent=grid[r][c];
-}
-
-function log(msg,cls=''){
-  const box=document.getElementById('step-log');
-  const d=document.createElement('div');d.className='log-line'+(cls?' '+cls:'');d.textContent=msg;
-  box.appendChild(d);box.scrollTop=box.scrollHeight;
-}
-function clearLog(){document.getElementById('step-log').innerHTML='';}
-
-function setResult(msg,type=''){
-  const b=document.getElementById('result-banner');
-  b.textContent=msg;b.className='result-banner'+(type?' '+type:'');
-}
-
-const DIRS=[[-1,0,'Up'],[1,0,'Down'],[0,-1,'Left'],[0,1,'Right']];
-
-async function dfs(word,idx,r,c,visited){
-  if(!solving) return false;
-  if(r<0||r>=ROWS||c<0||c>=COLS) return false;
-  if(visited[r][c]) return false;
-  if(grid[r][c]!==word[idx]){
-    setCell(r,c,'failed');
-    log('At ('+r+','+c+')='+grid[r][c]+' ≠ '+word[idx]+'. Mismatch.','log-back');
-    await sleep(spd()/3);
-    setCell(r,c,'');
+  steps.push({ title:'Word Search: "'+word+'" in '+R+'x'+C+' grid',
+    what:'Find "'+word+'" by navigating adjacent cells. No revisiting.',
+    why:'DFS backtracking: try all 4 neighbors for each next letter.',
+    ...snap(-1,-1,'start') });
+  var DIRS=[[-1,0],[1,0],[0,-1],[0,1]];
+  function dfs(r,c,k){
+    if(k===word.length){ found=true; return true; }
+    if(r<0||r>=R||c<0||c>=C||visited[r][c]||GRID[r][c]!==word[k]) return false;
+    visited[r][c]=true; pathCells.push([r,c]);
+    steps.push({ title:'Match "'+word[k]+'" at ('+r+','+c+') [letter '+k+'/'+word.length+']',
+      what:'GRID['+r+']['+c+']="'+GRID[r][c]+'" matches word['+k+']="'+word[k]+'". Path: ['+pathCells.map(function(p){return '('+p[0]+','+p[1]+')';}).join(',')+'].',
+      why:'Matching letter — advance to next letter.',
+      ...snap(r,c,'enter') });
+    for(var d=0;d<DIRS.length;d++){
+      if(dfs(r+DIRS[d][0],c+DIRS[d][1],k+1)) return true;
+    }
+    visited[r][c]=false; pathCells.pop();
+    steps.push({ title:'Backtrack from ('+r+','+c+')',
+      what:'No valid continuation from ('+r+','+c+'). Unmark and try other starting points.',
+      why:'Dead end: backtrack.',
+      ...snap(r,c,'back') });
     return false;
   }
-  // Match
-  visited[r][c]=true;
-  setCell(r,c,'active');
-  log('At ('+r+','+c+')='+grid[r][c]+' ✓ matches word['+idx+']='+word[idx],'log-ok');
-  await sleep(spd());
-  if(idx===word.length-1){return true;}
-  for(const [dr,dc,dname] of DIRS){
-    if(!solving) return false;
-    log('Try '+dname+' → ('+(r+dr)+','+(c+dc)+')');
-    const res=await dfs(word,idx+1,r+dr,c+dc,visited);
-    if(res) return true;
+  for(var r=0;r<R&&!found;r++) for(var c=0;c<C&&!found;c++) dfs(r,c,0);
+  steps.push({ title:found?'Word "'+word+'" found!':'Word "'+word+'" not found',
+    what:found?'Path: ['+pathCells.map(function(p){return '('+p[0]+','+p[1]+')';}).join(',')+'].':'No valid path for "'+word+'" in the grid.',
+    why:'Backtracking exhausted all starting positions.',
+    ...snap(-1,-1,'done') });
+  steps.forEach(function(s,i){ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
+}
+function renderStep(step){
+  var W=canvas.width/DPR, H=canvas.height/DPR, R=GRID.length, C=GRID[0].length;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  var cs=Math.min((W-40)/C,(H-40)/R);
+  var ox=(W-cs*C)/2, oy=(H-cs*R)/2;
+  var pathSet=new Set(step.path.map(function(p){return p[0]+','+p[1];}));
+  for(var r=0;r<R;r++) for(var c=0;c<C;c++){
+    var x=ox+c*cs, y=oy+r*cs;
+    var isCur=step.cur[0]===r&&step.cur[1]===c;
+    var isPath=pathSet.has(r+','+c);
+    var col=step.action==='done'&&isPath?'#a8e6a3':
+      isCur&&step.action==='back'?'#fca5a5':
+      isCur?'#fff176':
+      isPath?'#c3b1e1':'#f0f0f0';
+    ctx.fillStyle=col; ctx.fillRect(x+3,y+3,cs-6,cs-6);
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=1; ctx.strokeRect(x+3,y+3,cs-6,cs-6);
+    ctx.fillStyle='#1a1a2e'; ctx.font='bold '+(cs*0.4)+'px JetBrains Mono'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(GRID[r][c],x+cs/2,y+cs/2);
+    var idx=step.path.findIndex(function(p){return p[0]===r&&p[1]===c;});
+    if(idx>=0){ ctx.fillStyle='#7b4fd4'; ctx.font=(cs*0.28)+'px Inter'; ctx.textBaseline='top'; ctx.fillText(idx,x+cs*0.78,y+cs*0.05); }
+    ctx.textBaseline='alphabetic';
   }
-  visited[r][c]=false;
-  setCell(r,c,'failed');
-  log('Backtrack from ('+r+','+c+'). No valid continuation.','log-back');
-  await sleep(spd()/2);
-  setCell(r,c,'');
-  return false;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Matched: '+step.path.length+' letters  |  '+
+    (step.action==='done'?'Done!':step.action==='back'?'Backtrack from ('+step.cur[0]+','+step.cur[1]+')':'At ('+step.cur[0]+','+step.cur[1]+')');
 }
-
-async function startSearch(){
-  if(solving) return;
-  const word=document.getElementById('word-input').value.trim().toUpperCase();
-  if(!word){log('Please enter a word to search.');return;}
-  solving=true;
-  clearLog();
-  cellState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
-  buildGrid();
-  document.getElementById('btn-search').disabled=true;
-  document.getElementById('btn-reset').disabled=true;
-  document.getElementById('btn-shuffle').disabled=true;
-  setResult('Searching for "'+word+'"…');
-  log('Searching for "'+word+'" in '+ROWS+'×'+COLS+' grid…');
-  let found=false;
-  outer:for(let r=0;r<ROWS&&!found;r++){
-    for(let c=0;c<COLS&&!found;c++){
-      if(!solving) break outer;
-      if(grid[r][c]===word[0]){
-        log('Starting DFS from ('+r+','+c+')='+grid[r][c]);
-        const visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
-        found=await dfs(word,0,r,c,visited);
-        if(found){
-          // Mark all visited cells as found
-          for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++) if(visited[rr][cc]) setCell(rr,cc,'found');
-        }
-      }
-    }
-  }
-  if(found){
-    setResult('Word "'+word+'" found!','found');
-    log('"'+word+'" found successfully!','log-done');
-  } else {
-    setResult('Word "'+word+'" not found in grid.','notfound');
-    log('"'+word+'" does not exist in this grid.','log-back');
-    buildGrid();
-  }
-  solving=false;
-  document.getElementById('btn-search').disabled=false;
-  document.getElementById('btn-reset').disabled=false;
-  document.getElementById('btn-shuffle').disabled=false;
+function rebuild(){
+  var word=document.getElementById('word').value.toUpperCase().slice(0,8);
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(word),renderStep,'explanation','sim-bar');
 }
-
-function resetGrid(){
-  solving=false;clearLog();buildGrid();
-  setResult('Enter a word and press Search.');
-  log('Grid reset. Press Search to begin.');
-}
-
-function shuffleGrid(){
-  solving=false;
-  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  // Place a random word in the grid
-  const words=['SNAKE','TRACK','APPLE','BLEND','CRISP','QUEST'];
-  const word=words[Math.floor(Math.random()*words.length)];
-  grid=Array.from({length:ROWS},()=>Array.from({length:COLS},()=>letters[Math.floor(Math.random()*letters.length)]));
-  // Place the word horizontally at a random position
-  const row=Math.floor(Math.random()*ROWS);
-  const col=Math.min(Math.floor(Math.random()*(COLS-word.length+1)),COLS-word.length);
-  for(let i=0;i<word.length;i++) grid[row][col+i]=word[i];
-  document.getElementById('word-input').value=word;
-  clearLog();buildGrid();
-  setResult('New grid with "'+word+'" hidden inside. Press Search!');
-  log('New grid generated. "'+word+'" placed at row '+row+'. Press Search.');
-}
-
-buildGrid();
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

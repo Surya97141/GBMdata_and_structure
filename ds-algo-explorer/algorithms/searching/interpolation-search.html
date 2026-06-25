@@ -1,155 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Interpolation Search – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
-.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.formula-box{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;margin-bottom:24px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#1a1a2e;line-height:1.8}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.controls label{font-size:14px;font-weight:500}
-.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
-.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:200px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#059669}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.input-row input.arr{width:280px}
+.input-row input.tgt{width:80px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Interpolation Search
-  </nav>
-
-  <div class="hero">
-    <div class="category-tag">Searching</div>
-    <h1>Interpolation Search</h1>
-    <p class="tagline">Estimate where the target should be — like a smart dictionary reader.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Interpolation Search</span></nav>
+  <span class="tag">Searching</span>
+  <h1>Interpolation Search</h1>
+  <p class="tagline">Estimate where the target should be — like searching a phone book.</p>
+  <div class="prose">
+    <p>Instead of always probing the midpoint (Binary Search), Interpolation Search estimates the probe position using linear interpolation: <code>pos = lo + (target−a[lo]) / (a[hi]−a[lo]) × (hi−lo)</code>. On uniformly distributed data this converges in O(log log n).</p>
+    <p>Like looking up a name in a phone book: "Smith" starts near the back — you don't open it at the middle. It degrades to O(n) on non-uniform data (e.g. exponentially distributed values).</p>
   </div>
-
-  <div class="explanation">
-    <p>Interpolation search improves on binary search for uniformly distributed sorted data. Instead of always probing the midpoint, it estimates the likely position of the target using a linear interpolation formula based on the values at the current bounds.</p>
-    <p>The analogy is a dictionary. If you are looking for "Zebra," you would not open to the middle — you would open near the very end, because you know Z is at the back. Interpolation search does exactly this mathematically: it computes where the target is proportionally expected to be within the current value range.</p>
-    <p>For uniformly distributed data, interpolation search achieves O(log log n) — dramatically faster than O(log n) binary search. However, for skewed distributions, it degrades to O(n) in the worst case. It works only on sorted arrays with numeric keys.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="label">Time (Uniform)</div><div class="value">O(log log n)</div></div>
-    <div class="fact-card"><div class="label">Time (Worst)</div><div class="value">O(n)</div></div>
-    <div class="fact-card"><div class="label">Sorted Required</div><div class="value">Yes (numeric)</div></div>
+    <div class="fact"><div class="flabel">Best</div><div class="fval">O(log log n)</div><div class="fsub">uniform data</div></div>
+    <div class="fact"><div class="flabel">Worst</div><div class="fval">O(n)</div><div class="fsub">skewed data</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Sorted?</div><div class="fval">Yes</div><div class="fsub">required</div></div>
   </div>
-
-  <div class="formula-box">
-    pos = lo + floor( (target - arr[lo]) / (arr[hi] - arr[lo]) × (hi - lo) )
-  </div>
-
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Target:</label>
-      <input type="number" id="targetInput" value="63">
-      <button class="btn btn-primary" onclick="startSearch()">Search</button>
-      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="220"></canvas>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" class="arr" type="text" value="2,4,6,8,10,12,14,16,18,20"/>
+        <input id="tgtIn" class="tgt" type="number" value="10" placeholder="Target"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
+        <button class="btn btn-o" onclick="randomize()">Random uniform</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Search range</span>
+        <span class="leg"><span class="leg-dot" style="background:#d0d0d0"></span>Eliminated</span>
+        <span class="leg"><span class="leg-dot" style="background:#3b82f6;width:3px;height:12px;border-radius:1px"></span>lo (blue)</span>
+        <span class="leg"><span class="leg-dot" style="background:#ff9800;width:3px;height:12px;border-radius:1px"></span>hi (orange)</span>
+        <span class="leg"><span class="leg-dot" style="background:#8b5cf6;width:3px;height:12px;border-radius:1px"></span>probe (purple)</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Found</span>
+      </div>
     </div>
-    <canvas id="cvs" width="820" height="220"></canvas>
-    <div class="log">
-      <h3>Step Log</h3>
-      <div id="logEntries"></div>
-    </div>
   </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
-
 <script>
-const ARR=[3,7,12,18,25,31,42,56,63,78,85,92,97];
-const ACCENT='#e84393',GREEN='#27a060',GRAY='#d0cec8';
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-const n=ARR.length;
-let state=ARR.map(()=>'default'),running=false;
-
-function drawArray(lo,hi,pos,formulaStr){
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  const cellW=58,cellH=52;
-  const startX=(cvs.width-n*cellW)/2,startY=18;
-  ARR.forEach((v,i)=>{
-    const x=startX+i*cellW,y=startY;
-    const s=state[i];
-    let fill='#fff';
-    if(s==='found')fill=GREEN;
-    else if(s==='pos')fill=ACCENT;
-    else if(i<lo||i>hi)fill=GRAY;
-    ctx.fillStyle=fill;ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
-    ctx.fillStyle=(fill===GREEN||fill===ACCENT)?'#fff':(fill===GRAY?'#aaa':'#1a1a2e');
-    ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(v,x+cellW/2,y+cellH/2);
-    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
-    ctx.fillText(i,x+cellW/2,y+cellH+9);
-  });
-  const py=startY+cellH+22;
-  if(lo>=0){const lx=startX+lo*cellW+cellW/2;ctx.fillStyle='#3b82f6';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('L',lx,py);}
-  if(hi>=0&&hi<n){const hx=startX+hi*cellW+cellW/2;ctx.fillStyle='#f59e0b';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('R',hx,py);}
-  if(pos>=0&&pos<n){const px=startX+pos*cellW+cellW/2;ctx.fillStyle=ACCENT;ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('P',px,py);}
-  if(formulaStr){ctx.fillStyle='#5a5a72';ctx.font='11px JetBrains Mono';ctx.textAlign='center';ctx.fillText(formulaStr,cvs.width/2,startY+cellH+46);}
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w*DPR; canvas.height = 220*DPR;
+  canvas.style.width = w+'px'; canvas.style.height = '220px';
+  ctx.scale(DPR, DPR);
 }
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function generateSteps(arr, target) {
+  const steps = [], n = arr.length;
+  const elim = new Array(n).fill(false);
+  steps.push({ title:`Interpolation Search for ${target}`,
+    what:`Array (sorted, uniform): [${arr.join(', ')}]. Target = ${target}.`,
+    why:'Probe position estimated by linear interpolation between lo and hi values.',
+    state:`lo=0, hi=${n-1}`, phase:'start', arr:[...arr], elim:[...elim], lo:0, hi:n-1, probe:-1, target });
 
-async function startSearch(){
-  if(running)return;running=true;
-  state=ARR.map(()=>'default');
-  const target=parseInt(document.getElementById('targetInput').value);
-  log(`Interpolation search for target = ${target}`);
-  let lo=0,hi=n-1,step=0;
-  while(lo<=hi&&target>=ARR[lo]&&target<=ARR[hi]){
-    step++;
-    if(ARR[hi]===ARR[lo]){break;}
-    const pos=lo+Math.floor((target-ARR[lo])/(ARR[hi]-ARR[lo])*(hi-lo));
-    const formula=`pos = ${lo} + (${target}-${ARR[lo]})/(${ARR[hi]}-${ARR[lo]}) × (${hi}-${lo}) = ${pos}`;
-    state[pos]='pos';
-    drawArray(lo,hi,pos,formula);
-    log(`Step ${step}: ${formula}`);
-    await sleep(900);
-    if(ARR[pos]===target){state[pos]='found';drawArray(-1,-1,-1,'');log(`✓ Found ${target} at index ${pos}!`);running=false;return;}
-    else if(ARR[pos]<target){log(`arr[${pos}]=${ARR[pos]} < ${target}: search right`);state[pos]='default';lo=pos+1;}
-    else{log(`arr[${pos}]=${ARR[pos]} > ${target}: search left`);state[pos]='default';hi=pos-1;}
+  let lo=0, hi=n-1;
+  while (lo<=hi && target>=arr[lo] && target<=arr[hi]) {
+    const range=arr[hi]-arr[lo];
+    const probe = range===0 ? lo : lo + Math.floor((target-arr[lo])/range*(hi-lo));
+    const formula=`lo + (${target}−${arr[lo]}) / (${arr[hi]}−${arr[lo]}) × (${hi}−${lo}) = ${probe}`;
+    steps.push({ title:`Probe at index ${probe} — a[${probe}]=${arr[probe]}`,
+      what:`Interpolation formula: ${formula}. Probe a[${probe}]=${arr[probe]}.`,
+      why:'Interpolation guesses where the target should lie based on value distribution.',
+      state:`lo=${lo}, hi=${hi}, probe=${probe}`, phase:'probe', arr:[...arr], elim:[...elim], lo, hi, probe, target });
+    if (arr[probe]===target) {
+      steps.push({ title:`Found ${target} at index ${probe}!`, what:`a[${probe}]=${target}.`,
+        why:'Interpolation estimated the exact position.',
+        state:`Found at index ${probe}`, phase:'done-found', arr:[...arr], elim:[...elim], lo, hi, probe, target });
+      steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; }); return steps;
+    }
+    if (arr[probe]<target) {
+      for(let i=lo;i<=probe;i++) elim[i]=true;
+      steps.push({ title:`a[${probe}]=${arr[probe]} < ${target} — eliminate left half`,
+        what:`Probe value too small. Target must be in [${probe+1},${hi}].`,
+        why:'Since array is sorted, everything ≤ probe is less than target.',
+        state:`lo=${probe+1}, hi=${hi}`, phase:'elim-lo', arr:[...arr], elim:[...elim], lo:probe+1, hi, probe, target });
+      lo=probe+1;
+    } else {
+      for(let i=probe;i<=hi;i++) elim[i]=true;
+      steps.push({ title:`a[${probe}]=${arr[probe]} > ${target} — eliminate right half`,
+        what:`Probe value too large. Target must be in [${lo},${probe-1}].`,
+        why:'Since array is sorted, everything ≥ probe is greater than target.',
+        state:`lo=${lo}, hi=${probe-1}`, phase:'elim-hi', arr:[...arr], elim:[...elim], lo, hi:probe-1, probe, target });
+      hi=probe-1;
+    }
   }
-  drawArray(-1,-1,-1,'');log(`✗ ${target} not found.`);running=false;
+  steps.push({ title:`Target ${target} not found`,
+    what:`${target} not in array. Search range exhausted.`,
+    why:'Interpolation converged but target was absent.',
+    state:`${target} not in array`, phase:'done-notfound', arr:[...arr], elim:[...elim], lo, hi, probe:-1, target });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; }); return steps;
 }
 
-function resetSearch(){
-  running=false;state=ARR.map(()=>'default');drawArray(0,n-1,-1,'');
-  document.getElementById('logEntries').innerHTML='';
+function renderStep(step) {
+  const W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const { arr, elim, lo, hi, probe, phase, target } = step;
+  const n=arr.length; if(!n) return;
+  const maxVal=Math.max(...arr,1), padX=14, labelH=36, topPad=16;
+  const availW=W-padX*2, availH=H-labelH-topPad, cellW=availW/n;
+  for(let i=0;i<n;i++){
+    const v=arr[i], h=Math.max(4,(v/maxVal)*availH);
+    const bx=padX+i*cellW+2, by=H-labelH-h, bw=cellW-4;
+    let fill='#9ec8f0', stroke=null;
+    if (phase==='done-found' && i===probe)  { fill='#a8e6a3'; stroke='#27a060'; }
+    else if (phase==='done-notfound')       { fill=elim[i]?'#d0d0d0':'#ffb347'; }
+    else if (elim[i])                       { fill='#d0d0d0'; }
+    ctx.fillStyle=fill;
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,h,4); else ctx.rect(bx,by,bw,h); ctx.fill();
+    if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,h,4); else ctx.rect(bx,by,bw,h); ctx.stroke(); }
+    const fs=Math.max(7,Math.min(11,cellW-4));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(v, padX+i*cellW+cellW/2, H-labelH+14);
+    ctx.fillStyle='#5a5a72'; ctx.font='9px Inter,sans-serif';
+    ctx.fillText(`[${i}]`, padX+i*cellW+cellW/2, H-2);
+  }
+  // Draw pointer triangles
+  const drawPtr=(idx,color,label)=>{
+    if(idx<0||idx>=n) return;
+    const cx=padX+idx*cellW+cellW/2, ty=H-labelH-Math.max(4,(arr[idx]/maxVal)*availH)-8;
+    ctx.fillStyle=color;
+    ctx.beginPath(); ctx.moveTo(cx,ty); ctx.lineTo(cx-5,ty-10); ctx.lineTo(cx+5,ty-10); ctx.closePath(); ctx.fill();
+    ctx.fillStyle=color; ctx.font='bold 9px Inter,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(label, cx, ty-10);
+  };
+  drawPtr(lo,'#3b82f6','lo'); drawPtr(hi,'#ff9800','hi');
+  if(probe>=0) drawPtr(probe,'#8b5cf6','pos');
+  ctx.fillStyle='#059669'; ctx.font='bold 11px Inter,sans-serif';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText(`target = ${target}`, padX, 2);
 }
-drawArray(0,n-1,-1,'');
+function parseArr(s){return s.split(',').map(x=>parseInt(x.trim())).filter(x=>!isNaN(x)).sort((a,b)=>a-b);}
+function rebuild(){
+  const arr=parseArr(document.getElementById('arrIn').value);
+  const target=parseInt(document.getElementById('tgtIn').value)||0;
+  if(arr.length<2||arr.length>25){alert('Enter 2–25 numbers.');return;}
+  document.getElementById('arrIn').value=arr.join(',');
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr,target),renderStep,'explanation','sim-bar');
+}
+function randomize(){
+  const n=10+Math.floor(Math.random()*6);
+  const arr=[...new Set(Array.from({length:n+5},(_,i)=>i*3+Math.floor(Math.random()*3)+1))].slice(0,n).sort((a,b)=>a-b);
+  document.getElementById('arrIn').value=arr.join(',');
+  document.getElementById('tgtIn').value=arr[Math.floor(Math.random()*arr.length)];
+  rebuild();
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

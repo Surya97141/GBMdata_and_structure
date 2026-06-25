@@ -2,161 +2,177 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Hungarian Algorithm – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Hungarian Algorithm – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-.matrix-wrap{overflow-x:auto}
-table{border-collapse:collapse;margin:10px auto;font-family:'JetBrains Mono',monospace}
-td,th{width:60px;height:50px;text-align:center;border:1px solid #e2e0da;font-size:1rem;position:relative}
-th{background:#ede8fa;color:#7b4fd4;font-size:.8rem;font-weight:600}
-td.covered-row{background:#f0f0f0;color:#888}
-td.covered-col{background:#f0f0f0;color:#888}
-td.zero-cell{background:#d4f0e8;font-weight:700;color:#27a060}
-td.assigned{background:#7b4fd4;color:#fff;font-weight:700}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.back-link{margin-top:28px;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.matrix-wrap{overflow-x:auto;margin-top:.6rem}
+table.mat{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.75rem;margin:0 auto}
+table.mat td,table.mat th{border:1px solid var(--b);padding:.3rem .6rem;text-align:center;min-width:44px}
+table.mat th{background:var(--bg);font-weight:700;color:var(--m)}
+table.mat td.match{background:#a8e6a3;font-weight:700}
+table.mat td.zero{background:#fff176}
+table.mat td.covered{background:#f0e6ff}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>Hungarian Algorithm
-  </div>
-  <div class="hero-tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Hungarian Algorithm</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>Hungarian Algorithm</h1>
-  <p class="tagline">Optimal assignment in O(n³) — minimize total cost by reducing a matrix of zeros.</p>
+  <p class="tagline">Optimal assignment — minimum cost perfect matching in bipartite graphs.</p>
   <div class="prose">
-    <p>The Hungarian Algorithm (Kuhn-Munkres) solves the assignment problem: given n workers and n jobs with a cost matrix, find the minimum-cost assignment of one worker to each job. It runs in O(n³) time and is provably optimal.</p>
-    <p>The algorithm works by transforming the cost matrix into a form that reveals a zero-cost assignment. Step 1: subtract each row's minimum. Step 2: subtract each column's minimum. Now find zeros that form an independent set (assignment). If fewer than n zeros can be found, cover all zeros with minimum lines, find the minimum uncovered value, subtract it from uncovered cells and add to doubly-covered cells, then repeat.</p>
-    <p>Used everywhere from task scheduling and logistics to machine learning (tracking objects between frames). The name honors Harold Kuhn who published it in 1955 — though it was originally developed by Jenő Egerváry, a Hungarian mathematician.</p>
+    <p>The Hungarian algorithm solves the assignment problem: given N workers and N jobs with costs, assign each worker to exactly one job to minimize total cost. Steps: (1) Subtract row/column minima. (2) Find minimum zero cover (König's theorem). (3) If cover = N, read off matching. Else adjust matrix. Repeat until cover size = N.</p>
+    <p>This runs in O(N³). The algorithm works on a cost matrix, reducing it until a zero-cost perfect matching exists. Zeros in the matrix represent "free" assignments that can be used.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(n³)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(n²)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Matrix Reduction</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(N³)</div></div>
+    <div class="fact"><div class="flabel">Optimal?</div><div class="fval">Yes (min cost)</div></div>
+    <div class="fact"><div class="flabel">Problem</div><div class="fval">Assignment</div></div>
+    <div class="fact"><div class="flabel">Steps</div><div class="fval">Row/col reduce + cover</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">4×4 Cost Matrix — workers (rows) to jobs (cols). Click "Run Hungarian".</div>
-    <div class="matrix-wrap"><table id="matrix"></table></div>
-    <div class="controls">
-      <button id="btnRun">Run Hungarian</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnReset" class="sec">Reset</button>
-      <span id="cost" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="matrix-wrap"><div id="matBox"></div></div>
+      <div class="info-bar" id="infoBar">Cost matrix appears above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Hungarian Algorithm</button>
+      </div>
     </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
+const INIT_COST=[[9,2,7,8],[6,4,3,7],[5,8,1,8],[7,6,9,4]]; // 4×4
 const N=4;
-const original=[[9,2,7,8],[6,4,3,7],[5,8,1,8],[7,6,9,4]];
-let mat=[],covRow=[],covCol=[],assignment=[],algorithmStep=0,done=false;
-function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
-function init(){
-  mat=original.map(r=>[...r]);covRow=new Array(N).fill(false);covCol=new Array(N).fill(false);
-  assignment=[];algorithmStep=0;done=false;
-  document.getElementById('log').innerHTML='';document.getElementById('cost').textContent='';
-  addLog('Original cost matrix loaded. Click "Step" or "Run".');
-  renderMatrix();
-}
-function renderMatrix(zeros=[],assigned=[]){
-  const tbl=document.getElementById('matrix');
-  let html='<tr><th></th>'+['J0','J1','J2','J3'].map(j=>`<th>${j}</th>`).join('')+'</tr>';
-  for(let i=0;i<N;i++){
-    html+=`<tr><th>W${i}</th>`;
-    for(let j=0;j<N;j++){
-      let cls='';
-      const isAss=assigned.some(([r,c])=>r===i&&c===j);
-      const isZero=!isAss&&mat[i][j]===0;
-      if(isAss)cls='assigned';
-      else if(covRow[i]&&covCol[j])cls='covered-row covered-col';
-      else if(covRow[i])cls='covered-row';
-      else if(covCol[j])cls='covered-col';
-      else if(isZero)cls='zero-cell';
-      html+=`<td class="${cls}">${mat[i][j]}</td>`;
+let player=null;
+
+function generateSteps(){
+  const steps=[];
+  let mat=INIT_COST.map(r=>[...r]);
+  function snap(highlights,matched,covered){ return { mat:mat.map(r=>[...r]), highlights, matched:[...matched], covered:[...covered] }; }
+
+  steps.push({ title:'Initial cost matrix',
+    what:'4×4 cost matrix. Workers (rows) vs Jobs (cols). Goal: minimum cost perfect matching.',
+    why:'Hungarian: reduce matrix via row/col min subtraction, then cover zeros.',
+    ...snap([],[],[]) });
+
+  // Step 1: Row reduction
+  mat=mat.map(row=>{ const m=Math.min(...row); return row.map(v=>v-m); });
+  steps.push({ title:'Step 1: Row reduction — subtract row minimum',
+    what:'Subtract minimum of each row from that row. Creates at least one zero per row.',
+    why:'Subtracting a constant from a row does not change the optimal assignment.',
+    ...snap([],[],[]) });
+
+  // Step 2: Col reduction
+  for(let c=0;c<N;c++){
+    const m=Math.min(...mat.map(r=>r[c]));
+    for(let r=0;r<N;r++) mat[r][c]-=m;
+  }
+  steps.push({ title:'Step 2: Column reduction — subtract column minimum',
+    what:'Subtract minimum of each column. Creates at least one zero per column.',
+    why:'Column subtraction also preserves optimal — now zeros mark candidate assignments.',
+    ...snap([],[],[]) });
+
+  // Simple minimum cover + augment cycle (simplified for demo)
+  function findMatching(m){
+    const matchRow=new Array(N).fill(-1), matchCol=new Array(N).fill(-1);
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++) if(m[r][c]===0&&matchRow[r]<0&&matchCol[c]<0){ matchRow[r]=c; matchCol[c]=r; }
+    return matchRow;
+  }
+
+  let matched=findMatching(mat);
+  let iter=0;
+  while(matched.includes(-1)&&iter<10){
+    iter++;
+    // Find minimum number of lines to cover all zeros (simplified)
+    const covRow=new Array(N).fill(false), covCol=new Array(N).fill(false);
+    for(let r=0;r<N;r++) if(matched[r]>=0) covCol[matched[r]]=true;
+    let changed=true;
+    while(changed){ changed=false;
+      for(let r=0;r<N;r++) if(!covRow[r]&&matched[r]<0){ covRow[r]=true; changed=true; }
+      for(let r=0;r<N;r++) if(covRow[r]) for(let c=0;c<N;c++) if(mat[r][c]===0&&!covCol[c]){ covCol[c]=true; changed=true; }
+      for(let c=0;c<N;c++) if(covCol[c]) for(let r=0;r<N;r++) if(mat[r][c]>=0&&!covRow[r]){ covRow[r]=true; changed=true; }
     }
+    const covered=[];
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++) if(covRow[r]||covCol[c]) covered.push(`${r}-${c}`);
+    steps.push({ title:`Iteration ${iter}: Cover all zeros with minimum lines`,
+      what:`Covered rows: [${covRow.map((v,i)=>v?i:'').filter(Boolean).join(',')}], cols: [${covCol.map((v,i)=>v?i:'').filter(Boolean).join(',')}].`,
+      why:'König\'s theorem: minimum cover = maximum matching size. If < N, need adjustment.',
+      ...snap([],[...matched],[...covered]) });
+    const uncov=[];
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++) if(!covRow[r]&&!covCol[c]) uncov.push(mat[r][c]);
+    const minUncov=Math.min(...uncov);
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+      if(!covRow[r]&&!covCol[c]) mat[r][c]-=minUncov;
+      else if(covRow[r]&&covCol[c]) mat[r][c]+=minUncov;
+    }
+    steps.push({ title:`Adjust: subtract ${minUncov} from uncovered, add to doubly-covered`,
+      what:`Min uncovered value = ${minUncov}. Adjust matrix to create new zeros.`,
+      why:'This step creates new zeros in uncovered cells without breaking existing zero coverage.',
+      ...snap([],[...matched],[]) });
+    matched=findMatching(mat);
+  }
+  const cost=matched.reduce((s,c,r)=>s+(c>=0?INIT_COST[r][c]:0),0);
+  steps.push({ title:`Optimal assignment — total cost: ${cost}`,
+    what:`Assignment: ${matched.map((c,r)=>`W${r}→J${c}`).join(', ')}. Total cost: ${cost}.`,
+    why:'Perfect matching found — no more uncovered zeros needed.',
+    ...snap([],[...matched],[]) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
+}
+
+function renderStep(step){
+  const mb=document.getElementById('matBox'); if(!mb) return;
+  let html=`<table class="mat"><tr><th></th>${Array.from({length:N},(_,i)=>`<th>J${i}</th>`).join('')}</tr>`;
+  step.mat.forEach((row,r)=>{
+    html+=`<tr><th>W${r}</th>`;
+    row.forEach((v,c)=>{
+      const isCov=step.covered.includes(`${r}-${c}`),isMatch=step.matched[r]===c,isZero=v===0;
+      html+=`<td class="${isMatch?'match':isZero?'zero':isCov?'covered':''}">${v}</td>`;
+    });
     html+='</tr>';
-  }
-  tbl.innerHTML=html;
+  });
+  html+='</table>'; mb.innerHTML=html;
+  const cost=step.matched.reduce((s,c,r)=>c>=0?s+INIT_COST[r][c]:s,0);
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Assignment: ${step.matched.map((c,r)=>c>=0?`W${r}→J${c}`:'W'+r+'→?').join(', ')}  |  Cost: ${cost}  |  Green=matched, Yellow=zero`;
 }
-function stepAlgo(){
-  if(done)return;
-  if(algorithmStep===0){
-    // Row reduction
-    for(let i=0;i<N;i++){const mn=Math.min(...mat[i]);mat[i]=mat[i].map(v=>v-mn);}
-    addLog('Step 1: Row reduction — subtract row min from each row. Row mins: '+original.map((r,i)=>Math.min(...original[i])).join(','));
-    algorithmStep=1;renderMatrix();return;
-  }
-  if(algorithmStep===1){
-    // Col reduction
-    for(let j=0;j<N;j++){const mn=Math.min(...mat.map(r=>r[j]));mat.forEach(r=>r[j]-=mn);}
-    addLog('Step 2: Column reduction — subtract col min from each column.');
-    algorithmStep=2;renderMatrix();return;
-  }
-  if(algorithmStep>=2){
-    // Try assignment
-    const asgn=tryAssign();
-    if(asgn.length===N){
-      assignment=asgn;done=true;
-      const totalCost=asgn.reduce((s,[r,c])=>s+original[r][c],0);
-      addLog(`Optimal assignment found! ${asgn.map(([r,c])=>`W${r}→J${c}(${original[r][c]})`).join(', ')} Total cost=${totalCost}`);
-      document.getElementById('cost').textContent=`Optimal cost: ${totalCost}`;
-      renderMatrix([],asgn);return;
-    }
-    // Find min uncovered value
-    let mn=Infinity;
-    for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(!covRow[i]&&!covCol[j])mn=Math.min(mn,mat[i][j]);
-    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
-      if(!covRow[i]&&!covCol[j])mat[i][j]-=mn;
-      else if(covRow[i]&&covCol[j])mat[i][j]+=mn;
-    }
-    // recompute covers via simple greedy
-    covRow=new Array(N).fill(false);covCol=new Array(N).fill(false);
-    const tries=tryAssign();
-    tries.forEach(([r,c])=>{covRow[r]=false;covCol[c]=true;});
-    addLog(`Step ${algorithmStep}: Min uncovered=${mn}. Adjusted matrix. Covers updated.`);
-    algorithmStep++;renderMatrix([],tries);
-  }
-}
-function tryAssign(){
-  // simple greedy assignment on zeros
-  const usedCol=new Array(N).fill(false),usedRow=new Array(N).fill(false),res=[];
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++){
-    if(mat[i][j]===0&&!usedRow[i]&&!usedCol[j]){res.push([i,j]);usedRow[i]=true;usedCol[j]=true;}
-  }
-  return res;
-}
-document.getElementById('btnStep').onclick=()=>stepAlgo();
-document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else stepAlgo();},900);};
-document.getElementById('btnReset').onclick=()=>init();
-init();
+function rebuild(){ if(player) player.destroy(); player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar'); }
+rebuild();
 </script>
 </body>
 </html>

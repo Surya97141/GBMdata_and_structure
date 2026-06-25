@@ -2,159 +2,178 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Fleury's Algorithm – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fleury's Algorithm – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.back-link{margin-top:28px;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>Fleury's Algorithm
-  </div>
-  <div class="hero-tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Fleury's Algorithm</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>Fleury's Algorithm</h1>
-  <p class="tagline">Trace an Euler circuit by greedily avoiding bridge edges — the Königsberg Bridge solution.</p>
+  <p class="tagline">Find Eulerian path/circuit by avoiding bridges at each step.</p>
   <div class="prose">
-    <p>Fleury's algorithm finds an Eulerian circuit (a path that visits every edge exactly once and returns to start) in a graph where all vertices have even degree. The rule is deceptively simple: at each step, prefer to traverse any edge that is NOT a bridge — only use a bridge if it's your only option.</p>
-    <p>A bridge is an edge whose removal disconnects the graph. Crossing a bridge too early can strand you in a part of the graph you've already used up. By checking for bridges at each step (using DFS), Fleury's avoids getting "trapped". The algorithm is named after the mathematician who proved its correctness.</p>
-    <p>Think of the classic puzzle "draw this figure without lifting your pen": Fleury's gives you the strategy — at each crossing, don't burn the only bridge to unvisited parts. Its time complexity is O(E²) due to bridge-checking at each step, making Hierholzer's preferred for large graphs.</p>
+    <p>Fleury's algorithm finds an Eulerian path (visits every edge exactly once). At each step, move along any available edge — but prefer non-bridge edges (edges whose removal won't disconnect the graph). A bridge is only taken if there's no other choice. An Eulerian circuit exists if all vertices have even degree. A path exists if exactly 2 vertices have odd degree (start from one, end at the other).</p>
+    <p>Fleury's is simple but slow O(E²) because it checks for bridges at every step using DFS. Hierholzer's algorithm solves the same problem in O(E).</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(E²)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Avoid Bridges</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(E²)</div></div>
+    <div class="fact"><div class="flabel">Eulerian circuit</div><div class="fval">All even degree</div></div>
+    <div class="fact"><div class="flabel">Eulerian path</div><div class="fval">Exactly 2 odd</div></div>
+    <div class="fact"><div class="flabel">Key rule</div><div class="fval">Avoid bridges</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Eulerian Graph — all vertices have even degree. Traversed edges in violet.</div>
-    <canvas id="cv" width="700" height="320"></canvas>
-    <div class="controls">
-      <button id="btnRun">Find Euler Circuit</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnReset" class="sec">Reset</button>
-      <span id="circuit" style="font-size:.82rem;color:#5a5a72;font-family:'JetBrains Mono',monospace"></span>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Eulerian path appears here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Fleury's</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#c5c0d0;height:3px"></span>Available edge</span>
+        <span class="leg"><span class="leg-dot" style="background:#ef4444;height:3px"></span>Bridge (avoid if possible)</span>
+        <span class="leg"><span class="leg-dot" style="background:#22c55e;height:3px"></span>Visited (path so far)</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:2px solid #d4700a;border-radius:50%"></span>Current node</span>
+      </div>
     </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const nodes=[
-  {x:100,y:160,l:'0'},{x:250,y:80,l:'1'},{x:400,y:80,l:'2'},
-  {x:550,y:80,l:'3'},{x:600,y:200,l:'4'},{x:400,y:260,l:'5'},{x:180,y:260,l:'6'}
-];
-// Eulerian graph (all even degrees)
-let adjMat=[];
-const edgeDefs=[[0,1],[0,6],[1,2],[1,6],[2,3],[2,5],[3,4],[3,5],[4,5],[4,6],[5,6]];// 11 edges, all even
-function initAdj(){
-  adjMat=Array.from({length:7},()=>new Array(7).fill(0));
-  edgeDefs.forEach(([u,v])=>{adjMat[u][v]++;adjMat[v][u]++;});
+// Eulerian graph: all vertices even degree
+const NODES=[{x:80,y:140,label:'0'},{x:220,y:60,label:'1'},{x:360,y:60,label:'2'},
+  {x:500,y:140,label:'3'},{x:360,y:220,label:'4'},{x:220,y:220,label:'5'}];
+const INIT_EDGES=[[0,1],[0,5],[1,2],[1,5],[2,3],[2,4],[3,4],[4,5]]; // all even degree
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/600;
+  canvas.width=w*DPR; canvas.height=280*DPR; canvas.style.width=w+'px'; canvas.style.height='280px'; ctx.scale(DPR,DPR);
 }
-let current=0,circuit=[0],traversed=[],done=false;
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
-function isBridge(u,v){
-  // count connected edges from u without (u,v)
-  adjMat[u][v]--;adjMat[v][u]--;
-  const vis=new Array(7).fill(false);
-  let cnt=0;
-  function dfs(node){vis[node]=true;cnt++;for(let w=0;w<7;w++)if(adjMat[node][w]>0&&!vis[w])dfs(w);}
-  // find node with any edge
-  let start=0;
-  for(let i=0;i<7;i++)if(adjMat[i].some(x=>x>0)){start=i;break;}
-  dfs(start);
-  adjMat[u][v]++;adjMat[v][u]++;
-  const totalEdges=edgeDefs.length-traversed.length;
-  return cnt<7&&totalEdges>1;
-}
-function step(){
-  if(done)return;
-  const u=current;
-  const neighbors=[];
-  for(let v=0;v<7;v++)if(adjMat[u][v]>0)neighbors.push(v);
-  if(neighbors.length===0){
-    done=true;
-    if(u===0)addLog('Euler circuit complete! '+circuit.map(i=>nodes[i].l).join('→'));
-    else addLog('Stuck (graph may not be Eulerian from this state)');
-    document.getElementById('circuit').textContent='Circuit: '+circuit.map(i=>nodes[i].l).join('→');
-    draw();return;
+function generateSteps(){
+  const steps=[], n=6;
+  const adjMat=Array.from({length:n},()=>new Array(n).fill(0));
+  INIT_EDGES.forEach(([a,b])=>{ adjMat[a][b]++; adjMat[b][a]++; });
+  const path=[];
+  let cur=0; // start from vertex 0
+
+  function edgeCount(){ let c=0; for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) if(adjMat[i][j]>0) c++; return c; }
+  function isBridge(u,v){
+    adjMat[u][v]--; adjMat[v][u]--;
+    const vis=new Array(n).fill(false);
+    function dfs(x){ vis[x]=true; for(let y=0;y<n;y++) if(adjMat[x][y]>0&&!vis[y]) dfs(y); }
+    let startNode=-1; for(let i=0;i<n;i++) if(adjMat[i].some(x=>x>0)){ startNode=i; break; }
+    if(startNode>=0) dfs(startNode);
+    adjMat[u][v]++; adjMat[v][u]++;
+    return adjMat[u].some((_,i)=>i!==v&&adjMat[u][i]>0&&!vis[i]);
   }
-  let chosen=null;
-  for(const v of neighbors){
-    const bridge=isBridge(u,v);
-    if(!bridge){chosen=v;addLog(`At ${u}: edge(${u},${v}) is NOT bridge → traverse`);break;}
+  function snapE(bridges){
+    const edgeStates={};
+    INIT_EDGES.forEach(([a,b])=>{ const k=`${a}-${b}`; edgeStates[k]=adjMat[a][b]>0?(bridges.has(k)||bridges.has(`${b}-${a}`))?'bridge':'avail':'visited'; });
+    return { edgeStates:{...edgeStates}, path:[...path], cur };
   }
-  if(chosen===null){chosen=neighbors[0];addLog(`At ${u}: only edge(${u},${chosen}), must use bridge → traverse`);}
-  adjMat[u][chosen]--;adjMat[chosen][u]--;
-  traversed.push([u,chosen]);circuit.push(chosen);current=chosen;
-  document.getElementById('circuit').textContent='Path: '+circuit.map(i=>nodes[i].l).join('→');
-  // check done
-  const anyEdge=adjMat.some(row=>row.some(x=>x>0));
-  if(!anyEdge){done=true;addLog('All edges traversed! Circuit: '+circuit.map(i=>nodes[i].l).join('→'));}
-  draw();
+
+  steps.push({ title:'Fleury: Find Eulerian circuit (all vertices have even degree)',
+    what:'Start at node 0. At each step take non-bridge edge if possible.',
+    why:'Eulerian circuit: all vertices even degree. Fleury avoids bridges to prevent disconnecting remaining edges.',
+    ...snapE(new Set()), bridges:[] });
+
+  while(edgeCount()>0){
+    const neighbors=[];
+    for(let v=0;v<n;v++) if(adjMat[cur][v]>0) neighbors.push(v);
+    if(neighbors.length===0) break;
+    const bridgeEdges=new Set();
+    const nonBridges=neighbors.filter(v=>{ const b=isBridge(cur,v); if(b) bridgeEdges.add(`${cur}-${v}`); return !b; });
+    steps.push({ title:`At node ${cur}: ${nonBridges.length>0?'Non-bridge edge available':'Only bridge available'}`,
+      what:`Neighbors: [${neighbors.join(',')}]. Bridges: [${[...bridgeEdges].join(',')||'none'}]. Choose: ${nonBridges.length>0?nonBridges[0]:'bridge forced'}.`,
+      why:'Fleury: always prefer non-bridge edges to keep remaining graph connected.',
+      ...snapE(bridgeEdges), bridges:[...bridgeEdges] });
+    const next=nonBridges.length>0?nonBridges[0]:neighbors[0];
+    adjMat[cur][next]--; adjMat[next][cur]--;
+    path.push(cur);
+    steps.push({ title:`Traverse (${cur}→${next}) — path: [${[...path,next].map(i=>i).join('→')}]`,
+      what:`Remove edge (${cur}-${next}). Move to ${next}.`,
+      why:'Edge used exactly once — Eulerian property.',
+      ...snapE(new Set()), bridges:[] });
+    cur=next;
+  }
+  path.push(cur);
+  steps.push({ title:`Eulerian circuit complete: [${path.join('→')}]`,
+    what:`All ${INIT_EDGES.length} edges visited exactly once. Returned to start.`,
+    why:'Fleury guarantees an Eulerian path/circuit when one exists.',
+    ...snapE(new Set()), bridges:[] });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function draw(){
-  ctx.clearRect(0,0,700,320);
-  // draw edges
-  edgeDefs.forEach(([u,v])=>{
-    const timesTraversed=traversed.filter(([a,b])=>(a===u&&b===v)||(a===v&&b===u)).length;
-    const origCount=edgeDefs.filter(([a,b])=>(a===u&&b===v)||(a===v&&b===u)).length;
-    ctx.strokeStyle=timesTraversed>0?'#7b4fd4':'#d0ccc8';
-    ctx.lineWidth=timesTraversed>0?3:1.5;
-    ctx.setLineDash(adjMat[u][v]>0?[]:[4,4]);
-    ctx.beginPath();ctx.moveTo(nodes[u].x,nodes[u].y);ctx.lineTo(nodes[v].x,nodes[v].y);ctx.stroke();
-    ctx.setLineDash([]);
+
+function renderStep(step){
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  INIT_EDGES.forEach(([a,b])=>{
+    const k=`${a}-${b}`,st=step.edgeStates[k]||'visited';
+    const col=st==='bridge'?'#ef4444':st==='avail'?'#c5c0d0':'#22c55e';
+    const lw=st==='bridge'?3:1.5;
+    ctx.beginPath(); ctx.moveTo(NODES[a].x*sc,NODES[a].y*sc); ctx.lineTo(NODES[b].x*sc,NODES[b].y*sc);
+    ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.stroke();
   });
-  nodes.forEach((n,i)=>{
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=i===current?'#ede8fa':'#fff';ctx.fill();
-    ctx.strokeStyle=i===current?'#e8622a':'#7b4fd4';ctx.lineWidth=i===current?3:2;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.l,n.x,n.y);
-    const deg=adjMat[i].reduce((s,x)=>s+x,0);
-    ctx.font='9px JetBrains Mono';ctx.fillStyle='#5a5a72';ctx.fillText('d='+deg,n.x,n.y+32);
+  NODES.forEach((node,i)=>{
+    const r=20*sc, isCur=i===step.cur;
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=isCur?'#ffb347':'#e8e8f8'; ctx.fill();
+    ctx.strokeStyle=isCur?'#d4700a':'#5a5a72'; ctx.lineWidth=isCur?3:1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(12*sc)}px Inter`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(node.label,node.x*sc,node.y*sc);
+    const posInPath=step.path.filter(p=>p===i).length;
+    if(posInPath>0){ ctx.fillStyle='#7b4fd4'; ctx.font=`${Math.round(8*sc)}px JetBrains Mono`;
+      ctx.fillText(`#${posInPath}`,node.x*sc,node.y*sc+r+10*sc); }
   });
-  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Path: [${step.path.join('→')}]  |  Current: ${step.cur}  |  Bridges: [${step.bridges.join(', ')||'none'}]`;
 }
-function init(){
-  initAdj();current=0;circuit=[0];traversed=[];done=false;
-  document.getElementById('log').innerHTML='';document.getElementById('circuit').textContent='';
-  addLog('Graph ready. All degrees even → Eulerian circuit exists.');draw();
-}
-document.getElementById('btnStep').onclick=()=>step();
-document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},600);};
-document.getElementById('btnReset').onclick=()=>init();
-init();
+function rebuild(){ setupCanvas(); if(player) player.destroy(); player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar'); }
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

@@ -2,157 +2,176 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Prim's Algorithm – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Prim's Algorithm – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:140px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.tables{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap}
-.tbl-box{flex:1;min-width:200px}
-.tbl-box table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
-.tbl-box th{background:#ede8fa;color:#7b4fd4;padding:5px;border:1px solid #e2e0da}
-.tbl-box td{padding:5px;border:1px solid #e2e0da;text-align:center}
-.tbl-box td.inMST{background:#e8f7f0;color:#27a060;font-weight:700}
-.back-link{margin-top:28px;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
+  display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;
+  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>Prim's Algorithm
-  </div>
-  <div class="hero-tag">Graph</div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Prim's Algorithm</span>
+  </nav>
+  <span class="tag">Graph</span>
   <h1>Prim's Algorithm</h1>
-  <p class="tagline">Grow the MST one vertex at a time — always pick the cheapest frontier edge.</p>
+  <p class="tagline">Grow an MST from a seed node, always adding the cheapest frontier edge.</p>
   <div class="prose">
-    <p>Prim's algorithm builds the Minimum Spanning Tree by starting from a single vertex and greedily expanding. At each step, it picks the minimum-weight edge that connects a vertex already in the MST to one that isn't. Unlike Kruskal's (which sorts all edges globally), Prim's grows the tree incrementally.</p>
-    <p>The algorithm maintains a key[] array (minimum edge weight to connect each vertex to the MST) and a parent[] array (which MST vertex provides that minimum). Using a priority queue, it runs in O(E log V) time. Without a priority queue (simple array scan), it's O(V²) — better for dense graphs.</p>
-    <p>Prim's is conceptually similar to Dijkstra's shortest path algorithm. Both maintain a frontier of vertices and greedily pick the "best" next vertex. The difference: Dijkstra minimizes path length from source, while Prim minimizes edge weight to the growing tree.</p>
+    <p>Prim's builds an MST by starting from a single node and expanding: always pick the minimum-weight edge that connects the current MST to an outside node. This "cut property" guarantees the locally cheapest crossing edge is globally safe for the MST.</p>
+    <p>Similar cost to Kruskal's but stays vertex-centered — it's naturally expressed as a priority queue: extract the minimum key node, add its best edge to the MST, update keys of adjacent vertices.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(E log V)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Greedy Frontier</div></div>
+    <div class="fact"><div class="flabel">Time (heap)</div><div class="fval">O(E log V)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V)</div></div>
+    <div class="fact"><div class="flabel">Strategy</div><div class="fval">Vertex-centric</div></div>
+    <div class="fact"><div class="flabel">Better for</div><div class="fval">Dense graphs</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">7-node weighted graph. Source: <select id="src" style="font-family:'Inter',sans-serif;font-size:.85rem;padding:3px 7px;border:1px solid #e2e0da;border-radius:5px"></select></div>
-    <canvas id="cv" width="700" height="280"></canvas>
-    <div class="tables">
-      <div class="tbl-box"><table id="keyTable"><thead><tr><th>Node</th><th>key[]</th></tr></thead><tbody></tbody></table></div>
-      <div class="tbl-box"><table id="parTable"><thead><tr><th>Node</th><th>parent[]</th></tr></thead><tbody></tbody></table></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="320"></canvas>
+      <div class="info-bar" id="infoBar">MST info appears here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Source:</label>
+        <select id="srcSel">
+          <option>0</option><option>1</option><option>2</option>
+          <option>3</option><option>4</option><option>5</option><option>6</option>
+        </select>
+        <button class="btn btn-p" onclick="rebuild()">Run Prim's</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#e0e0e0;border:1px solid #bbb"></span>Outside MST</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>In priority queue</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Currently extracted</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>In MST</span>
+      </div>
     </div>
-    <div class="controls">
-      <button id="btnRun">Run Prim</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnReset" class="sec">Reset</button>
-      <span id="mstw" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
-    </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const nodes=[
-  {x:80,y:140,l:'0'},{x:200,y:60,l:'1'},{x:200,y:220,l:'2'},
-  {x:350,y:140,l:'3'},{x:470,y:60,l:'4'},{x:470,y:220,l:'5'},{x:600,y:140,l:'6'}
-];
-const adj=[
-  [[1,4],[2,3]],[[0,4],[2,1],[3,5]],[[0,3],[1,1],[3,6],[5,4]],
-  [[1,5],[2,6],[4,2],[5,7]],[[3,2],[6,3]],[[2,4],[3,7],[6,5]],[[4,3],[5,5]]
-];
-const N=7;
-let key_=[],parent_=[],inMST=[],done=false,src=0;
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const srcSel=document.getElementById('src');
-for(let i=0;i<N;i++){const o=document.createElement('option');o.value=i;o.textContent='Node '+i;srcSel.appendChild(o);}
+const NODES=[{x:100,y:170,label:'0'},{x:220,y:80,label:'1'},{x:220,y:260,label:'2'},
+  {x:360,y:50,label:'3'},{x:360,y:170,label:'4'},{x:360,y:290,label:'5'},{x:530,y:170,label:'6'}];
+const EDGES=[[0,1,4],[0,2,2],[1,3,3],[1,4,5],[2,4,6],[2,5,8],[4,6,3],[5,6,7]];
+const ADJ=Array.from({length:7},()=>[]);
+EDGES.forEach(([a,b,w])=>{ ADJ[a].push({to:b,w}); ADJ[b].push({to:a,w}); });
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/640;
+  canvas.width=w*DPR; canvas.height=320*DPR; canvas.style.width=w+'px'; canvas.style.height='320px'; ctx.scale(DPR,DPR);
+}
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
-function init(){
-  src=parseInt(srcSel.value);
-  key_=new Array(N).fill(Infinity);parent_=new Array(N).fill(-1);inMST=new Array(N).fill(false);
-  key_[src]=0;done=false;
-  document.getElementById('log').innerHTML='';document.getElementById('mstw').textContent='';
-  addLog(`Source: ${src}. key[${src}]=0. All others=∞`);
-  renderTables();draw();
-}
-function renderTables(){
-  document.getElementById('keyTable').querySelector('tbody').innerHTML=
-    nodes.map((n,i)=>`<tr><td>${n.l}</td><td class="${inMST[i]?'inMST':''}">${key_[i]===Infinity?'∞':key_[i]}</td></tr>`).join('');
-  document.getElementById('parTable').querySelector('tbody').innerHTML=
-    nodes.map((n,i)=>`<tr><td>${n.l}</td><td class="${inMST[i]?'inMST':''}">${parent_[i]===-1?'-':nodes[parent_[i]].l}</td></tr>`).join('');
-}
-function step(){
-  if(done)return;
-  let u=-1,minK=Infinity;
-  for(let i=0;i<N;i++)if(!inMST[i]&&key_[i]<minK){minK=key_[i];u=i;}
-  if(u===-1){done=true;
-    const w=key_.filter((k,i)=>i!==src&&k!==Infinity).reduce((s,k)=>s+k,0);
-    addLog(`MST complete! Total weight: ${w}`);document.getElementById('mstw').textContent=`MST Weight: ${w}`;renderTables();draw();return;
-  }
-  inMST[u]=true;addLog(`Pick min key: node ${u} (key=${key_[u]}). Add to MST.`);
-  adj[u].forEach(([v,w])=>{
-    if(!inMST[v]&&w<key_[v]){
-      addLog(`  Update key[${v}]=${w} via edge(${u},${v})`);
-      parent_[v]=u;key_[v]=w;
+function generateSteps(src){
+  const steps=[], n=7, INF=Infinity;
+  const key=new Array(n).fill(INF), parent=new Array(n).fill(-1);
+  const inMST=new Array(n).fill(false), nodeState=new Array(n).fill('outside');
+  key[src]=0;
+  const pq=[src]; nodeState[src]='pq';
+  const mstEdges=[];
+  let mstWeight=0;
+  steps.push({ title:`Initialize Prim's from source ${src}`,
+    what:`Set key[${src}]=0, all others=∞. Add source to priority queue.`,
+    why:'Prim starts at a single seed node and grows the MST outward.',
+    state:`key=[${key.map(k=>k===INF?'∞':k).join(',')}]`,
+    nodeState:[...nodeState], mstEdges:[], mstWeight:0, activeEdge:null });
+  while(pq.length){
+    pq.sort((a,b)=>key[a]-key[b]);
+    const u=pq.shift(); if(inMST[u]) continue;
+    inMST[u]=true; nodeState[u]='mst';
+    if(parent[u]>=0){ mstEdges.push([parent[u],u,key[u]]); mstWeight+=key[u]; }
+    steps.push({ title:`Extract min: node ${u} (key=${key[u]===INF?'∞':key[u]})`,
+      what:`Add node ${u} to MST${parent[u]>=0?' via edge ('+(parent[u])+'-'+u+' w='+key[u]+')':''}. MST weight: ${mstWeight}.`,
+      why:'Node with smallest key is the cheapest way to extend the MST.',
+      state:`MST weight: ${mstWeight}`, nodeState:[...nodeState], mstEdges:[...mstEdges], mstWeight, activeEdge:parent[u]>=0?[parent[u],u]:null });
+    for(const {to:v,w} of ADJ[u]){
+      if(inMST[v]) continue;
+      if(w<key[v]){
+        key[v]=w; parent[v]=u;
+        if(nodeState[v]==='outside'){ nodeState[v]='pq'; pq.push(v); }
+        steps.push({ title:`Update key[${v}] = ${w} via node ${u}`,
+          what:`Edge (${u}-${v}) weight ${w} < current key[${v}]${key[v]===w?'':' (already updated)'}. Update.`,
+          why:'A better (cheaper) edge to this node was found.',
+          state:`key[${v}]=${w}`, nodeState:[...nodeState], mstEdges:[...mstEdges], mstWeight, activeEdge:[u,v] });
+      }
     }
-  });
-  renderTables();draw();
+  }
+  steps.push({ title:`Prim's MST complete — total weight ${mstWeight}`,
+    what:`MST edges: ${mstEdges.map(([a,b,w])=>`(${a}-${b},${w})`).join(', ')}.`,
+    why:'All nodes added to MST, each via its minimum-weight connection.',
+    state:`MST weight: ${mstWeight}`, nodeState:[...nodeState], mstEdges:[...mstEdges], mstWeight, activeEdge:null });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function draw(){
-  ctx.clearRect(0,0,700,280);
-  adj.forEach((nb,u)=>nb.forEach(([v,w])=>{
-    if(v<=u)return;
-    const isMST=inMST[u]&&inMST[v]&&parent_[v]===u||inMST[v]&&inMST[u]&&parent_[u]===v;
-    const isFrontier=inMST[u]!==inMST[v];
-    ctx.strokeStyle=isMST?'#27a060':isFrontier?'#7b4fd4':'#d0ccc8';
-    ctx.lineWidth=isMST?3.5:isFrontier?2:1.5;
-    ctx.setLineDash(isFrontier&&!isMST?[6,4]:[]);
-    ctx.beginPath();ctx.moveTo(nodes[u].x,nodes[u].y);ctx.lineTo(nodes[v].x,nodes[v].y);ctx.stroke();
-    ctx.setLineDash([]);
-    const mx=(nodes[u].x+nodes[v].x)/2,my=(nodes[u].y+nodes[v].y)/2;
-    ctx.fillStyle=isMST?'#27a060':'#5a5a72';ctx.font=(isMST?'bold ':'')+'11px JetBrains Mono';ctx.textAlign='center';
-    ctx.fillText(w,mx,my-5);
-  }));
-  nodes.forEach((n,i)=>{
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=inMST[i]?'#e8f7f0':'#fff';ctx.fill();
-    ctx.strokeStyle=inMST[i]?'#27a060':'#7b4fd4';ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.l,n.x,n.y);
+
+function renderStep(step){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  const mstSet=new Set(step.mstEdges.map(([a,b])=>`${Math.min(a,b)}-${Math.max(a,b)}`));
+  const aeKey=step.activeEdge?`${Math.min(...step.activeEdge)}-${Math.max(...step.activeEdge)}`:null;
+  EDGES.forEach(([a,b,w])=>{
+    const key=`${Math.min(a,b)}-${Math.max(a,b)}`,isMst=mstSet.has(key),isAct=aeKey===key;
+    const mx=(NODES[a].x+NODES[b].x)/2*sc,my=(NODES[a].y+NODES[b].y)/2*sc;
+    ctx.beginPath(); ctx.moveTo(NODES[a].x*sc,NODES[a].y*sc); ctx.lineTo(NODES[b].x*sc,NODES[b].y*sc);
+    ctx.strokeStyle=isAct?'#f59e0b':isMst?'#22c55e':'#c5c0d0'; ctx.lineWidth=isMst||isAct?3:1.5; ctx.stroke();
+    ctx.fillStyle='#555'; ctx.font=`${Math.round(10*sc)}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(w,mx,my-8*sc);
   });
-  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const sc2={outside:'#e0e0e0',pq:'#fff176',current:'#ffb347',mst:'#a8e6a3'};
+  const ss2={outside:'#bbb',pq:'#c8c000',current:'#d4700a',mst:'#27a060'};
+  NODES.forEach((node,i)=>{
+    const st=step.nodeState[i]||'outside',r=20*sc;
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=sc2[st]||'#e0e0e0'; ctx.fill(); ctx.strokeStyle=ss2[st]||'#bbb'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(13*sc)}px Inter,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(node.label,node.x*sc,node.y*sc);
+  });
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`MST weight: ${step.mstWeight}  |  MST edges: ${step.mstEdges.map(([a,b,w])=>`(${a}-${b},${w})`).join(', ')||'none yet'}`;
 }
-srcSel.onchange=()=>init();
-document.getElementById('btnStep').onclick=()=>step();
-document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},600);};
-document.getElementById('btnReset').onclick=()=>init();
-init();
+function rebuild(){ const src=parseInt(document.getElementById('srcSel').value); setupCanvas(); if(player) player.destroy(); player=new SimulationPlayer(generateSteps(src),renderStep,'explanation','sim-bar'); }
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

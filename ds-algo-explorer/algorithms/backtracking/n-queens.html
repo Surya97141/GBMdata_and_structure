@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>N-Queens – DS Algo Explorer</title>
+<title>N-Queens – Backtracking</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#c0392b}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
 .wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
 .bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
@@ -19,44 +19,21 @@ h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margi
 .tagline{color:var(--m)}
 .prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
 .flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
-.fsub{font-size:.78rem;color:var(--m)}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
 .sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
-.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;
-  display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
-.sol-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--m);margin-left:auto}
 .sim-body{padding:1.3rem}
-/* Board */
-.board-wrap{display:flex;justify-content:center;margin-bottom:.75rem;overflow-x:auto}
-table#board{border-collapse:collapse}
-table#board td{
-  width:52px;height:52px;border:1px solid var(--b);
-  text-align:center;vertical-align:middle;font-size:1.5rem;
-  transition:background .15s;user-select:none;
-}
-/* Cell states */
-.cell-light{background:#fff}
-.cell-dark {background:#f0ede5}
-.cell-queen{background:#fde8e8}
-.cell-try  {background:#fff176 !important} /* trying this cell */
-.cell-back {background:#ffb3b3 !important} /* backtracking flash */
-.cell-solution{background:#a8e6a3 !important} /* solution found */
-.cell-safe {background:rgba(59,130,246,.08) !important} /* safe squares */
-/* Controls */
-.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.75rem;align-items:center}
+canvas{display:block;width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
 .input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
-select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;
-  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:70px;background:var(--bg);color:var(--ink)}
 .btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
 .btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
-/* Legend */
-.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
-.leg{display:flex;align-items:center;gap:.35rem}
-.leg-dot{width:12px;height:12px;border-radius:2px;flex-shrink:0;border:1px solid rgba(0,0,0,.15)}
 .back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
 .back:hover{color:var(--ink)}
 </style>
@@ -65,271 +42,122 @@ select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;
 <div class="wrap">
   <nav class="bc">
     <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Algorithms</a><span>/</span>N-Queens
+    <a href="../index.html">Algorithms</a><span>/</span><span>N-Queens</span>
   </nav>
-
   <span class="tag">Backtracking</span>
   <h1>N-Queens Problem</h1>
-  <p class="tagline">Place N queens on an N×N board — no two queens attack each other.</p>
-
+  <p class="tagline">Place N queens on an NxN board so none attack each other.</p>
   <div class="prose">
-    <p>The N-Queens problem is one of the most iconic backtracking challenges: place N queens on an N×N chessboard so no two share a row, column, or diagonal. The search space is enormous (N! placements) but systematic pruning makes it tractable.</p>
-    <p>Algorithm: try each column in the current row, check conflicts against all previously placed queens, recurse to the next row. If no column works, backtrack (remove the last queen and advance its column). The animation shows every placement and backtrack step-by-step.</p>
+    <p>N-Queens: place N queens on an NxN chessboard such that no two queens share the same row, column, or diagonal. Backtracking: place one queen per row (rows 0..N-1), try each column c, check if it conflicts with previously placed queens, recurse to next row if safe, backtrack if no column works.</p>
+    <p>Gold crown = placed queen. Red highlight = backtrack (removing queen). Attack lines are shown when conflict is detected.</p>
   </div>
-
   <div class="facts">
-    <div class="fact"><div class="flabel">Time</div><div class="fval">O(N!)</div><div class="fsub">pruning cuts it significantly</div></div>
-    <div class="fact"><div class="flabel">Space</div><div class="fval">O(N)</div><div class="fsub">recursion depth</div></div>
-    <div class="fact"><div class="flabel">Solutions (N=4)</div><div class="fval">2</div></div>
-    <div class="fact"><div class="flabel">Solutions (N=8)</div><div class="fval">92</div></div>
+    <div class="fact"><div class="flabel">N=4</div><div class="fval">2 solutions</div></div>
+    <div class="fact"><div class="flabel">N=8</div><div class="fval">92 solutions</div></div>
+    <div class="fact"><div class="flabel">Complexity</div><div class="fval">O(N!)</div></div>
+    <div class="fact"><div class="flabel">Per row</div><div class="fval">1 queen</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-hdr">
-      <span class="dot"></span>Interactive Simulation
-      <span class="sol-counter" id="solCounter">Solutions: 0</span>
-    </div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <div class="board-wrap"><table id="board"></table></div>
-
+      <canvas id="cvs" height="300"></canvas>
+      <div class="info-bar" id="infoBar">N-Queens board above.</div>
       <div id="explanation"></div>
       <div id="sim-bar"></div>
-
       <div class="input-row">
-        <label>Board size N =</label>
-        <select id="nSel" onchange="rebuild()">
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
-        <button class="btn btn-p" onclick="rebuild()">Regenerate</button>
-      </div>
-      <div class="legend">
-        <span class="leg"><span class="leg-dot" style="background:#fff176"></span>Currently trying</span>
-        <span class="leg"><span class="leg-dot" style="background:#fde8e8"></span>Queen placed</span>
-        <span class="leg"><span class="leg-dot" style="background:#ffb3b3"></span>Backtracking (conflict)</span>
-        <span class="leg"><span class="leg-dot" style="background:#a8e6a3"></span>Solution found</span>
-        <span class="leg"><span class="leg-dot" style="background:rgba(59,130,246,.18)"></span>Safe squares</span>
+        <label>N (board size):</label>
+        <input type="number" id="nval" value="5" min="4" max="7"/>
+        <button class="btn btn-p" onclick="rebuild()">Solve N-Queens</button>
       </div>
     </div>
   </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-let N = 4, player = null, totalSols = 0;
-
-/* ── Build DOM board ───────────────────────────── */
-function buildBoard(n) {
-  const tbl = document.getElementById('board');
-  tbl.innerHTML = '';
-  for (let r = 0; r < n; r++) {
-    const tr = document.createElement('tr');
-    for (let c = 0; c < n; c++) {
-      const td = document.createElement('td');
-      td.id = `c_${r}_${c}`;
-      td.className = (r + c) % 2 === 0 ? 'cell-light' : 'cell-dark';
-      tr.appendChild(td);
+var canvas=document.getElementById('cvs'), ctx=canvas.getContext('2d');
+var player=null, DPR=window.devicePixelRatio||1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; var w=canvas.parentElement.clientWidth-26;
+  canvas.width=w*DPR; canvas.height=300*DPR; canvas.style.width=w+'px'; canvas.style.height='300px'; ctx.scale(DPR,DPR);
+}
+window.addEventListener('resize',function(){ setupCanvas(); if(player) player.renderCurrentStep(); });
+function generateSteps(N){
+  var steps=[], queens=new Array(N).fill(-1);
+  function snap(row,col,action){ return { queens:queens.slice(), cur:[row,col], action:action, N:N }; }
+  steps.push({ title:N+'-Queens on '+N+'x'+N+' board',
+    what:'Place '+N+' queens, one per row. Check column and both diagonals.',
+    why:'One queen per row guaranteed — only need to check column+diagonals.',
+    ...snap(-1,-1,'start') });
+  var found=false;
+  function isSafe(row,col){
+    for(var r=0;r<row;r++){
+      if(queens[r]===col||Math.abs(queens[r]-col)===Math.abs(r-row)) return false;
     }
-    tbl.appendChild(tr);
+    return true;
   }
-}
-
-/* ── Safety check ──────────────────────────────── */
-function isSafe(queens, row, col) {
-  for (let r = 0; r < row; r++) {
-    const c = queens[r];
-    if (c === col || Math.abs(c - col) === Math.abs(r - row)) return false;
-  }
-  return true;
-}
-
-/* ── Step generation ───────────────────────────── */
-function generateSteps(n) {
-  const steps = [];
-  let solCount = 0;
-
-  const mkStep = (queens, phase, row, col, extra = {}) => {
-    const safeSet = new Set();
-    if (phase === 'try') {
-      for (let r = row + 1; r < n; r++) {
-        for (let c = 0; c < n; c++) {
-          if (isSafe([...queens.slice(0, row + 1)], r, c)) safeSet.add(`${r},${c}`);
-        }
+  function solve(row){
+    if(row===N){ found=true; return true; }
+    for(var col=0;col<N;col++){
+      var safe=isSafe(row,col);
+      queens[row]=col;
+      if(safe){
+        steps.push({ title:'Queen at row '+row+', col '+col,
+          what:'Safe placement: no row/col/diagonal conflicts.',
+          why:'Recurse to row '+(row+1)+'.',
+          ...snap(row,col,'place') });
+        if(solve(row+1)) return true;
+        queens[row]=-1;
+        steps.push({ title:'Backtrack row '+row+': remove from col '+col,
+          what:'No solution with queen at ('+row+','+col+'). Try next column.',
+          why:'Backtrack.',
+          ...snap(row,col,'back') });
       }
     }
-    return { queens: [...queens], phase, row, col, safeSet, ...extra };
-  };
-
-  const snapshot = (queens, phase, row, col, extra = {}) => {
-    steps.push(mkStep(queens, phase, row, col, extra));
-  };
-
-  steps.push({
-    queens: new Array(n).fill(-1), phase: 'initial', row: -1, col: -1,
-    safeSet: new Set(),
-    title: `N-Queens with N=${n}`,
-    what: `Place ${n} queens on a ${n}×${n} board so no two attack each other.`,
-    why: 'Backtracking tries each column in the current row, pruning when a conflict is detected.',
-    state: `Board size: ${n}×${n} · Solutions found so far: 0`
-  });
-
-  const solve = (queens, row) => {
-    if (row === n) {
-      solCount++;
-      steps.push({
-        queens: [...queens], phase: 'solution', row: n - 1, col: queens[n - 1],
-        safeSet: new Set(), solNum: solCount,
-        title: `Solution #${solCount} found! [${queens.join(',')}]`,
-        what: `All ${n} queens placed without conflicts. Solution: ${queens.map((c, r) => `Q(${r},${c})`).join(', ')}`,
-        why: 'Every queen is safe from all others — no shared rows, columns, or diagonals.',
-        state: `Solutions found: ${solCount}`
-      });
-      return;
-    }
-
-    for (let col = 0; col < n; col++) {
-      if (isSafe(queens, row, col)) {
-        queens[row] = col;
-        steps.push({
-          queens: [...queens], phase: 'try', row, col, safeSet: new Set(),
-          title: `Row ${row} · Trying column ${col}`,
-          what: `Placing queen tentatively at row ${row}, column ${col}. Checking for conflicts with rows 0–${row - 1}.`,
-          why: `Column ${col} has no conflict with any previously placed queen. Moving to row ${row + 1}.`,
-          state: `Queens so far: ${queens.slice(0, row + 1).map((c, r) => `(${r},${c})`).join(', ')}`
-        });
-
-        solve(queens, row + 1);
-
-        if (queens[row] === col) { // backtrack only if not already cleared by a solution-found step
-          queens[row] = -1;
-          steps.push({
-            queens: [...queens], phase: 'backtrack', row, col, safeSet: new Set(),
-            title: `Backtrack from row ${row}, column ${col}`,
-            what: `No valid placement found for rows ${row + 1}+. Removing queen from (${row}, ${col}).`,
-            why: 'Backtracking: undo the last placement and try the next column.',
-            state: `Backtracted — trying next column in row ${row}`
-          });
-        }
-      } else {
-        steps.push({
-          queens: [...queens.slice(0, row), -1, ...new Array(n - row - 1).fill(-1)], phase: 'skip', row, col, safeSet: new Set(),
-          title: `Row ${row} · Column ${col} is unsafe — skip`,
-          what: `Placing at (${row}, ${col}) would conflict with an existing queen. Skipping.`,
-          why: isSafeWhy(queens, row, col),
-          state: `Skipping column ${col} in row ${row}`
-        });
-      }
-    }
-  };
-
-  solve(new Array(n).fill(-1), 0);
-
-  steps.push({
-    queens: new Array(n).fill(-1), phase: 'done', row: -1, col: -1, safeSet: new Set(), solCount,
-    title: `Complete — ${solCount} solution${solCount !== 1 ? 's' : ''} found`,
-    what: `Exhausted all possibilities for N=${n}. Total: ${solCount} distinct solutions.`,
-    why: 'Backtracking has explored every valid path through the search tree.',
-    state: `N=${n} · Total solutions: ${solCount}`
-  });
-
-  steps.forEach((s, i) => { s.stepNumber = i + 1; s.totalSteps = steps.length; s.N = n; });
+    queens[row]=-1;
+    return false;
+  }
+  solve(0);
+  steps.push({ title:found?N+'-Queens solved! Solution: ['+queens.join(',')+']':'No solution',
+    what:found?'Queens at columns: ['+queens.join(',')+'].':'No valid placement found.',
+    why:'Backtracking exhausted all possibilities.',
+    ...snap(-1,-1,'done') });
+  steps.forEach(function(s,i){ s.stepNumber=i+1; s.totalSteps=steps.length; });
   return steps;
 }
-
-function isSafeWhy(queens, row, col) {
-  for (let r = 0; r < row; r++) {
-    const c = queens[r];
-    if (c === -1) continue;
-    if (c === col) return `Column ${col} is already occupied by queen at (${r},${c}).`;
-    if (Math.abs(c - col) === Math.abs(r - row)) return `Diagonal conflict with queen at (${r},${c}).`;
-  }
-  return 'Conflict detected.';
-}
-
-/* ── Render ────────────────────────────────────── */
-function renderStep(step) {
-  const { queens, phase, row, col, safeSet, N: n, solNum, solCount } = step;
-
-  // Reset board
-  for (let r = 0; r < n; r++) {
-    for (let c = 0; c < n; c++) {
-      const cell = document.getElementById(`c_${r}_${c}`);
-      if (!cell) continue;
-      const base = (r + c) % 2 === 0 ? 'cell-light' : 'cell-dark';
-      cell.className = base;
-      cell.textContent = '';
+function renderStep(step){
+  var N=step.N, W=canvas.width/DPR, H=canvas.height/DPR;
+  var cs=Math.min((W-40)/N,(H-40)/N);
+  var ox=(W-cs*N)/2, oy=(H-cs*N)/2;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(var r=0;r<N;r++) for(var c=0;c<N;c++){
+    var x=ox+c*cs, y=oy+r*cs;
+    ctx.fillStyle=(r+c)%2===0?'#f0ede7':'#d4c9b0';
+    ctx.fillRect(x,y,cs,cs);
+    var isCur=step.cur[0]===r&&step.cur[1]===c;
+    if(isCur&&step.action==='back'){ ctx.fillStyle='rgba(252,165,165,0.5)'; ctx.fillRect(x,y,cs,cs); }
+    else if(isCur){ ctx.fillStyle='rgba(255,241,118,0.5)'; ctx.fillRect(x,y,cs,cs); }
+    if(step.queens[r]===c&&step.queens[r]>=0){
+      ctx.fillStyle=step.action==='done'?'#16a34a':'#7b4fd4';
+      ctx.font='bold '+(cs*0.55)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('♛',x+cs/2,y+cs/2);
     }
   }
-
-  // Safe cells hint (when phase === 'try')
-  if (phase === 'try' && safeSet) {
-    safeSet.forEach(key => {
-      const [sr, sc] = key.split(',').map(Number);
-      const cell = document.getElementById(`c_${sr}_${sc}`);
-      if (cell) cell.classList.add('cell-safe');
-    });
+  for(var r=0;r<N;r++){
+    ctx.strokeStyle='#b0a090'; ctx.lineWidth=0.5;
+    ctx.strokeRect(ox+0,oy+r*cs,cs*N,cs);
+    ctx.strokeRect(ox+r*cs,oy,cs,cs*N);
   }
-
-  // Draw placed queens
-  for (let r = 0; r < n; r++) {
-    if (queens[r] >= 0) {
-      const cell = document.getElementById(`c_${r}_${queens[r]}`);
-      if (!cell) continue;
-      if (phase === 'solution') {
-        cell.className = 'cell-solution'; cell.textContent = '♛';
-      } else if (phase === 'backtrack' && r === row) {
-        cell.className = 'cell-back'; cell.textContent = '♛';
-      } else {
-        cell.className = 'cell-queen'; cell.textContent = '♛';
-      }
-    }
-  }
-
-  // Highlight current trial cell
-  if (phase === 'try' && row >= 0 && col >= 0) {
-    const cell = document.getElementById(`c_${row}_${col}`);
-    if (cell) { cell.className = 'cell-try'; cell.textContent = '♛'; }
-  }
-
-  // Update solution counter
-  const sc = document.getElementById('solCounter');
-  if (sc) {
-    const cnt = phase === 'done' ? solCount : (step.solNum ? step.solNum : totalSolsSoFar(step));
-    sc.textContent = `Solutions: ${cnt || 0}`;
-  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Row '+(step.cur[0]>=0?step.cur[0]:'?')+', Col '+(step.cur[1]>=0?step.cur[1]:'?')+'  |  Placed: '+step.queens.filter(function(q){return q>=0;}).length+'/'+N+'  |  '+
+    (step.action==='done'?'Done!':step.action==='back'?'Backtrack':'Placing queen');
 }
-
-function totalSolsSoFar(step) {
-  // Count solutions seen up to current step by looking at stepNumber
-  // We don't have a cumulative count per step, so just show 0 until done
-  return 0;
+function rebuild(){
+  var N=Math.min(Math.max(4,parseInt(document.getElementById('nval').value)),7);
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(N),renderStep,'explanation','sim-bar');
 }
-
-/* ── Bootstrap ─────────────────────────────────── */
-function rebuild() {
-  N = parseInt(document.getElementById('nSel').value);
-  totalSols = 0;
-  buildBoard(N);
-  document.getElementById('solCounter').textContent = 'Solutions: 0';
-  if (player) player.destroy();
-  const steps = generateSteps(N);
-  // Count solutions to update counter as we go
-  document.addEventListener('sim:step-change', e => {
-    const step = steps[e.detail.step];
-    if (step && step.phase === 'solution') {
-      document.getElementById('solCounter').textContent = `Solutions: ${step.solNum}`;
-    } else if (step && step.phase === 'done') {
-      document.getElementById('solCounter').textContent = `Solutions: ${step.solCount}`;
-    }
-  }, { once: false });
-  player = new SimulationPlayer(steps, renderStep, 'explanation', 'sim-bar');
-}
-
-rebuild();
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

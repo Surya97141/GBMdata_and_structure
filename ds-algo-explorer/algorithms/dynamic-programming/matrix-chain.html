@@ -2,146 +2,143 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Matrix Chain Multiplication – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Matrix Chain Multiplication – Dynamic Programming</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem}
-.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
-.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
-.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
-label{font-size:14px;color:#5a5a72;font-weight:500}
-input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:220px}
-button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
-button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
-.dp-wrap{overflow-x:auto;margin-bottom:16px}
-table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px}
-table.dp th{background:#fdf0ea;color:#e8622a;padding:6px 14px;border:1px solid #f5c4a8;text-align:center;min-width:60px}
-table.dp td{padding:6px 14px;border:1px solid #e2e0da;text-align:center;min-width:60px;transition:background .3s}
-td.cur{background:#e8622a!important;color:#fff}
-td.done{background:#fdf0ea}
-td.diag{background:#f7f6f2;color:#5a5a72}
-.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none;font-family:'JetBrains Mono',monospace}
-.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:220px;overflow-y:auto}
-.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
-.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.matrix-wrap{overflow-x:auto}
+table.mat{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.75rem;margin:0 auto}
+table.mat td,table.mat th{border:1px solid var(--b);padding:.28rem .6rem;text-align:center;min-width:55px}
+table.mat th{background:var(--bg);font-weight:700;color:var(--m)}
+table.mat td.cur{background:#fff176;font-weight:700}
+table.mat td.dep{background:#c3b1e1}
+table.mat td.opt{background:#a8e6a3}
+table.mat td.na{background:#f0f0f0;color:#bbb}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:240px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Matrix Chain
-  </div>
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Matrix Chain Multiplication</h1>
-    <p class="tagline">Find the optimal parenthesisation order to minimise scalar multiplications.</p>
-  </div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Matrix Chain Multiplication</span>
+  </nav>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Matrix Chain Multiplication</h1>
+  <p class="tagline">Optimal parenthesization to minimize scalar multiplications.</p>
   <div class="prose">
-    <p>Multiplying matrices is associative: (AB)C = A(BC). But the order in which you parenthesise them dramatically changes how many scalar multiplications you need. Given matrices A₁A₂…Aₙ, find the grouping that minimises total operations.</p>
-    <p>Define <code>m[i][j]</code> as the minimum cost to multiply matrices from i to j. For each split point k between i and j: cost = m[i][k] + m[k+1][j] + p[i-1]·p[k]·p[j], where p[] are the dimension sequence. Fill the table by chain length — length 1 costs 0; then length 2, 3, … up to n.</p>
-    <p>The algorithm runs in O(n³) and uses O(n²) space. It finds the optimal sequence for real matrix libraries (NumPy, BLAS) and is foundational in compiler optimisation for expression evaluation order.</p>
+    <p>Given a chain of matrices A₁×A₂×...×Aₙ, find the parenthesization that minimizes the total number of scalar multiplications. dp[i][j] = minimum cost to multiply matrices from i to j. Try all split points k: dp[i][j] = min over k of (dp[i][k] + dp[k+1][j] + p[i-1]×p[k]×p[j]), where p[] are the dimensions. The DP fills diagonals of increasing chain length.</p>
+    <p>Classic interval DP. The optimal order can differ massively from left-to-right — for example, A(1×100)×B(100×1)×C(1×100) costs 200 multiplications in one order, but 1+10,000 in another.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-val">O(n³)</div><div class="fact-lbl">Time Complexity</div></div>
-    <div class="fact"><div class="fact-val">O(n²)</div><div class="fact-lbl">Space Complexity</div></div>
-    <div class="fact"><div class="fact-val">Interval DP</div><div class="fact-lbl">DP Style</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n³)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Pattern</div><div class="fval">Interval DP</div></div>
+    <div class="fact"><div class="flabel">Subproblems</div><div class="fval">O(n²)</div></div>
   </div>
-
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Dimensions (p₀,p₁,…): <input type="text" id="dims" value="30,35,15,5,10"/></label>
-      <button id="solveBtn" onclick="solve()">Solve</button>
-      <button onclick="reset()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="matrix-wrap"><div id="matBox"></div></div>
+      <div class="info-bar" id="infoBar">DP table above (rows=i, cols=j, dp[i][j]=min cost).</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Dimensions (p₀,p₁,...,pₙ):</label>
+        <input type="text" id="dims" value="10,30,5,60,40"/>
+        <button class="btn btn-p" onclick="rebuild()">Compute MCM</button>
+      </div>
     </div>
-    <div id="matInfo" style="font-size:13px;color:#5a5a72;margin-bottom:12px"></div>
-    <div class="dp-wrap"><div id="dpWrap"></div></div>
-    <div class="result" id="result"></div>
-  </div>
-
-  <div class="card">
-    <h2>Step Log</h2>
-    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
   </div>
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-let running=false;let m=[];let s=[];
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
-function reset(){document.getElementById('dpWrap').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('matInfo').textContent='';document.getElementById('solveBtn').disabled=false;running=false;}
-function buildTable(n){
-  let html='<table class="dp"><tr><th>m[i][j]</th>';
-  for(let j=1;j<=n;j++) html+=`<th>j=${j}</th>`;
-  html+='</tr>';
+let player=null;
+function generateSteps(p){
+  const steps=[], n=p.length-1;
+  const dp=Array.from({length:n+1},()=>new Array(n+1).fill(0));
+  const split=Array.from({length:n+1},()=>new Array(n+1).fill(0));
+  function snap(r,c){ return { dp:dp.map(row=>[...row]), split:split.map(r2=>[...r2]), cur:[r,c] }; }
+  steps.push({ title:`Matrix Chain: ${n} matrices, dims=[${p.join(',')}]`,
+    what:`Matrices: A1(${p[0]}×${p[1]}), A2(${p[1]}×${p[2]}), ...A${n}(${p[n-1]}×${p[n]}). Find optimal parenthesization.`,
+    why:'dp[i][j] = min multiplications to compute product A[i..j].',
+    ...snap(0,0) });
+  for(let len=2;len<=n;len++){
+    for(let i=1;i<=n-len+1;i++){
+      const j=i+len-1; dp[i][j]=Infinity;
+      for(let k=i;k<j;k++){
+        const cost=dp[i][k]+dp[k+1][j]+p[i-1]*p[k]*p[j];
+        steps.push({ title:`dp[${i}][${j}]: split at k=${k}`,
+          what:`dp[${i}][${k}]+dp[${k+1}][${j}]+${p[i-1]}×${p[k]}×${p[j]}=${dp[i][k]}+${dp[k+1][j]}+${p[i-1]*p[k]*p[j]}=${cost}. ${cost<dp[i][j]?'NEW BEST!':'No improvement.'}`,
+          why:'Try each split: left subchain × right subchain × final multiply.',
+          ...snap(i,j) });
+        if(cost<dp[i][j]){ dp[i][j]=cost; split[i][j]=k; }
+      }
+      steps.push({ title:`dp[${i}][${j}] = ${dp[i][j]} (split at k=${split[i][j]})`,
+        what:`Best split k=${split[i][j]} gives cost ${dp[i][j]}.`,
+        why:'Optimal subchain cost stored for use in larger chains.',
+        ...snap(i,j) });
+    }
+  }
+  steps.push({ title:`Minimum cost: ${dp[1][n]} multiplications`,
+    what:`dp[1][${n}]=${dp[1][n]}. Optimal split tracked in split[] table.`,
+    why:'Full chain optimal: combines all optimal sub-chain solutions.',
+    ...snap(1,n) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
+}
+function renderStep(step,n){
+  const mb=document.getElementById('matBox'); if(!mb) return;
+  let html=`<table class="mat"><tr><th>i\\j</th>${Array.from({length:n},(_,j)=>`<th>${j+1}</th>`).join('')}</tr>`;
   for(let i=1;i<=n;i++){
-    html+=`<tr><th>i=${i}</th>`;
+    html+=`<tr><th>${i}</th>`;
     for(let j=1;j<=n;j++){
-      if(j<i) html+=`<td class="diag">—</td>`;
-      else html+=`<td id="m${i}_${j}">0</td>`;
+      const isCur=step.cur&&step.cur[0]===i&&step.cur[1]===j;
+      const v=step.dp[i][j];
+      html+=`<td class="${j<i?'na':isCur?'cur':v>0?'opt':''}">${j<i?'—':v===Infinity?'∞':v}</td>`;
     }
     html+='</tr>';
   }
-  html+='</table>';
-  document.getElementById('dpWrap').innerHTML=html;
+  html+='</table>'; mb.innerHTML=html;
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Current: dp[${step.cur[0]}][${step.cur[1]}]=${step.dp[step.cur[0]][step.cur[1]]===Infinity?'∞':step.dp[step.cur[0]][step.cur[1]]}  |  Min cost: ${step.dp[1][n]}`;
 }
-function setCell(i,j,v,cls){const el=document.getElementById(`m${i}_${j}`);if(!el)return;el.textContent=v;el.className=cls||'';}
-function optimalParen(s,i,j,names){
-  if(i===j)return names[i];
-  return`(${optimalParen(s,i,s[i][j],names)}${optimalParen(s,s[i][j]+1,j,names)})`;
-}
-async function solve(){
-  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
-  document.getElementById('log').innerHTML='';
-  const p=document.getElementById('dims').value.split(',').map(s=>parseInt(s.trim())).filter(x=>!isNaN(x));
+function rebuild(){
+  const p=document.getElementById('dims').value.split(',').map(Number).filter(v=>v>0).slice(0,7);
+  if(p.length<2) return;
   const n=p.length-1;
-  if(n<2){log('<span class="hi">Need at least 2 matrices (3 dimensions).</span>');running=false;document.getElementById('solveBtn').disabled=false;return;}
-  const names=[];
-  let info='Matrices: ';
-  for(let i=1;i<=n;i++){names.push(String.fromCharCode(64+i));info+=`A${i}(${p[i-1]}×${p[i]}) `;}
-  document.getElementById('matInfo').textContent=info;
-  buildTable(n);
-  m=[];s=[];
-  for(let i=0;i<=n+1;i++){m.push(new Array(n+1).fill(0));s.push(new Array(n+1).fill(0));}
-  log(`<span class="hi">Matrix Chain: ${n} matrices, dims [${p.join(',')}]</span>`);
-  await sleep(300);
-  for(let len=2;len<=n;len++){
-    for(let i=1;i<=n-len+1;i++){
-      const j=i+len-1;
-      m[i][j]=Infinity;
-      setCell(i,j,'…','cur');await sleep(80);
-      for(let k=i;k<j;k++){
-        const cost=m[i][k]+m[k+1][j]+p[i-1]*p[k]*p[j];
-        if(cost<m[i][j]){m[i][j]=cost;s[i][j]=k;}
-      }
-      setCell(i,j,m[i][j],'done');
-      log(`m[${i}][${j}] = ${m[i][j]} (split at k=${s[i][j]})`);
-    }
-  }
-  const paren=optimalParen(s,1,n,[''].concat(names));
-  const res=document.getElementById('result');res.style.display='block';
-  res.innerHTML=`<b>Min multiplications: ${m[1][n]}</b><br>Optimal: ${paren}`;
-  log(`✓ Min cost = ${m[1][n]}, Parenthesisation: ${paren}`);
-  running=false;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(p),(s)=>renderStep(s,n),'explanation','sim-bar');
 }
+rebuild();
 </script>
 </body>
 </html>

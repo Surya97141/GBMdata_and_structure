@@ -1,179 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Exponential Search – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#e84393;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#e84393;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
-.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.controls label{font-size:14px;font-weight:500}
-.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#e84393;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
-.log{margin-top:20px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:200px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e84393;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#059669}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.input-row input.arr{width:280px}
+.input-row input.tgt{width:80px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Exponential Search
-  </nav>
-
-  <div class="hero">
-    <div class="category-tag">Searching</div>
-    <h1>Exponential Search</h1>
-    <p class="tagline">Double the range until you overshoot, then binary search the pocket.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Exponential Search</span></nav>
+  <span class="tag">Searching</span>
+  <h1>Exponential Search</h1>
+  <p class="tagline">Double the boundary until overshoot, then Binary Search the found range.</p>
+  <div class="prose">
+    <p>Exponential Search first finds a range [i/2, i] where the target might exist by doubling i (1, 2, 4, 8…) until a[i] ≥ target or i exceeds n. Then Binary Search is applied within that range.</p>
+    <p>Ideal for unbounded/infinite sorted arrays and when the target is near the beginning. Outperforms Binary Search when the element is near the start, as only O(log pos) work is done to reach the right range.</p>
   </div>
-
-  <div class="explanation">
-    <p>Exponential search finds the range where the target lies by jumping at positions 1, 2, 4, 8, 16… until it either goes out of bounds or finds an element greater than the target. It then applies binary search within the range [prev, curr] — a much smaller window.</p>
-    <p>Imagine searching for a word in a massive sorted dictionary. Instead of opening to the middle (which may be very far from your target), you first flip to page 1, then 2, then 4, then 8… until you overshoot. You now know the word is somewhere between the previous stop and the overshoot. Binary search in that narrow range is fast.</p>
-    <p>This makes exponential search especially powerful for unbounded or infinite sorted arrays where the size is unknown, and for cases where the target is near the beginning of a large array. Its time complexity is O(log n) — dominated by the binary search phase, but with a small constant thanks to quick range-finding.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(log n)</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(1)</div></div>
-    <div class="fact-card"><div class="label">Best For</div><div class="value">Unbounded arrays</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Phase 1</div><div class="fval">O(log i)</div><div class="fsub">find range</div></div>
+    <div class="fact"><div class="flabel">Phase 2</div><div class="fval">O(log i)</div><div class="fsub">binary search</div></div>
   </div>
-
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Target:</label>
-      <input type="number" id="targetInput" value="42">
-      <button class="btn btn-primary" onclick="startSearch()">Search</button>
-      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
-    </div>
-    <canvas id="cvs" width="820" height="200"></canvas>
-    <div class="log">
-      <h3>Step Log</h3>
-      <div id="logEntries"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="220"></canvas>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" class="arr" type="text" value="2,3,4,10,40,55,67,80,91,100"/>
+        <input id="tgtIn" class="tgt" type="number" value="40" placeholder="Target"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Unchecked</span>
+        <span class="leg"><span class="leg-dot" style="background:#ff9800;border:1px solid #e65100"></span>Doubling boundary</span>
+        <span class="leg"><span class="leg-dot" style="background:#d0d0d0"></span>Outside range</span>
+        <span class="leg"><span class="leg-dot" style="background:#c3b1e1;border:1px solid #8b5cf6"></span>Binary search range</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Mid probe</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Found!</span>
+      </div>
     </div>
   </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
-
 <script>
-const ARR=[3,7,12,18,25,31,42,56,63,78,85,92,97];
-const ACCENT='#e84393',GREEN='#27a060',GRAY='#d0cec8',ORANGE='#f59e0b',BLUE='#3b82f6';
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-const n=ARR.length;
-let state=ARR.map(()=>'default'),running=false,phase='',bsRange=[-1,-1];
-
-function drawArray(highlight=-1){
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  const cellW=58,cellH=58;
-  const startX=(cvs.width-n*cellW)/2,startY=20;
-  ARR.forEach((v,i)=>{
-    const x=startX+i*cellW,y=startY;
-    const s=state[i];
-    let fill='#fff';
-    if(i===highlight&&phase==='exp')fill=ACCENT;
-    else if(i===highlight&&phase==='bin')fill=BLUE;
-    else if(s==='exp')fill='#fce7f3';
-    else if(s==='bin')fill='#dbeafe';
-    else if(s==='found')fill=GREEN;
-    else if(s==='mid')fill=BLUE;
-    else if(s==='eliminated')fill=GRAY;
-    ctx.fillStyle=fill;ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
-    ctx.fillStyle=(fill===GREEN||fill===BLUE)?'#fff':(s==='eliminated'?'#aaa':'#1a1a2e');
-    ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(v,x+cellW/2,y+cellH/2);
-    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
-    ctx.fillText(i,x+cellW/2,y+cellH+10);
-  });
-  // Binary search range bracket
-  if(bsRange[0]>=0){
-    const lx=startX+bsRange[0]*cellW+2,rx=startX+bsRange[1]*cellW+cellW-2;
-    ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;ctx.setLineDash([4,3]);
-    ctx.beginPath();ctx.moveTo(lx,startY-6);ctx.lineTo(lx,startY+cellH+6);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(rx,startY-6);ctx.lineTo(rx,startY+cellH+6);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='#3b82f6';ctx.font='11px Inter';ctx.textAlign='center';
-    ctx.fillText(`Binary search range [${bsRange[0]}..${bsRange[1]}]`,(lx+rx)/2,startY+cellH+28);
-  }
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w*DPR; canvas.height = 220*DPR;
+  canvas.style.width = w+'px'; canvas.style.height = '220px';
+  ctx.scale(DPR, DPR);
 }
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function generateSteps(arr, target) {
+  const steps = [], n = arr.length;
+  const mkState = () => new Array(n).fill('unchecked');
 
-async function startSearch(){
-  if(running)return;running=true;
-  state=ARR.map(()=>'default');bsRange=[-1,-1];phase='';
-  const target=parseInt(document.getElementById('targetInput').value);
-  log(`Exponential search for target = ${target}`);
-  // Check index 0
-  phase='exp';state[0]='exp';drawArray(0);
-  log(`Check index 0: arr[0]=${ARR[0]}`);
-  await sleep(600);
-  if(ARR[0]===target){state[0]='found';drawArray();log(`✓ Found at index 0!`);running=false;return;}
+  steps.push({ title:`Exponential Search for ${target}`,
+    what:`Sorted array: [${arr.join(', ')}]. Phase 1: double boundary until a[i] >= ${target}. Phase 2: binary search.`,
+    why:'Two-phase approach finds the right range first, then narrows within it.',
+    state:`Starting at index 1`, phase:'start', arr:[...arr], cells:mkState(), lo:-1, hi:-1, mid:-1, target });
+
+  if (arr[0]===target) {
+    const c=mkState(); c[0]='found';
+    steps.push({ title:`a[0]=${arr[0]} = target!`, what:`First element is the target.`, why:'',
+      state:'Found at 0', phase:'done-found', arr:[...arr], cells:c, lo:0, hi:0, mid:0, target });
+    steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; }); return steps;
+  }
+
   let i=1;
-  while(i<n&&ARR[i]<=target){
-    phase='exp';state[i]='exp';drawArray(i);
-    log(`Exp jump: index ${i} → arr[${i}]=${ARR[i]} ${ARR[i]<target?'<':'='} ${target}${ARR[i]<target?', continue':'.'}`);
-    await sleep(650);
-    if(ARR[i]===target){state[i]='found';drawArray();log(`✓ Found at index ${i}!`);running=false;return;}
+  while (i<n && arr[i]<=target) {
+    const c=mkState();
+    for(let k=0;k<i;k++) c[k]='outside';
+    c[i]='boundary';
+    steps.push({ title:`Double: check a[${i}]=${arr[i]}`,
+      what:`a[${i}]=${arr[i]} ${arr[i]===target?'= TARGET!':arr[i]<target?'< '+target+'. Double i to '+(i*2)+'.':'>= '+target+'. Stop.'}`,
+      why:'Doubling ensures we find the range in O(log pos) steps.',
+      state:`Boundary index = ${i}`, phase:'double', arr:[...arr], cells:c, lo:-1, hi:-1, mid:i, target });
+    if (arr[i]===target) {
+      const cf=mkState(); cf[i]='found';
+      steps.push({ title:`Found ${target} at boundary index ${i}!`, what:`a[${i}]=${target}.`, why:'',
+        state:`Found at ${i}`, phase:'done-found', arr:[...arr], cells:cf, lo:i, hi:i, mid:i, target });
+      steps.forEach((s,j)=>{ s.stepNumber=j+1; s.totalSteps=steps.length; }); return steps;
+    }
     i*=2;
   }
-  // Binary search in [i/2, min(i, n-1)]
-  let lo=Math.floor(i/2),hi=Math.min(i,n-1);
-  bsRange=[lo,hi];phase='bin';
-  log(`Overshoot! Binary search in [${lo}..${hi}]`);
-  let step=0;
-  while(lo<=hi){
-    step++;
+  let lo=Math.floor(i/2), hi=Math.min(i, n-1);
+  const c0=mkState();
+  for(let k=0;k<lo;k++) c0[k]='outside';
+  for(let k=lo;k<=hi;k++) c0[k]='range';
+  for(let k=hi+1;k<n;k++) c0[k]='outside';
+  steps.push({ title:`Phase 2: Binary Search in [${lo}, ${hi}]`,
+    what:`Range [${lo},${hi}] established. Binary search within this range.`,
+    why:'The target must lie in this range (if it exists).',
+    state:`Binary search: lo=${lo}, hi=${hi}`, phase:'bs-start', arr:[...arr], cells:c0, lo, hi, mid:-1, target });
+
+  while (lo<=hi) {
     const mid=Math.floor((lo+hi)/2);
-    for(let j=0;j<n;j++){
-      if(j<bsRange[0]||j>bsRange[1])state[j]='eliminated';
-      else if(j<lo||j>hi)state[j]='eliminated';
-      else if(j===mid)state[j]='mid';
-      else state[j]='bin';
+    const c1=mkState();
+    for(let k=0;k<lo;k++) c1[k]='outside';
+    for(let k=lo;k<=hi;k++) c1[k]='range';
+    for(let k=hi+1;k<n;k++) c1[k]='outside';
+    c1[mid]='mid';
+    steps.push({ title:`Binary Search: a[${mid}]=${arr[mid]}`,
+      what:`Check a[mid=${mid}]=${arr[mid]}.`,
+      why:arr[mid]===target?'Found!':(arr[mid]<target?'Target is to the right.':'Target is to the left.'),
+      state:`lo=${lo}, mid=${mid}, hi=${hi}`, phase:'bs-probe', arr:[...arr], cells:c1, lo, hi, mid, target });
+    if (arr[mid]===target) {
+      const cf=mkState(); cf[mid]='found';
+      steps.push({ title:`Found ${target} at index ${mid}!`, what:`a[${mid}]=${target}.`, why:'',
+        state:`Found at ${mid}`, phase:'done-found', arr:[...arr], cells:cf, lo, hi, mid, target });
+      steps.forEach((s,j)=>{ s.stepNumber=j+1; s.totalSteps=steps.length; }); return steps;
     }
-    drawArray(mid);
-    log(`BinSearch step ${step}: mid=${mid} arr[${mid}]=${ARR[mid]}`);
-    await sleep(700);
-    if(ARR[mid]===target){state[mid]='found';bsRange=[-1,-1];drawArray();log(`✓ Found ${target} at index ${mid}!`);running=false;return;}
-    else if(ARR[mid]<target)lo=mid+1;
-    else hi=mid-1;
+    if (arr[mid]<target) lo=mid+1; else hi=mid-1;
   }
-  bsRange=[-1,-1];drawArray();log(`✗ ${target} not found.`);running=false;
+  steps.push({ title:`Target ${target} not found`, what:`${target} not in array.`, why:'',
+    state:`Not found`, phase:'done-notfound', arr:[...arr], cells:mkState(), lo, hi, mid:-1, target });
+  steps.forEach((s,j)=>{ s.stepNumber=j+1; s.totalSteps=steps.length; }); return steps;
 }
 
-function resetSearch(){
-  running=false;state=ARR.map(()=>'default');bsRange=[-1,-1];phase='';drawArray();
-  document.getElementById('logEntries').innerHTML='';
+function renderStep(step) {
+  const W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const { arr, cells, target } = step;
+  const n=arr.length; if(!n) return;
+  const maxVal=Math.max(...arr,1), padX=14, labelH=36, topPad=16;
+  const availW=W-padX*2, availH=H-labelH-topPad, cellW=availW/n;
+  const cmap={unchecked:'#9ec8f0',boundary:'#ff9800',outside:'#d0d0d0',range:'#c3b1e1',mid:'#fff176',found:'#a8e6a3',notfound:'#ffb347'};
+  const smap={boundary:'#e65100',mid:'#c8c000',found:'#27a060',range:'#8b5cf6'};
+  for(let i=0;i<n;i++){
+    const v=arr[i], h=Math.max(4,(v/maxVal)*availH);
+    const bx=padX+i*cellW+2, by=H-labelH-h, bw=cellW-4;
+    const c=cells[i]||'unchecked';
+    ctx.fillStyle=cmap[c]||'#9ec8f0';
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,h,4); else ctx.rect(bx,by,bw,h); ctx.fill();
+    if(smap[c]){ ctx.strokeStyle=smap[c]; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,h,4); else ctx.rect(bx,by,bw,h); ctx.stroke(); }
+    const fs=Math.max(7,Math.min(11,cellW-4));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(v, padX+i*cellW+cellW/2, H-labelH+14);
+    ctx.fillStyle='#5a5a72'; ctx.font='9px Inter,sans-serif';
+    ctx.fillText(`[${i}]`, padX+i*cellW+cellW/2, H-2);
+  }
+  ctx.fillStyle='#059669'; ctx.font='bold 11px Inter,sans-serif';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText(`target = ${target}`, padX, 2);
 }
-drawArray();
+function parseArr(s){return s.split(',').map(x=>parseInt(x.trim())).filter(x=>!isNaN(x)).sort((a,b)=>a-b);}
+function rebuild(){
+  const arr=parseArr(document.getElementById('arrIn').value);
+  const target=parseInt(document.getElementById('tgtIn').value)||0;
+  if(arr.length<2||arr.length>25){alert('Enter 2-25 numbers.');return;}
+  document.getElementById('arrIn').value=arr.join(',');
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr,target),renderStep,'explanation','sim-bar');
+}
+function randomize(){
+  const n=10+Math.floor(Math.random()*6);
+  const arr=[...new Set(Array.from({length:n+5},()=>1+Math.floor(Math.random()*100)))].slice(0,n).sort((a,b)=>a-b);
+  document.getElementById('arrIn').value=arr.join(',');
+  document.getElementById('tgtIn').value=arr[Math.floor(Math.random()*arr.length)];
+  rebuild();
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

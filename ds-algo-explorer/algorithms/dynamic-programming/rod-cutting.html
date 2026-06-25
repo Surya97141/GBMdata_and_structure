@@ -1,196 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rod Cutting – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Rod Cutting – Dynamic Programming</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:var(--accent);text-decoration:none;}
-  a:hover{text-decoration:underline;}
-  .container{max-width:900px;margin:0 auto;padding:0 24px;}
-  /* breadcrumb */
-  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
-  .breadcrumb span{margin:0 6px;}
-  /* hero */
-  .hero{padding:48px 0 32px;}
-  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
-  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
-  /* explanation */
-  .explanation{padding:24px 0;}
-  .explanation p{margin-bottom:14px;color:var(--ink);}
-  /* facts */
-  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
-  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
-  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
-  /* simulation */
-  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
-  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
-  .input-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end;}
-  .input-group{display:flex;flex-direction:column;gap:4px;}
-  .input-group label{font-size:.8rem;font-weight:600;color:var(--muted);}
-  .input-group input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;width:220px;background:var(--bg);}
-  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
-  .btn:hover{opacity:.85;}
-  .btn:disabled{opacity:.4;cursor:not-allowed;}
-  /* dp table */
-  .dp-scroll{overflow-x:auto;margin:18px 0;}
-  table.dp{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.85rem;}
-  table.dp th,table.dp td{border:1px solid var(--border);padding:8px 14px;text-align:center;min-width:52px;transition:background .3s,color .3s;}
-  table.dp th{background:var(--bg);font-weight:600;color:var(--muted);}
-  table.dp td{background:var(--surface);}
-  table.dp td.active{background:var(--accent);color:#fff;}
-  table.dp td.done{background:#fff3ed;}
-  .cuts-result{margin-top:14px;font-size:.95rem;}
-  .cuts-result strong{color:var(--accent);}
-  /* step log */
-  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
-  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
-  .log-box p.highlight{color:#e8a87c;}
-  /* back */
-  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:260px;background:var(--bg);color:var(--ink)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:80px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Rod Cutting
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Rod Cutting</span>
   </nav>
-
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Rod Cutting</h1>
-    <p class="tagline">Maximize profit by cutting a rod into pieces sold at different prices.</p>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Rod Cutting Problem</h1>
+  <p class="tagline">Find the optimal cuts to maximize revenue from a rod.</p>
+  <div class="prose">
+    <p>Given a rod of length n and price table price[1..n] where price[i] is the value of a piece of length i, find the maximum revenue from cutting the rod. This is unbounded knapsack: dp[l] = max revenue for rod of length l. For each length l, try all first cuts i: dp[l] = max(price[i] + dp[l-i]). Build dp[0..n].</p>
+    <p>The visualization shows the DP array growing. Each bar's height shows the maximum revenue for that rod length. The traceback shows which cuts produce the optimal solution.</p>
   </div>
-
-  <div class="explanation">
-    <p>Imagine you own a steel rod of length <em>n</em> and a price list that tells you how much a piece of each length is worth. You can make as many cuts as you like, anywhere along the rod. The goal is to figure out the cutting strategy that maximizes total revenue.</p>
-    <p>A greedy approach (always cut the highest-ratio piece first) fails. Dynamic programming saves us: <code>dp[i]</code> stores the maximum revenue from a rod of length <em>i</em>. To fill it, we try every first-cut size <em>j</em> from 1 to <em>i</em> and take <code>max(price[j] + dp[i-j])</code>.</p>
-    <p>This bottom-up DP runs in O(n²) time — each subproblem is solved once and its result reused, turning a naively exponential search into a fast polynomial one.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Time Complexity</div></div>
-    <div class="fact-card"><div class="val">O(n)</div><div class="label">Space Complexity</div></div>
-    <div class="fact-card"><div class="val">Bottom-Up</div><div class="label">DP Approach</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Pattern</div><div class="fval">Unbounded knapsack</div></div>
+    <div class="fact"><div class="flabel">Cuts</div><div class="fval">Unlimited</div></div>
   </div>
-
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <div class="input-row">
-      <div class="input-group">
-        <label>Rod Length (n)</label>
-        <input type="number" id="rodLen" value="8" min="1" max="12">
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="240"></canvas>
+      <div class="info-bar" id="infoBar">DP array appears above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Prices (len 1,2,...n):</label>
+        <input type="text" id="prices" value="1,5,8,9,10,17,17,20"/>
+        <label>Rod length:</label>
+        <input type="number" id="rodLen" value="8" min="1" max="10"/>
+        <button class="btn btn-p" onclick="rebuild()">Cut Rod</button>
       </div>
-      <div class="input-group">
-        <label>Prices p[1..n] (comma-separated)</label>
-        <input type="text" id="prices" value="1,5,8,9,10,17,17,20">
-      </div>
-      <button class="btn" id="solveBtn" onclick="startSolve()">Solve</button>
     </div>
-
-    <div class="dp-scroll">
-      <table class="dp" id="dpTable"></table>
-    </div>
-    <div class="cuts-result" id="cutsResult"></div>
   </div>
-
-  <div class="sim-box" style="padding:20px;">
-    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
-    <div class="log-box" id="logBox"></div>
-  </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
-
 <script>
-function log(msg, highlight=false){
-  const lb=document.getElementById('logBox');
-  const p=document.createElement('p');
-  if(highlight) p.classList.add('highlight');
-  p.textContent=msg;
-  lb.appendChild(p);
-  lb.scrollTop=lb.scrollHeight;
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26;
+  canvas.width=w*DPR; canvas.height=240*DPR; canvas.style.width=w+'px'; canvas.style.height='240px'; ctx.scale(DPR,DPR);
 }
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-async function startSolve(){
-  const btn=document.getElementById('solveBtn');
-  btn.disabled=true;
-  document.getElementById('logBox').innerHTML='';
-  document.getElementById('cutsResult').innerHTML='';
-
-  const n=parseInt(document.getElementById('rodLen').value)||8;
-  const rawPrices=document.getElementById('prices').value.split(',').map(x=>parseInt(x.trim())||0);
-  const p=[0,...rawPrices]; // 1-indexed
-
-  // Build dp and choice arrays
-  const dp=new Array(n+1).fill(0);
-  const choice=new Array(n+1).fill(0);
-
-  // Build header row
-  const tbl=document.getElementById('dpTable');
-  tbl.innerHTML='';
-  const thead=tbl.createTHead();
-  const hrow=thead.insertRow();
-  hrow.insertCell().textContent='i';
-  for(let i=0;i<=n;i++){const th=document.createElement('th');th.textContent=i;hrow.appendChild(th);}
-
-  const tbody=tbl.createTBody();
-  const drow=tbody.insertRow();
-  const firstCell=drow.insertCell();
-  firstCell.textContent='dp[i]';
-  firstCell.style.fontWeight='600';
-  const cells=[];
-  for(let i=0;i<=n;i++){
-    const td=drow.insertCell();
-    td.textContent='–';
-    cells.push(td);
-  }
-
-  // Set dp[0]=0
-  cells[0].textContent='0';
-  cells[0].classList.add('done');
-  log('dp[0] = 0 (base case: empty rod has value 0)');
-  await sleep(300);
-
-  for(let i=1;i<=n;i++){
-    cells[i].classList.add('active');
-    let best=-Infinity, bestJ=1;
-    const parts=[];
-    for(let j=1;j<=i;j++){
-      const val=(p[j]||0)+dp[i-j];
-      parts.push(`p[${j}]+dp[${i-j}]=${val}`);
-      if(val>best){best=val;bestJ=j;}
+function generateSteps(prices,n){
+  const steps=[], dp=new Array(n+1).fill(0), firstCut=new Array(n+1).fill(0);
+  function snap(c,dep){ return { dp:[...dp], firstCut:[...firstCut], cur:c, dep }; }
+  steps.push({ title:`Rod Cutting: rod length ${n}, prices=[${prices.slice(0,n).join(',')}]`,
+    what:`dp[l]=max revenue for rod of length l. dp[0]=0.`,
+    why:'Unbounded knapsack: each piece length can be cut unlimited times.',
+    ...snap(-1,-1) });
+  for(let l=1;l<=n;l++){
+    let best=-1, bestCut=-1;
+    for(let i=1;i<=l;i++){
+      const val=prices[i-1]+dp[l-i];
+      if(val>best){ best=val; bestCut=i; }
+      steps.push({ title:`dp[${l}]: try cut at length ${i}`,
+        what:`price[${i}]+dp[${l-i}]=${prices[i-1]}+${dp[l-i]}=${val}. ${val>dp[l]?'NEW BEST!':''}`,
+        why:`First piece of length ${i} costs price[${i}]=${prices[i-1]}. Rest (length ${l-i}) solved recursively.`,
+        ...snap(l,l-i) });
     }
-    dp[i]=best;
-    choice[i]=bestJ;
-    log(`dp[${i}] = max(${parts.join(', ')}) = ${best}`, i===n);
-    await sleep(350);
-    cells[i].textContent=best;
-    cells[i].classList.remove('active');
-    cells[i].classList.add('done');
+    dp[l]=best; firstCut[l]=bestCut;
+    steps.push({ title:`dp[${l}] = ${dp[l]} (first cut = ${firstCut[l]})`,
+      what:`Best first cut: length ${firstCut[l]}. Revenue: ${dp[l]}.`,
+      why:'Optimal first cut stored for traceback.',
+      ...snap(l,-1) });
   }
-
-  // Backtrace cuts
-  let rem=n, cuts=[];
-  while(rem>0){cuts.push(choice[rem]);rem-=choice[rem];}
-  document.getElementById('cutsResult').innerHTML=
-    `<strong>Max Revenue: ${dp[n]}</strong> &nbsp;|&nbsp; Best cuts: [${cuts.join(', ')}]`;
-  log(`Done. Max revenue = ${dp[n]}. Cuts: [${cuts.join(', ')}]`, true);
-  btn.disabled=false;
+  const cuts=[]; let rem=n;
+  while(rem>0){ cuts.push(firstCut[rem]); rem-=firstCut[rem]; }
+  steps.push({ title:`Max revenue: ${dp[n]} — cuts: [${cuts.join('+')}]`,
+    what:`Optimal cuts: [${cuts.join(',')}]. Total revenue: ${dp[n]}.`,
+    why:'Traceback: follow firstCut[] until rod is fully cut.',
+    ...snap(n,-1) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-
-// Init table on load
-window.onload=()=>startSolve();
+function renderStep(step,prices,n){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const maxV=Math.max(...step.dp.slice(1),1), pad=30;
+  const bw=(W-pad*2)/(n+1)*0.75, bsp=(W-pad*2)/(n+1);
+  for(let i=0;i<=n;i++){
+    const h=i===0?10:(step.dp[i]/maxV)*(H-90);
+    const x=pad+i*bsp+bsp*0.125, y=H-50-h;
+    let col='#9ec8f0';
+    if(step.cur===i) col='#ffb347';
+    else if(step.dep===i) col='#c3b1e1';
+    else if(step.cur>i) col='#a8e6a3';
+    ctx.fillStyle=col; ctx.fillRect(x,y,bw,h);
+    ctx.strokeStyle='#5a5a72'; ctx.lineWidth=1; ctx.strokeRect(x,y,bw,h);
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold 10px Inter`; ctx.textAlign='center';
+    ctx.fillText(step.dp[i],x+bw/2,y-5);
+    ctx.fillStyle='#888'; ctx.font=`9px JetBrains Mono`;
+    ctx.fillText(`l=${i}`,x+bw/2,H-28);
+    if(i>0){ ctx.fillStyle='#7b4fd4'; ctx.fillText(`p${prices[i-1]}`,x+bw/2,H-14); }
+  }
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Length ${step.cur>=0?step.cur:'—'}: dp[${step.cur>=0?step.cur:'—'}]=${step.cur>=0?step.dp[step.cur]:'—'}  |  Max revenue for n=${n}: ${step.dp[n]}`;
+}
+function rebuild(){
+  const prices=document.getElementById('prices').value.split(',').map(Number).filter(v=>v>=0);
+  const n=Math.min(parseInt(document.getElementById('rodLen').value),Math.min(prices.length,10));
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(prices,n),(s)=>renderStep(s,prices,n),'explanation','sim-bar');
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

@@ -2,138 +2,159 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Longest Increasing Subsequence – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Longest Increasing Subsequence – Dynamic Programming</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#e8622a;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.tag{display:inline-block;background:#fdf0ea;color:#e8622a;border:1px solid #f5c4a8;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.15;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem}
-.prose{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:28px;margin-bottom:24px;line-height:1.75}
-.prose p{margin-bottom:14px}.prose p:last-child{margin-bottom:0}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:#e8622a}
-.fact-lbl{font-size:12px;color:#5a5a72;margin-top:4px}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-bottom:24px}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:16px}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
-label{font-size:14px;color:#5a5a72;font-weight:500}
-input[type=text]{padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;width:240px}
-button{padding:10px 22px;background:#e8622a;color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
-button:hover{background:#cf5224}button:disabled{background:#c8c6c0;cursor:not-allowed}
-.arr-display{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.arr-cell{min-width:44px;padding:10px 6px;text-align:center;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;border:2px solid #e2e0da;background:#fff;transition:all .3s}
-.arr-cell.cur{border-color:#e8622a;background:#fdf0ea}
-.arr-cell.lis{border-color:#e8622a;background:#e8622a;color:#fff}
-.arr-cell .dp-val{font-size:10px;color:#5a5a72;font-weight:400;display:block}
-.arr-cell.cur .dp-val{color:#e8622a}
-.arr-cell.lis .dp-val{color:#fdebd7}
-.result{background:#fdf0ea;border:1px solid #f5c4a8;border-radius:8px;padding:14px;font-size:14px;margin-top:12px;display:none}
-.log{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8a8c0;max-height:200px;overflow-y:auto}
-.log div{margin-bottom:4px;line-height:1.5}.log .hi{color:#e8622a}
-.back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#e8622a;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:300px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    LIS
-  </div>
-  <div class="hero">
-    <span class="tag">Dynamic Programming</span>
-    <h1>Longest Increasing Subsequence</h1>
-    <p class="tagline">Find the longest subsequence of numbers in strictly increasing order.</p>
-  </div>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>LIS</span>
+  </nav>
+  <span class="tag">Dynamic Programming</span>
+  <h1>Longest Increasing Subsequence</h1>
+  <p class="tagline">Find the longest strictly increasing subsequence using DP.</p>
   <div class="prose">
-    <p>Think of stock prices over time. You want to find the longest streak of days where each day's price was higher than the previous one you picked — but you can skip days in between. That's the LIS problem.</p>
-    <p>The O(n²) DP approach: <code>dp[i]</code> is the length of the longest increasing subsequence ending at index i. For each i, look back at all j&lt;i where <code>a[j] &lt; a[i]</code> and take the maximum <code>dp[j]+1</code>. The answer is the maximum value in dp[].</p>
-    <p>An O(n log n) solution using patience sorting exists too, but the DP version is more intuitive and easier to visualise. After computing dp[], backtracing parent pointers gives the actual subsequence.</p>
+    <p>The LIS problem: given a sequence, find the longest subsequence (not necessarily contiguous) that is strictly increasing. DP approach: dp[i] = length of longest increasing subsequence ending at index i. For each i, look at all j < i where arr[j] < arr[i] and take dp[i] = max(dp[j]) + 1. Time O(n²).</p>
+    <p>The visualization shows bars representing array elements. When computing dp[i], we check all previous elements. Blue arrows indicate valid predecessor relationships. The LIS elements are highlighted green at the end.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-val">O(n²)</div><div class="fact-lbl">Time (DP)</div></div>
-    <div class="fact"><div class="fact-val">O(n log n)</div><div class="fact-lbl">Time (Optimal)</div></div>
-    <div class="fact"><div class="fact-val">O(n)</div><div class="fact-lbl">Space Complexity</div></div>
+    <div class="fact"><div class="flabel">Time (DP)</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Time (Optimal)</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Subsequence</div><div class="fval">Not contiguous</div></div>
   </div>
-
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Array (comma-separated): <input type="text" id="arr" value="3,1,8,2,5,9,4,7"/></label>
-      <button id="solveBtn" onclick="solve()">Solve</button>
-      <button onclick="reset()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="260"></canvas>
+      <div class="info-bar" id="infoBar">LIS info appears here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Array:</label>
+        <input type="text" id="arr" value="3,10,2,1,20,5,9,6,7"/>
+        <button class="btn btn-p" onclick="rebuild()">Find LIS</button>
+      </div>
     </div>
-    <div class="arr-display" id="arrDisplay"></div>
-    <div class="result" id="result"></div>
-  </div>
-
-  <div class="card">
-    <h2>Step Log</h2>
-    <div class="log" id="log"><div class="hi">Press Solve to start.</div></div>
   </div>
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-let running=false;
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function log(msg){const d=document.getElementById('log');const div=document.createElement('div');div.innerHTML=msg;d.appendChild(div);d.scrollTop=d.scrollHeight;}
-function reset(){document.getElementById('arrDisplay').innerHTML='';document.getElementById('result').style.display='none';document.getElementById('log').innerHTML='<div class="hi">Press Solve to start.</div>';document.getElementById('solveBtn').disabled=false;running=false;}
-function buildCells(a){
-  const wrap=document.getElementById('arrDisplay');wrap.innerHTML='';
-  a.forEach((v,i)=>{
-    const div=document.createElement('div');div.className='arr-cell';div.id=`ac${i}`;
-    div.innerHTML=`${v}<span class="dp-val">dp=?</span>`;wrap.appendChild(div);
-  });
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26;
+  canvas.width=w*DPR; canvas.height=260*DPR; canvas.style.width=w+'px'; canvas.style.height='260px'; ctx.scale(DPR,DPR);
 }
-function updateCell(i,dpVal,cls){
-  const el=document.getElementById(`ac${i}`);if(!el)return;
-  el.className='arr-cell '+(cls||'');
-  el.innerHTML=el.textContent.split('\n')[0].trim().split('<')[0]||el.firstChild?.textContent||'';
-  el.innerHTML=`${el.dataset.v}<span class="dp-val">dp=${dpVal}</span>`;
-}
-async function solve(){
-  if(running)return;running=true;document.getElementById('solveBtn').disabled=true;
-  document.getElementById('log').innerHTML='';
-  const raw=document.getElementById('arr').value.split(',').map(s=>parseInt(s.trim())).filter(x=>!isNaN(x));
-  const a=raw;const n=a.length;
-  buildCells(a);
-  // store values in data attribute
-  a.forEach((v,i)=>{const el=document.getElementById(`ac${i}`);if(el)el.dataset.v=v;});
-  const dp=new Array(n).fill(1);
-  const parent=new Array(n).fill(-1);
-  log(`<span class="hi">LIS on [${a.join(',')}]</span>`);
-  await sleep(300);
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
+
+function generateSteps(arr){
+  const steps=[], n=arr.length;
+  const dp=new Array(n).fill(1), pred=new Array(n).fill(-1);
+  function snap(ci,cj,lis){ return { dp:[...dp], pred:[...pred], ci, cj, lis:[...lis] }; }
+  steps.push({ title:`LIS: array [${arr.join(',')}]`,
+    what:`n=${n}. dp[i]=length of LIS ending at index i. Initialize all dp[i]=1.`,
+    why:'Each element alone is a subsequence of length 1.',
+    ...snap(-1,-1,[]) });
   for(let i=0;i<n;i++){
-    const el=document.getElementById(`ac${i}`);if(el){el.className='arr-cell cur';el.innerHTML=`${a[i]}<span class="dp-val">dp=?</span>`;}
-    await sleep(100);
     for(let j=0;j<i;j++){
-      if(a[j]<a[i]&&dp[j]+1>dp[i]){dp[i]=dp[j]+1;parent[i]=j;}
+      if(arr[j]<arr[i]){
+        steps.push({ title:`Check pair (j=${j}, i=${i}): arr[${j}]=${arr[j]} < arr[${i}]=${arr[i]}?`,
+          what:`arr[${j}]=${arr[j]} < arr[${i}]=${arr[i]} — YES. dp[${i}] = max(${dp[i]}, dp[${j}]+1=${dp[j]+1}) = ${Math.max(dp[i],dp[j]+1)}.`,
+          why:'If arr[j] < arr[i], index i can extend the LIS ending at j.',
+          ...snap(i,j,[]) });
+        if(dp[j]+1>dp[i]){ dp[i]=dp[j]+1; pred[i]=j; }
+      } else {
+        steps.push({ title:`Check (j=${j}, i=${i}): arr[${j}]=${arr[j]} ≥ arr[${i}]=${arr[i]}`,
+          what:'Not increasing — cannot extend.',
+          why:'Strictly increasing requires arr[j] < arr[i].',
+          ...snap(i,j,[]) });
+      }
     }
-    if(el){el.className='arr-cell';el.innerHTML=`${a[i]}<span class="dp-val">dp=${dp[i]}</span>`;}
-    log(`dp[${i}]=${dp[i]} (element ${a[i]}${parent[i]>=0?`, extends from ${a[parent[i]]} at idx ${parent[i]}`:`, starts new'})`);
   }
-  // find LIS end
-  let maxLen=0,endIdx=0;
-  dp.forEach((v,i)=>{if(v>maxLen){maxLen=v;endIdx=i;}});
-  // backtrace
-  const lisIdx=[];let cur=endIdx;
-  while(cur>=0){lisIdx.push(cur);cur=parent[cur];}
-  lisIdx.reverse();
-  lisIdx.forEach(i=>{const el=document.getElementById(`ac${i}`);if(el){el.className='arr-cell lis';el.innerHTML=`${a[i]}<span class="dp-val">dp=${dp[i]}</span>`;}});
-  const res=document.getElementById('result');res.style.display='block';
-  res.innerHTML=`<b>LIS Length: ${maxLen}</b> &nbsp;|&nbsp; Subsequence: [${lisIdx.map(i=>a[i]).join(', ')}]`;
-  log(`✓ LIS = [${lisIdx.map(i=>a[i]).join(', ')}] (length ${maxLen})`);
-  running=false;
+  const lisLen=Math.max(...dp), lisEnd=dp.indexOf(lisLen);
+  const lis=[];
+  let cur=lisEnd;
+  while(cur>=0){ lis.unshift(cur); cur=pred[cur]; }
+  steps.push({ title:`LIS length = ${lisLen}: [${lis.map(i=>arr[i]).join(',')}]`,
+    what:`LIS indices: [${lis.join(',')}], values: [${lis.map(i=>arr[i]).join(',')}].`,
+    why:'Traceback via pred[] array finds actual subsequence.',
+    ...snap(-1,-1,lis) });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
+
+function renderStep(step,arr){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const n=arr.length, maxV=Math.max(...arr), pad=30;
+  const bw=(W-pad*2)/n*0.75, bsp=(W-pad*2)/n;
+  const lisSet=new Set(step.lis);
+  for(let i=0;i<n;i++){
+    const h=(arr[i]/maxV)*(H-80);
+    const x=pad+i*bsp+bsp*0.125, y=H-40-h;
+    let col='#9ec8f0';
+    if(step.ci===i) col='#ffb347';
+    else if(step.cj===i) col='#c3b1e1';
+    else if(lisSet.has(i)) col='#a8e6a3';
+    ctx.fillStyle=col; ctx.fillRect(x,y,bw,h);
+    ctx.strokeStyle='#5a5a72'; ctx.lineWidth=1; ctx.strokeRect(x,y,bw,h);
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold 11px Inter`; ctx.textAlign='center';
+    ctx.fillText(arr[i],x+bw/2,y-5);
+    ctx.fillStyle='#7b4fd4'; ctx.font=`9px JetBrains Mono`;
+    ctx.fillText(`d${step.dp[i]}`,x+bw/2,H-24);
+    ctx.fillStyle='#555'; ctx.font=`9px JetBrains Mono`;
+    ctx.fillText(i,x+bw/2,H-10);
+  }
+  if(step.ci>=0&&step.cj>=0){
+    const xi=pad+step.ci*bsp+bsp/2, xj=pad+step.cj*bsp+bsp/2, yy=H-42;
+    ctx.beginPath(); ctx.moveTo(xj,yy); ctx.lineTo(xi,yy);
+    ctx.strokeStyle='#7b4fd4'; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+  }
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`dp: [${step.dp.join(',')}]  |  LIS length: ${Math.max(...step.dp)}  |  LIS: [${step.lis.map(i=>arr[i]).join(',')||'computing'}]`;
+}
+function rebuild(){
+  const arr=document.getElementById('arr').value.split(',').map(Number).filter(v=>!isNaN(v)).slice(0,12);
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),(s)=>renderStep(s,arr),'explanation','sim-bar');
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

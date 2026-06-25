@@ -2,170 +2,187 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Ford-Fulkerson Algorithm – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ford-Fulkerson – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-button.active{background:#e8622a}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.back-link{margin-top:28px;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>Ford-Fulkerson
-  </div>
-  <div class="hero-tag">Graph</div>
-  <h1>Ford-Fulkerson Algorithm</h1>
-  <p class="tagline">The foundational max-flow method — find augmenting paths in the residual graph until none remain.</p>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Ford-Fulkerson</span>
+  </nav>
+  <span class="tag">Graph</span>
+  <h1>Ford-Fulkerson Max Flow</h1>
+  <p class="tagline">Find maximum flow via DFS augmenting paths on the residual graph.</p>
   <div class="prose">
-    <p>Ford-Fulkerson is the foundational algorithm for computing maximum network flow. The idea: repeatedly find a path from source S to sink T with available capacity (an "augmenting path"), push as much flow as possible along it (the bottleneck capacity), and update the residual graph. Repeat until no augmenting path exists.</p>
-    <p>The residual graph is crucial: for every forward edge (u,v) with flow f and capacity c, there's a backward edge (v,u) with capacity f. This allows the algorithm to "undo" bad flow decisions by sending flow backwards. Using DFS to find paths, the algorithm may not always terminate for irrational capacities, but works for integer capacities.</p>
-    <p>Toggle the "Residual" view to see back-edges. The pink highlighted path shows the current DFS augmenting path. Ford-Fulkerson proves the Max-Flow Min-Cut theorem: maximum flow equals minimum cut capacity.</p>
+    <p>Ford-Fulkerson finds maximum flow from source to sink by repeatedly finding an augmenting path (using DFS) in the residual graph and pushing flow along it. Each augmentation increases flow by the bottleneck capacity. The algorithm terminates when no augmenting path exists — at that point, by the max-flow min-cut theorem, max flow equals min cut.</p>
+    <p>Edges show flow/capacity. The residual graph has forward edges (remaining capacity) and backward edges (current flow, allowing "undoing" of flow). This demo shows each DFS path and the flow update step by step.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(E · maxFlow)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Residual Graph</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(E · maxFlow)</div></div>
+    <div class="fact"><div class="flabel">Path finding</div><div class="fval">DFS</div></div>
+    <div class="fact"><div class="flabel">Theorem</div><div class="fval">Max-flow=Min-cut</div></div>
+    <div class="fact"><div class="flabel">Termination</div><div class="fval">No aug. path</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Flow Network — DFS augmenting paths. Pink = current path.</div>
-    <canvas id="cv" width="700" height="320"></canvas>
-    <div class="controls">
-      <button id="btnRun">Run</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnRes" class="sec">Show Residual</button>
-      <button id="btnReset" class="sec">Reset</button>
-      <span id="mf" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Flow info appears here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Ford-Fulkerson</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#c5c0d0;height:3px"></span>Residual (no flow)</span>
+        <span class="leg"><span class="leg-dot" style="background:#7b4fd4;height:3px"></span>Augmenting path</span>
+        <span class="leg"><span class="leg-dot" style="background:#22c55e;height:3px"></span>Saturated edge</span>
+      </div>
     </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const nodes=[
-  {x:80,y:160,l:'S'},{x:230,y:70,l:'1'},{x:230,y:250,l:'2'},
-  {x:420,y:70,l:'3'},{x:420,y:250,l:'4'},{x:600,y:160,l:'T'}
-];
-const N=6,S=0,T=5;
-let cap=[],flow=[];
-const edgeList=[[0,1,10],[0,2,8],[1,3,5],[1,2,2],[2,4,10],[3,4,3],[3,5,7],[4,5,10]];
-let totalFlow=0,done=false,currentPath=[],showResidual=false;
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const NODES=[{x:60,y:140,label:'S'},{x:200,y:60,label:'1'},{x:200,y:220,label:'2'},
+  {x:380,y:60,label:'3'},{x:380,y:220,label:'4'},{x:540,y:140,label:'T'}];
+const CAP_EDGES=[[0,1,10],[0,2,10],[1,2,2],[1,3,4],[1,4,8],[2,4,9],[3,5,10],[4,3,6],[4,5,10]];
+const n=6,src=0,snk=5;
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/620;
+  canvas.width=w*DPR; canvas.height=280*DPR; canvas.style.width=w+'px'; canvas.style.height='280px'; ctx.scale(DPR,DPR);
+}
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-function initGraph(){
-  cap=Array.from({length:N},()=>new Array(N).fill(0));
-  flow=Array.from({length:N},()=>new Array(N).fill(0));
-  edgeList.forEach(([u,v,c])=>{cap[u][v]=c;});
-  totalFlow=0;done=false;currentPath=[];
-  document.getElementById('log').innerHTML='';document.getElementById('mf').textContent='';
-  addLog('Flow network ready. S=0, T=5. DFS augmenting paths.');draw();
-}
-function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
-function dfsPath(){
-  const vis=new Array(N).fill(false),parent=new Array(N).fill(-1);
-  function dfs(u){
-    if(u===T)return true;vis[u]=true;
-    for(let v=0;v<N;v++){
-      if(!vis[v]&&cap[u][v]-flow[u][v]>0){parent[v]=u;if(dfs(v))return true;}
+function generateSteps(){
+  const steps=[];
+  const cap=Array.from({length:n},()=>new Array(n).fill(0));
+  const flow=Array.from({length:n},()=>new Array(n).fill(0));
+  CAP_EDGES.forEach(([a,b,c])=>cap[a][b]=c);
+  let totalFlow=0;
+  function snapF(){ return { flow:flow.map(r=>[...r]), cap:cap.map(r=>[...r]), totalFlow }; }
+
+  steps.push({ title:'Initialize Ford-Fulkerson — source S, sink T',
+    what:'Build residual graph. Capacity matrix initialized. DFS finds augmenting paths.',
+    why:'Augmenting paths push flow while residual capacity remains.',
+    path:[], bottleneck:0, ...snapF() });
+
+  function dfs(u,visited,path){
+    if(u===snk) return path;
+    visited[u]=true;
+    for(let v=0;v<n;v++){
+      if(!visited[v]&&cap[u][v]-flow[u][v]>0){
+        const p=dfs(v,visited,[...path,[u,v]]);
+        if(p) return p;
+      }
     }
-    return false;
+    return null;
   }
-  if(!dfs(S))return null;
-  const path=[];let cur=T;
-  while(cur!==S){path.unshift(cur);cur=parent[cur];}path.unshift(S);
-  return path;
+
+  let iter=0;
+  while(iter<20){
+    iter++;
+    const visited=new Array(n).fill(false);
+    const path=dfs(src,visited,[]);
+    if(!path) break;
+    const bottleneck=Math.min(...path.map(([a,b])=>cap[a][b]-flow[a][b]));
+    steps.push({ title:`Iteration ${iter}: Found augmenting path`,
+      what:`Path: ${[src,...path.map(([,b])=>b)].map(i=>NODES[i].label).join('→')}. Bottleneck: ${bottleneck}.`,
+      why:'Bottleneck = minimum residual capacity along the path.',
+      path, bottleneck, ...snapF() });
+    path.forEach(([a,b])=>{ flow[a][b]+=bottleneck; flow[b][a]-=bottleneck; });
+    totalFlow+=bottleneck;
+    steps.push({ title:`Send ${bottleneck} units — total flow: ${totalFlow}`,
+      what:'Update flow. Backward edges (reverse capacity) allow future "undoing" of flow.',
+      why:'Residual graph backward edges are the key that makes Ford-Fulkerson correct.',
+      path, bottleneck, ...snapF() });
+  }
+  steps.push({ title:`Max flow = ${totalFlow} — no more augmenting paths`,
+    what:'DFS cannot find any path from S to T in the residual graph.',
+    why:'By max-flow min-cut theorem, this equals the minimum cut capacity.',
+    path:[], bottleneck:0, ...snapF() });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function step(){
-  if(done)return;
-  const path=dfsPath();
-  if(!path){done=true;addLog(`No augmenting path. Max Flow = ${totalFlow}`);document.getElementById('mf').textContent=`Max Flow: ${totalFlow}`;currentPath=[];draw();return;}
-  let bn=Infinity;
-  for(let i=0;i<path.length-1;i++)bn=Math.min(bn,cap[path[i]][path[i+1]]-flow[path[i]][path[i+1]]);
-  for(let i=0;i<path.length-1;i++){flow[path[i]][path[i+1]]+=bn;flow[path[i+1]][path[i]]-=bn;}
-  totalFlow+=bn;
-  const pStr=path.map(i=>nodes[i].l).join('→');
-  addLog(`Augmenting path: ${pStr}. BN=${bn}. Flows updated. Residual: back-edges added.`);
-  addLog(`Total max-flow so far: ${totalFlow}`);
-  currentPath=path;draw();
+
+function drawArrow(a,b,col,lw,label){
+  const sc=SCALE;
+  const dx=NODES[b].x-NODES[a].x,dy=NODES[b].y-NODES[a].y,len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len,r=22*sc;
+  const sx=(NODES[a].x+ux*r)*sc,sy=(NODES[a].y+uy*r)*sc;
+  const ex=(NODES[b].x-ux*r)*sc,ey=(NODES[b].y-uy*r)*sc;
+  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey);
+  ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.stroke();
+  if(label){
+    const mx=(sx+ex)/2,my=(sy+ey)/2;
+    ctx.fillStyle=col; ctx.font=`${Math.round(9*sc)}px JetBrains Mono`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(label,mx-uy*13*sc,my+ux*13*sc);
+  }
+  const ax=ex-ux*8*sc-uy*5*sc,ay=ey-uy*8*sc+ux*5*sc;
+  const bx2=ex-ux*8*sc+uy*5*sc,by2=ey-uy*8*sc-ux*5*sc;
+  ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ax,ay); ctx.lineTo(bx2,by2); ctx.closePath();
+  ctx.fillStyle=col; ctx.fill();
 }
-function drawArrow(x1,y1,x2,y2,color,lw,dashed){
-  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
-  const ux=dx/len,uy=dy/len;
-  const ex=x2-ux*24,ey=y2-uy*24;
-  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=lw;
-  if(dashed)ctx.setLineDash([5,4]);
-  ctx.beginPath();ctx.moveTo(x1+ux*24,y1+uy*24);ctx.lineTo(ex,ey);ctx.stroke();
-  ctx.setLineDash([]);ctx.restore();
-  ctx.fillStyle=color;
-  ctx.beginPath();ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-uy*5-ux*9,ey+ux*5-uy*9);ctx.lineTo(ex+uy*5-ux*9,ey-ux*5-uy*9);
-  ctx.closePath();ctx.fill();
-}
-function draw(){
-  ctx.clearRect(0,0,700,320);
-  edgeList.forEach(([u,v])=>{
-    const f=flow[u][v],c=cap[u][v];
-    const onPath=currentPath.some((n,i)=>currentPath[i+1]!==undefined&&n===u&&currentPath[i+1]===v);
-    const color=onPath?'#e84393':f>=c?'#e8622a':f>0?'#7b4fd4':'#b0aec8';
-    drawArrow(nodes[u].x,nodes[u].y,nodes[v].x,nodes[v].y,color,onPath?3.5:1.8,false);
-    const mx=(nodes[u].x+nodes[v].x)/2,my=(nodes[u].y+nodes[v].y)/2;
-    ctx.fillStyle='#1a1a2e';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
-    ctx.fillText(`${f}/${c}`,mx,my-8);
-    if(showResidual&&f>0){
-      // draw back edge
-      const px=nodes[u].x,py=nodes[u].y,qx=nodes[v].x,qy=nodes[v].y;
-      const ox=(qy-py)/len2(px,py,qx,qy)*12,oy=-(qx-px)/len2(px,py,qx,qy)*12;
-      ctx.globalAlpha=0.5;
-      drawArrow(qx+ox,qy+oy,px+ox,py+oy,'#e8622a',1.2,true);
-      ctx.globalAlpha=1;
-      ctx.fillStyle='#e8622a';ctx.font='9px JetBrains Mono';ctx.textAlign='center';
-      ctx.fillText(f,(px+qx)/2+ox,(py+qy)/2+oy-6);
-    }
+
+function renderStep(step){
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  const pathEdges=new Set(step.path.map(([a,b])=>`${a}-${b}`));
+  CAP_EDGES.forEach(([a,b,c])=>{
+    const f=step.flow[a][b], res=c-f;
+    const isPath=pathEdges.has(`${a}-${b}`);
+    const col=isPath?'#7b4fd4':res===0?'#22c55e':'#c5c0d0';
+    drawArrow(a,b,col,isPath?3:res===0?2:1.5,`${f}/${c}`);
   });
-  function len2(x1,y1,x2,y2){return Math.sqrt((x2-x1)**2+(y2-y1)**2)||1;}
-  nodes.forEach((n,i)=>{
-    const onPath=currentPath.includes(i);
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=onPath?'#fff0f8':'#fff';ctx.fill();
-    ctx.strokeStyle=i===S||i===T?'#e8622a':onPath?'#e84393':'#7b4fd4';ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.l,n.x,n.y);
+  NODES.forEach((node,i)=>{
+    const r=22*sc;
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=i===src||i===snk?'#c3b1e1':'#e8e8f8'; ctx.fill(); ctx.strokeStyle='#5a5a72'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(13*sc)}px Inter`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(node.label,node.x*sc,node.y*sc);
   });
-  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Total flow: ${step.totalFlow}  |  Bottleneck: ${step.bottleneck||'—'}`;
 }
-document.getElementById('btnStep').onclick=()=>step();
-document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},700);};
-document.getElementById('btnRes').onclick=function(){showResidual=!showResidual;this.textContent=showResidual?'Hide Residual':'Show Residual';this.classList.toggle('active',showResidual);draw();};
-document.getElementById('btnReset').onclick=()=>initGraph();
-initGraph();
+function rebuild(){ setupCanvas(); if(player) player.destroy(); player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar'); }
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

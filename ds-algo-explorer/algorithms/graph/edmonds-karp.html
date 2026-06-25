@@ -2,155 +2,193 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Edmonds-Karp Algorithm – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Edmonds-Karp – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.back-link{margin-top:28px;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>Edmonds-Karp
-  </div>
-  <div class="hero-tag">Graph</div>
-  <h1>Edmonds-Karp Algorithm</h1>
-  <p class="tagline">BFS-based max-flow — always augment along the shortest path in the residual graph.</p>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Edmonds-Karp</span>
+  </nav>
+  <span class="tag">Graph</span>
+  <h1>Edmonds-Karp Max Flow</h1>
+  <p class="tagline">Ford-Fulkerson with BFS — finds shortest augmenting path each time.</p>
   <div class="prose">
-    <p>Edmonds-Karp is a specific implementation of Ford-Fulkerson that uses BFS to find augmenting paths instead of DFS. This seemingly small change provides a crucial guarantee: BFS always finds the shortest augmenting path (fewest edges), which ensures the algorithm terminates in O(VE²) time regardless of edge capacity values.</p>
-    <p>The key insight is that using BFS makes the augmenting path lengths non-decreasing across iterations. Since path length is at most V−1 and each edge can become "critical" (bottleneck) at most V/2 times before the path length increases, the total number of augmentations is bounded by O(VE).</p>
-    <p>Think of water flowing through pipes: BFS finds the most direct route each time you pump water. The pink highlighted path shows the current augmenting path found by BFS, and you can see flows on edges update as water fills the network.</p>
+    <p>Edmonds-Karp is Ford-Fulkerson with BFS instead of DFS for finding augmenting paths. BFS guarantees the shortest (fewest edges) augmenting path, giving O(VE²) complexity — much better than the O(E·maxFlow) of basic DFS, which can be slow on large capacities.</p>
+    <p>The key insight: BFS shortest paths guarantee that augmenting path lengths never decrease, so the total number of augmentations is bounded by O(VE). Each BFS augments the shortest path, systematically saturating edges level by level.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(VE²)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V + E)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">BFS Shortest Path</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(VE²)</div></div>
+    <div class="fact"><div class="flabel">Path finding</div><div class="fval">BFS (shortest)</div></div>
+    <div class="fact"><div class="flabel">vs Ford-F</div><div class="fval">Polynomial</div></div>
+    <div class="fact"><div class="flabel">Augmentations</div><div class="fval">O(VE)</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Flow Network — S=node 0, T=node 5. Pink = current BFS path.</div>
-    <canvas id="cv" width="700" height="320"></canvas>
-    <div class="controls">
-      <button id="btnRun">Run</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnReset" class="sec">Reset</button>
-      <span id="mf" style="font-family:'JetBrains Mono',monospace;color:#7b4fd4;font-weight:600"></span>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Flow info appears here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Edmonds-Karp</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#c5c0d0;height:3px"></span>Residual edge</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;height:3px"></span>BFS frontier node</span>
+        <span class="leg"><span class="leg-dot" style="background:#7b4fd4;height:3px"></span>Augmenting path</span>
+        <span class="leg"><span class="leg-dot" style="background:#22c55e;height:3px"></span>Saturated edge</span>
+      </div>
     </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const nodes=[
-  {x:80,y:160,l:'S'},{x:230,y:70,l:'1'},{x:230,y:250,l:'2'},
-  {x:420,y:70,l:'3'},{x:420,y:250,l:'4'},{x:600,y:160,l:'T'}
-];
-const N=6,S=0,T=5;
-let cap=[],flow=[];
-const edgeList=[[0,1,10],[0,2,8],[1,3,5],[1,2,2],[2,4,10],[3,4,3],[3,5,7],[4,5,10]];
-let totalFlow=0,done=false,currentPath=[];
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const NODES=[{x:60,y:140,label:'S'},{x:200,y:60,label:'1'},{x:200,y:220,label:'2'},
+  {x:380,y:60,label:'3'},{x:380,y:220,label:'4'},{x:540,y:140,label:'T'}];
+const CAP_EDGES=[[0,1,10],[0,2,10],[1,2,2],[1,3,4],[1,4,8],[2,4,9],[3,5,10],[4,3,6],[4,5,10]];
+const n=6,src=0,snk=5;
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/620;
+  canvas.width=w*DPR; canvas.height=280*DPR; canvas.style.width=w+'px'; canvas.style.height='280px'; ctx.scale(DPR,DPR);
+}
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-function initGraph(){
-  cap=Array.from({length:N},()=>new Array(N).fill(0));
-  flow=Array.from({length:N},()=>new Array(N).fill(0));
-  edgeList.forEach(([u,v,c])=>{cap[u][v]=c;});
-  totalFlow=0;done=false;currentPath=[];
-  document.getElementById('log').innerHTML='';document.getElementById('mf').textContent='';
-  addLog('Flow network ready. S=0, T=5. Click Step or Run.');draw();
-}
-function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
-function bfsPath(){
-  const parent=new Array(N).fill(-1);parent[S]=S;
-  const q=[S];
-  while(q.length){
-    const u=q.shift();
-    if(u===T)break;
-    for(let v=0;v<N;v++){
-      if(parent[v]===-1&&cap[u][v]-flow[u][v]>0){parent[v]=u;q.push(v);}
+function generateSteps(){
+  const steps=[];
+  const cap=Array.from({length:n},()=>new Array(n).fill(0));
+  const flow=Array.from({length:n},()=>new Array(n).fill(0));
+  CAP_EDGES.forEach(([a,b,c])=>cap[a][b]=c);
+  let totalFlow=0;
+  function snapF(){ return { flow:flow.map(r=>[...r]), cap:cap.map(r=>[...r]), totalFlow }; }
+
+  steps.push({ title:'Initialize Edmonds-Karp — source S, sink T',
+    what:'BFS finds shortest augmenting path (fewest edges) each iteration.',
+    why:'BFS ensures polynomial time O(VE²) vs potentially exponential DFS.',
+    path:[], bottleneck:0, bfsNodes:[], ...snapF() });
+
+  function bfs(){
+    const parent=new Array(n).fill(-1), visited=new Array(n).fill(false);
+    const queue=[src]; visited[src]=true;
+    while(queue.length){
+      const u=queue.shift();
+      if(u===snk) break;
+      for(let v=0;v<n;v++){
+        if(!visited[v]&&cap[u][v]-flow[u][v]>0){ visited[v]=true; parent[v]=u; queue.push(v); }
+      }
     }
+    if(!visited[snk]) return null;
+    const path=[]; let v=snk;
+    while(v!==src){ path.unshift([parent[v],v]); v=parent[v]; }
+    return path;
   }
-  if(parent[T]===-1)return null;
-  const path=[];let cur=T;
-  while(cur!==S){path.unshift(cur);cur=parent[cur];}path.unshift(S);
-  return path;
+
+  let iter=0;
+  while(iter<20){
+    iter++;
+    const path=bfs();
+    if(!path) break;
+    const bottleneck=Math.min(...path.map(([a,b])=>cap[a][b]-flow[a][b]));
+    const bfsNodes=path.map(([a])=>a);
+    steps.push({ title:`BFS iteration ${iter}: Shortest augmenting path (${path.length} edges)`,
+      what:`Path: ${[src,...path.map(([,b])=>b)].map(i=>NODES[i].label).join('→')}. Bottleneck: ${bottleneck}.`,
+      why:'BFS guarantees shortest path (hop count), bounding total augmentations.',
+      path, bottleneck, bfsNodes, ...snapF() });
+    path.forEach(([a,b])=>{ flow[a][b]+=bottleneck; flow[b][a]-=bottleneck; });
+    totalFlow+=bottleneck;
+    steps.push({ title:`Augment ${bottleneck} units — total flow: ${totalFlow}`,
+      what:'Update residual graph. Saturated edges block future same-direction flow.',
+      why:'Saturating edges forces longer BFS paths next time — ensures progress.',
+      path, bottleneck, bfsNodes:[], ...snapF() });
+  }
+  steps.push({ title:`Max flow = ${totalFlow} — BFS cannot reach T`,
+    what:'No path from S to T in residual graph.',
+    why:'Max-flow min-cut: max flow equals minimum cut capacity.',
+    path:[], bottleneck:0, bfsNodes:[], ...snapF() });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function step(){
-  if(done)return;
-  const path=bfsPath();
-  if(!path){done=true;addLog(`No more augmenting paths. Max Flow = ${totalFlow}`);document.getElementById('mf').textContent=`Max Flow: ${totalFlow}`;currentPath=[];draw();return;}
-  let bottleneck=Infinity;
-  for(let i=0;i<path.length-1;i++)bottleneck=Math.min(bottleneck,cap[path[i]][path[i+1]]-flow[path[i]][path[i+1]]);
-  for(let i=0;i<path.length-1;i++){flow[path[i]][path[i+1]]+=bottleneck;flow[path[i+1]][path[i]]-=bottleneck;}
-  totalFlow+=bottleneck;
-  const pStr=path.map(i=>nodes[i].l).join('→');
-  addLog(`BFS path: ${pStr}. Bottleneck=${bottleneck}. Update flows. Max-flow=${totalFlow}`);
-  currentPath=path;draw();
+
+function drawArrow(a,b,col,lw,label){
+  const sc=SCALE;
+  const dx=NODES[b].x-NODES[a].x,dy=NODES[b].y-NODES[a].y,len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len,uy=dy/len,r=22*sc;
+  const sx=(NODES[a].x+ux*r)*sc,sy=(NODES[a].y+uy*r)*sc;
+  const ex=(NODES[b].x-ux*r)*sc,ey=(NODES[b].y-uy*r)*sc;
+  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.stroke();
+  if(label){
+    const mx=(sx+ex)/2,my=(sy+ey)/2; ctx.fillStyle=col;
+    ctx.font=`${Math.round(9*sc)}px JetBrains Mono`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(label,mx-uy*13*sc,my+ux*13*sc);
+  }
+  const ax=ex-ux*8*sc-uy*5*sc,ay=ey-uy*8*sc+ux*5*sc;
+  const bx2=ex-ux*8*sc+uy*5*sc,by2=ey-uy*8*sc-ux*5*sc;
+  ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ax,ay); ctx.lineTo(bx2,by2); ctx.closePath();
+  ctx.fillStyle=col; ctx.fill();
 }
-function drawArrow(u,v,color,lw){
-  const n1=nodes[u],n2=nodes[v];
-  const dx=n2.x-n1.x,dy=n2.y-n1.y,len=Math.sqrt(dx*dx+dy*dy);
-  const ux=dx/len,uy=dy/len;
-  const sx=n1.x+ux*24,sy=n1.y+uy*24,ex=n2.x-ux*24,ey=n2.y-uy*24;
-  ctx.strokeStyle=color;ctx.lineWidth=lw;
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();
-  ctx.fillStyle=color;
-  ctx.beginPath();ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-uy*6-ux*10,ey+ux*6-uy*10);ctx.lineTo(ex+uy*6-ux*10,ey-ux*6-uy*10);
-  ctx.closePath();ctx.fill();
-  const mx=(sx+ex)/2,my=(sy+ey)/2;
-  ctx.fillStyle='#1a1a2e';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
-  ctx.fillText(`${flow[u][v]}/${cap[u][v]}`,mx,my-8);
-}
-function draw(){
-  ctx.clearRect(0,0,700,320);
-  edgeList.forEach(([u,v])=>{
-    const onPath=currentPath.some((n,i)=>currentPath[i+1]!==undefined&&n===u&&currentPath[i+1]===v);
-    const f=flow[u][v],c=cap[u][v];
-    const color=onPath?'#e84393':f>=c?'#e8622a':f>0?'#7b4fd4':'#b0aec8';
-    drawArrow(u,v,color,onPath?3.5:1.8);
+
+function renderStep(step){
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  const pathEdges=new Set(step.path.map(([a,b])=>`${a}-${b}`));
+  const bfsSet=new Set(step.bfsNodes||[]);
+  CAP_EDGES.forEach(([a,b,c])=>{
+    const f=step.flow[a][b], res=c-f;
+    const isPath=pathEdges.has(`${a}-${b}`);
+    const col=isPath?'#7b4fd4':res===0?'#22c55e':'#c5c0d0';
+    drawArrow(a,b,col,isPath?3:res===0?2:1.5,`${f}/${c}`);
   });
-  nodes.forEach((n,i)=>{
-    const onPath=currentPath.includes(i);
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=onPath?'#fff0f8':'#fff';ctx.fill();
-    ctx.strokeStyle=i===S||i===T?'#e8622a':onPath?'#e84393':'#7b4fd4';ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.l,n.x,n.y);
+  NODES.forEach((node,i)=>{
+    const r=22*sc, isBFS=bfsSet.has(i);
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=i===src||i===snk?'#c3b1e1':isBFS?'#fff176':'#e8e8f8';
+    ctx.fill(); ctx.strokeStyle='#5a5a72'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(13*sc)}px Inter`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(node.label,node.x*sc,node.y*sc);
   });
-  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Total flow: ${step.totalFlow}  |  Path: ${step.path.length?[src,...step.path.map(([,b])=>b)].map(i=>NODES[i].label).join('→'):'—'}  |  Bottleneck: ${step.bottleneck||'—'}`;
 }
-document.getElementById('btnStep').onclick=()=>step();
-document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done)clearInterval(iv);else step();},700);};
-document.getElementById('btnReset').onclick=()=>initGraph();
-initGraph();
+function rebuild(){ setupCanvas(); if(player) player.destroy(); player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar'); }
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

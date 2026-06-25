@@ -2,213 +2,161 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Rat in a Maze – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Rat in a Maze – Backtracking</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#c0392b}
-body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-nav.breadcrumb{padding:18px 40px;font-size:.85rem;color:var(--muted)}
-nav.breadcrumb a{color:var(--muted)}nav.breadcrumb span{margin:0 6px}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:48px 40px 40px}
-.hero-tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px}
-.hero p.tagline{color:var(--muted);font-size:1.05rem;max-width:620px}
-.content{max-width:900px;margin:0 auto;padding:40px 40px 0}
-.section{margin-bottom:36px}
-.section p{color:var(--muted);line-height:1.75;margin-bottom:12px;font-size:.97rem}
-.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
-.fact-card .label{font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--ink);font-weight:600}
-.fact-card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
-.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
-.sim-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
-button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}button:disabled{opacity:.45;cursor:not-allowed}
-button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
-.canvas-wrap{display:flex;justify-content:center;margin-bottom:16px}
-canvas{border:2px solid var(--border);border-radius:8px;cursor:pointer}
-.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:.8rem;color:var(--muted)}
-.leg-item{display:flex;align-items:center;gap:6px}
-.leg-box{width:16px;height:16px;border-radius:3px;border:1px solid var(--border)}
-.step-log{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)}
-.step-log .log-line{padding:2px 0;border-bottom:1px solid var(--border)}
-.log-ok{color:#27ae60}.log-back{color:var(--accent)}.log-done{color:#1a7a40;font-weight:600}
-.back-link{display:inline-block;margin-top:36px;color:var(--muted);font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border:1px solid var(--b);border-radius:8px;background:#1a1a2e}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Rat in a Maze
-</nav>
-<div class="hero">
-  <div style="max-width:900px;margin:0 auto">
-    <span class="hero-tag">Backtracking</span>
-    <h1>Rat in a Maze</h1>
-    <p class="tagline">Find a path through a grid maze from top-left to bottom-right, navigating around walls using backtracking DFS.</p>
+<div class="wrap">
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Rat in a Maze</span>
+  </nav>
+  <span class="tag">Backtracking</span>
+  <h1>Rat in a Maze</h1>
+  <p class="tagline">Backtracking path-finding from start to exit through a maze.</p>
+  <div class="prose">
+    <p>Rat in a Maze: given a grid where 1=open and 0=wall, find a path from (0,0) to (N-1,N-1) moving right/down. Backtracking: mark current cell as path, recurse right and down, backtrack (unmark) if dead end. All solutions can be enumerated by continuing after first success.</p>
+    <p>Orange = rat's current position. Purple = path so far. Gray = wall. Red = backtrack (dead end removed). Green = final solution path.</p>
   </div>
-</div>
-<div class="content">
-  <div class="section">
-    <p>A rat starts at cell (0,0) and must reach cell (N-1,N-1). Some cells are blocked (walls). The rat can move right or down (or in all 4 directions in extended versions). Backtracking explores each path and retreats when it hits a dead end.</p>
-    <p>Think of navigating a physical maze: you walk forward, mark your trail, and when you hit a dead end you retrace your steps to the last junction and try a different direction. The algorithm does exactly this, making the explored-and-failed cells visually distinguishable from the current active path.</p>
-    <p>Click any cell to toggle it as a wall (dark) or open (light). The start (0,0) and end (7,7) cannot be walled. Then press Solve to watch the backtracking DFS in action.</p>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(2^(n2))</div></div>
+    <div class="fact"><div class="flabel">Moves</div><div class="fval">Right, Down</div></div>
+    <div class="fact"><div class="flabel">Grid</div><div class="fval">N x N</div></div>
+    <div class="fact"><div class="flabel">Strategy</div><div class="fval">DFS backtrack</div></div>
   </div>
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(2^(N²))</div><div class="sub">Worst-case without pruning</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(N²)</div><div class="sub">Visited matrix + recursion</div></div>
-    <div class="fact-card"><div class="label">Moves</div><div class="value">4-dir</div><div class="sub">Up, Down, Left, Right</div></div>
-  </div>
-  <div class="sim-card">
-    <div class="sim-controls">
-      <button id="btn-solve" onclick="startSolve()">Solve</button>
-      <button id="btn-reset" onclick="resetMaze()" class="secondary">Reset</button>
-      <button id="btn-clear" onclick="clearWalls()" class="secondary">Clear Walls</button>
-      <label style="font-size:.85rem;color:var(--muted)">Speed:
-        <select id="spd" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem">
-          <option value="30">Fast</option>
-          <option value="80" selected>Medium</option>
-          <option value="200">Slow</option>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Maze grid above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Maze:</label>
+        <select id="mazeSelect" onchange="rebuild()">
+          <option value="0">Easy (4x4)</option>
+          <option value="1">Medium (5x5)</option>
         </select>
-      </label>
+        <button class="btn btn-p" onclick="rebuild()">Rebuild</button>
+      </div>
     </div>
-    <div class="legend">
-      <div class="leg-item"><div class="leg-box" style="background:#4CAF50"></div> Start (0,0)</div>
-      <div class="leg-item"><div class="leg-box" style="background:var(--accent)"></div> End (7,7)</div>
-      <div class="leg-item"><div class="leg-box" style="background:#fde8e8"></div> Current Path</div>
-      <div class="leg-item"><div class="leg-box" style="background:#e0e0e0"></div> Tried & Failed</div>
-      <div class="leg-item"><div class="leg-box" style="background:#2c3e50"></div> Wall</div>
-    </div>
-    <div class="canvas-wrap"><canvas id="maze-canvas" width="416" height="416"></canvas></div>
-    <div class="step-log" id="step-log"><div class="log-line">Click cells to toggle walls. Press Solve to begin.</div></div>
   </div>
-  <a href="../index.html" class="back-link">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const ROWS=8,COLS=8,CELL=52;
-let maze=[], visited=[], pathState=[], solving=false;
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-function spd(){return parseInt(document.getElementById('spd').value)}
-
-const canvas=document.getElementById('maze-canvas');
-const ctx=canvas.getContext('2d');
-
-function initMaze(){
-  maze=Array.from({length:ROWS},()=>new Array(COLS).fill(0));
-  // Default walls
-  const defaultWalls=[[0,2],[1,2],[2,2],[2,3],[3,5],[3,6],[4,0],[4,1],[5,3],[6,3],[6,4],[7,2]];
-  defaultWalls.forEach(([r,c])=>maze[r][c]=1);
-  visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
-  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
-  draw();
+var MAZES=[
+  [[1,0,0,0],[1,1,0,1],[0,1,0,0],[0,1,1,1]],
+  [[1,1,0,0,0],[0,1,1,0,0],[0,0,1,1,0],[0,0,0,1,0],[0,0,0,1,1]]
+];
+var canvas=document.getElementById('cvs'), ctx=canvas.getContext('2d');
+var player=null, DPR=window.devicePixelRatio||1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; var w=canvas.parentElement.clientWidth-26;
+  canvas.width=w*DPR; canvas.height=280*DPR; canvas.style.width=w+'px'; canvas.style.height='280px'; ctx.scale(DPR,DPR);
 }
-
-function draw(){
+window.addEventListener('resize',function(){ setupCanvas(); if(player) player.renderCurrentStep(); });
+function generateSteps(maze){
+  var N=maze.length, steps=[];
+  var path=Array.from({length:N},function(){ return new Array(N).fill(0); });
+  var deadEnds=[];
+  function snap(r,c,action){
+    return { path:path.map(function(row){return row.slice();}), maze:maze, cur:[r,c], action:action, N:N };
+  }
+  steps.push({ title:'Rat in Maze: '+N+'x'+N+' grid',
+    what:'Start=(0,0), End=('+( N-1)+','+(N-1)+'). 1=open, 0=wall. Try right, then down.',
+    why:'Backtracking: explore all directions, undo if dead end.',
+    ...snap(-1,-1,'start') });
+  var solved=false;
+  function solve(r,c){
+    if(r<0||r>=N||c<0||c>=N||maze[r][c]===0||path[r][c]===1) return false;
+    path[r][c]=1;
+    steps.push({ title:'Enter ('+r+','+c+')',
+      what:'Mark ('+r+','+c+') as path. Try moving right, then down.',
+      why:'Explore this cell as part of potential solution.',
+      ...snap(r,c,'enter') });
+    if(r===N-1&&c===N-1){ solved=true; return true; }
+    if(solve(r,c+1)||solve(r+1,c)) return true;
+    path[r][c]=0;
+    steps.push({ title:'Backtrack from ('+r+','+c+')',
+      what:'Dead end at ('+r+','+c+'). Unmark and backtrack.',
+      why:'No valid path found from this cell.',
+      ...snap(r,c,'back') });
+    return false;
+  }
+  solve(0,0);
+  steps.push({ title:solved?'Path found!':'No path exists',
+    what:solved?'Path from (0,0) to ('+(N-1)+','+(N-1)+') found.':'No valid path in this maze.',
+    why:'Backtracking exhausted all possibilities.',
+    ...snap(-1,-1,'done') });
+  steps.forEach(function(s,i){ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
+}
+function renderStep(step){
+  var W=canvas.width/DPR, H=canvas.height/DPR, N=step.N;
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const x=c*CELL,y=r*CELL;
-      if(maze[r][c]===1){ctx.fillStyle='#2c3e50';}
-      else if(r===0&&c===0){ctx.fillStyle='#4CAF50';}
-      else if(r===ROWS-1&&c===COLS-1){ctx.fillStyle=pathState[r][c]==='path'?'#a93226':'var(--accent)';}
-      else if(pathState[r][c]==='path'){ctx.fillStyle='#fde8e8';}
-      else if(pathState[r][c]==='failed'){ctx.fillStyle='#e8e8e8';}
-      else{ctx.fillStyle='#fff';}
-      ctx.fillRect(x+1,y+1,CELL-2,CELL-2);
-      ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;
-      ctx.strokeRect(x+1,y+1,CELL-2,CELL-2);
-      if(r===0&&c===0){ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('S',x+CELL/2,y+CELL/2);}
-      else if(r===ROWS-1&&c===COLS-1){ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('E',x+CELL/2,y+CELL/2);}
-      else if(pathState[r][c]==='path'){ctx.fillStyle='var(--accent)';ctx.font='bold 16px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('•',x+CELL/2,y+CELL/2);}
-    }
+  ctx.fillStyle='#1a1a2e'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  var pad=20, cs=Math.min((W-pad*2)/N,(H-pad*2)/N);
+  var ox=(W-cs*N)/2, oy=(H-cs*N)/2;
+  for(var r=0;r<N;r++) for(var c=0;c<N;c++){
+    var x=ox+c*cs, y=oy+r*cs;
+    var isCur=step.cur[0]===r&&step.cur[1]===c;
+    var isPath=step.path[r][c]===1;
+    var col=step.maze[r][c]===0?'#374151':
+      step.action==='done'&&isPath?'#a8e6a3':
+      isCur&&step.action==='back'?'#fca5a5':
+      isCur?'#ffb347':
+      isPath?'#c3b1e1':'#6b7280';
+    ctx.fillStyle=col; ctx.fillRect(x+2,y+2,cs-4,cs-4);
+    ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=2; ctx.strokeRect(x+2,y+2,cs-4,cs-4);
+    if(r===0&&c===0){ ctx.fillStyle='#fff'; ctx.font='bold '+(cs*0.35)+'px Inter'; ctx.textAlign='center'; ctx.fillText('S',x+cs/2,y+cs/2+5); }
+    if(r===N-1&&c===N-1){ ctx.fillStyle='#fff'; ctx.font='bold '+(cs*0.35)+'px Inter'; ctx.textAlign='center'; ctx.fillText('E',x+cs/2,y+cs/2+5); }
+    else if(step.maze[r][c]===0){ ctx.fillStyle='#111827'; ctx.font='bold '+(cs*0.4)+'px Inter'; ctx.textAlign='center'; ctx.fillText('X',x+cs/2,y+cs/2+5); }
   }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=step.action==='enter'?'Entered ('+step.cur[0]+','+step.cur[1]+')':
+    step.action==='back'?'Backtrack from ('+step.cur[0]+','+step.cur[1]+')':
+    step.action==='done'?'Done!':'Starting...';
 }
-
-canvas.addEventListener('click',e=>{
-  if(solving) return;
-  const rect=canvas.getBoundingClientRect();
-  const scaleX=canvas.width/rect.width, scaleY=canvas.height/rect.height;
-  const cx=Math.floor((e.clientX-rect.left)*scaleX/CELL);
-  const cy=Math.floor((e.clientY-rect.top)*scaleY/CELL);
-  if(cy<0||cy>=ROWS||cx<0||cx>=COLS) return;
-  if((cy===0&&cx===0)||(cy===ROWS-1&&cx===COLS-1)) return;
-  maze[cy][cx]=maze[cy][cx]===1?0:1;
-  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
-  draw();
-});
-
-function log(msg,cls=''){
-  const box=document.getElementById('step-log');
-  const d=document.createElement('div');
-  d.className='log-line'+(cls?' '+cls:'');
-  d.textContent=msg;
-  box.appendChild(d);box.scrollTop=box.scrollHeight;
+function rebuild(){
+  var idx=parseInt(document.getElementById('mazeSelect').value);
+  var maze=MAZES[idx];
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(maze),renderStep,'explanation','sim-bar');
 }
-function clearLog(){document.getElementById('step-log').innerHTML='';}
-
-async function dfs(r,c){
-  if(!solving) return false;
-  if(r<0||r>=ROWS||c<0||c>=COLS||maze[r][c]===1||visited[r][c]) return false;
-  visited[r][c]=true;
-  pathState[r][c]='path';
-  draw();
-  if(r===ROWS-1&&c===COLS-1){log('Reached end ('+r+','+c+')! Path found.','log-done');return true;}
-  log('Move to ('+r+','+c+')','log-ok');
-  await sleep(spd());
-  const dirs=[[1,0],[0,1],[-1,0],[0,-1]];
-  const dirNames=['Down','Right','Up','Left'];
-  for(let i=0;i<4;i++){
-    const nr=r+dirs[i][0],nc=c+dirs[i][1];
-    log('Try '+dirNames[i]+' → ('+nr+','+nc+')');
-    const res=await dfs(nr,nc);
-    if(res) return true;
-  }
-  pathState[r][c]='failed';
-  draw();
-  log('Backtrack from ('+r+','+c+')','log-back');
-  await sleep(spd()/2);
-  return false;
-}
-
-async function startSolve(){
-  if(solving) return;
-  solving=true;
-  clearLog();
-  visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
-  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
-  document.getElementById('btn-solve').disabled=true;
-  document.getElementById('btn-reset').disabled=true;
-  log('Starting maze solver from (0,0)…');
-  const found=await dfs(0,0);
-  if(!found) log('No path exists through this maze.','log-back');
-  solving=false;
-  document.getElementById('btn-solve').disabled=false;
-  document.getElementById('btn-reset').disabled=false;
-}
-
-function resetMaze(){
-  solving=false;
-  clearLog();
-  initMaze();
-  log('Maze reset. Click cells to add/remove walls.');
-}
-
-function clearWalls(){
-  if(solving) return;
-  maze=Array.from({length:ROWS},()=>new Array(COLS).fill(0));
-  pathState=Array.from({length:ROWS},()=>new Array(COLS).fill(''));
-  visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
-  clearLog();log('Walls cleared.');draw();
-}
-
-initMaze();
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

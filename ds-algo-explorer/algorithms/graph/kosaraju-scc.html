@@ -2,157 +2,216 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Kosaraju's SCC – DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kosaraju's SCC – Graph Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;min-height:100vh}
-a{color:#7b4fd4;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px;color:#c0bdb6}
-.hero-tag{display:inline-block;background:#ede8fa;color:#7b4fd4;font-size:12px;font-weight:600;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-h1{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1.2;margin-bottom:10px}
-.tagline{color:#5a5a72;font-size:1.05rem;margin-bottom:28px}
-.prose p{color:#2e2e45;line-height:1.75;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-.fact-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#7b4fd4;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:22px;margin-bottom:22px}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:14px;color:#1a1a2e}
-canvas{display:block;border:1px solid #e2e0da;border-radius:8px}
-.controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
-button{background:#7b4fd4;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
-button:hover{opacity:.85}
-button.sec{background:#fff;color:#7b4fd4;border:1px solid #7b4fd4}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8b4d0}
-.log-box .entry{padding:2px 0;border-bottom:1px solid #252540}
-.back-link{margin-top:28px;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;background:#f8f9fd;border:1px solid var(--b);border-radius:8px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>Kosaraju's SCC
-  </div>
-  <div class="hero-tag">Graph</div>
-  <h1>Kosaraju's Algorithm (SCC)</h1>
-  <p class="tagline">Two-pass DFS reveals strongly connected components — the backbone of compiler analysis.</p>
+  <nav class="bc">
+    <a href="../../index.html">Home</a><span>/</span>
+    <a href="../index.html">Algorithms</a><span>/</span><span>Kosaraju's SCC</span>
+  </nav>
+  <span class="tag">Graph</span>
+  <h1>Kosaraju's SCC Algorithm</h1>
+  <p class="tagline">Two DFS passes — finish order on original, traverse reversed graph.</p>
   <div class="prose">
-    <p>Kosaraju's algorithm finds all Strongly Connected Components (SCCs) in a directed graph in O(V+E) time. A SCC is a maximal set of vertices such that every vertex is reachable from every other vertex in the set.</p>
-    <p>The algorithm runs two DFS passes. First pass on the original graph: run DFS and push vertices onto a stack in order of decreasing finish time. Second pass on the transposed graph: pop vertices from the stack and run DFS — each DFS tree in the second pass is an SCC. The key insight: finishing order in the first DFS corresponds to topological order of the condensed SCC graph.</p>
-    <p>Applications include finding cycles in dependency graphs, analyzing social network clusters, deadlock detection in operating systems, and solving 2-SAT problems. Each SCC can be "contracted" into a single node, revealing the DAG structure of the original graph.</p>
+    <p>Kosaraju's finds SCCs in two DFS passes: (1) Run DFS on original graph, push nodes to a stack in finish order. (2) Transpose the graph (reverse all edges). (3) Process nodes from the stack — each DFS on the transposed graph from a new root finds one SCC.</p>
+    <p>The insight: if u can reach v in the original and v can reach u in the reversed graph, they are in the same SCC. Simpler to understand than Tarjan's but requires two full DFS passes.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(V + E)</div></div>
-    <div class="fact"><div class="fact-label">Space Complexity</div><div class="fact-val">O(V)</div></div>
-    <div class="fact"><div class="fact-label">Key Property</div><div class="fact-val">Two DFS Passes</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(V + E)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V)</div></div>
+    <div class="fact"><div class="flabel">Passes</div><div class="fval">2 DFS</div></div>
+    <div class="fact"><div class="flabel">Extra</div><div class="fval">Transposed graph</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Directed graph — 8 nodes. Each color = one SCC after algorithm completes.</div>
-    <canvas id="cv" width="700" height="320"></canvas>
-    <div class="controls">
-      <button id="btnRun">Run Kosaraju</button>
-      <button id="btnStep" class="sec">Step</button>
-      <button id="btnReset" class="sec">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Pass info appears here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Kosaraju's SCC</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#e0e0e0;border:1px solid #bbb"></span>Unvisited</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>DFS pass 1 (visited)</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>SCC 1</span>
+        <span class="leg"><span class="leg-dot" style="background:#c3b1e1;border:1px solid #8b5cf6"></span>SCC 2</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #f59e0b"></span>SCC 3+</span>
+      </div>
     </div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Step Log</div>
-    <div class="log-box" id="log"></div>
-  </div>
-  <div class="back-link"><a href="../index.html">← Back to Algorithms</a></div>
+  <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const nodes=[
-  {x:100,y:80,l:'0'},{x:240,y:80,l:'1'},{x:380,y:80,l:'2'},{x:520,y:80,l:'3'},
-  {x:100,y:240,l:'4'},{x:240,y:240,l:'5'},{x:380,y:240,l:'6'},{x:520,y:240,l:'7'}
-];
-const N=8;
-// directed edges forming 3 SCCs: {0,1,4},{2,3,7},{5,6}
-const adj=[[1],[2,4],[3],[7],[0,5],[6],[5],[]];// original
-const adjT=Array.from({length:N},()=>[]);// transposed
-adj.forEach((nb,u)=>nb.forEach(v=>adjT[v].push(u)));
-const SCC_COLORS=['#7b4fd4','#27a060','#e8622a','#e84393','#2196f3','#ff9800'];
-let visited=[],stack=[],sccId=[],sccs=[],phase=0,done=false;
-let animStep=0,allSteps=[];
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const NODES=[{x:100,y:80,label:'0'},{x:230,y:80,label:'1'},{x:165,y:200,label:'2'},
+  {x:360,y:140,label:'3'},{x:470,y:80,label:'4'},{x:470,y:200,label:'5'}];
+const EDGES=[[0,1],[1,2],[2,0],[1,3],[3,4],[4,5],[5,4]];
+const ADJ=Array.from({length:6},()=>[]);
+const RADJ=Array.from({length:6},()=>[]);
+EDGES.forEach(([a,b])=>{ ADJ[a].push(b); RADJ[b].push(a); });
+const SCC_COLORS=['#a8e6a3','#c3b1e1','#ffb347','#9ec8f0'];
+const canvas=document.getElementById('cvs');
+const ctx=canvas.getContext('2d');
+let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
+function setupCanvas(){
+  DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/580;
+  canvas.width=w*DPR; canvas.height=280*DPR; canvas.style.width=w+'px'; canvas.style.height='280px'; ctx.scale(DPR,DPR);
+}
+window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
-function buildSteps(){
-  const steps=[];
-  const vis1=new Array(N).fill(false),stk=[];
-  function dfs1(u){vis1[u]=true;steps.push({type:'visit1',node:u});
-    adj[u].forEach(v=>{if(!vis1[v])dfs1(v);});stk.push(u);steps.push({type:'finish1',node:u,stack:[...stk]});}
-  for(let i=0;i<N;i++)if(!vis1[i])dfs1(i);
-  steps.push({type:'phase2start',stack:[...stk]});
-  const vis2=new Array(N).fill(false),sccArr=new Array(N).fill(-1);let sccCount=0;
-  function dfs2(u,id){vis2[u]=true;sccArr[u]=id;steps.push({type:'scc',node:u,id});}
-  while(stk.length){
-    const u=stk.pop();
-    if(!vis2[u]){
-      const id=sccCount++;
-      steps.push({type:'newscc',id,root:u});
-      const q=[u];vis2[u]=true;sccArr[u]=id;
-      steps.push({type:'scc',node:u,id});
-      // BFS on transposed for simplicity
-      const bfsQ=[u];
-      while(bfsQ.length){const v=bfsQ.shift();adjT[v].forEach(w=>{if(!vis2[w]){vis2[w]=true;sccArr[w]=id;bfsQ.push(w);steps.push({type:'scc',node:w,id});}});}
+function generateSteps(){
+  const steps=[], n=6;
+  const visited=new Array(n).fill(false), sccId=new Array(n).fill(-1);
+  const nodeState=new Array(n).fill('unvisited');
+  const order=[], sccs=[];
+  let phase=1;
+
+  function snap(){ return { nodeState:[...nodeState], sccId:[...sccId], order:[...order], sccs:sccs.map(s=>[...s]), phase }; }
+
+  steps.push({ title:'Start Kosaraju\'s — Phase 1: DFS on original graph',
+    what:'Run DFS on original graph. Push each node to finish stack when DFS from it completes.',
+    why:'Finish order captures: nodes finishing last are "strongest" roots in the SCC condensation.',
+    state:'Phase 1', ...snap(), activeEdge:null });
+
+  function dfs1(u){
+    visited[u]=true; nodeState[u]='p1';
+    steps.push({ title:`P1: Visit node ${u}`,
+      what:`Mark ${u} visited. Explore all outgoing edges.`,
+      why:'Standard DFS traversal.',
+      state:`Phase 1 · Visiting ${u}`, ...snap(), activeEdge:null });
+    for(const v of ADJ[u]){
+      if(!visited[v]){
+        steps.push({ title:`P1: Traverse ${u}→${v}`,
+          what:`Node ${v} unvisited — DFS into it.`, why:'',
+          state:`Phase 1`, ...snap(), activeEdge:[u,v] });
+        dfs1(v);
+      }
+    }
+    order.push(u);
+    steps.push({ title:`P1: Finish node ${u} — push to stack`,
+      what:`All descendants of ${u} processed. Push ${u} onto finish stack.`,
+      why:'Finish order determines the processing order in Phase 2.',
+      state:`Finish stack: [${order.join(',')}]`, ...snap(), activeEdge:null });
+  }
+  for(let i=0;i<n;i++) if(!visited[i]) dfs1(i);
+
+  steps.push({ title:`Phase 1 done. Finish order: [${order.join(',')}]`,
+    what:`Process nodes in reverse finish order: [${[...order].reverse().join(',')}]. Now DFS on transposed graph.`,
+    why:'Reversed finish order from pass 1 gives the correct SCC traversal order.',
+    state:'Phase 2 starting', ...snap(), activeEdge:null });
+
+  phase=2; const vis2=new Array(n).fill(false);
+  function dfs2(u,sccIdx){
+    vis2[u]=true; sccId[u]=sccIdx; nodeState[u]=`scc${sccIdx}`;
+    sccs[sccIdx]=sccs[sccIdx]||[];
+    sccs[sccIdx].push(u);
+    steps.push({ title:`P2: Visit ${u} (SCC ${sccIdx+1})`,
+      what:`Node ${u} assigned to SCC ${sccIdx+1}.`,
+      why:'DFS on reversed graph from an unvisited node discovers one full SCC.',
+      state:`SCC ${sccIdx+1}: {${sccs[sccIdx].join(',')}}`, ...snap(), activeEdge:null });
+    for(const v of RADJ[u]){
+      if(!vis2[v]){
+        steps.push({ title:`P2: Reversed edge ${u}←${v}`,
+          what:`Traverse reversed edge to node ${v}.`, why:'',
+          state:`Phase 2`, ...snap(), activeEdge:[v,u] });
+        dfs2(v,sccIdx);
+      }
     }
   }
-  steps.push({type:'done',sccArr});
+  let sccIdx=0;
+  for(let i=order.length-1;i>=0;i--){
+    const u=order[i];
+    if(!vis2[u]){
+      steps.push({ title:`P2: Start SCC ${sccIdx+1} from node ${u}`,
+        what:`Node ${u} unvisited in pass 2. Starting DFS on reversed graph from ${u}.`,
+        why:'Each new unvisited start in pass 2 = a new SCC.',
+        state:`SCC ${sccIdx+1}`, ...snap(), activeEdge:null });
+      dfs2(u,sccIdx); sccIdx++;
+    }
+  }
+  steps.push({ title:`Kosaraju complete — ${sccIdx} SCCs found`,
+    what:`SCCs: ${sccs.map((s,i)=>`SCC${i+1}:{${s.join(',')}}`).join(', ')}.`,
+    why:'Two-pass DFS identifies all strongly connected components.',
+    state:`${sccIdx} SCCs`, ...snap(), activeEdge:null });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
   return steps;
 }
-let stepsArr=[],currentSccArr=[];
-function init(){
-  stepsArr=buildSteps();animStep=0;currentSccArr=new Array(N).fill(-1);done=false;
-  document.getElementById('log').innerHTML='';
-  addLog('Directed graph ready. Phase 1: DFS on original graph, build finish-time stack.');draw();
-}
-function addLog(m){const d=document.getElementById('log');d.innerHTML+=`<div class="entry">${m}</div>`;d.scrollTop=d.scrollHeight;}
-function advanceStep(){
-  if(animStep>=stepsArr.length){done=true;return;}
-  const s=stepsArr[animStep++];
-  if(s.type==='visit1')addLog(`Phase 1: Visit node ${s.node}`);
-  else if(s.type==='finish1')addLog(`Phase 1: Finish node ${s.node}. Stack: [${s.stack.join(',')}]`);
-  else if(s.type==='phase2start')addLog(`Phase 2: Transpose graph. Pop stack order: [${s.stack.join(',')}]`);
-  else if(s.type==='newscc')addLog(`Phase 2: Pop node ${s.root} → new SCC #${s.id}`);
-  else if(s.type==='scc'){currentSccArr[s.node]=s.id;addLog(`  Node ${s.node} → SCC #${s.id}`);}
-  else if(s.type==='done'){currentSccArr=s.sccArr;done=true;addLog('All SCCs found!');}
-  draw();
-}
-function drawArrow(u,v,color){
-  const n1=nodes[u],n2=nodes[v];
-  const dx=n2.x-n1.x,dy=n2.y-n1.y,len=Math.sqrt(dx*dx+dy*dy);
-  const ux=dx/len,uy=dy/len;
-  const sx=n1.x+ux*24,sy=n1.y+uy*24,ex=n2.x-ux*24,ey=n2.y-uy*24;
-  ctx.strokeStyle=color;ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();
-  ctx.fillStyle=color;
-  ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex-uy*5-ux*9,ey+ux*5-uy*9);ctx.lineTo(ex+uy*5-ux*9,ey-ux*5-uy*9);
-  ctx.closePath();ctx.fill();
-}
-function draw(){
-  ctx.clearRect(0,0,700,320);
-  adj.forEach((nb,u)=>nb.forEach(v=>drawArrow(u,v,'#b0aec8')));
-  nodes.forEach((n,i)=>{
-    const scc=currentSccArr[i];
-    const fillColor=scc>=0?SCC_COLORS[scc%SCC_COLORS.length]+'33':'#fff';
-    const strokeColor=scc>=0?SCC_COLORS[scc%SCC_COLORS.length]:'#7b4fd4';
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=fillColor;ctx.fill();ctx.strokeStyle=strokeColor;ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.l,n.x,n.y);
-    if(scc>=0){ctx.font='9px JetBrains Mono';ctx.fillStyle=strokeColor;ctx.fillText('SCC'+scc,n.x,n.y+32);}
+
+function renderStep(step){
+  const W=canvas.width/DPR,H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sc=SCALE;
+  const aeKey=step.activeEdge?`${step.activeEdge[0]}-${step.activeEdge[1]}`:null;
+  const drawEdges=(edges,reversed)=>{
+    edges.forEach(([a,b])=>{
+      const [sa,sb]=reversed?[b,a]:[a,b];
+      const key=`${sa}-${sb}`,isAct=key===aeKey;
+      const dx=NODES[sb].x-NODES[sa].x,dy=NODES[sb].y-NODES[sa].y,len=Math.sqrt(dx*dx+dy*dy);
+      const ux=dx/len,uy=dy/len,r=20*sc;
+      const sx=(NODES[sa].x+ux*r)*sc,sy=(NODES[sa].y+uy*r)*sc;
+      const ex=(NODES[sb].x-ux*r)*sc,ey=(NODES[sb].y-uy*r)*sc;
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey);
+      ctx.strokeStyle=isAct?(reversed?'#22c55e':'#7b4fd4'):'#c5c0d0';
+      ctx.lineWidth=isAct?3:1.5; ctx.setLineDash(reversed?[4,3]:[]); ctx.stroke(); ctx.setLineDash([]);
+      const ax=ex-ux*8*sc-uy*5*sc,ay=ey-uy*8*sc+ux*5*sc;
+      const bx=ex-ux*8*sc+uy*5*sc,by=ey-uy*8*sc-ux*5*sc;
+      ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ax,ay); ctx.lineTo(bx,by); ctx.closePath();
+      ctx.fillStyle=isAct?(reversed?'#22c55e':'#7b4fd4'):'#c5c0d0'; ctx.fill();
+    });
+  };
+  drawEdges(EDGES,false);
+  NODES.forEach((node,i)=>{
+    const r=20*sc, scc=step.sccId[i];
+    let fill='#e0e0e0',stroke='#bbb';
+    if(step.nodeState[i]==='p1'){ fill='#fff176'; stroke='#c8c000'; }
+    else if(scc>=0){ fill=SCC_COLORS[scc%SCC_COLORS.length]; stroke='#555'; }
+    ctx.beginPath(); ctx.arc(node.x*sc,node.y*sc,r,0,Math.PI*2);
+    ctx.fillStyle=fill; ctx.fill(); ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a1a2e'; ctx.font=`bold ${Math.round(12*sc)}px Inter,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(node.label,node.x*sc,node.y*sc);
   });
-  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const ib=document.getElementById('infoBar');
+  if(ib) ib.textContent=`Phase ${step.phase}  |  Finish order: [${step.order.join(',')}]  |  ${step.sccs.map((s,i)=>`SCC${i+1}:{${s.join(',')}}`).join('  ')||'no SCCs yet'}`;
 }
-document.getElementById('btnStep').onclick=()=>advanceStep();
-document.getElementById('btnRun').onclick=()=>{const iv=setInterval(()=>{if(done||animStep>=stepsArr.length)clearInterval(iv);else advanceStep();},300);};
-document.getElementById('btnReset').onclick=()=>init();
-init();
+function rebuild(){ setupCanvas(); if(player) player.destroy(); player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar'); }
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>
