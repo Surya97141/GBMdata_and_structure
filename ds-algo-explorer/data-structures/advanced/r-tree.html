@@ -3,228 +3,180 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>R-Tree – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>R-Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#c0392b;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);cursor:crosshair;}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#fdecea;color:var(--a);border:1px solid #f5c6c2;}.btn-sec:hover{background:#f9d5d2;}
-.btn-neu{background:#eee;color:#444;border:1px solid #ddd;}.btn-neu:hover{background:#e0e0e0;}
-.hint{font-size:.8rem;color:var(--m);margin-top:.5rem;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+#explanation{margin-top:.75rem}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    R-Tree
-  </nav>
-  <header class="hero">
-    <span class="tag">Advanced</span>
-    <h1>R-Tree</h1>
-    <p>A spatial index for rectangles and regions — the data structure that powers PostGIS, spatial databases, and map tile queries worldwide.</p>
-  </header>
-  <section class="prose">
-    <p>An <strong>R-Tree</strong> (Rectangle Tree) groups nearby spatial objects (rectangles, polygons, points) into minimum bounding rectangles (MBRs). Parent nodes contain the MBR of all children below them, forming a hierarchy of nested bounding boxes. Unlike a KD-tree (which splits points), an R-tree indexes extended objects and allows overlap between sibling bounding boxes.</p>
-    <p>Imagine a library sorted by physical shelf location. Each shelf spans a floor range; each floor spans a wing; each wing spans the building. When you search for "books near coordinates (floor 3, aisle 7)", you only open the wings that overlap, then the relevant shelves — skipping most of the building. R-trees apply this same principle to maps: "find all restaurants in this viewport" skips any MBR that doesn't overlap the viewport.</p>
-    <p>Below, each added rectangle is a "data object". The R-tree groups them into nodes with MBRs. Click the canvas to perform a point-in-rectangle search — highlighted rectangles contain the clicked point. Node MBRs are drawn at different depths in different colors.</p>
-  </section>
-  <div class="facts">
-    <div class="fact"><div class="fact-label">Insert</div><div class="fact-val">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Search</div><div class="fact-val">O(log n + k)</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">PostGIS, Map tiles, DB indexes</div></div>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>R-Tree</span></nav>
+  <span class="tag">Advanced</span>
+  <h1>R-Tree</h1>
+  <p class="tagline">Minimum bounding rectangles for spatial indexing — nearest neighbor, range queries on 2D objects.</p>
+  <div class="prose">
+    <p>An R-tree indexes spatial objects (rectangles, polygons, points) using minimum bounding rectangles (MBRs). Each internal node holds 2-M child MBRs; leaves hold actual objects. Insert: choose subtree with minimum MBR expansion → insert → split if overflow. Query: prune nodes whose MBR doesn't intersect query. Used in PostGIS, SQLite spatial extension, geographic databases for 2D range and nearest-neighbor queries.</p>
+    <p>Blue = level-1 MBRs (root). Purple = level-2 MBRs. Green = objects matching query. Orange = current node being checked. Yellow dashed = query rectangle.</p>
   </div>
-
+  <div class="facts">
+    <div class="fact"><div class="flabel">Insert</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Range query</div><div class="fval">O(√n + k)</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">PostGIS, GeoSearch</div></div>
+    <div class="fact"><div class="flabel">Key idea</div><div class="fval">MBR grouping</div></div>
+  </div>
   <div class="sim-panel">
-    <div class="sim-title">R-Tree — Rectangles + MBR Groupings</div>
-    <canvas id="cv" height="380"></canvas>
-    <div class="hint">Click "Add Random Rectangle" to insert MBRs. Click the canvas to search which rectangles contain that point.</div>
-    <div class="controls">
-      <button class="btn btn-pri" onclick="doAddRandom()">Add Random Rectangle</button>
-      <button class="btn btn-sec" onclick="doClearSearch()">Clear Search</button>
-      <button class="btn btn-neu" onclick="doClear()">Clear All</button>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="320"></canvas>
+      <div class="info-bar" id="infoBar">Building R-tree…</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Rebuild</button>
+      </div>
     </div>
   </div>
-
-  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=380; canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr); render();
+var player=null;
+var OBJECTS=[
+  {id:0,x:30,y:40,w:50,h:40,name:'Park'},
+  {id:1,x:120,y:30,w:60,h:50,name:'Mall'},
+  {id:2,x:220,y:60,w:40,h:35,name:'Hotel'},
+  {id:3,x:300,y:30,w:55,h:45,name:'School'},
+  {id:4,x:60,y:140,w:45,h:50,name:'Hospital'},
+  {id:5,x:160,y:150,w:55,h:40,name:'Museum'},
+  {id:6,x:270,y:130,w:50,h:60,name:'Stadium'},
+  {id:7,x:40,y:240,w:60,h:45,name:'Airport'},
+  {id:8,x:170,y:250,w:50,h:40,name:'Library'},
+  {id:9,x:300,y:240,w:55,h:50,name:'Market'}
+];
+var L1_MBRS=[
+  {x:20,y:20,w:180,h:190,color:'rgba(37,99,235,0.12)',stroke:'#2563eb',label:'MBR-1',children:[0,1,4,5]},
+  {x:210,y:20,w:160,h:200,color:'rgba(124,58,237,0.12)',stroke:'#7c3aed',label:'MBR-2',children:[2,3,6]},
+  {x:20,y:220,w:350,h:90,color:'rgba(22,163,74,0.12)',stroke:'#16a34a',label:'MBR-3',children:[7,8,9]}
+];
+var QX=130, QY=120, QW=160, QH=110;
+function intersects(ax,ay,aw,ah,bx,by,bw,bh){
+  return !(ax+aw<bx||bx+bw<ax||ay+ah<by||by+bh<ay);
 }
-window.addEventListener('resize',resize);
-
-// Simplified R-tree: leaf rectangles, group into clusters, show MBRs
-const MAX_PER_NODE=3;
-let rects=[]; // {x,y,w,h,id}
-let clickPt=null;
-let hitRects=[];
-let idCounter=1;
-
-// Compute MBR of an array of rects
-function mbr(rs){ if(!rs.length) return null;
-  let x=Infinity,y=Infinity,x2=-Infinity,y2=-Infinity;
-  for(const r of rs){ x=Math.min(x,r.x);y=Math.min(y,r.y);x2=Math.max(x2,r.x+r.w);y2=Math.max(y2,r.y+r.h); }
-  return {x,y,w:x2-x,h:y2-y};
-}
-
-// Group rects into nodes of MAX_PER_NODE for display
-function buildRTree(rs){
-  if(rs.length<=MAX_PER_NODE) return [{rects:rs,mbr:mbr(rs),depth:1}];
-  const nodes=[];
-  // Sort by center x for simple spatial clustering
-  const sorted=[...rs].sort((a,b)=>(a.x+a.w/2)-(b.x+b.w/2));
-  for(let i=0;i<sorted.length;i+=MAX_PER_NODE){
-    const group=sorted.slice(i,i+MAX_PER_NODE);
-    nodes.push({rects:group,mbr:mbr(group),depth:1});
+function generateSteps(){
+  var steps=[];
+  function snap(activeL1,activeObjs,foundObjs){
+    return {activeL1:activeL1,activeObjs:activeObjs||[],foundObjs:foundObjs||[]};
   }
-  // Level 2 grouping if needed
-  if(nodes.length>MAX_PER_NODE){
-    const l2=[];
-    for(let i=0;i<nodes.length;i+=MAX_PER_NODE){
-      const group=nodes.slice(i,i+MAX_PER_NODE);
-      const allRects=group.flatMap(n=>n.rects);
-      l2.push({nodes:group,rects:allRects,mbr:mbr(allRects),depth:2});
+  steps.push({title:'R-Tree: '+OBJECTS.length+' spatial objects (buildings, landmarks)',
+    what:'Objects grouped into 3 level-1 MBRs. Each MBR is the smallest bounding rectangle of its children.',
+    why:'R-tree: group nearby objects → prune entire groups during query.',
+    ...snap(-1,[],[])});
+  L1_MBRS.forEach(function(mbr,i){
+    steps.push({title:mbr.label+': bounds ['+mbr.x+','+mbr.y+']-['+(mbr.x+mbr.w)+','+(mbr.y+mbr.h)+']',
+      what:'Contains: '+mbr.children.map(function(c){return OBJECTS[c].name;}).join(', ')+'.',
+      why:'MBR = tightest bounding box around all child objects. Minimizes wasted space.',
+      ...snap(i,[],[])});
+  });
+  steps.push({title:'Range query: find all objects intersecting ['+QX+','+QY+']-['+(QX+QW)+','+(QY+QH)+']',
+    what:'Query rectangle: '+QW+'×'+QH+' starting at ('+QX+','+QY+').',
+    why:'R-tree query: check L1 MBRs first — prune MBRs that don\'t intersect query.',
+    ...snap(-1,[],[])});
+  var foundObjs=[];
+  L1_MBRS.forEach(function(mbr,i){
+    var hit=intersects(mbr.x,mbr.y,mbr.w,mbr.h,QX,QY,QW,QH);
+    steps.push({title:mbr.label+(hit?' intersects query → check children':' does NOT intersect → PRUNE'),
+      what:hit?'MBR ['+mbr.x+','+mbr.y+']-['+(mbr.x+mbr.w)+','+(mbr.y+mbr.h)+'] overlaps query.':'MBR fully outside query. Skip '+mbr.children.length+' objects.',
+      why:hit?'Cannot prune: must check individual children.':'Pruning: O(1) check eliminates '+mbr.children.length+' object comparisons.',
+      ...snap(i,[],[])});
+    if(hit){
+      mbr.children.forEach(function(c){
+        var obj=OBJECTS[c];
+        var objHit=intersects(obj.x,obj.y,obj.w,obj.h,QX,QY,QW,QH);
+        if(objHit) foundObjs.push(c);
+        steps.push({title:obj.name+(objHit?' FOUND':' not in query'),
+          what:obj.name+' ['+obj.x+','+obj.y+']-['+(obj.x+obj.w)+','+(obj.y+obj.h)+']. '+(objHit?'Intersects query!':'Does not intersect.'),
+          why:'Leaf-level check: compare actual object MBR against query rectangle.',
+          ...snap(i,[c],foundObjs.slice())});
+      });
     }
-    return {l1:nodes,l2,root:mbr(rs)};
-  }
-  return {l1:nodes,l2:[],root:mbr(rs)};
+  });
+  steps.push({title:'Query complete: '+foundObjs.length+' objects found.',
+    what:'Found: '+foundObjs.map(function(i){return OBJECTS[i].name;}).join(', ')+'.',
+    why:'R-tree pruned MBRs that didn\'t intersect. Better than O(n) sequential scan for large datasets.',
+    ...snap(-1,[],foundObjs)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-const DEPTH_STROKES=['rgba(192,57,43,0.7)','rgba(41,128,185,0.6)','rgba(39,160,96,0.5)'];
-const DEPTH_FILLS=['rgba(192,57,43,0.06)','rgba(41,128,185,0.06)','rgba(39,160,96,0.06)'];
-const RECT_COLORS=['#c0392b','#e74c3c','#8e44ad','#2980b9','#27a060','#f39c12','#16a085','#d35400','#7f8c8d','#2c3e50','#1abc9c','#e67e22'];
-
-function drawRect(r,fill,stroke,lw,dash){
-  ctx.beginPath(); ctx.rect(r.x,r.y,r.w,r.h);
-  ctx.fillStyle=fill; ctx.fill();
-  if(dash) ctx.setLineDash(dash);
-  ctx.strokeStyle=stroke; ctx.lineWidth=lw; ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-function render(){
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||400, H=320, DPR=window.devicePixelRatio||1, SCALE=W/400;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  if(rects.length===0){
-    ctx.fillStyle='#aaa'; ctx.font="14px 'Inter',sans-serif";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('Add rectangles to build the R-Tree',W/2,H/2); return;
-  }
-  const tree=buildRTree(rects);
-  // Draw L2 MBRs
-  if(tree.l2) for(const n of tree.l2){
-    drawRect(n.mbr,DEPTH_FILLS[1],DEPTH_STROKES[1],2,[7,4]);
-  }
-  // Draw L1 MBRs
-  for(const n of (tree.l1||tree)){
-    drawRect(n.mbr,DEPTH_FILLS[0],DEPTH_STROKES[0],1.5,[4,3]);
-  }
-  // Draw leaf rects
-  for(let i=0;i<rects.length;i++){
-    const r=rects[i];
-    const isHit=hitRects.includes(r.id);
-    drawRect(r,isHit?'rgba(192,57,43,0.25)':'rgba(39,160,96,0.12)',isHit?'#c0392b':RECT_COLORS[i%RECT_COLORS.length],isHit?2.5:1.5,null);
-    ctx.fillStyle=isHit?'#c0392b':'#5a5a72';
-    ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign='center'; ctx.textBaseline='top';
-    ctx.fillText('R'+r.id,r.x+r.w/2,r.y+2);
-  }
-  // Click point
-  if(clickPt){
-    ctx.beginPath();
-    ctx.moveTo(clickPt.x-8,clickPt.y); ctx.lineTo(clickPt.x+8,clickPt.y);
-    ctx.moveTo(clickPt.x,clickPt.y-8); ctx.lineTo(clickPt.x,clickPt.y+8);
-    ctx.strokeStyle='#8e44ad'; ctx.lineWidth=2; ctx.stroke();
-  }
-  // Legend
-  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(8,H-20); ctx.lineTo(28,H-20);
-  ctx.strokeStyle=DEPTH_STROKES[0]; ctx.lineWidth=1.5; ctx.stroke();
-  ctx.setLineDash([7,4]); ctx.beginPath(); ctx.moveTo(100,H-20); ctx.lineTo(120,H-20);
-  ctx.strokeStyle=DEPTH_STROKES[1]; ctx.lineWidth=2; ctx.stroke();
+  L1_MBRS.forEach(function(mbr,i){
+    var isActive=i===step.activeL1;
+    ctx.fillStyle=mbr.color;
+    ctx.fillRect(mbr.x*SCALE,mbr.y,mbr.w*SCALE,mbr.h);
+    ctx.strokeStyle=isActive?'#d97706':mbr.stroke;
+    ctx.lineWidth=isActive?2.5:1.5;
+    ctx.strokeRect(mbr.x*SCALE,mbr.y,mbr.w*SCALE,mbr.h);
+    ctx.fillStyle=mbr.stroke;ctx.font='bold 9px JetBrains Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(mbr.label,(mbr.x+2)*SCALE,mbr.y+11);
+  });
+  OBJECTS.forEach(function(obj,i){
+    var isFound=step.foundObjs.indexOf(i)>=0;
+    var isActive=step.activeObjs.indexOf(i)>=0;
+    ctx.fillStyle=isFound?'rgba(22,163,74,0.3)':isActive?'rgba(251,146,60,0.3)':'rgba(195,177,225,0.3)';
+    ctx.fillRect(obj.x*SCALE,obj.y,obj.w*SCALE,obj.h);
+    ctx.strokeStyle=isFound?'#16a34a':isActive?'#fb923c':'#7b4fd4';
+    ctx.lineWidth=1.5;
+    ctx.strokeRect(obj.x*SCALE,obj.y,obj.w*SCALE,obj.h);
+    ctx.fillStyle='#1a1a2e';ctx.font='8px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillText(obj.name,(obj.x+obj.w/2)*SCALE,obj.y+obj.h/2+3);
+  });
+  ctx.strokeStyle='rgba(234,88,12,0.7)';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.strokeRect(QX*SCALE,QY,QW*SCALE,QH);
   ctx.setLineDash([]);
-  ctx.fillStyle='#5a5a72'; ctx.fillText('L1 MBR',32,H-24); ctx.fillText('L2 MBR',124,H-24);
+  ctx.fillStyle='rgba(234,88,12,0.08)';ctx.fillRect(QX*SCALE,QY,QW*SCALE,QH);
+  ctx.fillStyle='#ea580c';ctx.font='8px JetBrains Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Query',(QX+2)*SCALE,QY+10);
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Objects: '+OBJECTS.length+'  |  L1 MBRs: '+L1_MBRS.length+'  |  Found: '+step.foundObjs.length;
 }
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-function doAddRandom(){
-  const mx=W-80,my=H-80;
-  const x=Math.random()*mx+10;
-  const y=Math.random()*my+10;
-  const w=Math.random()*80+20;
-  const h=Math.random()*60+20;
-  const r={x,y,w:Math.min(w,mx-x),h:Math.min(h,my-y),id:idCounter++};
-  rects.push(r);
-  const tree=buildRTree(rects);
-  const node=(tree.l1||tree).find(n=>n.rects.includes(r));
-  log(`Insert R${r.id} [${Math.round(x)},${Math.round(y)},${Math.round(r.w)}×${Math.round(r.h)}]: grouped into L1 node (MBR expanded).`);
-  render();
-}
-
-function doClearSearch(){ clickPt=null; hitRects=[]; render(); }
-
-function doClear(){ rects=[]; clickPt=null; hitRects=[]; idCounter=1; render(); log('Cleared all rectangles.'); }
-
-canvas.addEventListener('click',function(e){
-  if(!rects.length){log('Add rectangles first.');return;}
-  const rect=canvas.getBoundingClientRect();
-  const px=(e.clientX-rect.left)*(W/rect.width);
-  const py=(e.clientY-rect.top)*(H/rect.height);
-  clickPt={x:px,y:py};
-  hitRects=rects.filter(r=>px>=r.x&&px<=r.x+r.w&&py>=r.y&&py<=r.y+r.h).map(r=>r.id);
-  log(`Point search (${Math.round(px)},${Math.round(py)}): hit ${hitRects.length} rectangle(s) — [${hitRects.map(i=>'R'+i).join(',')||'none'}]`);
-  render();
-});
-
-// Seed
-const seeds=[[40,30,120,80],[220,60,90,110],[380,40,100,70],[80,200,140,90],[300,180,80,100],[480,150,110,80],[150,300,100,60],[400,270,90,90]];
-for(const [x,y,w,h] of seeds){ rects.push({x,y,w,h,id:idCounter++}); }
-resize();
-log(`Seeded with ${rects.length} rectangles. Click the canvas to search which contain a point.`);
+rebuild();
 </script>
 </body>
 </html>

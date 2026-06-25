@@ -2,7 +2,7 @@
   "version": 2,
   "rewrites": [
     { "source": "/",           "destination": "/ds-algo-explorer/app.html" },
-    { "source": "/((?!ds-algo-explorer/).*)", "destination": "/ds-algo-explorer/$1" }
+    { "source": "/((?!ds-algo-explorer/)(?!_vercel/)(?!api/).*)", "destination": "/ds-algo-explorer/$1" }
   ],
   "headers": [
     {

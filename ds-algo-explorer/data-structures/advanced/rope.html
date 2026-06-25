@@ -2,201 +2,241 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Rope — DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Rope</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:920px;margin:0 auto;padding:24px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
-.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
-.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
-.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
-canvas{display:block;background:#f7f6f2;border-radius:10px;border:1px solid #e2e0da;margin-bottom:12px}
-.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;align-items:center}
-.ctrl-group{display:flex;gap:6px;align-items:center;font-size:13px;color:#5a5a72}
-input[type=text]{height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:13px;padding:0 8px;outline:none;background:#f7f6f2;width:140px}
-input[type=text]:focus{border-color:#c0392b;background:#fff}
-input[type=number]{width:60px;height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;outline:none;padding:0 4px;background:#f7f6f2}
-input[type=number]:focus{border-color:#c0392b;background:#fff}
-button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 15px;font-size:.86rem;font-weight:600;cursor:pointer;transition:opacity .2s}
-button:hover{opacity:.85}
-button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
-.current-str{font-family:'JetBrains Mono',monospace;font-size:14px;background:#f7f6f2;border-radius:6px;padding:8px 12px;margin-bottom:10px;border:1px solid #e2e0da;word-break:break-all}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:12px;max-height:150px;overflow-y:auto}
-.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
-.log-box p.warn{color:#ffd180}
-.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.rope-str{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.5rem .8rem;background:var(--bg);border:1px solid var(--b);border-radius:6px;margin-top:.5rem;letter-spacing:.05em}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:70px}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:90px}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+#explanation{margin-top:.75rem}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Data Structures</a><span>›</span>
-    Rope
-  </div>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Rope</span></nav>
   <span class="tag">Advanced</span>
   <h1>Rope</h1>
-  <p class="tagline">A binary tree for efficient string concatenation, splitting, and indexing at scale.</p>
+  <p class="tagline">Binary tree of string chunks — O(log n) insert/delete vs O(n) for plain strings.</p>
   <div class="prose">
-    <p>A <strong>Rope</strong> is a binary tree data structure designed for efficient manipulation of very long strings. Unlike a flat array-based string where inserting a character in the middle requires shifting O(n) bytes, a Rope can concatenate two strings in O(1) (just create a new root node) and split a string at any index in O(log n).</p>
-    <p>Internal nodes store the total length of all leaves in their left subtree (the "weight"), which enables O(log n) character indexing by walking down the tree. Leaf nodes hold the actual string fragments. Real-world text editors like VS Code's Monaco use a similar structure (called a "piece table") to handle large files efficiently.</p>
-    <p>Real-world analogy: Instead of one long paper scroll, imagine a filing system where documents are broken into labeled chunks stored in folders. To append a new section, you just add a new folder label — you do not re-copy everything.</p>
+    <p>A rope is a binary tree where each leaf holds a small string chunk and each internal node stores the total length of its left subtree (weight). Index/concatenate: traverse by weight. Split at position k: walk down splitting subtree at k. Concat: create new root. Insert/delete: split + insert/delete + concat. All O(log n). Used in text editors (Vim, Emacs ropes) for huge documents where O(n) string operations are too slow.</p>
+    <p>Each leaf (green) holds a string fragment. Internal nodes (purple) show left-subtree weight. Yellow = node being traversed during operation.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Concat</div><div class="fact-value">O(1)</div></div>
-    <div class="fact"><div class="fact-label">Split / Index</div><div class="fact-value">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Text Editors · DNA · Diff</div></div>
+    <div class="fact"><div class="flabel">Index</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Split</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Concat</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">Text editors</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Rope Tree Visualization</div>
-    <div class="current-str" id="currentStr">Current string: "Hello World"</div>
-    <canvas id="cv" width="840" height="260"></canvas>
-    <div class="controls">
-      <div class="ctrl-group">
-        Concat:
-        <input type="text" id="concatStr" value=" there" placeholder="append string"/>
-        <button onclick="doConcat()">Concat</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="260"></canvas>
+      <div class="rope-str" id="ropeStr">String: "Hello, World!"</div>
+      <div class="info-bar" id="infoBar">Select an operation and click Run.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Op:</label>
+        <select id="opSel">
+          <option value="index">Index(k)</option>
+          <option value="split">Split at k</option>
+          <option value="concat">Concat</option>
+        </select>
+        <label>k:</label>
+        <input type="number" id="kInput" value="7" min="0" max="12"/>
+        <button class="btn btn-p" onclick="rebuild()">Run</button>
       </div>
-      <div class="ctrl-group">
-        Split at index:
-        <input type="number" id="splitIdx" value="5" min="0"/>
-        <button onclick="doSplit()">Split</button>
-      </div>
-      <div class="ctrl-group">
-        Index:
-        <input type="number" id="indexI" value="0" min="0"/>
-        <button onclick="doIndex()">Index(i)</button>
-      </div>
-      <button class="secondary" onclick="resetRope()">Reset</button>
     </div>
-    <div class="log-box" id="logBox"></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-class RopeNode{
-  constructor(str=null,left=null,right=null){
-    this.str=str;this.left=left;this.right=right;
-    this.weight=str!==null?str.length:(left?ropeLen(left):0);
+var player=null;
+var ROPE={
+  w:6, left:{w:5,left:{leaf:'Hello',w:5},right:{leaf:', ',w:2}},
+  right:{w:6,left:{leaf:'World',w:5},right:{leaf:'!',w:1}}
+};
+var ROPE2={leaf:' How are you?',w:13};
+function collectString(node){
+  if(node.leaf!==undefined) return node.leaf;
+  return collectString(node.left)+collectString(node.right);
+}
+function assignPos(node,x,y,spread){
+  node._x=x; node._y=y;
+  if(node.left) assignPos(node.left,x-spread,y+70,spread/2);
+  if(node.right) assignPos(node.right,x+spread,y+70,spread/2);
+}
+function generateSteps(op,k){
+  var steps=[];
+  assignPos(ROPE,320,40,120);
+  var str=collectString(ROPE);
+  function snap(path,splitAt){
+    return {ropePath:path||[],splitAt:splitAt||-1,str:str,op:op};
   }
+  steps.push({title:'Rope: "'+str+'" (n='+str.length+')',
+    what:'Binary tree of string chunks. Internal nodes store left-subtree weight.',
+    why:'Rope avoids O(n) copy on insert/delete. O(log n) operations via tree traversal.',
+    ...snap([])});
+  if(op==='index'){
+    var path=[], cur=ROPE, rem=k;
+    steps.push({title:'Index('+k+'): find character at position '+k,
+      what:'Start at root. If k < weight(left), go left. Else k -= weight(left), go right.',
+      why:'Weight = total chars in left subtree — used to navigate without concatenating.',
+      ...snap([])});
+    while(cur.leaf===undefined){
+      path.push(cur);
+      if(rem<cur.w){
+        steps.push({title:'k='+rem+' < weight='+cur.w+' → go left',
+          what:'Left subtree weight='+cur.w+'. k fits in left.',
+          why:'Navigate left when index is within left subtree range.',
+          ...snap(path.map(function(n){return n._x+','+n._y;}))});
+        cur=cur.left;
+      } else {
+        rem-=cur.w;
+        steps.push({title:'k='+rem+' (after -'+cur.w+') → go right',
+          what:'k ≥ left weight. Subtract weight, go right.',
+          why:'Navigate right: remaining index is relative to right subtree.',
+          ...snap(path.map(function(n){return n._x+','+n._y;}))});
+        cur=cur.right;
+      }
+    }
+    path.push(cur);
+    var ch=cur.leaf[rem]||'?';
+    steps.push({title:'Found leaf "'+cur.leaf+'" at offset '+rem+'. Char = "'+ch+'"',
+      what:'Character at index '+k+' = "'+ch+'".',
+      why:'O(log n): one tree traversal, no string concatenation needed.',
+      ...snap(path.map(function(n){return n._x+','+n._y;}))});
+  } else if(op==='split'){
+    steps.push({title:'Split "'+str+'" at position '+k,
+      what:'Left part: "'+str.slice(0,k)+'". Right part: "'+str.slice(k)+'".',
+      why:'Split walks down tree, splitting nodes at boundary k.',
+      ...snap([])});
+    var left_s=str.slice(0,k), right_s=str.slice(k);
+    var path=[];
+    var cur=ROPE, rem=k;
+    while(cur.leaf===undefined){
+      path.push(cur);
+      if(rem<=cur.w){
+        steps.push({title:'Split point '+rem+' ≤ weight '+cur.w+' → split in left subtree',
+          what:'Left part of this node will be split.',
+          why:'Recursive split: propagate split point into left child.',
+          ...snap(path.map(function(n){return n._x+','+n._y;}))});
+        cur=cur.left;
+      } else {
+        rem-=cur.w;
+        steps.push({title:'Split point '+rem+' (after -'+cur.w+') > weight → split in right subtree',
+          what:'Entire left subtree goes to left result.',
+          why:'Recursive split: propagate adjusted split point into right child.',
+          ...snap(path.map(function(n){return n._x+','+n._y;}))});
+        cur=cur.right;
+      }
+    }
+    steps.push({title:'Split complete: ["'+left_s+'"] + ["'+right_s+'"]',
+      what:'Two ropes produced. O(log n) nodes created/modified.',
+      why:'No string copying. Only tree pointers modified.',
+      ...snap(path.map(function(n){return n._x+','+n._y;}),k)});
+  } else if(op==='concat'){
+    var str2=collectString(ROPE2);
+    steps.push({title:'Concat "'+str+'" + "'+str2+'"',
+      what:'Create new root node. Left = existing rope, Right = new rope.',
+      why:'Concat is O(1): just create a new root with left-weight = len of first rope.',
+      ...snap([])});
+    steps.push({title:'New root: weight='+str.length+' (length of left rope)',
+      what:'Left child = rope1 (root). Right child = rope2.',
+      why:'O(1) concat. String never copied — tree pointer updated only.',
+      ...snap([])});
+    steps.push({title:'Resulting rope: "'+str+str2+'" (n='+(str.length+str2.length)+')',
+      what:'Logical string = concatenation. Physical = two subtrees under new root.',
+      why:'Used in text editors: O(log n) insert anywhere vs O(n) for plain string.',
+      ...snap([])});
+  }
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-function ropeLen(n){if(!n)return 0;if(n.str!==null)return n.str.length;return ropeLen(n.left)+ropeLen(n.right);}
-function ropeStr(n){if(!n)return'';if(n.str!==null)return n.str;return ropeStr(n.left)+ropeStr(n.right);}
-function ropeConcat(a,b){if(!a)return b;if(!b)return a;return new RopeNode(null,a,b);}
-function ropeSplit(n,i){
-  if(!n)return[null,null];
-  if(n.str!==null){const l=n.str.slice(0,i),r=n.str.slice(i);return[l.length?new RopeNode(l):null,r.length?new RopeNode(r):null];}
-  const lLen=ropeLen(n.left);
-  if(i<lLen){const[ll,lr]=ropeSplit(n.left,i);return[ll,ropeConcat(lr,n.right)];}
-  if(i===lLen)return[n.left,n.right];
-  const[rl,rr]=ropeSplit(n.right,i-lLen);return[ropeConcat(n.left,rl),rr];
-}
-function ropeIndex(n,i){
-  if(!n)return'';
-  if(n.str!==null)return n.str[i]||'';
-  const lLen=ropeLen(n.left);
-  if(i<lLen)return ropeIndex(n.left,i);
-  return ropeIndex(n.right,i-lLen);
-}
-
-let rope=null;
-function fromString(s){
-  if(s.length<=6)return new RopeNode(s);
-  const m=Math.floor(s.length/2);
-  return ropeConcat(fromString(s.slice(0,m)),fromString(s.slice(m)));
-}
-
-function resetRope(){rope=fromString('Hello World');render();log('Reset: rope = "Hello World"');}
-
-function doConcat(){
-  const s=document.getElementById('concatStr').value;
-  if(!s){log('Empty string, nothing to concat','warn');return;}
-  rope=ropeConcat(rope,fromString(s));
-  log(`Concat "${s}": new root created, weight updated`);
-  render();
-}
-function doSplit(){
-  const i=parseInt(document.getElementById('splitIdx').value);
-  const total=ropeLen(rope);
-  if(isNaN(i)||i<0||i>total){log(`Split index must be 0–${total}`,'warn');return;}
-  const[l,r]=ropeSplit(rope,i);
-  const ls=ropeStr(l),rs=ropeStr(r);
-  rope=l;// keep left part
-  log(`Split at ${i}: left="${ls}" right="${rs}". Showing left half.`);
-  render();
-}
-function doIndex(){
-  const i=parseInt(document.getElementById('indexI').value);
-  const total=ropeLen(rope);
-  if(isNaN(i)||i<0||i>=total){log(`Index must be 0–${total-1}`,'warn');return;}
-  const ch=ropeIndex(rope,i);
-  log(`Index(${i}) = '${ch}'`);
-  render(i);
-}
-
-function log(msg,type=''){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(type)p.classList.add(type);b.appendChild(p);b.scrollTop=b.scrollHeight;}
-
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const CW=840,CH=260;
-const LEAF_W=70,LEAF_H=36,INT_W=56,INT_H=32;
-
-function layoutTree(node,x,y,spread){
-  if(!node)return null;
-  const info={node,x,y};
-  if(node.str!==null){info.leaf=true;return info;}
-  const lc=node.left?layoutTree(node.left,x-spread,y+70,spread*0.55):null;
-  const rc=node.right?layoutTree(node.right,x+spread,y+70,spread*0.55):null;
-  info.lc=lc;info.rc=rc;
-  return info;
-}
-
-function drawTree(info,highlightIdx=-1){
-  if(!info)return;
-  // draw edges
-  if(info.lc){ctx.beginPath();ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.moveTo(info.x,info.y+INT_H/2);ctx.lineTo(info.lc.x,info.lc.y-(!info.lc.leaf?INT_H/2:LEAF_H/2));ctx.stroke();}
-  if(info.rc){ctx.beginPath();ctx.strokeStyle='#3498db';ctx.lineWidth=1.5;ctx.moveTo(info.x,info.y+INT_H/2);ctx.lineTo(info.rc.x,info.rc.y-(!info.rc.leaf?INT_H/2:LEAF_H/2));ctx.stroke();}
-  drawTree(info.lc,highlightIdx);
-  drawTree(info.rc,highlightIdx);
-  // draw node
-  if(info.leaf){
-    const w=Math.max(LEAF_W,info.node.str.length*10);
-    const x=info.x-w/2,y=info.y-LEAF_H/2;
-    ctx.fillStyle='#fff';ctx.strokeStyle='#1a1a2e';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(x,y,w,LEAF_H,6);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#c0392b';ctx.font='bold 12px JetBrains Mono, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(`"${info.node.str}"`,info.x,info.y);
+function drawNode(ctx,node,path,SCALE){
+  if(!node) return;
+  var cx=node._x*SCALE, cy=node._y;
+  var isPath=path.some(function(p){var parts=p.split(',');return Math.abs(node._x-parseFloat(parts[0]))<2&&Math.abs(node._y-parseFloat(parts[1]))<2;});
+  if(node.left){
+    ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(cx,cy+14);ctx.lineTo(node.left._x*SCALE,node.left._y-14);ctx.stroke();
+  }
+  if(node.right){
+    ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(cx,cy+14);ctx.lineTo(node.right._x*SCALE,node.right._y-14);ctx.stroke();
+  }
+  if(node.leaf!==undefined){
+    var w=Math.max(50,node.leaf.length*9+16);
+    ctx.fillStyle=isPath?'#fff176':'#a8e6a3';
+    ctx.beginPath();
+    ctx.roundRect?ctx.roundRect(cx-w/2,cy-13,w,26,5):ctx.rect(cx-w/2,cy-13,w,26);
+    ctx.fill();
+    ctx.strokeStyle='#16a34a';ctx.lineWidth=1.5;ctx.beginPath();
+    ctx.roundRect?ctx.roundRect(cx-w/2,cy-13,w,26,5):ctx.rect(cx-w/2,cy-13,w,26);
+    ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('"'+node.leaf+'"',cx,cy+4);
   } else {
-    const wt=ropeLen(info.node.left||null);
-    const x=info.x-INT_W/2,y=info.y-INT_H/2;
-    ctx.fillStyle='#1a1a2e';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(x,y,INT_W,INT_H,6);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#fff';ctx.font='bold 12px JetBrains Mono, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(`w=${wt}`,info.x,info.y);
+    ctx.fillStyle=isPath?'#fff176':'#c3b1e1';
+    ctx.beginPath();ctx.arc(cx,cy,18,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,18,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('w='+node.w,cx,cy+4);
   }
+  drawNode(ctx,node.left,path,SCALE);
+  drawNode(ctx,node.right,path,SCALE);
 }
-
-function render(highlightIdx=-1){
-  ctx.clearRect(0,0,CW,CH);
-  const str=ropeStr(rope);
-  document.getElementById('currentStr').textContent=`Current string: "${str}" (length ${str.length})`;
-  if(!rope){ctx.fillStyle='#5a5a72';ctx.font='14px Inter';ctx.textAlign='center';ctx.fillText('Empty rope',CW/2,CH/2);return;}
-  const layout=layoutTree(rope,CW/2,40,CW/4);
-  drawTree(layout,highlightIdx);
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=260, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  assignPos(ROPE,320,40,120);
+  drawNode(ctx,ROPE,step.ropePath,SCALE);
+  var rs=document.getElementById('ropeStr');
+  if(rs) rs.textContent='String: "'+step.str+'"';
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Operation: '+step.op+'  |  Length: '+step.str.length;
 }
-
-resetRope();
+function rebuild(){
+  var op=document.getElementById('opSel').value;
+  var k=parseInt(document.getElementById('kInput').value)||7;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(op,k),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

@@ -1,5 +1,15 @@
 /* DS/Algo Explorer — Shared JS Utilities + SimulationPlayer */
 
+/* ── Vercel Analytics (injected once per page load) ─────── */
+(function () {
+  if (document.getElementById('_va_script')) return;
+  var s = document.createElement('script');
+  s.id = '_va_script';
+  s.defer = true;
+  s.src = '/_vercel/insights/script.js';
+  document.head.appendChild(s);
+}());
+
 /* ── SimulationPlayer CSS (injected once per page load) ───── */
 (function () {
   if (document.getElementById('_sim_css')) return;

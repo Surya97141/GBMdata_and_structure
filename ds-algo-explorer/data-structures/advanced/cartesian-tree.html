@@ -2,154 +2,197 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Cartesian Tree — DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cartesian Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:24px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
-.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
-.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
-.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
-.array-input{display:flex;gap:6px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-.array-input label{font-size:13px;color:#5a5a72;min-width:60px}
-.cell-inp{width:50px;height:38px;border:1.5px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;text-align:center;outline:none;background:#f7f6f2}
-.cell-inp:focus{border-color:#c0392b;background:#fff}
-canvas{display:block;background:#f7f6f2;border-radius:10px;border:1px solid #e2e0da;margin-bottom:12px}
-button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s;margin-right:8px}
-button:hover{opacity:.85}
-button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
-.info-bar{font-size:13px;color:#5a5a72;margin-bottom:10px;font-family:'JetBrains Mono',monospace}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:12px;max-height:150px;overflow-y:auto}
-.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
-.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.arr-row{display:flex;gap:3px;margin:.5rem 0;align-items:center}
+.arr-cell{width:44px;height:36px;border:1.5px solid var(--b);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700}
+.arr-cell.cur{background:#fff176;border-color:#d97706}
+.arr-cell.done{background:#a8e6a3;border-color:#16a34a}
+.arr-cell.mn{background:#fb923c;border-color:#ea580c;color:#fff}
+.arr-idx{font-size:.55rem;color:var(--m);font-weight:400}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+#explanation{margin-top:.75rem}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Data Structures</a><span>›</span>
-    Cartesian Tree
-  </div>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Cartesian Tree</span></nav>
   <span class="tag">Advanced</span>
   <h1>Cartesian Tree</h1>
-  <p class="tagline">A binary tree that satisfies both BST (on indices) and min-heap (on values) properties simultaneously.</p>
+  <p class="tagline">BST by index, min-heap by value — in-order traversal recovers original array.</p>
   <div class="prose">
-    <p>A <strong>Cartesian Tree</strong> is built from a sequence of values such that it satisfies two properties at once: an <em>in-order traversal gives the original array indices</em> (BST property), and the <em>root always holds the minimum value</em> (min-heap property). This duality makes it uniquely powerful for range minimum queries and treap-based balanced BSTs.</p>
-    <p>Construction is O(n) using a stack: iterate left to right, maintaining a right-spine. For each new element, pop the stack while the top is larger, make the last popped element the left child of the new node, then push. The result encodes the entire RMQ structure implicitly — LCA of two nodes in a Cartesian Tree equals the range minimum between them.</p>
-    <p>Real-world analogy: imagine building a tournament bracket where each match is decided by the minimum — the overall minimum wins the whole bracket, and sub-brackets represent sub-ranges.</p>
+    <p>A Cartesian tree is a binary tree built from an array where: (1) in-order traversal gives the original array, and (2) each node's value is less than or equal to its children (min-heap property). Built in O(n) using a stack. Root = global minimum. Left subtree = subarray left of root, right subtree = subarray right of root. Used in RMQ, treap construction, and suffix array LCP queries.</p>
+    <p>Building: process array left-to-right, maintaining a stack of right-spine nodes. Orange = global minimum (root). Yellow = node being inserted. Purple = already placed in tree.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Build</div><div class="fact-value">O(n)</div></div>
-    <div class="fact"><div class="fact-label">RMQ via LCA</div><div class="fact-value">O(1) after O(n)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Treap · RMQ · Sorting</div></div>
+    <div class="fact"><div class="flabel">Build</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">RMQ query</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Root</div><div class="fval">Global min</div></div>
+    <div class="fact"><div class="flabel">In-order</div><div class="fval">Original array</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Cartesian Tree Builder</div>
-    <div class="array-input">
-      <label>Array (8):</label>
-      <span id="cellWrap"></span>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="240"></canvas>
+      <div class="arr-row" id="arrVis"></div>
+      <div class="info-bar" id="infoBar">Building Cartesian tree…</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Rebuild</button>
+      </div>
     </div>
-    <button onclick="buildCT()">Build Cartesian Tree</button>
-    <button class="secondary" onclick="resetCT()">Reset</button>
-    <div class="info-bar" id="infoBar" style="margin-top:12px"></div>
-    <canvas id="cv" width="820" height="280"></canvas>
-    <div class="log-box" id="logBox"></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-const N=8;
-const defaults=[9,3,7,1,8,12,10,20];
-let inputs=[];
-
-function resetCT(){
-  const wrap=document.getElementById('cellWrap');wrap.innerHTML='';inputs=[];
-  wrap.style.display='inline-flex';wrap.style.gap='6px';
-  defaults.forEach((v,i)=>{
-    const inp=document.createElement('input');inp.type='number';inp.value=v;inp.className='cell-inp';inp.min=-99;inp.max=99;
-    const label=document.createElement('span');label.style.cssText='font-size:10px;color:#5a5a72;display:block;text-align:center';label.textContent=`[${i}]`;
-    const d=document.createElement('div');d.style.textAlign='center';d.appendChild(inp);d.appendChild(label);
-    wrap.appendChild(d);inputs.push(inp);
-  });
-  document.getElementById('logBox').innerHTML='';
-  document.getElementById('infoBar').textContent='';
-  const ctx=document.getElementById('cv').getContext('2d');ctx.clearRect(0,0,820,280);
-}
-
-class CTNode{constructor(idx,val){this.idx=idx;this.val=val;this.left=null;this.right=null;}}
-
-function buildCT(){
-  const arr=inputs.map(i=>parseInt(i.value)||0);
-  const stack=[];const roots=Array(N).fill(null);
-  const nodes=arr.map((v,i)=>new CTNode(i,v));
-  // O(n) stack-based build
-  for(let i=0;i<N;i++){
-    let last=null;
-    while(stack.length&&stack[stack.length-1].val>nodes[i].val){last=stack.pop();}
-    nodes[i].left=last;
-    if(stack.length)stack[stack.length-1].right=nodes[i];
-    stack.push(nodes[i]);
+var player=null;
+var ARR=[9,3,7,1,8,12,10,20,15,18,5];
+var N=ARR.length;
+function buildCartesian(arr){
+  var n=arr.length;
+  var parent=new Array(n).fill(-1);
+  var left=new Array(n).fill(-1);
+  var right=new Array(n).fill(-1);
+  var stack=[];
+  for(var i=0;i<n;i++){
+    var last=-1;
+    while(stack.length&&arr[stack[stack.length-1]]>arr[i]){
+      last=stack.pop();
+    }
+    if(last>=0){left[i]=last;parent[last]=i;}
+    if(stack.length){right[stack[stack.length-1]]=i;parent[i]=stack[stack.length-1];}
+    stack.push(i);
   }
-  const root=stack[0];
-  const minVal=Math.min(...arr);
-  const minIdx=arr.indexOf(minVal);
-  document.getElementById('infoBar').textContent=`Root: index ${minIdx}, value ${minVal} (minimum of array)`;
-  log(`Building Cartesian Tree from [${arr.join(', ')}]`);
-  log(`Root: index=${minIdx}, value=${minVal} (global minimum)`);
-  // log right spine
-  let cur=root;const spine=[];while(cur){spine.push(`[${cur.idx}]=${cur.val}`);cur=cur.right;}
-  log(`Right spine from root: ${spine.join(' → ')}`);
-  drawCT(root);
+  return {parent:parent,left:left,right:right};
 }
-
-const cv=document.getElementById('cv');const ctx=cv.getContext('2d');
-const CW=820,CH=280;
-
-function layoutNode(node,x,y,spread){
-  if(!node)return null;
-  const info={node,x,y};
-  info.lc=node.left?layoutNode(node.left,x-spread,y+68,spread*0.55):null;
-  info.rc=node.right?layoutNode(node.right,x+spread,y+68,spread*0.55):null;
-  return info;
+function getTreePos(idx,left,right,parent,arr){
+  var root=-1;
+  for(var i=0;i<arr.length;i++) if(parent[i]===-1) root=i;
+  var pos={};
+  function assign(node,x,y,spread){
+    if(node===-1) return;
+    pos[node]=[x,y];
+    assign(left[node],x-spread,y+65,spread/2);
+    assign(right[node],x+spread,y+65,spread/2);
+  }
+  assign(root,320,40,100);
+  return pos;
 }
-function drawLayout(info,isRoot=false){
-  if(!info)return;
-  if(info.lc){ctx.beginPath();ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.moveTo(info.x,info.y+20);ctx.lineTo(info.lc.x,info.lc.y-20);ctx.stroke();}
-  if(info.rc){ctx.beginPath();ctx.strokeStyle='#3498db';ctx.lineWidth=1.5;ctx.moveTo(info.x,info.y+20);ctx.lineTo(info.rc.x,info.rc.y-20);ctx.stroke();}
-  drawLayout(info.lc);drawLayout(info.rc);
-  const isMin=info===layoutInfo;
-  ctx.beginPath();ctx.arc(info.x,info.y,20,0,Math.PI*2);
-  ctx.fillStyle=isRoot?'#c0392b':'#fff';ctx.fill();
-  ctx.strokeStyle=isRoot?'#c0392b':'#1a1a2e';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=isRoot?'#fff':'#1a1a2e';ctx.font='bold 12px JetBrains Mono, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(info.node.val,info.x,info.y-4);
-  ctx.fillStyle=isRoot?'rgba(255,255,255,.7)':'#5a5a72';ctx.font='10px Inter';
-  ctx.fillText(`i=${info.node.idx}`,info.x,info.y+8);
+function generateSteps(){
+  var steps=[];
+  var tree=buildCartesian(ARR);
+  var pos=getTreePos(0,tree.left,tree.right,tree.parent,ARR);
+  var root=-1;
+  for(var i=0;i<N;i++) if(tree.parent[i]===-1) root=i;
+  function snap(cur,placed){
+    return {cur:cur,placed:placed.slice(),tree:tree,pos:pos,root:root};
+  }
+  steps.push({title:'Array: ['+ARR.join(',')+'] (n='+N+')',
+    what:'Build Cartesian tree: BST by index, min-heap by value.',
+    why:'Root = global min. In-order = original array. O(n) using stack.',
+    ...snap(-1,[])});
+  var stack=[], placed=[];
+  for(var i=0;i<N;i++){
+    var popped=[];
+    while(stack.length&&ARR[stack[stack.length-1]]>ARR[i]) popped.push(stack.pop());
+    steps.push({title:'Insert A['+i+']='+ARR[i]+'. Popped from stack: ['+popped.map(function(p){return ARR[p];}).join(',')+']',
+      what:'Pop elements from right-spine that are > '+ARR[i]+'. They become left child of new node.',
+      why:'Maintaining min-heap: smaller value must be ancestor of larger.',
+      ...snap(i,placed.slice())});
+    stack.push(i);
+    placed.push(i);
+    steps.push({title:'A['+i+']='+ARR[i]+' inserted. Stack right-spine: ['+stack.map(function(s){return ARR[s];}).join(',')+']',
+      what:'Node '+i+' (val='+ARR[i]+') placed. Right spine of tree so far.',
+      why:'Stack always holds the current right spine in increasing order of value.',
+      ...snap(i,placed.slice())});
+  }
+  steps.push({title:'Cartesian tree complete. Root = index '+root+' (value='+ARR[root]+')',
+    what:'Root is global minimum. Left child = min of left subarray, right child = min of right.',
+    why:'In-order traversal: '+placed.sort(function(a,b){return a-b;}).map(function(i){return ARR[i];}).join('→')+'.',
+    ...snap(-1,placed.slice())});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-let layoutInfo=null;
-function drawCT(root){
-  ctx.clearRect(0,0,CW,CH);
-  const lay=layoutNode(root,CW/2,38,CW/4.5);
-  layoutInfo=lay;
-  drawLayout(lay,true);
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=240, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  var pos=step.pos, tree=step.tree;
+  step.placed.forEach(function(i){
+    if(tree.left[i]>=0&&pos[tree.left[i]]){
+      ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(pos[i][0]*SCALE,pos[i][1]+14);
+      ctx.lineTo(pos[tree.left[i]][0]*SCALE,pos[tree.left[i]][1]-14);ctx.stroke();
+    }
+    if(tree.right[i]>=0&&pos[tree.right[i]]){
+      ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(pos[i][0]*SCALE,pos[i][1]+14);
+      ctx.lineTo(pos[tree.right[i]][0]*SCALE,pos[tree.right[i]][1]-14);ctx.stroke();
+    }
+  });
+  step.placed.forEach(function(i){
+    if(!pos[i]) return;
+    var cx=pos[i][0]*SCALE, cy=pos[i][1];
+    var isCur=i===step.cur, isRoot=i===step.root;
+    ctx.fillStyle=isCur?'#fff176':isRoot?'#fb923c':'#c3b1e1';
+    ctx.beginPath();ctx.arc(cx,cy,14,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle=isRoot?'#ea580c':'#7b4fd4';ctx.lineWidth=isCur?2.5:1.5;
+    ctx.beginPath();ctx.arc(cx,cy,14,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle=isRoot?'#fff':'#1a1a2e';ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(ARR[i],cx,cy+4);
+    ctx.fillStyle='#888';ctx.font='8px JetBrains Mono,monospace';
+    ctx.fillText('i='+i,cx,cy-18);
+  });
+  var av=document.getElementById('arrVis');
+  if(av){
+    av.innerHTML='<span style="font-size:.68rem;color:var(--m);font-family:JetBrains Mono,monospace;margin-right:4px">arr[]</span>'+
+    ARR.map(function(v,i){
+      var cls=i===step.cur?' cur':step.placed.indexOf(i)>=0?' done':'';
+      return '<div class="arr-cell'+cls+'"><span class="arr-idx">'+i+'</span>'+v+'</div>';
+    }).join('');
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Root: index '+step.root+' (val='+ARR[step.root]+', global min)  |  Placed: '+step.placed.length+'/'+N;
 }
-
-function log(msg){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;b.appendChild(p);b.scrollTop=b.scrollHeight;}
-
-resetCT();
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

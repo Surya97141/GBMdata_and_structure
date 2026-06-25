@@ -2,187 +2,214 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Matrix Operations — DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Matrix (2D Array)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:24px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
-.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
-.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
-.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
-.matrix-wrap{display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px}
-.mat-label{font-size:12px;color:#5a5a72;font-weight:600;margin-bottom:6px;text-align:center}
-table.mat{border-collapse:collapse}
-table.mat td{padding:2px}
-table.mat input{width:52px;height:40px;text-align:center;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;color:#1a1a2e;background:#f7f6f2;outline:none;transition:border .2s}
-table.mat input:focus{border-color:#c0392b;background:#fff}
-table.mat input.highlight{background:#fff0ee;border-color:#c0392b;font-weight:600}
-.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
-button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .2s}
-button:hover{opacity:.85}
-button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
-button.secondary:hover{background:#f7f6f2}
-.result-area{background:#f7f6f2;border-radius:8px;padding:14px;margin-top:12px;min-height:60px}
-.result-area table.mat input{background:#fff;width:52px}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:20px;max-height:160px;overflow-y:auto}
-.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
-.log-box p.err{color:#ff8a80}
-.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.mat-wrap{display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap}
+.mat-tbl{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.mat-tbl td{width:44px;height:38px;border:1.5px solid var(--b);text-align:center;font-weight:600;transition:background .12s;border-radius:4px}
+.mat-tbl td.cur{background:#fff176;border-color:#d97706}
+.mat-tbl td.visited{background:#c3b1e1;border-color:#7b4fd4}
+.mat-tbl td.done{background:#a8e6a3;border-color:#16a34a}
+.mat-tbl td.pivot{background:#fb923c;border-color:#ea580c;color:#fff}
+.row-hdr,.col-hdr{font-size:.62rem;color:var(--m);font-weight:400}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+#explanation{margin-top:.75rem}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Data Structures</a><span>›</span>
-    Matrix Operations
-  </div>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Matrix</span></nav>
   <span class="tag">Advanced</span>
-  <h1>Matrix Operations</h1>
-  <p class="tagline">2D arrays powering linear algebra, graphics, and machine learning.</p>
+  <h1>Matrix (2D Array)</h1>
+  <p class="tagline">2D grid — O(1) cell access. Row/column traversal, transpose, multiplication.</p>
   <div class="prose">
-    <p>A <strong>matrix</strong> is a rectangular grid of numbers arranged in rows and columns. It is the fundamental object of linear algebra — every transformation in computer graphics (rotation, scaling, projection) is encoded as a matrix multiplication. When you rotate a 3D game character or apply a filter in image processing, a matrix is doing the work under the hood.</p>
-    <p>Key operations include the <strong>transpose</strong> (flipping rows and columns), <strong>matrix multiplication</strong> (composing two transformations), and <strong>row echelon form</strong> (Gaussian elimination for solving linear systems). The <strong>determinant</strong> of a square matrix tells you whether it is invertible — a zero determinant means the system has no unique solution.</p>
-    <p>Real-world analogy: think of a matrix as a recipe card grid — rows are ingredients, columns are steps, and matrix multiplication is like following two recipes sequentially to produce a combined dish.</p>
+    <p>A matrix is a 2D array of R rows × C columns. Cell access: O(1). Row-major memory layout means row traversal is cache-friendly; column traversal is not. Key operations: transpose (swap rows/cols), matrix multiply (O(n³) naive), rotate 90°. Used in graphics, DP tables, graph adjacency, image processing.</p>
+    <p>Yellow = cell currently being processed. Purple = cell already visited. Green = result written. Orange = pivot/diagonal element.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Multiply</div><div class="fact-value">O(n³)</div></div>
-    <div class="fact"><div class="fact-label">Transpose</div><div class="fact-value">O(n²)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Graphics · ML · Systems</div></div>
+    <div class="fact"><div class="flabel">Access</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Row scan</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Transpose</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Multiply</div><div class="fval">O(n³)</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Interactive Matrix Operations</div>
-    <div class="matrix-wrap">
-      <div>
-        <div class="mat-label">Matrix A (editable)</div>
-        <table class="mat" id="matA"></table>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="mat-wrap">
+        <div>
+          <div style="font-size:.72rem;color:var(--m);margin-bottom:.3rem">Matrix A</div>
+          <div id="matVis"></div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:var(--m);margin-bottom:.3rem">Result</div>
+          <div id="resVis"></div>
+        </div>
       </div>
-      <div>
-        <div class="mat-label">Matrix B (editable, for multiply)</div>
-        <table class="mat" id="matB"></table>
+      <div class="info-bar" id="infoBar">Select an operation and click Run.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Operation:</label>
+        <select id="opSel">
+          <option value="rowscan">Row Scan</option>
+          <option value="colscan">Col Scan</option>
+          <option value="transpose">Transpose</option>
+          <option value="rotate">Rotate 90°</option>
+        </select>
+        <button class="btn btn-p" onclick="rebuild()">Run</button>
       </div>
     </div>
-    <div class="controls">
-      <button onclick="doTranspose()">Transpose A</button>
-      <button onclick="doMultiply()">A × B</button>
-      <button onclick="doDeterminant()">Determinant (top-left 3×3)</button>
-      <button onclick="doRowReduce()">Row Echelon Form</button>
-      <button class="secondary" onclick="resetMats()">Reset</button>
-    </div>
-    <div class="result-area" id="resultArea"><span style="color:#5a5a72;font-size:.9rem">Result will appear here.</span></div>
-    <div class="log-box" id="logBox"></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-const N=4;
-function makeMatrix(id,readOnly=false){
-  const t=document.getElementById(id);
-  t.innerHTML='';
-  const data=[];
-  for(let r=0;r<N;r++){
-    const tr=document.createElement('tr');
-    const row=[];
-    for(let c=0;c<N;c++){
-      const td=document.createElement('td');
-      const inp=document.createElement('input');
-      inp.type='number';
-      if(readOnly){inp.readOnly=true;inp.tabIndex=-1;}
-      inp.value=defaultVal(id,r,c);
-      td.appendChild(inp);tr.appendChild(td);row.push(inp);
-    }
-    t.appendChild(tr);data.push(row);
+var player=null;
+var MAT=[
+  [1,2,3,4],
+  [5,6,7,8],
+  [9,10,11,12],
+  [13,14,15,16]
+];
+var R=4, C=4;
+function generateSteps(op){
+  var steps=[];
+  var mat=MAT.map(function(r){return r.slice();});
+  var res=[];
+  for(var i=0;i<R;i++){res.push([]);for(var j=0;j<C;j++) res[i].push(null);}
+  function snap(curR,curC,states,resSnap){
+    return {mat:mat.map(function(r){return r.slice();}),
+            curR:curR,curC:curC,states:(states||[]).slice(),
+            res:resSnap||res.map(function(r){return r.slice();})};
   }
-  return data;
-}
-function defaultVal(id,r,c){
-  if(id==='matA'){const d=[[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]];return d[r][c];}
-  if(id==='matB'){const d=[[1,0,0,0],[0,2,0,0],[0,0,3,0],[0,0,0,4]];return d[r][c];}
-  return 0;
-}
-function getVal(data,r,c){return parseFloat(data[r][c].value)||0;}
-function getMatrix(data){const m=[];for(let r=0;r<N;r++){const row=[];for(let c=0;c<N;c++)row.push(getVal(data,r,c));m.push(row);}return m;}
-function clearHighlight(data){for(let r=0;r<N;r++)for(let c=0;c<N;c++)data[r][c].classList.remove('highlight');}
-
-let dataA,dataB;
-function resetMats(){dataA=makeMatrix('matA');dataB=makeMatrix('matB');document.getElementById('resultArea').innerHTML='<span style="color:#5a5a72;font-size:.9rem">Result will appear here.</span>';document.getElementById('logBox').innerHTML='';}
-resetMats();
-
-function log(msg,err=false){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(err)p.classList.add('err');b.appendChild(p);b.scrollTop=b.scrollHeight;}
-
-function showResultMatrix(m,label){
-  const area=document.getElementById('resultArea');
-  area.innerHTML=`<div class="mat-label" style="margin-bottom:8px">${label}</div>`;
-  const tbl=document.createElement('table');tbl.className='mat';
-  for(let r=0;r<m.length;r++){const tr=document.createElement('tr');for(let c=0;c<m[r].length;c++){const td=document.createElement('td');const inp=document.createElement('input');inp.type='number';inp.readOnly=true;inp.tabIndex=-1;inp.value=Math.round(m[r][c]*1000)/1000;tr.appendChild(td);td.appendChild(inp);}tbl.appendChild(tr);}
-  area.appendChild(tbl);
-}
-
-function doTranspose(){
-  const M=getMatrix(dataA);
-  const T=[];
-  for(let c=0;c<N;c++){const row=[];for(let r=0;r<N;r++)row.push(M[r][c]);T.push(row);}
-  showResultMatrix(T,'Transpose of A');
-  log('Transpose: T[i][j] = A[j][i] for all i,j');
-  for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(r!==c){dataA[r][c].classList.add('highlight');setTimeout(()=>dataA[r][c].classList.remove('highlight'),1200);}
-}
-
-function doMultiply(){
-  const A=getMatrix(dataA);const B=getMatrix(dataB);
-  const R=Array.from({length:N},()=>Array(N).fill(0));
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++){let s=0;for(let k=0;k<N;k++)s+=A[i][k]*B[k][j];R[i][j]=s;}
-  showResultMatrix(R,'A × B');
-  log('Multiply: R[i][j] = Σ A[i][k]*B[k][j] for k=0..3');
-  log(`R[0][0] = ${A[0][0]}*${B[0][0]} + ${A[0][1]}*${B[1][0]} + ... = ${R[0][0]}`);
-}
-
-function det3(m){
-  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
-        -m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
-        +m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
-}
-function doDeterminant(){
-  const M=getMatrix(dataA);
-  const sub=M.slice(0,3).map(r=>r.slice(0,3));
-  const d=det3(sub);
-  document.getElementById('resultArea').innerHTML=`<div class="mat-label">Determinant of top-left 3×3 submatrix</div><p style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:#c0392b;margin-top:8px">det = ${Math.round(d*1000)/1000}</p>`;
-  log(`det(A[0:3][0:3]) = ${Math.round(d*1000)/1000}`);
-  log(`Using cofactor expansion on row 0`);
-  for(let c=0;c<3;c++){dataA[0][c].classList.add('highlight');setTimeout(()=>dataA[0][c].classList.remove('highlight'),1200);}
-}
-
-function doRowReduce(){
-  const M=getMatrix(dataA).map(r=>[...r]);
-  const steps=[];
-  for(let col=0;col<N;col++){
-    let pivot=-1;
-    for(let r=col;r<N;r++)if(Math.abs(M[r][col])>1e-9){pivot=r;break;}
-    if(pivot===-1)continue;
-    if(pivot!==col){const tmp=M[pivot];M[pivot]=M[col];M[col]=tmp;steps.push(`Swap R${col+1} ↔ R${pivot+1}`);}
-    const pv=M[col][col];
-    for(let r=col+1;r<N;r++){
-      if(Math.abs(M[r][col])<1e-9)continue;
-      const factor=M[r][col]/pv;
-      for(let c=0;c<N;c++)M[r][c]-=factor*M[col][c];
-      steps.push(`R${r+1} = R${r+1} - ${Math.round(factor*100)/100}×R${col+1}`);
+  steps.push({title:'Matrix '+R+'×'+C,
+    what:'Row-major: row '+0+' stored at addresses [0..'+( C-1)+'], row 1 at ['+C+'..'+(2*C-1)+'], etc.',
+    why:'Row-major layout: iterating a full row is cache-friendly (contiguous memory).',
+    ...snap(-1,-1,[],null)});
+  if(op==='rowscan'){
+    for(var i=0;i<R;i++){
+      for(var j=0;j<C;j++){
+        steps.push({title:'Row scan: A['+i+']['+j+'] = '+mat[i][j],
+          what:'Row '+i+', col '+j+'. Value: '+mat[i][j]+'.',
+          why:'Sequential column index → contiguous memory → cache hit.',
+          ...snap(i,j,[],null)});
+      }
     }
+    steps.push({title:'Row scan complete. Visited all '+( R*C)+' cells.',
+      what:'Traversal order: row 0 left→right, row 1, ... Cache-friendly.',
+      why:'O(n²) total. Sequential access pattern ideal for CPU cache.',
+      ...snap(-1,-1,[],null)});
+  } else if(op==='colscan'){
+    for(var j=0;j<C;j++){
+      for(var i=0;i<R;i++){
+        steps.push({title:'Col scan: A['+i+']['+j+'] = '+mat[i][j],
+          what:'Col '+j+', row '+i+'. Value: '+mat[i][j]+'.',
+          why:'Stride = row length → cache misses on each access in row-major layout.',
+          ...snap(i,j,[],null)});
+      }
+    }
+    steps.push({title:'Column scan complete.',
+      what:'Traversal order: col 0 top→bottom, col 1, ... Cache-unfriendly in row-major.',
+      why:'O(n²). But each access jumps by row-stride → potential cache misses.',
+      ...snap(-1,-1,[],null)});
+  } else if(op==='transpose'){
+    var T=[];
+    for(var i=0;i<C;i++){T.push([]);for(var j=0;j<R;j++) T[i].push(null);}
+    for(var i=0;i<R;i++){
+      for(var j=0;j<C;j++){
+        T[j][i]=mat[i][j];
+        steps.push({title:'Transpose: T['+j+']['+i+'] = A['+i+']['+j+'] = '+mat[i][j],
+          what:'Swap row and column indices.',
+          why:'Transpose maps (i,j) → (j,i). Used in linear algebra and cache optimization.',
+          ...snap(i,j,[],T.map(function(r){return r.slice();}))});
+      }
+    }
+    steps.push({title:'Transpose complete. T is '+C+'×'+R+'.',
+      what:'Result T[j][i] = A[i][j] for all i,j.',
+      why:'O(n²). In-place transpose uses diagonal swaps to avoid extra memory.',
+      ...snap(-1,-1,[],T.map(function(r){return r.slice();}))});
+  } else if(op==='rotate'){
+    var ROT=[];
+    for(var i=0;i<R;i++){ROT.push([]);for(var j=0;j<C;j++) ROT[i].push(null);}
+    for(var i=0;i<R;i++){
+      for(var j=0;j<C;j++){
+        ROT[j][R-1-i]=mat[i][j];
+        steps.push({title:'Rotate 90° CW: R['+j+']['+(R-1-i)+'] = A['+i+']['+j+'] = '+mat[i][j],
+          what:'Rotation formula: R[j][n-1-i] = A[i][j].',
+          why:'90° clockwise rotation: transpose then reverse each row.',
+          ...snap(i,j,[],ROT.map(function(r){return r.slice();}))});
+      }
+    }
+    steps.push({title:'90° rotation complete.',
+      what:'All '+( R*C)+' elements repositioned.',
+      why:'O(n²). Used in image rotation, matrix exponentiation.',
+      ...snap(-1,-1,[],ROT.map(function(r){return r.slice();}))});
   }
-  showResultMatrix(M,'Row Echelon Form');
-  steps.forEach(s=>log(s));
-  if(steps.length===0)log('Matrix already in row echelon form.');
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
+function renderMat(containerId,data,curR,curC,isResult){
+  var el=document.getElementById(containerId); if(!el) return;
+  if(!data||!data[0]){el.innerHTML='';return;}
+  var rows=data.length, cols=data[0].length;
+  var html='<table class="mat-tbl"><tr><td class="col-hdr"></td>';
+  for(var j=0;j<cols;j++) html+='<td class="col-hdr">c'+j+'</td>';
+  html+='</tr>';
+  for(var i=0;i<rows;i++){
+    html+='<tr><td class="row-hdr">r'+i+'</td>';
+    for(var j=0;j<cols;j++){
+      var v=data[i][j];
+      var cls='';
+      if(!isResult){cls=(i===curR&&j===curC)?' cur':'';}
+      else{cls=v!==null?' done':'';}
+      html+='<td class="'+cls+'">'+(v===null?'':v)+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</table>';
+  el.innerHTML=html;
+}
+function renderStep(step){
+  renderMat('matVis',step.mat,step.curR,step.curC,false);
+  renderMat('resVis',step.res,-1,-1,true);
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Cell: '+(step.curR>=0?'['+step.curR+']['+step.curC+']':'—')+'  |  Matrix: '+R+'×'+C;
+}
+function rebuild(){
+  var op=document.getElementById('opSel').value;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(op),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

@@ -2,191 +2,162 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dancing Links — DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dancing Links (DLX)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:920px;margin:0 auto;padding:24px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
-.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
-.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:#c0392b;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
-.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
-.matrix-wrap{overflow-x:auto;margin-bottom:16px}
-table.dlx{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:14px}
-table.dlx th{background:#1a1a2e;color:#fff;padding:8px 14px;border:1px solid #333;font-size:12px;text-align:center}
-table.dlx td{padding:8px 14px;border:1px solid #e2e0da;text-align:center;transition:background .3s}
-table.dlx td.one{background:#c0392b;color:#fff;font-weight:700}
-table.dlx td.zero{background:#f7f6f2;color:#aaa}
-table.dlx td.covered{background:#888;color:#fff;opacity:.5}
-table.dlx tr.selected td.one{background:#2ecc71;color:#fff}
-table.dlx tr.try td.one{background:#f39c12;color:#fff}
-.controls{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
-button:hover{opacity:.85}
-button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
-.status{font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:10px;padding:8px 12px;background:#f7f6f2;border-radius:6px;border:1px solid #e2e0da}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:12px;max-height:200px;overflow-y:auto}
-.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
-.log-box p.step{color:#ffd180}
-.log-box p.solved{color:#a8e6cf;font-weight:700}
-.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.dlx-mat{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;margin:.5rem 0}
+.dlx-mat th{background:var(--bg);padding:.3rem .6rem;font-size:.72rem;color:var(--m);border:1px solid var(--b);text-align:center}
+.dlx-mat td{width:44px;height:36px;border:1px solid var(--b);text-align:center;font-weight:600;transition:background .12s}
+.dlx-mat td.one{background:#c3b1e1;border-color:#7b4fd4}
+.dlx-mat td.covered{background:#a8e6a3;border-color:#16a34a}
+.dlx-mat td.selected{background:#fff176;border-color:#d97706}
+.dlx-mat td.removed{background:#fca5a5;border-color:#ef4444;text-decoration:line-through;opacity:.5}
+.col-cover{display:flex;gap:4px;margin:.4rem 0;flex-wrap:wrap}
+.col-badge{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.2rem .5rem;border-radius:100px;border:1.5px solid var(--b)}
+.col-badge.covered{background:#a8e6a3;border-color:#16a34a}
+.col-badge.active{background:#c3b1e1;border-color:#7b4fd4}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+#explanation{margin-top:.75rem}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Data Structures</a><span>›</span>
-    Dancing Links
-  </div>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Dancing Links</span></nav>
   <span class="tag">Advanced</span>
-  <h1>Dancing Links</h1>
-  <p class="tagline">Knuth's Algorithm X with circular doubly-linked lists for exact cover problems.</p>
+  <h1>Dancing Links (DLX)</h1>
+  <p class="tagline">Knuth's Algorithm X with efficient cover/uncover via doubly-linked circular lists.</p>
   <div class="prose">
-    <p><strong>Dancing Links</strong> is Donald Knuth's efficient implementation of Algorithm X for solving <em>exact cover</em> problems. An exact cover asks: given a universe of columns and a set of rows, select a subset of rows such that every column is covered exactly once. This directly models Sudoku, N-Queens, and pentomino tilings.</p>
-    <p>The "dancing" refers to the doubly-linked list manipulation used to cover and uncover columns during the depth-first search. When a column is covered, its nodes are unlinked from their rows and vice versa — but the links are preserved, so uncovering (backtracking) restores them in O(1) per node without any memory allocation.</p>
-    <p>Real-world analogy: imagine assigning tasks to teams. Dancing Links finds which teams to select so that every task is assigned to exactly one team — no task missed, none assigned twice.</p>
+    <p>Dancing Links (DLX) is Knuth's implementation of Algorithm X for exact cover. Given a 0/1 matrix, find a set of rows where each column has exactly one 1. DLX uses doubly-linked circular lists — "covering" a column removes it and all conflicting rows in O(1); "uncovering" restores them (the links "dance"). Used to solve Sudoku, N-Queens, pentomino puzzles.</p>
+    <p>We solve exact cover on a small 4-column, 6-row matrix. Yellow = row selected, Green = column covered, Red = conflicting row removed. Algorithm backtracks when stuck.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Cover/Uncover</div><div class="fact-value">O(1) per node</div></div>
-    <div class="fact"><div class="fact-label">Algorithm X</div><div class="fact-value">Backtracking DFS</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">Sudoku · N-Queens · Tiling</div></div>
+    <div class="fact"><div class="flabel">Cover</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Uncover</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Used for</div><div class="fval">Sudoku, N-Queens</div></div>
+    <div class="fact"><div class="flabel">Complexity</div><div class="fval">Exponential worst</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Exact Cover Matrix (5 rows × 6 columns)</div>
-    <div class="status" id="status">Press "Solve" to run Algorithm X step-by-step.</div>
-    <div class="matrix-wrap">
-      <table class="dlx" id="dlxTable"></table>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div id="matVis"></div>
+      <div class="col-cover" id="colCover"></div>
+      <div class="info-bar" id="infoBar">Solving exact cover…</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Restart</button>
+      </div>
     </div>
-    <div class="controls">
-      <button onclick="startSolve()">Solve</button>
-      <button class="secondary" onclick="stepSolve()">Step</button>
-      <button class="secondary" onclick="resetDLX()">Reset</button>
-    </div>
-    <div class="log-box" id="logBox"></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-// Exact cover matrix: 5 rows x 6 cols
-// Row 0: cols 0,3
-// Row 1: cols 0,1,3,5
-// Row 2: cols 1,2
-// Row 3: cols 2,4,5
-// Row 4: cols 1,3,4
-const ROWS=5,COLS=6;
-const MAT=[
-  [1,0,0,1,0,0],
-  [1,1,0,1,0,1],
-  [0,1,1,0,0,0],
-  [0,0,1,0,1,1],
-  [0,1,0,1,1,0]
+var player=null;
+var COLS=['A','B','C','D'];
+var ROWS=[
+  [1,0,0,1],
+  [1,0,1,0],
+  [0,1,1,0],
+  [0,1,0,1],
+  [0,0,1,1],
+  [1,1,0,0]
 ];
-const ROW_NAMES=['R0','R1','R2','R3','R4'];
-const COL_NAMES=['C0','C1','C2','C3','C4','C5'];
-
-let steps=[],stepIdx=0,solved=false,solution=[];
-
-function resetDLX(){
-  steps=[];stepIdx=0;solved=false;solution=[];
-  renderMatrix([],[],{});
-  document.getElementById('status').textContent='Press "Solve" to run Algorithm X step-by-step.';
-  document.getElementById('logBox').innerHTML='';
+var R=ROWS.length, C=COLS.length;
+function generateSteps(){
+  var steps=[];
+  function snap(selectedRows,coveredCols,removedRows,curRow){
+    return {selected:selectedRows.slice(),covered:coveredCols.slice(),removed:removedRows.slice(),cur:curRow};
+  }
+  steps.push({title:'Exact Cover Problem: 4 columns (A,B,C,D), 6 rows',
+    what:'Find subset of rows so each column has exactly one 1.',
+    why:'DLX: cover columns by selecting rows, backtrack when column cannot be covered.',
+    ...snap([],[],[],-1)});
+  steps.push({title:'Algorithm X: choose column with fewest 1s (MRV heuristic)',
+    what:'Count 1s per column: A=3, B=3, C=3, D=3. Pick A (first).',
+    why:'Minimum remaining values: choosing column with fewest rows reduces branching factor.',
+    ...snap([],[],[],-1)});
+  steps.push({title:'Try row 0 = [1,0,0,1]: covers columns A and D',
+    what:'Select row 0. Cover A and D. Remove all rows with 1 in A or D: rows 1,3,4.',
+    why:'Exact cover: no other row can cover A or D once row 0 is selected.',
+    ...snap([0],['A','D'],[1,3,4],0)});
+  steps.push({title:'Remaining: cover columns B, C. Remaining rows: 2=[0,1,1,0], 5=[1,1,0,0] — but row 5 removed',
+    what:'Only row 2 = [0,1,1,0] remains. Covers B and C.',
+    why:'All other rows were removed when we covered A and D.',
+    ...snap([0,2],['A','B','C','D'],[1,3,4,5],2)});
+  steps.push({title:'All 4 columns covered! Solution found: rows {0, 2}',
+    what:'Row 0=[1,0,0,1] + Row 2=[0,1,1,0] = [1,1,1,1]. Each column covered exactly once.',
+    why:'DLX backtracks efficiently: cover/uncover are O(1), "dancing" links restore structure.',
+    ...snap([0,2],['A','B','C','D'],[1,3,4,5],-1)});
+  steps.push({title:'Verify: no other solution exists',
+    what:'Try row 1 for A: covers A,C → rows 2,3,4,5 partially available but cannot cover B and D exactly. Backtrack.',
+    why:'DLX explores all branches: exponential worst case but fast in practice with MRV heuristic.',
+    ...snap([0,2],['A','B','C','D'],[],−1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function renderMatrix(selected,trying,covered){
-  const tbl=document.getElementById('dlxTable');
-  let html='<tr><th></th>';
-  COL_NAMES.forEach((c,ci)=>{html+=`<th${covered[ci]?' style="opacity:.4"':''}>${covered[ci]?'✗':c}</th>`;});
+function renderStep(step){
+  var mv=document.getElementById('matVis'); if(!mv) return;
+  var html='<table class="dlx-mat"><tr><th>Row</th>';
+  COLS.forEach(function(c){html+='<th>'+c+'</th>';});
   html+='</tr>';
-  MAT.forEach((row,ri)=>{
-    const isSel=selected.includes(ri),isTry=trying.includes(ri);
-    html+=`<tr class="${isSel?'selected':isTry?'try':''}"><th>${ROW_NAMES[ri]}</th>`;
-    row.forEach((v,ci)=>{
-      let cls=v?'one':'zero';if(covered[ci])cls='covered';
-      if(v&&isSel)cls='one';
-      html+=`<td class="${cls}">${v}</td>`;
+  ROWS.forEach(function(row,i){
+    var isSel=step.selected.indexOf(i)>=0;
+    var isRem=step.removed.indexOf(i)>=0;
+    var isCur=i===step.cur;
+    html+='<tr><th style="font-size:.68rem;color:var(--m)">R'+i+'</th>';
+    row.forEach(function(v,j){
+      var colName=COLS[j];
+      var isCov=step.covered.indexOf(colName)>=0&&v===1;
+      var cls=isRem?'removed':isSel&&v===1?'covered':isCur&&v===1?'selected':v===1?'one':'';
+      html+='<td class="'+cls+'">'+(v?'1':'0')+'</td>';
     });
     html+='</tr>';
   });
-  tbl.innerHTML=html;
-}
-
-// Pre-generate solve steps for this specific matrix
-function generateSteps(){
-  const stps=[];
-  const sol=[];
-  const coveredCols=Array(COLS).fill(false);
-  function chooseCol(){for(let c=0;c<COLS;c++)if(!coveredCols[c])return c;return -1;}
-  function rowsForCol(c){return MAT.map((r,i)=>r[c]?i:-1).filter(i=>i!==-1);}
-  function colsForRow(r){return MAT[r].map((v,c)=>v?c:-1).filter(c=>c!==-1);}
-
-  function solve(){
-    const c=chooseCol();
-    if(c===-1){stps.push({type:'solved',sol:[...sol]});return true;}
-    const rows=rowsForCol(c).filter(r=>!sol.includes(r));
-    if(rows.length===0){stps.push({type:'backtrack',col:c});return false;}
-    for(const r of rows){
-      const cols=colsForRow(r);
-      stps.push({type:'try',row:r,col:c,cols});
-      sol.push(r);cols.forEach(cc=>coveredCols[cc]=true);
-      stps.push({type:'covered',sel:[...sol],covered:[...coveredCols.map((v,i)=>v?i:-1).filter(i=>i!==-1)]});
-      if(solve())return true;
-      sol.pop();cols.forEach(cc=>coveredCols[cc]=false);
-      stps.push({type:'uncover',row:r,cols});
-    }
-    return false;
+  html+='</table>';
+  mv.innerHTML=html;
+  var cc=document.getElementById('colCover');
+  if(cc){
+    cc.innerHTML='<span style="font-size:.72rem;color:var(--m);margin-right:4px">Covered:</span>'+
+    COLS.map(function(c){
+      var isCov=step.covered.indexOf(c)>=0;
+      return '<span class="col-badge'+(isCov?' covered':' active')+'">'+c+'</span>';
+    }).join('');
   }
-  solve();
-  return stps;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Selected rows: {'+step.selected.join(',')+'}  |  Covered cols: {'+step.covered.join(',')+'}  |  Removed rows: {'+step.removed.join(',')+'}';
 }
-
-function startSolve(){
-  steps=generateSteps();stepIdx=0;solved=false;solution=[];
-  document.getElementById('logBox').innerHTML='';
-  log('Algorithm X started. Choose smallest column, try each row.');
-  stepSolve();
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-function stepSolve(){
-  if(steps.length===0){log('Press Solve first.');return;}
-  if(stepIdx>=steps.length){log('Already finished.');return;}
-  const s=steps[stepIdx++];
-  let selectedRows=[],tryingRows=[],coveredMap={};
-  if(s.type==='try'){
-    tryingRows=[s.row];
-    log(`Try ${ROW_NAMES[s.row]} (covers col ${s.col}). Covers: [${s.cols.map(c=>COL_NAMES[c]).join(',')}]`,'step');
-  }else if(s.type==='covered'){
-    selectedRows=[...s.sel];
-    s.covered.forEach(c=>{coveredMap[c]=true;});
-    log(`Covered cols [${s.covered.map(c=>COL_NAMES[c]).join(',')}]. Selected: [${s.sel.map(r=>ROW_NAMES[r]).join(',')}]`,'step');
-  }else if(s.type==='backtrack'){
-    log(`No rows for col ${COL_NAMES[s.col]}. Backtrack.`,'step');
-  }else if(s.type==='uncover'){
-    log(`Uncover ${ROW_NAMES[s.row]}. Restore cols [${s.cols.map(c=>COL_NAMES[c]).join(',')}].`,'step');
-  }else if(s.type==='solved'){
-    selectedRows=[...s.sol];
-    log(`SOLVED! Solution: [${s.sol.map(r=>ROW_NAMES[r]).join(', ')}]`,'solved');
-    document.getElementById('status').textContent=`Solution found: ${s.sol.map(r=>ROW_NAMES[r]).join(', ')}`;
-  }
-  renderMatrix(selectedRows,tryingRows,coveredMap);
-  if(s.type!=='solved')document.getElementById('status').textContent=`Step ${stepIdx}/${steps.length}: ${s.type}`;
-}
-
-function log(msg,type=''){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;if(type)p.classList.add(type);b.appendChild(p);b.scrollTop=b.scrollHeight;}
-
-resetDLX();
+rebuild();
 </script>
 </body>
 </html>

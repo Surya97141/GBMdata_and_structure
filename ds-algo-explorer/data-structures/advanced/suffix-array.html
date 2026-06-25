@@ -2,146 +2,189 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Suffix Array — DS Algo Explorer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Suffix Array</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-a{color:#c0392b;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:24px 20px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.tag{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;padding:3px 10px;border-radius:4px;text-transform:uppercase;margin-bottom:12px}
-h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1a1a2e;margin-bottom:8px}
-.tagline{font-size:1.05rem;color:#5a5a72;margin-bottom:32px}
-.prose p{color:#1a1a2e;margin-bottom:14px;font-size:.97rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:18px;text-align:center}
-.fact-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5a5a72;margin-bottom:6px}
-.fact-value{font-family:'JetBrains Mono',monospace;font-size:1rem;color:#c0392b;font-weight:600}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin:28px 0}
-.sim-title{font-weight:600;font-size:1rem;margin-bottom:16px;color:#1a1a2e}
-.controls{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-input[type=text]{height:36px;border:1px solid #e2e0da;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;padding:0 10px;outline:none;background:#f7f6f2;width:200px}
-input[type=text]:focus{border-color:#c0392b;background:#fff}
-button{background:#c0392b;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:.87rem;font-weight:600;cursor:pointer;transition:opacity .2s}
-button:hover{opacity:.85}
-button.secondary{background:#fff;color:#1a1a2e;border:1px solid #e2e0da}
-.suffix-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:13px}
-.suffix-table th{background:#f7f6f2;color:#5a5a72;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border:1px solid #e2e0da;text-align:left}
-.suffix-table td{border:1px solid #e2e0da;padding:7px 10px;vertical-align:middle}
-.suffix-table tr.row-highlight td{background:#fff0ee}
-.lcp-bar{display:inline-block;height:14px;border-radius:3px;background:#c0392b;opacity:.25;vertical-align:middle;margin-right:4px}
-.suffix-chars span{display:inline-block;padding:0 2px;border-radius:3px}
-.suffix-chars span.lcp{background:#ffd5d0}
-.suffix-chars span.rest{color:#1a1a2e}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.log-box{background:#1a1a2e;border-radius:10px;padding:16px;margin-top:16px;max-height:160px;overflow-y:auto}
-.log-box p{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8e6cf;margin-bottom:4px}
-.back-link{margin-top:32px;display:inline-block;font-size:.9rem}
-.section-label{font-size:12px;font-weight:600;color:#5a5a72;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.sa-list{font-family:'JetBrains Mono',monospace;font-size:.78rem;margin:.5rem 0}
+.sa-row{display:flex;align-items:center;gap:.6rem;padding:.2rem .4rem;border-radius:5px;margin:.15rem 0}
+.sa-row.cur{background:#fff176}
+.sa-row.done{background:#a8e6a3}
+.sa-row.cmp{background:#c3b1e1}
+.sa-idx{width:24px;text-align:right;color:var(--m);font-size:.68rem}
+.sa-sfx{color:var(--ink);flex:1}
+.sa-sfx .match{background:#fde68a;border-radius:2px;padding:0 1px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:100px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+#explanation{margin-top:.75rem}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Data Structures</a><span>›</span>
-    Suffix Array
-  </div>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Suffix Array</span></nav>
   <span class="tag">Advanced</span>
   <h1>Suffix Array</h1>
-  <p class="tagline">All suffixes of a string, sorted — enabling fast pattern matching and LCP queries.</p>
+  <p class="tagline">Sorted array of all suffixes — O(n log n) build, O(m log n) pattern search.</p>
   <div class="prose">
-    <p>A <strong>Suffix Array</strong> is a sorted array of all suffixes of a given string. For the string "banana", its suffixes are "banana", "anana", "nana", "ana", "na", "a" — and the suffix array gives their sorted order by index: [5, 3, 1, 0, 4, 2] (i.e., "a", "ana", "anana", "banana", "na", "nana").</p>
-    <p>The companion <strong>LCP Array</strong> stores the length of the longest common prefix between consecutive suffixes in sorted order. Together they support pattern matching in O(m + log n) time and are the backbone of DNA sequence alignment tools like BWA.</p>
-    <p>Real-world analogy: think of a phonebook that lists every possible "tail" of every name, sorted alphabetically. Want to find all entries containing "ana"? Binary search the sorted list in milliseconds.</p>
+    <p>A suffix array SA is an array of starting indices of all suffixes of a string, sorted lexicographically. Build: O(n log n) with prefix-doubling. Pattern search: binary search on SA in O(m log n) where m=|pattern|. Combined with LCP array enables O(n+m) search. Used in bioinformatics, full-text search, data compression.</p>
+    <p>Building: all n suffixes sorted. Search: binary search finds range [lo,hi] where suffixes start with pattern. Yellow = current comparison, Purple = sorted suffix, Green = match found.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Build</div><div class="fact-value">O(n log n)</div></div>
-    <div class="fact"><div class="fact-label">Pattern Search</div><div class="fact-value">O(m + log n)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-value">DNA · Search · Compression</div></div>
+    <div class="fact"><div class="flabel">Build</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Search</div><div class="fval">O(m log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">Full-text search</div></div>
   </div>
-  <div class="sim-box">
-    <div class="sim-title">Suffix Array Builder</div>
-    <div class="controls">
-      <input type="text" id="strInput" value="banana" maxlength="10" placeholder="Enter string (max 10 chars)"/>
-      <button onclick="buildSA()">Build</button>
-      <button class="secondary" onclick="document.getElementById('strInput').value='banana';buildSA()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="sa-list" id="saVis"></div>
+      <div class="info-bar" id="infoBar">Building suffix array…</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Pattern:</label>
+        <input type="text" id="patInput" value="an"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
+      </div>
     </div>
-    <div class="two-col" id="outputArea"></div>
-    <div class="log-box" id="logBox"></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-function buildSA(){
-  const raw=document.getElementById('strInput').value.toLowerCase().replace(/[^a-z]/g,'').slice(0,10);
-  if(raw.length<2){log('Enter at least 2 characters');return;}
-  const s=raw+'$';
-  const n=s.length;
-  // build suffix array naively (n≤11 so O(n²logn) is fine)
-  const suffixes=Array.from({length:n},(_,i)=>i);
-  suffixes.sort((a,b)=>s.slice(a)<s.slice(b)?-1:s.slice(a)>s.slice(b)?1:0);
-  // remove sentinel
-  const sa=suffixes.filter(i=>i<n-1);
-  // build LCP array
-  const rank=Array(n).fill(0);
-  sa.forEach((v,i)=>rank[v]=i);
-  const lcp=Array(sa.length).fill(0);
-  let h=0;
-  for(let i=0;i<n-1;i++){
-    if(rank[i]>0){
-      const j=sa[rank[i]-1];
-      while(i+h<n&&j+h<n&&s[i+h]===s[j+h])h++;
-      lcp[rank[i]]=h;
-      if(h>0)h--;
+var player=null;
+var TEXT='banana$';
+function buildSA(s){
+  var n=s.length;
+  var idx=[];for(var i=0;i<n;i++) idx.push(i);
+  idx.sort(function(a,b){
+    var sa=s.slice(a), sb=s.slice(b);
+    return sa<sb?-1:sa>sb?1:0;
+  });
+  return idx;
+}
+var SA=buildSA(TEXT);
+function generateSteps(pat){
+  var steps=[];
+  var n=TEXT.length;
+  function snap(cur,compared,matches){
+    return {sa:SA.slice(),cur:cur,compared:compared||[],matches:matches||[]};
+  }
+  steps.push({title:'Text: "'+TEXT+'" (n='+n+')',
+    what:'Build suffix array: sort all '+n+' suffixes lexicographically.',
+    why:'Suffix array enables O(m log n) pattern search via binary search.',
+    ...snap(-1,[],[])});
+  SA.forEach(function(si,rank){
+    steps.push({title:'SA['+rank+'] = '+si+' → "'+TEXT.slice(si)+'"',
+      what:'Suffix starting at index '+si+': "'+TEXT.slice(si)+'".',
+      why:'Lexicographic rank '+rank+' of all suffixes.',
+      ...snap(rank,[],[])});
+  });
+  steps.push({title:'Suffix array built. Now search for "'+pat+'"',
+    what:'SA = ['+SA.join(',')+'].',
+    why:'Binary search on SA: compare pattern with suffix at midpoint.',
+    ...snap(-1,[],[])});
+  var lo=0, hi=n-1;
+  var matchStart=-1, matchEnd=-1;
+  while(lo<=hi){
+    var mid=Math.floor((lo+hi)/2);
+    var sfx=TEXT.slice(SA[mid]);
+    var cmp=sfx.slice(0,pat.length);
+    steps.push({title:'Binary search: mid='+mid+', SA[mid]='+SA[mid]+', suffix="'+sfx+'"',
+      what:'Compare "'+pat+'" with "'+cmp+'" (first '+pat.length+' chars of suffix).',
+      why:'Binary search on sorted suffixes: O(m log n) total.',
+      ...snap(mid,[lo,hi],[])});
+    if(cmp===pat){
+      var left=mid, right=mid;
+      while(left>0&&TEXT.slice(SA[left-1]).slice(0,pat.length)===pat) left--;
+      while(right<n-1&&TEXT.slice(SA[right+1]).slice(0,pat.length)===pat) right++;
+      matchStart=left; matchEnd=right;
+      var found=[];for(var k=left;k<=right;k++) found.push(SA[k]);
+      steps.push({title:'Pattern "'+pat+'" found at SA['+left+'..'+right+']',
+        what:'Occurrences at positions: ['+found.join(',')+'].',
+        why:'Expand both sides to find all occurrences in O(occ) extra steps.',
+        ...snap(mid,[],found)});
+      break;
+    } else if(cmp<pat){
+      steps.push({title:'"'+cmp+'" < "'+pat+'" → search right half',
+        what:'lo = '+(mid+1)+'.',
+        why:'Sorted order: if suffix < pattern, answer must be in right half.',
+        ...snap(mid,[mid+1,hi],[])});
+      lo=mid+1;
+    } else {
+      steps.push({title:'"'+cmp+'" > "'+pat+'" → search left half',
+        what:'hi = '+(mid-1)+'.',
+        why:'Sorted order: if suffix > pattern, answer must be in left half.',
+        ...snap(mid,[lo,mid-1],[])});
+      hi=mid-1;
     }
   }
-  renderOutput(raw,sa,lcp,s);
-  log(`Input: "${raw}"`);
-  sa.forEach((idx,rank2)=>{
-    log(`Rank ${rank2}: suffix[${idx}] = "${s.slice(idx,n-1)}", LCP with prev = ${lcp[rank2]}`);
-  });
+  if(matchStart<0){
+    steps.push({title:'Pattern "'+pat+'" not found.',
+      what:'Binary search exhausted without match.',
+      why:'O(m log n) guaranteed even on miss.',
+      ...snap(-1,[],[])});
+  }
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function renderOutput(raw,sa,lcp,s){
-  const n=s.length;
-  const area=document.getElementById('outputArea');
-  // Suffix array table
-  let html1=`<div><div class="section-label">Sorted Suffixes</div>
-  <table class="suffix-table"><tr><th>Rank</th><th>Index</th><th>Suffix</th><th>LCP</th></tr>`;
-  sa.forEach((idx,rank2)=>{
-    const suf=s.slice(idx,n-1);
-    const l=lcp[rank2];
-    let chars='<span class="suffix-chars">';
-    for(let k=0;k<suf.length;k++){
-      if(k<l)chars+=`<span class="lcp">${suf[k]}</span>`;
-      else chars+=`<span class="rest">${suf[k]}</span>`;
+function renderStep(step){
+  var vis=document.getElementById('saVis'); if(!vis) return;
+  var html='';
+  var pat=document.getElementById('patInput').value||'an';
+  step.sa.forEach(function(si,rank){
+    var isCur=rank===step.cur;
+    var isCmp=step.compared.length===2&&rank>=step.compared[0]&&rank<=step.compared[1];
+    var isMatch=step.matches.indexOf(si)>=0;
+    var sfx=TEXT.slice(si);
+    var sfxHtml='';
+    if(isMatch){
+      sfxHtml='<span class="match">'+sfx.slice(0,pat.length)+'</span>'+sfx.slice(pat.length);
+    } else {
+      sfxHtml=sfx;
     }
-    chars+='</span>';
-    html1+=`<tr><td>${rank2}</td><td>${idx}</td><td>${chars}</td><td>${l>0?l:'—'}</td></tr>`;
+    html+='<div class="sa-row'+(isCur?' cur':isMatch?' done':isCmp?' cmp':'')+'">'+
+      '<span class="sa-idx">'+rank+'</span>'+
+      '<span style="color:var(--m);font-size:.68rem;width:20px">'+si+':</span>'+
+      '<span class="sa-sfx">'+sfxHtml+'</span></div>';
   });
-  html1+='</table></div>';
-
-  // LCP array visual
-  let html2=`<div><div class="section-label">LCP Array</div>
-  <table class="suffix-table"><tr><th>Rank</th><th>Suffix</th><th>LCP</th><th>Bar</th></tr>`;
-  sa.forEach((idx,rank2)=>{
-    const suf=s.slice(idx,n-1);
-    const l=lcp[rank2];
-    const barW=l*24;
-    html2+=`<tr><td>${rank2}</td><td>${suf}</td><td>${l}</td><td><div class="lcp-bar" style="width:${barW}px"></div>${l}</td></tr>`;
-  });
-  html2+='</table></div>';
-
-  area.innerHTML=html1+html2;
+  vis.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Text: "'+TEXT+'"  |  Pattern: "'+pat+'"  |  Matches: '+step.matches.length;
 }
-
-function log(msg){const b=document.getElementById('logBox');const p=document.createElement('p');p.textContent='> '+msg;b.appendChild(p);b.scrollTop=b.scrollHeight;}
-
-buildSA();
+function rebuild(){
+  var pat=document.getElementById('patInput').value||'an';
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(pat),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>
