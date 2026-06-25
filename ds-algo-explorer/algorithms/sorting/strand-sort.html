@@ -1,166 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Strand Sort — DS/Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Strand Sort – DS Algo Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8;--r:14px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
-.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
 .bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
 h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
 .tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
-.tagline{color:var(--m);margin-bottom:1.5rem}
-.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
 .flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
-.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
-.sim-body{padding:1.4rem}
-.arr-section{margin:.8rem 0}
-.arr-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--m);margin-bottom:.4rem}
-.chip-row{display:flex;flex-wrap:wrap;gap:4px;min-height:38px;padding:.3rem .4rem;background:var(--bg);border-radius:8px;border:1.5px solid var(--b)}
-.chip{width:34px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.82rem;border:1.5px solid var(--b);background:var(--s);transition:background .25s,border-color .25s,color .25s}
-.chip.strand{background:#2a7ae8;color:#fff;border-color:#2a7ae8}
-.chip.result{background:#27a060;color:#fff;border-color:#27a060}
-.chip.cur{background:#e8622a;color:#fff;border-color:#e8622a}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0;align-items:center}
-.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.strand-row{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink);
+  background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:.35rem .7rem;
+  margin:.5rem 0;min-height:24px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:240px}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
 .btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
 .btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
-select{padding:.38rem .6rem;border:1.5px solid var(--b);border-radius:8px;font-size:.8rem;background:var(--s);color:var(--ink);outline:none}
-select:focus{border-color:var(--a)}
-.result-box{background:var(--bg);border-radius:10px;padding:.8rem 1.2rem;margin-top:.6rem;font-family:'JetBrains Mono',monospace;font-size:.85rem}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
-.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
-.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
 .back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Strand Sort</span></nav>
-  <div class="hero">
-    <span class="tag">Sorting</span>
-    <h1>Strand Sort</h1>
-    <p class="tagline">Extract naturally sorted subsequences (strands) from the input and merge them — adaptive and excellent for nearly-sorted data.</p>
-  </div>
-  <div class="explain">
-    <p>Strand sort works by repeatedly pulling out the longest ascending subsequence starting from the beginning of the remaining input. Each extracted "strand" is already sorted. These strands are then merged into the growing output list, similar to merge sort's merge step.</p>
-    <p>The algorithm is adaptive: if the input is already nearly sorted, very few large strands are needed and it approaches O(n) performance. In the worst case (reverse-sorted input), each strand has length 1 and the algorithm degrades to O(n²). This makes it ideal for real-world datasets that often have partially-sorted structure.</p>
-    <p>Implementation-wise it's elegant: walk left-to-right keeping an element if it's greater than the last kept element, otherwise skip. After extraction, merge the strand with the output using the standard sorted-list merge.</p>
+  <span class="tag">Sorting</span>
+  <h1>Strand Sort</h1>
+  <p class="tagline">Pull sorted strands from the input and merge them one by one.</p>
+  <div class="prose">
+    <p>Strand Sort repeatedly scans the remaining input and extracts the longest increasing "strand" (subsequence) starting from the first element. Each extracted strand is merged with the running output list. Repeat until the input is empty.</p>
+    <p>It is adaptive: O(n) on already-sorted data (one strand pulls everything), O(n²) worst case (reverse-sorted). It naturally exploits existing sorted order in the input.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="flabel">Best Case</div><div class="fval">O(n)</div><div class="fsub">Already sorted input</div></div>
-    <div class="fact"><div class="flabel">Worst Case</div><div class="fval">O(n²)</div><div class="fsub">Reverse-sorted input</div></div>
-    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div><div class="fsub">Output + strand lists</div></div>
+    <div class="fact"><div class="flabel">Best</div><div class="fval">O(n)</div><div class="fsub">sorted input</div></div>
+    <div class="fact"><div class="flabel">Average</div><div class="fval">O(n√n)</div></div>
+    <div class="fact"><div class="flabel">Worst</div><div class="fval">O(n²)</div><div class="fsub">reverse sorted</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div></div>
   </div>
   <div class="sim-panel">
-    <div class="sim-hdr"><span class="dot"></span> Strand Sort Simulation</div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <div class="controls">
-        <select id="spd"><option value="700">Slow</option><option value="400" selected>Medium</option><option value="180">Fast</option></select>
-        <button class="btn btn-p" onclick="runStrand()">Sort</button>
-        <button class="btn btn-o" onclick="resetArr()">New Array</button>
+      <canvas id="cvs" height="220"></canvas>
+      <div class="strand-row" id="strandRow">Strand and output appear here.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" type="text" value="3,1,4,5,2,6,8,7"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort this array</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
       </div>
-      <div class="arr-section">
-        <div class="arr-label">Input (remaining)</div>
-        <div class="chip-row" id="inputRow"></div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Remaining input</span>
+        <span class="leg"><span class="leg-dot" style="background:#ff9800;border:1px solid #e65100"></span>Added to strand</span>
+        <span class="leg"><span class="leg-dot" style="background:#d0d0d0"></span>Skipped this pass</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Merged into output</span>
       </div>
-      <div class="arr-section">
-        <div class="arr-label">Current Strand</div>
-        <div class="chip-row" id="strandRow"></div>
-      </div>
-      <div class="arr-section">
-        <div class="arr-label">Sorted Output</div>
-        <div class="chip-row" id="outputRow"></div>
-      </div>
-      <div class="result-box" id="result">Click Sort to start.</div>
     </div>
-  </div>
-  <div class="log-panel">
-    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
-    <div class="log-body" id="log"><div class="le li">Ready.</div></div>
   </div>
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-let origArr=[],running=false;
-
-function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
-function clearLog(){document.getElementById('log').innerHTML=''}
-
-function renderRow(id,vals,cls=''){
-  const row=document.getElementById(id);row.innerHTML='';
-  vals.forEach(v=>{
-    const d=document.createElement('div');d.className='chip '+cls;d.textContent=v;row.appendChild(d);
-  });
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w*DPR; canvas.height = 220*DPR;
+  canvas.style.width = w+'px'; canvas.style.height = '220px';
+  ctx.scale(DPR, DPR);
 }
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function resetArr(){
-  const n=12;
-  origArr=Array.from({length:n},()=>Math.floor(Math.random()*90)+10);
-  running=false;
-  renderRow('inputRow',origArr);renderRow('strandRow',[]);renderRow('outputRow',[]);
-  clearLog();document.getElementById('result').textContent='Click Sort to start.';
-}
+function generateSteps(origArr) {
+  const steps = [], n = origArr.length;
+  let remaining = [...origArr];
+  let output = [];
+  let strandNum = 0;
 
-function merge(a,b){
-  const res=[];let i=0,j=0;
-  while(i<a.length&&j<b.length){
-    if(a[i]<=b[j]) res.push(a[i++]); else res.push(b[j++]);
-  }
-  return res.concat(a.slice(i)).concat(b.slice(j));
-}
+  steps.push({ title:'Initial array', what:`${n} elements. Strand Sort pulls sorted strands repeatedly.`,
+    why:'Each strand is extracted greedily; strands are merged into running output.',
+    state:`Input: [${remaining.join(', ')}]`, phase:'initial',
+    remaining:[...remaining], output:[], strand:[], strandColors:[] });
 
-async function runStrand(){
-  if(running)return;running=true;clearLog();
-  const spd=parseInt(document.getElementById('spd').value)||400;
-  let input=[...origArr];
-  let output=[];
-  let pass=0;
-  log('Input: ['+input.join(', ')+']','li');
-  renderRow('outputRow',output,'result');
-  while(input.length>0){
-    pass++;
-    const strand=[];
-    const remaining=[];
-    for(let i=0;i<input.length;i++){
-      if(strand.length===0||input[i]>strand[strand.length-1]){
-        strand.push(input[i]);
+  while (remaining.length > 0) {
+    strandNum++;
+    const strand = [remaining[0]];
+    const strandIdx = [0];
+    const skippedIdx = [];
+    for (let i=1; i<remaining.length; i++) {
+      if (remaining[i] >= strand[strand.length-1]) {
+        strand.push(remaining[i]); strandIdx.push(i);
+        steps.push({ title:`Strand ${strandNum}: ${remaining[i]} ≥ ${strand[strand.length-2]} — add to strand`,
+          what:`${remaining[i]} extends the strand. Strand so far: [${strand.join(', ')}].`,
+          why:'Greedily extend the increasing strand.',
+          state:`Strand: [${strand.join(', ')}] · Input left: ${remaining.length}`,
+          phase:'extend', remaining:[...remaining], output:[...output], strand:[...strand],
+          strandIdx:[...strandIdx], skippedIdx:[...skippedIdx] });
       } else {
-        remaining.push(input[i]);
+        skippedIdx.push(i);
+        steps.push({ title:`Strand ${strandNum}: ${remaining[i]} < ${strand[strand.length-1]} — skip`,
+          what:`${remaining[i]} breaks the increasing order. Skip for now.`,
+          why:'It stays in the remaining array and will be picked up in a later strand.',
+          state:`Strand: [${strand.join(', ')}] · Input left: ${remaining.length}`,
+          phase:'skip', remaining:[...remaining], output:[...output], strand:[...strand],
+          strandIdx:[...strandIdx], skippedIdx:[...skippedIdx] });
       }
-      renderRow('inputRow',input.slice(i+1));
-      renderRow('strandRow',strand,'strand');
-      await new Promise(r=>setTimeout(r,spd/2));
     }
-    log('Pass '+pass+': strand=['+strand.join(',')+']  remaining=['+remaining.join(',')+']','ls');
-    renderRow('inputRow',remaining);renderRow('strandRow',strand,'strand');
-    await new Promise(r=>setTimeout(r,spd));
-    output=merge(output,strand);
-    renderRow('outputRow',output,'result');
-    renderRow('strandRow',[],'strand');
-    log('Merged → output=['+output.join(',')+']','ls');
-    input=remaining;
-    await new Promise(r=>setTimeout(r,spd));
+
+    // Remove strand from remaining
+    const strandSet = new Set(strandIdx);
+    remaining = remaining.filter((_, i) => !strandSet.has(i));
+
+    steps.push({ title:`Strand ${strandNum} complete: [${strand.join(', ')}]`,
+      what:`Extracted strand [${strand.join(', ')}]. ${remaining.length} elements remain.`,
+      why:'Now merge this strand with the running output list.',
+      state:`Strand: [${strand.join(', ')}] · Output: [${output.join(', ')}]`,
+      phase:'strand-done', remaining:[...remaining], output:[...output], strand:[...strand],
+      strandIdx:[], skippedIdx:[] });
+
+    // Merge strand into output
+    const merged = [], s=[...strand], o=[...output];
+    let si=0, oi=0;
+    while(si<s.length&&oi<o.length){ if(s[si]<=o[oi]) merged.push(s[si++]); else merged.push(o[oi++]); }
+    while(si<s.length) merged.push(s[si++]);
+    while(oi<o.length) merged.push(o[oi++]);
+    output = merged;
+
+    steps.push({ title:`Merged strand ${strandNum} → output [${output.join(', ')}]`,
+      what:`Output after merging strand ${strandNum}: [${output.join(', ')}].`,
+      why:'Merging two sorted lists is O(n+k). Output grows sorted after each merge.',
+      state:`Output: [${output.join(', ')}] · Remaining: ${remaining.length}`,
+      phase:'merged', remaining:[...remaining], output:[...output], strand:[],
+      strandIdx:[], skippedIdx:[] });
   }
-  renderRow('outputRow',output,'result');
-  document.getElementById('result').innerHTML='Sorted: ['+output.join(', ')+']  —  <strong>'+pass+'</strong> strand pass'+(pass!==1?'es':'');
-  log('✓ Done in '+pass+' pass'+(pass!==1?'es':'')+'. Result: ['+output.join(',')+']','ld');
-  running=false;
+
+  steps.push({ title:'Sorting complete!', what:`Array: [${output.join(', ')}]`,
+    why:`${strandNum} strand(s) extracted and merged.`,
+    state:`Sorted: [${output.join(', ')}]`, phase:'done',
+    remaining:[], output:[...output], strand:[], strandIdx:[], skippedIdx:[] });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; s.origArr=origArr; });
+  return steps;
 }
 
-resetArr();
+function renderStep(step) {
+  const W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const { output, phase, origArr } = step;
+  const displayArr = phase==='done' ? output : step.origArr;
+  const n=(displayArr||[]).length; if(!n) return;
+  const maxVal=Math.max(...(displayArr||[1]),1), padX=14, labelH=26, topPad=12;
+  const availW=W-padX*2, availH=H-labelH-topPad, barW=availW/n;
+  const strandSet=new Set((step.strandIdx||[]));
+  const skipSet=new Set((step.skippedIdx||[]));
+  for (let i=0;i<n;i++) {
+    const v=displayArr[i];
+    const barH=Math.max(4,(v/maxVal)*availH);
+    const bx=padX+i*barW+2, by=H-labelH-barH, bw=barW-4;
+    let fill='#9ec8f0', stroke=null;
+    if (phase==='done') { fill='#a8e6a3'; stroke='#27a060'; }
+    else if (strandSet.has(i))   { fill='#ff9800'; stroke='#e65100'; }
+    else if (skipSet.has(i))     { fill='#d0d0d0'; }
+    ctx.fillStyle=fill;
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.fill();
+    if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.stroke(); }
+    const fs=Math.max(8,Math.min(13,barW-6));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(v, padX+i*barW+barW/2, H-2);
+  }
+  const sr=document.getElementById('strandRow');
+  if(sr) {
+    const parts=[];
+    if(step.strand&&step.strand.length) parts.push(`Strand: [${step.strand.join(', ')}]`);
+    if(step.output&&step.output.length) parts.push(`Output: [${step.output.join(', ')}]`);
+    if(step.remaining&&step.remaining.length) parts.push(`Remaining: [${step.remaining.join(', ')}]`);
+    sr.textContent=parts.join('  ·  ');
+  }
+}
+function parseArr(s){return s.split(',').map(x=>Math.max(1,Math.min(200,parseInt(x.trim())||1))).filter(Boolean);}
+function rebuild(){
+  const arr=parseArr(document.getElementById('arrIn').value);
+  if(arr.length<2||arr.length>20){alert('Enter 2–20 numbers.');return;}
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),renderStep,'explanation','sim-bar');
+}
+function randomize(){
+  const n=7+Math.floor(Math.random()*5);
+  document.getElementById('arrIn').value=Array.from({length:n},()=>5+Math.floor(Math.random()*95)).join(',');
+  rebuild();
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

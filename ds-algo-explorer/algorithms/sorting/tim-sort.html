@@ -2,211 +2,195 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Tim Sort – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-  a{color:#2a7ae8;text-decoration:none}a:hover{text-decoration:underline}
-  .breadcrumb{padding:14px 32px;font-size:.85rem;color:#5a5a72;border-bottom:1px solid #e2e0da;background:#fff}
-  .breadcrumb a{color:#5a5a72}.breadcrumb span{margin:0 6px}
-  .hero{background:#fff;padding:48px 32px 36px;border-bottom:1px solid #e2e0da}
-  .tag{display:inline-block;background:#dbeafe;color:#2a7ae8;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:10px}
-  .hero p.tagline{color:#5a5a72;font-size:1.1rem;max-width:640px}
-  .container{max-width:860px;margin:0 auto;padding:36px 32px}
-  .prose p{margin-bottom:14px;color:#1a1a2e;font-size:1rem}
-  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0}
-  .fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-  .fact .label{font-size:.75rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-  .fact .value{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:#1a1a2e}
-  .viz-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-top:28px}
-  .viz-card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
-  canvas{display:block;border-radius:8px;background:#f7f6f2;width:100%;max-width:700px}
-  .controls{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
-  .btn{padding:8px 18px;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;transition:opacity .2s}
-  .btn-primary{background:#2a7ae8;color:#fff}.btn-secondary{background:#e2e0da;color:#1a1a2e}
-  .btn:disabled{opacity:.45;cursor:not-allowed}
-  .speed-wrap{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:.85rem;color:#5a5a72}
-  input[type=range]{accent-color:#2a7ae8;width:90px}
-  .log-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;margin-top:18px}
-  .log-card h3{font-size:1rem;font-weight:600;margin-bottom:10px}
-  #log{height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#1a1a2e;background:#f7f6f2;border-radius:8px;padding:10px;line-height:1.7}
-  #log p{border-bottom:1px solid #e2e0da;padding-bottom:2px;margin-bottom:2px}
-  .back{display:inline-block;margin-top:28px;color:#5a5a72;font-size:.9rem}
-  .back:hover{color:#2a7ae8}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:240px}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Tim Sort
-</nav>
-<div class="hero">
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Tim Sort</span></nav>
   <span class="tag">Sorting</span>
   <h1>Tim Sort</h1>
-  <p class="tagline">Python's and Java's built-in sort — a hybrid of merge sort and insertion sort that exploits natural runs in real-world data.</p>
-</div>
-<div class="container">
+  <p class="tagline">Python's and Java's built-in sort — Insertion Sort on small runs, then Merge Sort.</p>
   <div class="prose">
-    <p>Tim Sort was designed by Tim Peters in 2002 for Python and has since been adopted by Java, Android, and many other platforms. It is a hybrid algorithm that combines insertion sort for small chunks with merge sort for combining them — deliberately engineered around the structure of real-world data rather than random inputs.</p>
-    <p>Imagine you are tidying a messy bookshelf. Instead of starting from scratch, you first notice sections that are already in order ("natural runs"), sort any tiny piles quickly by hand, and then carefully interleave the ordered sections two at a time. Tim Sort does exactly this: it detects ascending and descending subsequences, reverses descending ones, extends short runs to a minimum length (minRun) via insertion sort, and then performs a series of power-of-two-aware merges.</p>
-    <p>Tim Sort's real strength is on partially sorted data — common in databases, log files, and user-edited lists — where it achieves O(n) best case because it merely detects the existing order. Its worst case matches merge sort at O(n log n) with O(n) auxiliary space.</p>
+    <p>Tim Sort is a hybrid stable sort that splits the array into small "runs" (size RUN, here 4), sorts each with Insertion Sort (which is fastest for small arrays), then merges adjacent sorted runs using Merge Sort until the whole array is sorted.</p>
+    <p>It is the default sort in Python, Java (Arrays.sort for objects), and many other languages. O(n) on already-sorted or reverse-sorted data; O(n log n) otherwise.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="label">Best Time</div><div class="value">O(n)</div></div>
-    <div class="fact"><div class="label">Average Time</div><div class="value">O(n log n)</div></div>
-    <div class="fact"><div class="label">Worst Time</div><div class="value">O(n log n)</div></div>
-    <div class="fact"><div class="label">Space</div><div class="value">O(n)</div></div>
+    <div class="fact"><div class="flabel">Best</div><div class="fval">O(n)</div><div class="fsub">already sorted</div></div>
+    <div class="fact"><div class="flabel">Average</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Worst</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div></div>
   </div>
-  <div class="viz-card">
-    <h2>Animated Simulation</h2>
-    <canvas id="cv" height="280"></canvas>
-    <div class="controls">
-      <button class="btn btn-secondary" id="btnNew">New Array</button>
-      <button class="btn btn-secondary" id="btnStep">Step</button>
-      <button class="btn btn-primary" id="btnRun">Run</button>
-      <button class="btn btn-secondary" id="btnPause">Pause</button>
-      <div class="speed-wrap"><span>Speed</span><input type="range" id="speed" min="1" max="10" value="5"/></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="260"></canvas>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" type="text" value="5,21,7,23,19,13,3,11,17,2"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort this array</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Unsorted</span>
+        <span class="leg"><span class="leg-dot" style="background:#ff9800;border:1px solid #e65100"></span>Current run (insertion sort)</span>
+        <span class="leg"><span class="leg-dot" style="background:#c3b1e1;border:1px solid #8b5cf6"></span>Left merge run</span>
+        <span class="leg"><span class="leg-dot" style="background:#ffb347;border:1px solid #d4700a"></span>Right merge run</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Sorted</span>
+      </div>
     </div>
-  </div>
-  <div class="log-card">
-    <h3>Step Log</h3>
-    <div id="log"></div>
   </div>
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const cv=document.getElementById('cv');
-const ctx=cv.getContext('2d');
-const logEl=document.getElementById('log');
-const speedEl=document.getElementById('speed');
-let arr=[],N=16,W,H,bw,running=false,timer=null;
-let comparisons=0,swaps=0;
-let steps=[],stepIdx=0;
-const MIN_RUN=4;
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
+const RUN = 4;
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w*DPR; canvas.height = 260*DPR;
+  canvas.style.width = w+'px'; canvas.style.height = '260px';
+  ctx.scale(DPR, DPR);
+}
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function dpr(){return window.devicePixelRatio||1}
-function initCanvas(){
-  const d=dpr();
-  const rect=cv.parentElement.getBoundingClientRect();
-  W=Math.min(700,rect.width-48);H=280;
-  cv.width=W*d;cv.height=H*d;
-  cv.style.width=W+'px';cv.style.height=H+'px';
-  ctx.scale(d,d);bw=(W-32)/N-2;
-}
-function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
-function newArray(){
-  arr=Array.from({length:N},()=>rnd(10,100));
-  comparisons=0;swaps=0;buildSteps();stepIdx=0;
-  drawBars(arr,{});logEl.innerHTML='';
-  addLog('New array generated. Press Step or Run.');
-}
-function drawBars(a,hl){
-  ctx.clearRect(0,0,W,H);
-  const maxV=Math.max(...a);
-  a.forEach((v,i)=>{
-    const x=16+i*(bw+2);const bh=(v/maxV)*(H-40);const y=H-20-bh;
-    ctx.fillStyle=hl[i]||'#2a7ae8';
-    ctx.beginPath();ctx.roundRect(x,y,bw,bh,4);ctx.fill();
-    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';ctx.textAlign='center';
-    ctx.fillText(v,x+bw/2,H-6);
-  });
-}
-function addLog(msg){const p=document.createElement('p');p.textContent=msg;logEl.prepend(p);}
-function insertionSort(a,lo,hi){
-  for(let i=lo+1;i<=hi;i++){
-    const key=a[i];let j=i-1;
-    while(j>=lo&&a[j]>key){a[j+1]=a[j];j--;swaps++;}
-    a[j+1]=key;comparisons++;
-    steps.push({type:'insert',a:[...a],lo,hi,i,msg:`InsSort run[${lo}..${hi}]: placed ${key} at pos ${j+1}`});
-  }
-}
-function merge(a,lo,mid,hi){
-  const left=a.slice(lo,mid+1);const right=a.slice(mid+1,hi+1);
-  let i=0,j=0,k=lo;
-  while(i<left.length&&j<right.length){
-    comparisons++;
-    if(left[i]<=right[j]){a[k++]=left[i++];}else{a[k++]=right[j++];swaps++;}
-  }
-  while(i<left.length)a[k++]=left[i++];
-  while(j<right.length)a[k++]=right[j++];
-  steps.push({type:'merge',a:[...a],lo,mid,hi,msg:`Merged [${lo}..${mid}] + [${mid+1}..${hi}]`});
-}
-function buildSteps(){
-  steps=[];
-  const a=[...arr];
-  // find and sort runs
-  let runStart=0;
-  const runs=[];
-  while(runStart<N){
-    let runEnd=runStart;
-    while(runEnd+1<N&&a[runEnd+1]>=a[runEnd])runEnd++;
-    if(runEnd-runStart<MIN_RUN-1)runEnd=Math.min(runStart+MIN_RUN-1,N-1);
-    steps.push({type:'run',a:[...a],lo:runStart,hi:runEnd,msg:`Found/extended run at [${runStart}..${runEnd}]: [${a.slice(runStart,runEnd+1)}]`});
-    insertionSort(a,runStart,runEnd);
-    runs.push([runStart,runEnd]);
-    runStart=runEnd+1;
-  }
-  // merge pairs
-  let size=MIN_RUN;
-  while(size<N){
-    for(let lo=0;lo<N;lo+=2*size){
-      const mid=Math.min(lo+size-1,N-1);
-      const hi=Math.min(lo+2*size-1,N-1);
-      if(mid<hi){
-        steps.push({type:'premerge',a:[...a],lo,mid,hi,msg:`Merging runs [${lo}..${mid}] and [${mid+1}..${hi}]`});
-        merge(a,lo,mid,hi);
-      }
+function generateSteps(arr) {
+  const steps = [], a = [...arr], n = a.length;
+  const colors = new Array(n).fill('unsorted');
+  const st = () => `[${a.join(', ')}]`;
+
+  steps.push({ title:`Initial array — RUN size = ${RUN}`,
+    what:`${n} elements. Split into runs of size ≤${RUN}, sort each with Insertion Sort.`,
+    why:`Insertion Sort is fastest for small arrays. Merge Sort handles the larger merges.`,
+    state:st(), phase:'initial', arr:[...a], colors:[...colors] });
+
+  // Phase 1: Insertion sort each run
+  for (let lo=0; lo<n; lo+=RUN) {
+    const hi=Math.min(lo+RUN-1, n-1);
+    for (let k=lo; k<=hi; k++) colors[k]='run';
+    steps.push({ title:`Insertion Sort run a[${lo}..${hi}]`,
+      what:`Sorting sub-run [${a.slice(lo,hi+1).join(', ')}] with Insertion Sort.`,
+      why:`Small runs (≤${RUN}) are sorted in-place. Fast due to cache locality and low overhead.`,
+      state:st(), phase:'run-start', arr:[...a], colors:[...colors] });
+
+    for (let i=lo+1; i<=hi; i++) {
+      const key=a[i]; let j=i-1;
+      while (j>=lo && a[j]>key) { a[j+1]=a[j]; j--; }
+      a[j+1]=key;
     }
-    size*=2;
+    steps.push({ title:`Run a[${lo}..${hi}] sorted — [${a.slice(lo,hi+1).join(', ')}]`,
+      what:`Insertion Sort complete for this run.`,
+      why:'This run is now sorted and ready to be merged with adjacent runs.',
+      state:st(), phase:'run-done', arr:[...a], colors:[...colors] });
+    for (let k=lo; k<=hi; k++) colors[k]='sorted';
   }
-  steps.push({type:'done',a:[...a]});
+
+  // Phase 2: Merge runs
+  for (let width=RUN; width<n; width*=2) {
+    for (let lo=0; lo<n; lo+=2*width) {
+      const mid=Math.min(lo+width-1, n-1);
+      const hi=Math.min(lo+2*width-1, n-1);
+      if (mid>=hi) continue;
+      for (let k=lo; k<=mid; k++) colors[k]='left';
+      for (let k=mid+1; k<=hi; k++) colors[k]='right';
+      steps.push({ title:`Merge a[${lo}..${mid}] + a[${mid+1}..${hi}]`,
+        what:`Merging [${a.slice(lo,mid+1).join(',')}] + [${a.slice(mid+1,hi+1).join(',')}]`,
+        why:`Merge Sort phase: combine two sorted runs into one.`,
+        state:st(), phase:'merge', arr:[...a], colors:[...colors] });
+      const tmp=[]; let l=lo, r=mid+1;
+      while(l<=mid&&r<=hi) { if(a[l]<=a[r]) tmp.push(a[l++]); else tmp.push(a[r++]); }
+      while(l<=mid) tmp.push(a[l++]);
+      while(r<=hi) tmp.push(a[r++]);
+      for (let k=0;k<tmp.length;k++) { a[lo+k]=tmp[k]; colors[lo+k]='sorted'; }
+      steps.push({ title:`Merged → a[${lo}..${hi}] = [${a.slice(lo,hi+1).join(', ')}]`,
+        what:'Merge complete. Combined run is now sorted.',
+        why:'Each merge doubles the sorted run length.',
+        state:st(), phase:'merge-done', arr:[...a], colors:[...colors] });
+    }
+  }
+
+  steps.push({ title:'Sorting complete!', what:`Array: [${a.join(', ')}]`,
+    why:'Tim Sort: Insertion Sort for small runs + Merge Sort for the rest.',
+    state:st(), phase:'done', arr:[...a], colors:new Array(n).fill('sorted') });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function execStep(s){
-  if(!s)return true;
-  if(s.type==='done'){
-    const hl={};s.a.forEach((_,i)=>hl[i]='#27a060');
-    drawBars(s.a,hl);addLog(`Done! ${comparisons} comparisons, ${swaps} swaps.`);return true;
+
+function renderStep(step) {
+  const W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const { arr, colors } = step;
+  const n=arr.length; if(!n) return;
+  const maxVal=Math.max(...arr,1), padX=14, labelH=26, topPad=12;
+  const availW=W-padX*2, availH=H-labelH-topPad, barW=availW/n;
+  const cmap={unsorted:'#9ec8f0',run:'#ff9800',left:'#c3b1e1',right:'#ffb347',sorted:'#a8e6a3'};
+  const smap={run:'#e65100',left:'#8b5cf6',right:'#d4700a',sorted:'#27a060'};
+  for (let i=0; i<n; i++) {
+    const barH=Math.max(4,(arr[i]/maxVal)*availH);
+    const bx=padX+i*barW+2, by=H-labelH-barH, bw=barW-4;
+    const c=colors[i]||'unsorted';
+    ctx.fillStyle=cmap[c];
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.fill();
+    if(smap[c]){ ctx.strokeStyle=smap[c]; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.stroke(); }
+    const fs=Math.max(8,Math.min(13,barW-6));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(arr[i], padX+i*barW+barW/2, H-2);
   }
-  const hl={};
-  if(s.type==='run'){
-    for(let i=s.lo;i<=s.hi;i++)hl[i]='#27a060';
-    drawBars(s.a,hl);addLog(s.msg);
-  } else if(s.type==='insert'){
-    hl[s.i]='#f4a261';for(let i=s.lo;i<s.i;i++)hl[i]='#27a060';
-    drawBars(s.a,hl);addLog(s.msg);
-  } else if(s.type==='premerge'){
-    for(let i=s.lo;i<=s.mid;i++)hl[i]='#f4a261';
-    for(let i=s.mid+1;i<=s.hi;i++)hl[i]='#e84393';
-    drawBars(s.a,hl);addLog(s.msg);
-  } else if(s.type==='merge'){
-    for(let i=s.lo;i<=s.hi;i++)hl[i]='#27a060';
-    drawBars(s.a,hl);addLog(s.msg);
-  }
-  return false;
 }
-function doStep(){if(stepIdx>=steps.length)return;const done=execStep(steps[stepIdx++]);if(done)stopRun();}
-function startRun(){
-  if(running)return;running=true;
-  function tick(){
-    if(stepIdx>=steps.length){stopRun();return;}
-    const done=execStep(steps[stepIdx++]);
-    if(done){stopRun();return;}
-    const delay=Math.max(30,600-speedEl.value*55);
-    timer=setTimeout(tick,delay);
-  }
-  tick();
+function parseArr(s){return s.split(',').map(x=>Math.max(1,Math.min(200,parseInt(x.trim())||1))).filter(Boolean);}
+function rebuild(){
+  const arr=parseArr(document.getElementById('arrIn').value);
+  if(arr.length<2||arr.length>30){alert('Enter 2–30 numbers.');return;}
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),renderStep,'explanation','sim-bar');
 }
-function stopRun(){running=false;if(timer){clearTimeout(timer);timer=null;}}
-document.getElementById('btnNew').onclick=()=>{stopRun();newArray();};
-document.getElementById('btnStep').onclick=()=>{stopRun();doStep();};
-document.getElementById('btnRun').onclick=startRun;
-document.getElementById('btnPause').onclick=stopRun;
-window.addEventListener('resize',()=>{initCanvas();drawBars(arr,{});});
-initCanvas();newArray();
+function randomize(){
+  const n=8+Math.floor(Math.random()*6);
+  document.getElementById('arrIn').value=Array.from({length:n},()=>5+Math.floor(Math.random()*95)).join(',');
+  rebuild();
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>

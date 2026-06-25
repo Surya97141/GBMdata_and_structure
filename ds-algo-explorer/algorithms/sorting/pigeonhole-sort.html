@@ -2,203 +2,185 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Pigeonhole Sort – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-  a{color:#2a7ae8;text-decoration:none}a:hover{text-decoration:underline}
-  .breadcrumb{padding:14px 32px;font-size:.85rem;color:#5a5a72;border-bottom:1px solid #e2e0da;background:#fff}
-  .breadcrumb a{color:#5a5a72}.breadcrumb span{margin:0 6px}
-  .hero{background:#fff;padding:48px 32px 36px;border-bottom:1px solid #e2e0da}
-  .tag{display:inline-block;background:#dbeafe;color:#2a7ae8;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:10px}
-  .hero p.tagline{color:#5a5a72;font-size:1.1rem;max-width:640px}
-  .container{max-width:860px;margin:0 auto;padding:36px 32px}
-  .prose p{margin-bottom:14px;color:#1a1a2e;font-size:1rem}
-  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0}
-  .fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:16px;text-align:center}
-  .fact .label{font-size:.75rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-  .fact .value{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:#1a1a2e}
-  .viz-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:24px;margin-top:28px}
-  .viz-card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px}
-  canvas{display:block;border-radius:8px;background:#f7f6f2;width:100%;max-width:700px}
-  .controls{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
-  .btn{padding:8px 18px;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;transition:opacity .2s}
-  .btn-primary{background:#2a7ae8;color:#fff}.btn-secondary{background:#e2e0da;color:#1a1a2e}
-  .btn:disabled{opacity:.45;cursor:not-allowed}
-  .speed-wrap{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:.85rem;color:#5a5a72}
-  input[type=range]{accent-color:#2a7ae8;width:90px}
-  .log-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;margin-top:18px}
-  .log-card h3{font-size:1rem;font-weight:600;margin-bottom:10px}
-  #log{height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#1a1a2e;background:#f7f6f2;border-radius:8px;padding:10px;line-height:1.7}
-  #log p{border-bottom:1px solid #e2e0da;padding-bottom:2px;margin-bottom:2px}
-  .back{display:inline-block;margin-top:28px;color:#5a5a72;font-size:.9rem}
-  .back:hover{color:#2a7ae8}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#2a7ae8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}
+.fsub{font-size:.78rem;color:var(--m)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border-radius:8px;background:#f8f9fd;border:1px solid var(--b)}
+.holes-row{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink);
+  background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:.35rem .7rem;
+  margin:.5rem 0;min-height:24px;line-height:1.8;word-break:break-all}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center}
+.input-row input{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .8rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:240px}
+.input-row input:focus{outline:none;border-color:var(--a)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.8rem;font-size:.75rem;color:var(--m)}
+.leg{display:flex;align-items:center;gap:.35rem}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.back{display:block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Pigeonhole Sort
-</nav>
-<div class="hero">
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Pigeonhole Sort</span></nav>
   <span class="tag">Sorting</span>
   <h1>Pigeonhole Sort</h1>
-  <p class="tagline">Sort by assigning each value its own "hole" — blazing fast when the value range equals the number of elements.</p>
-</div>
-<div class="container">
+  <p class="tagline">One pigeonhole per value — place each element, then collect in order.</p>
   <div class="prose">
-    <p>Pigeonhole Sort is a non-comparison-based integer sorting algorithm that exploits the mathematical pigeonhole principle: if you have n items and n holes, each item goes in exactly one hole. The algorithm finds the range [min, max] of the input values, creates max − min + 1 empty "holes" (buckets of capacity 1), places each element in its corresponding hole, then reads the holes back in order to reconstruct the sorted array.</p>
-    <p>Think of sorting a class of 30 students by birthday month (1–12). You create 12 slots, drop each student's name into the right slot, then read the slots in order. If every student has a unique month, each slot gets exactly one name — that is Pigeonhole Sort. Counting Sort is its generalisation that allows multiple items per hole.</p>
-    <p>The key constraint is that Pigeonhole Sort is only efficient when the range R = max − min is O(n). When R is much larger than n, the algorithm wastes time initialising and scanning mostly empty holes. For integers in a small range — scores 0–100, ASCII characters, calendar days — it achieves true O(n + R) time with zero comparisons, beating every comparison-based algorithm's Ω(n log n) lower bound.</p>
+    <p>Pigeonhole Sort creates one "hole" (bucket that can hold multiple items) for each distinct value in the range [min, max]. Each element is placed into its corresponding hole, then holes are collected in order to reconstruct the sorted array. Unlike Counting Sort, it stores actual elements (not counts), making it stable.</p>
+    <p>Best when n ≈ range (value range close to array size). Falls apart when range ≫ n due to wasted hole-allocations.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="label">Best Time</div><div class="value">O(n + R)</div></div>
-    <div class="fact"><div class="label">Average Time</div><div class="value">O(n + R)</div></div>
-    <div class="fact"><div class="label">Worst Time</div><div class="value">O(n + R)</div></div>
-    <div class="fact"><div class="label">Space</div><div class="value">O(R)</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n + range)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n + range)</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div></div>
+    <div class="fact"><div class="flabel">Best for</div><div class="fval">n ≈ range</div></div>
   </div>
-  <div class="viz-card">
-    <h2>Animated Simulation</h2>
-    <canvas id="cv" height="280"></canvas>
-    <div class="controls">
-      <button class="btn btn-secondary" id="btnNew">New Array</button>
-      <button class="btn btn-secondary" id="btnStep">Step</button>
-      <button class="btn btn-primary" id="btnRun">Run</button>
-      <button class="btn btn-secondary" id="btnPause">Pause</button>
-      <div class="speed-wrap"><span>Speed</span><input type="range" id="speed" min="1" max="10" value="5"/></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="cvs" height="200"></canvas>
+      <div class="holes-row" id="holesRow">Pigeonholes appear here during sorting.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <input id="arrIn" type="text" value="8,3,2,7,5,2,3,8,1"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort this array</button>
+        <button class="btn btn-o" onclick="randomize()">Random</button>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-dot" style="background:#9ec8f0"></span>Input</span>
+        <span class="leg"><span class="leg-dot" style="background:#fff176;border:1px solid #c8c000"></span>Element being placed</span>
+        <span class="leg"><span class="leg-dot" style="background:#c3b1e1;border:1px solid #8b5cf6"></span>Collecting from holes</span>
+        <span class="leg"><span class="leg-dot" style="background:#a8e6a3;border:1px solid #27a060"></span>Output (sorted)</span>
+      </div>
     </div>
-  </div>
-  <div class="log-card">
-    <h3>Step Log</h3>
-    <div id="log"></div>
   </div>
   <a class="back" href="../index.html">← Back to Algorithms</a>
 </div>
 <script>
-const cv=document.getElementById('cv');
-const ctx=cv.getContext('2d');
-const logEl=document.getElementById('log');
-const speedEl=document.getElementById('speed');
-let arr=[],N=16,W,H,running=false,timer=null;
-let steps=[],stepIdx=0;
-let holes=[],minV=0,maxV=0;
-
-function dpr(){return window.devicePixelRatio||1}
-function initCanvas(){
-  const d=dpr();
-  const rect=cv.parentElement.getBoundingClientRect();
-  W=Math.min(700,rect.width-48);H=280;
-  cv.width=W*d;cv.height=H*d;
-  cv.style.width=W+'px';cv.style.height=H+'px';
-  ctx.scale(d,d);
+const canvas = document.getElementById('cvs');
+const ctx = canvas.getContext('2d');
+let player = null, DPR = window.devicePixelRatio || 1;
+function setupCanvas() {
+  DPR = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.clientWidth - 26;
+  canvas.width = w*DPR; canvas.height = 200*DPR;
+  canvas.style.width = w+'px'; canvas.style.height = '200px';
+  ctx.scale(DPR, DPR);
 }
-function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
-function newArray(){
-  // use range 5-25 so holes fit on screen
-  arr=Array.from({length:N},()=>rnd(5,25));
-  buildSteps();stepIdx=0;
-  drawHoles([],arr,-1);logEl.innerHTML='';
-  addLog('New array generated. Press Step or Run.');
-}
-function addLog(msg){const p=document.createElement('p');p.textContent=msg;logEl.prepend(p);}
+window.addEventListener('resize', () => { setupCanvas(); if (player) player.renderCurrentStep(); });
 
-function drawHoles(h,remaining,activeHole){
-  ctx.clearRect(0,0,W,H);
-  if(h.length===0){
-    // draw original bars
-    const bw=(W-32)/remaining.length-2;
-    const maxVl=Math.max(...remaining);
-    remaining.forEach((v,i)=>{
-      const x=16+i*(bw+2);const bh=(v/maxVl)*(H-40);const y=H-20-bh;
-      ctx.fillStyle='#2a7ae8';
-      ctx.beginPath();ctx.roundRect(x,y,bw,bh,4);ctx.fill();
-      ctx.fillStyle='#5a5a72';ctx.font='10px Inter';ctx.textAlign='center';
-      ctx.fillText(v,x+bw/2,H-6);
-    });
-    return;
+function generateSteps(arr) {
+  const steps = [], n = arr.length;
+  const minVal=Math.min(...arr), maxVal=Math.max(...arr);
+  const range=maxVal-minVal+1;
+  const holes=Array.from({length:range},()=>[]);
+  const output=[];
+
+  steps.push({ title:'Initial array', what:`${n} elements, values [${minVal},${maxVal}], range=${range} pigeonholes.`,
+    why:'One hole per distinct value. Works best when n ≈ range.',
+    state:`Input: [${arr.join(', ')}]`, phase:'initial', arr:[...arr], output:[], highlight:-1, holes:holes.map(h=>[...h]) });
+
+  // Phase 1: distribute
+  for (let i=0;i<n;i++) {
+    const hi=arr[i]-minVal;
+    holes[hi].push(arr[i]);
+    steps.push({ title:`Place a[${i}]=${arr[i]} into hole[${hi}]`,
+      what:`Value ${arr[i]} maps to hole index ${hi} (= ${arr[i]} − ${minVal}).`,
+      why:'Each value maps to exactly one hole. Duplicates stack in the same hole.',
+      state:`hole[${hi}]: [${holes[hi].join(',')}]`, phase:'place', arr:[...arr], output:[], highlight:i, holes:holes.map(h=>[...h]) });
   }
-  const R=h.length;
-  const hw=Math.max(14,Math.min(28,(W-32)/R-3));
-  h.forEach((occupied,i)=>{
-    const x=16+i*(hw+3);const y=H-60;const hh=40;
-    ctx.strokeStyle=i===activeHole?'#e84393':'#e2e0da';
-    ctx.lineWidth=i===activeHole?2:1;
-    ctx.fillStyle=occupied?'#2a7ae8':'#f7f6f2';
-    ctx.beginPath();ctx.roundRect(x,y,hw,hh,3);ctx.fill();ctx.stroke();
-    if(occupied){
-      ctx.fillStyle='#fff';ctx.font='bold 9px JetBrains Mono';ctx.textAlign='center';
-      ctx.fillText(minV+i,x+hw/2,y+hh/2+4);
+
+  steps.push({ title:'All elements distributed. Phase 2: collect.',
+    what:`Holes: ${holes.map((h,i)=>h.length?`[${minVal+i}]=[${h.join(',')}]`:null).filter(Boolean).join('  ')}`,
+    why:'Iterate holes from 0 to range-1 and output each element.',
+    state:'Collecting...', phase:'collect-start', arr:[...arr], output:[], highlight:-1, holes:holes.map(h=>[...h]) });
+
+  // Phase 2: collect
+  for (let hi=0;hi<range;hi++) {
+    for (let elem of holes[hi]) {
+      output.push(elem);
+      steps.push({ title:`Collect ${elem} from hole[${hi}] → output[${output.length-1}]`,
+        what:`hole[${hi}] contains ${elem}. Append to output.`,
+        why:'Iterating holes in order guarantees sorted output.',
+        state:`Output so far: [${output.join(', ')}]`, phase:'collect', arr:[...arr], output:[...output], highlight:-1, holes:holes.map(h=>[...h]) });
     }
-    ctx.fillStyle='#5a5a72';ctx.font='8px Inter';ctx.textAlign='center';
-    ctx.fillText(minV+i,x+hw/2,H-8);
-  });
-  ctx.fillStyle='#1a1a2e';ctx.font='11px Inter';ctx.textAlign='left';
-  ctx.fillText(`Range: [${minV}..${maxV}]  Holes: ${R}`,16,20);
-}
-
-function drawResult(result){
-  ctx.clearRect(0,0,W,H);
-  const bw=(W-32)/result.length-2;
-  const maxVl=Math.max(...result);
-  result.forEach((v,i)=>{
-    const x=16+i*(bw+2);const bh=(v/maxVl)*(H-40);const y=H-20-bh;
-    ctx.fillStyle='#27a060';
-    ctx.beginPath();ctx.roundRect(x,y,bw,bh,4);ctx.fill();
-    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';ctx.textAlign='center';
-    ctx.fillText(v,x+bw/2,H-6);
-  });
-}
-
-function buildSteps(){
-  steps=[];
-  minV=Math.min(...arr);maxV=Math.max(...arr);
-  const R=maxV-minV+1;
-  holes=new Array(R).fill(false);
-  steps.push({type:'init',h:[...holes],msg:`Range: [${minV}..${maxV}], ${R} holes created.`});
-  // place phase
-  arr.forEach(v=>{
-    holes[v-minV]=true;
-    steps.push({type:'place',h:[...holes],val:v,holeIdx:v-minV,
-      msg:`Place ${v} → hole[${v-minV}] (offset ${v}−${minV})`});
-  });
-  // reconstruct
-  const result=[];
-  holes.forEach((occ,i)=>{if(occ)result.push(minV+i);});
-  steps.push({type:'reconstruct',result:[...result],msg:`Reconstruct: [${result}]`});
-  steps.push({type:'done',result:[...result]});
-}
-
-function execStep(s){
-  if(!s)return true;
-  if(s.type==='done'){drawResult(s.result);addLog(`Done! Sorted: [${s.result}]`);return true;}
-  if(s.type==='init'){drawHoles(new Array(s.h.length).fill(false),arr,-1);addLog(s.msg);}
-  else if(s.type==='place'){drawHoles(s.h,arr,s.holeIdx);addLog(s.msg);}
-  else if(s.type==='reconstruct'){drawResult(s.result);addLog(s.msg);}
-  return false;
-}
-function doStep(){if(stepIdx>=steps.length)return;const done=execStep(steps[stepIdx++]);if(done)stopRun();}
-function startRun(){
-  if(running)return;running=true;
-  function tick(){
-    if(stepIdx>=steps.length){stopRun();return;}
-    const done=execStep(steps[stepIdx++]);
-    if(done){stopRun();return;}
-    const delay=Math.max(30,600-speedEl.value*55);
-    timer=setTimeout(tick,delay);
   }
-  tick();
+
+  steps.push({ title:`Pigeonhole Sort complete — [${output.join(', ')}]`,
+    what:`Sorted: [${output.join(', ')}]`,
+    why:`O(n+range) time. Stable — equal elements maintain relative order from input.`,
+    state:`Sorted: [${output.join(', ')}]`, phase:'done', arr:[...output], output:[...output], highlight:-1, holes:[] });
+  steps.forEach((s,i)=>{ s.stepNumber=i+1; s.totalSteps=steps.length; });
+  return steps;
 }
-function stopRun(){running=false;if(timer){clearTimeout(timer);timer=null;}}
-document.getElementById('btnNew').onclick=()=>{stopRun();newArray();};
-document.getElementById('btnStep').onclick=()=>{stopRun();doStep();};
-document.getElementById('btnRun').onclick=startRun;
-document.getElementById('btnPause').onclick=stopRun;
-window.addEventListener('resize',()=>{initCanvas();drawHoles([],arr,-1);});
-initCanvas();newArray();
+
+function renderStep(step) {
+  const W=canvas.width/DPR, H=canvas.height/DPR;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#f8f9fd'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const displayArr = (step.phase==='done'||step.phase==='collect') ? step.output : step.arr;
+  const n=displayArr.length; if(!n) return;
+  const maxVal=Math.max(...displayArr,1), padX=14, labelH=26, topPad=12;
+  const availW=W-padX*2, availH=H-labelH-topPad, barW=availW/n;
+  for (let i=0;i<n;i++) {
+    const v=displayArr[i]; if(v===undefined||v===null) continue;
+    const barH=Math.max(4,(v/maxVal)*availH);
+    const bx=padX+i*barW+2, by=H-labelH-barH, bw=barW-4;
+    let fill='#9ec8f0', stroke=null;
+    if (step.phase==='done') { fill='#a8e6a3'; stroke='#27a060'; }
+    else if (step.phase==='collect' && i<step.output.length) { fill='#a8e6a3'; stroke='#27a060'; }
+    else if (step.phase==='collect-start') { fill='#c3b1e1'; stroke='#8b5cf6'; }
+    else if (i===step.highlight) { fill='#fff176'; stroke='#c8c000'; }
+    ctx.fillStyle=fill;
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.fill();
+    if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(bx,by,bw,barH,4); else ctx.rect(bx,by,bw,barH); ctx.stroke(); }
+    const fs=Math.max(8,Math.min(13,barW-6));
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${fs}px JetBrains Mono,monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(v, padX+i*barW+barW/2, H-2);
+  }
+  const hr=document.getElementById('holesRow');
+  if(hr) hr.textContent=step.holes&&step.holes.length?step.holes.map((h,i)=>h.length?`[${i}]:[${h.join(',')}]`:null).filter(Boolean).join('  '):'';
+}
+function parseArr(s){return s.split(',').map(x=>Math.max(0,Math.min(99,parseInt(x.trim())||0))).filter(x=>!isNaN(x));}
+function rebuild(){
+  const arr=parseArr(document.getElementById('arrIn').value);
+  if(arr.length<2||arr.length>20){alert('Enter 2–20 numbers (values 0–99).');return;}
+  if(Math.max(...arr)-Math.min(...arr)>50){alert('Keep value range ≤50 for readable visualization.');return;}
+  setupCanvas(); if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),renderStep,'explanation','sim-bar');
+}
+function randomize(){
+  const n=7+Math.floor(Math.random()*5);
+  document.getElementById('arrIn').value=Array.from({length:n},()=>1+Math.floor(Math.random()*15)).join(',');
+  rebuild();
+}
+setupCanvas(); rebuild();
 </script>
 </body>
 </html>
