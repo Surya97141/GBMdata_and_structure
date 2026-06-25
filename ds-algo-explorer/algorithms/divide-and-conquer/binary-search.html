@@ -1,167 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Binary Search (D&C) – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Binary Search</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.controls label{font-size:14px;font-weight:500}
-.controls input{font-family:'Inter',sans-serif;font-size:14px;padding:8px 12px;border:1px solid #e2e0da;border-radius:8px;width:90px;background:#f7f6f2}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-.two-col{display:grid;grid-template-columns:1fr 280px;gap:16px}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
-.tree-panel{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:12px;overflow-y:auto;max-height:260px}
-.tree-panel h3{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.tree-node{font-family:'JetBrains Mono',monospace;font-size:11px;color:#2e2e42;padding:2px 0 2px 0;border-left:2px solid #27a060;padding-left:8px;margin:3px 0}
-.log{margin-top:16px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:160px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.arr-vis{display:flex;gap:4px;flex-wrap:wrap;margin:.6rem 0;font-family:'JetBrains Mono',monospace}
+.arr-cell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.arr-cell .val{width:44px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1.5px solid var(--b);font-size:.85rem;font-weight:700;background:var(--bg)}
+.arr-cell .val.mid{background:#fff176;border-color:#f59e0b;outline:2px solid #d97706}
+.arr-cell .val.active{background:#c3b1e1;border-color:#7b4fd4}
+.arr-cell .val.found{background:#a8e6a3;border-color:#16a34a;outline:2px solid #16a34a}
+.arr-cell .val.elim{background:#e5e7eb;color:#aaa}
+.arr-cell .label{font-size:.58rem;color:#888}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:250px;background:var(--bg);color:var(--ink)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:80px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Binary Search (D&amp;C)
-  </nav>
-  <div class="hero">
-    <div class="category-tag">Divide &amp; Conquer</div>
-    <h1>Binary Search</h1>
-    <p class="tagline">A classic D&C algorithm — recursively halve the problem space.</p>
-  </div>
-  <div class="explanation">
-    <p>Binary search is a textbook divide-and-conquer algorithm. The D&C pattern is explicit: divide the array into two halves at the midpoint, conquer by recursing into only the relevant half, and combine trivially (no merge step needed — the result is returned directly from the subproblem).</p>
-    <p>The recursive call tree is unbalanced in general — each level only recurses into one branch. This produces a call tree of depth O(log n) with one active node per level. Each node represents the subproblem: "is the target in this subarray?" The base cases are a single element or an empty range.</p>
-    <p>Understanding binary search as D&C builds intuition for more complex divide-and-conquer algorithms. The pattern — choose a split point, determine which subproblem the answer lies in, recurse only there — appears in range trees, segment trees, and competitive programming divide-and-conquer optimizations.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Binary Search</span></nav>
+  <span class="tag">Divide & Conquer</span>
+  <h1>Binary Search</h1>
+  <p class="tagline">Search sorted array in O(log n) by halving search space each step.</p>
+  <div class="prose">
+    <p>Binary search maintains a [lo, hi] range. Each iteration computes mid = (lo+hi)/2 and compares a[mid] to target. If equal, found. If target > a[mid], search right half. Otherwise left half. Each step eliminates half the elements.</p>
+    <p>Yellow = current mid element being compared. Purple = active search range. Gray = eliminated range. Green = found.</p>
   </div>
   <div class="facts">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(log n)</div></div>
-    <div class="fact-card"><div class="label">Recursion Depth</div><div class="value">O(log n)</div></div>
-    <div class="fact-card"><div class="label">Subproblems/Level</div><div class="value">1 (active)</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Requires</div><div class="fval">Sorted array</div></div>
+    <div class="fact"><div class="flabel">Steps</div><div class="fval">⌊log₂ n⌋ + 1</div></div>
   </div>
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <label>Target:</label>
-      <input type="number" id="targetInput" value="42">
-      <button class="btn btn-primary" onclick="startSearch()">Search</button>
-      <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
-    </div>
-    <div class="two-col">
-      <div>
-        <canvas id="cvs" width="520" height="200"></canvas>
-      </div>
-      <div class="tree-panel">
-        <h3>Recursion Tree</h3>
-        <div id="treeNodes"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="arr-vis" id="arrVis"></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Sorted array:</label>
+        <input type="text" id="arr" value="2,5,8,12,16,23,38,56,72,91"/>
+        <label>Target:</label>
+        <input type="number" id="target" value="23"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
       </div>
     </div>
-    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const ARR=[3,7,12,18,25,31,42,56,63,78];
-const ACCENT='#27a060',GREEN='#27a060',GRAY='#d0cec8';
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-let state=ARR.map(()=>'default'),running=false,lo=0,hi=ARR.length-1,mid=-1;
-
-function drawArray(){
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  const n=ARR.length,cellW=50,cellH=54;
-  const startX=4,startY=20;
-  ARR.forEach((v,i)=>{
-    const x=startX+i*cellW,y=startY;
-    const s=state[i];
-    ctx.fillStyle=s==='default'?'#fff':s==='mid'?ACCENT:s==='found'?'#bbf7d0':GRAY;
-    ctx.strokeStyle='#e2e0da';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(x+2,y,cellW-4,cellH,8);ctx.fill();ctx.stroke();
-    ctx.fillStyle=(s==='mid')?'#fff':(s==='eliminated'?'#aaa':'#1a1a2e');
-    ctx.font='bold 14px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(v,x+cellW/2,y+cellH/2);
-    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
-    ctx.fillText(i,x+cellW/2,y+cellH+9);
+var player=null;
+function generateSteps(arr,target){
+  var steps=[], n=arr.length;
+  var cellState=new Array(n).fill('active');
+  function snap(lo,hi,mid){return {arr:arr.slice(),cellState:cellState.slice(),lo:lo,hi:hi,mid:mid,target:target,n:n};}
+  steps.push({title:'Binary Search for '+target+' in ['+arr.join(',')+']',
+    what:'lo=0, hi='+(n-1)+'. Search range = entire array.',
+    why:'Array sorted: compare midpoint to halve search space.',
+    ...snap(0,n-1,-1)});
+  var lo=0,hi=n-1,found=-1;
+  while(lo<=hi){
+    var mid=Math.floor((lo+hi)/2);
+    for(var k=0;k<n;k++) cellState[k]=k>=lo&&k<=hi?'active':'elim';
+    cellState[mid]='mid';
+    steps.push({title:'mid='+mid+', a[mid]='+arr[mid]+'. Compare to target='+target,
+      what:'a['+mid+']='+arr[mid]+' '+(arr[mid]===target?'== target → FOUND!':arr[mid]<target?'< target → search right half':'> target → search left half')+'.',
+      why:'Each comparison eliminates half the remaining elements.',
+      ...snap(lo,hi,mid)});
+    if(arr[mid]===target){found=mid;cellState[mid]='found';break;}
+    else if(arr[mid]<target){lo=mid+1;for(var k=0;k<mid;k++)cellState[k]='elim';}
+    else{hi=mid-1;for(var k=mid+1;k<n;k++)cellState[k]='elim';}
+  }
+  if(found>=0){
+    steps.push({title:'Found '+target+' at index '+found,
+      what:'a['+found+']='+target+'. Search complete in O(log n) steps.',
+      why:'Binary search: O(log '+n+') ≈ '+Math.ceil(Math.log2(n+1))+' max comparisons.',
+      ...snap(lo,hi,found)});
+  } else {
+    steps.push({title:''+target+' not found in array',
+      what:'lo='+lo+' > hi='+hi+'. Target absent.',
+      why:'Search space exhausted.',
+      ...snap(lo,hi,-1)});
+  }
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
+}
+function renderStep(step){
+  var av=document.getElementById('arrVis'); if(!av) return;
+  var h='';
+  step.arr.forEach(function(v,i){
+    var st=step.cellState[i];
+    var lbl=i===step.lo?'lo':i===step.hi?'hi':i===step.mid?'mid':i+'';
+    h+='<div class="arr-cell"><div class="val '+st+'">'+v+'</div><div class="label">'+lbl+'</div></div>';
   });
-  const py=startY+cellH+26;
-  if(lo>=0&&lo<ARR.length){ctx.fillStyle='#3b82f6';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('L',startX+lo*cellW+cellW/2,py);}
-  if(hi>=0&&hi<ARR.length){ctx.fillStyle='#f59e0b';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('R',startX+hi*cellW+cellW/2,py);}
-  if(mid>=0&&mid<ARR.length){ctx.fillStyle=ACCENT;ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.fillText('M',startX+mid*cellW+cellW/2,py);}
+  av.innerHTML=h;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Target='+step.target+'  |  lo='+step.lo+'  hi='+step.hi+'  mid='+(step.mid>=0?step.mid:'—');
 }
-
-function addTreeNode(depth,loI,hiI,midI,result){
-  const d=document.getElementById('treeNodes');
-  const e=document.createElement('div');e.className='tree-node';
-  e.style.marginLeft=(depth*14)+'px';
-  e.style.borderColor=result==='found'?'#27a060':result==='elim'?'#d0cec8':'#27a060';
-  e.textContent=`bs([${loI}..${hiI}]) mid=${midI} ${result==='found'?'✓ FOUND':result==='elim'?'✗':'→'}`;
-  d.appendChild(e);d.scrollTop=d.scrollHeight;
+function rebuild(){
+  var arr=document.getElementById('arr').value.split(',').map(function(x){return parseInt(x.trim());}).filter(function(x){return !isNaN(x);}).slice(0,14);
+  arr.sort(function(a,b){return a-b;});
+  var target=parseInt(document.getElementById('target').value)||23;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr,target),renderStep,'explanation','sim-bar');
 }
-
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function bsRecurse(loI,hiI,target,depth){
-  if(loI>hiI){addTreeNode(depth,loI,hiI,-1,'elim');log(`[${loI}..${hiI}] empty — target not in this range`);return false;}
-  const midI=Math.floor((loI+hiI)/2);
-  for(let i=0;i<ARR.length;i++){
-    if(i<loI||i>hiI)state[i]='eliminated';
-    else if(i===midI)state[i]='mid';
-    else state[i]='default';
-  }
-  lo=loI;hi=hiI;mid=midI;drawArray();
-  log(`D&C call(depth=${depth}): subarray [${loI}..${hiI}], mid=${midI} → arr[${midI}]=${ARR[midI]}`);
-  await sleep(800);
-  if(ARR[midI]===target){
-    state[midI]='found';drawArray();
-    addTreeNode(depth,loI,hiI,midI,'found');
-    log(`✓ Found ${target} at index ${midI}!`);return true;
-  }
-  addTreeNode(depth,loI,hiI,midI,ARR[midI]<target?'right':'left');
-  if(ARR[midI]<target){log(`arr[${midI}]=${ARR[midI]} < ${target}: recurse right half`);return await bsRecurse(midI+1,hiI,target,depth+1);}
-  else{log(`arr[${midI}]=${ARR[midI]} > ${target}: recurse left half`);return await bsRecurse(loI,midI-1,target,depth+1);}
-}
-
-async function startSearch(){
-  if(running)return;running=true;
-  state=ARR.map(()=>'default');lo=0;hi=ARR.length-1;mid=-1;
-  document.getElementById('treeNodes').innerHTML='';
-  document.getElementById('logEntries').innerHTML='';
-  const target=parseInt(document.getElementById('targetInput').value);
-  log(`Binary Search (D&C) for target = ${target}`);
-  const found=await bsRecurse(0,ARR.length-1,target,0);
-  if(!found){for(let i=0;i<ARR.length;i++)state[i]='eliminated';drawArray();log(`✗ ${target} not found.`);}
-  running=false;
-}
-
-function resetSearch(){
-  running=false;state=ARR.map(()=>'default');lo=0;hi=ARR.length-1;mid=-1;
-  document.getElementById('treeNodes').innerHTML='';
-  document.getElementById('logEntries').innerHTML='';drawArray();
-}
-drawArray();
+rebuild();
 </script>
 </body>
 </html>

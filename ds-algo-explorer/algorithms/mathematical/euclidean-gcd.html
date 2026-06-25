@@ -3,171 +3,136 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Euclidean GCD – DS-Algo Explorer</title>
+<title>Euclidean GCD Algorithm</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
-.breadcrumb span{margin:0 .4rem}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
-.hero-inner{max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
-.hero p.tagline{color:var(--muted);font-size:1.05rem}
-.content{max-width:860px;margin:0 auto;padding:2rem}
-.explain p{margin-bottom:1rem;color:#333}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
-.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
-label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
-input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:130px}
-input[type=number]:focus{outline:none;border-color:var(--accent)}
-.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
-.btn:hover{opacity:.85}
-.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:.8rem 0}
-th{background:var(--bg);padding:.5rem .7rem;text-align:left;font-size:.78rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
-td{padding:.45rem .7rem;border-bottom:1px solid #f0eeea;transition:background .3s}
-tr.active td{background:#fff3e0}
-tr.result-row td{background:#fde8e2;font-weight:700;color:var(--accent)}
-.geo-vis{margin:1rem 0}
-.rect-outer{position:relative;background:var(--bg);border:2px solid var(--border);border-radius:6px;overflow:hidden;height:80px;width:100%;max-width:500px}
-.rect-inner{position:absolute;top:0;left:0;height:100%;background:var(--accent);opacity:.2;transition:width .5s}
-.rect-gcd{position:absolute;top:0;left:0;height:100%;background:var(--accent);opacity:.5;transition:width .4s}
-.geo-label{font-size:.78rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:.3rem}
-#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
-#log div{margin-bottom:.3rem}
-#log .hi{color:#79c0ff}#log .ok{color:#56d364}
-.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.call-stack{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin:.6rem 0;min-height:60px}
+.call-row{display:flex;gap:.5rem;align-items:center;padding:.18rem 0}
+.call-row .arrow{color:var(--a);font-weight:700}
+.call-row.cur{color:var(--a);font-weight:700}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:90px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Euclidean GCD
-</nav>
-<div class="hero">
-  <div class="hero-inner">
-    <span class="tag">Mathematical</span>
-    <h1>Euclidean Algorithm (GCD)</h1>
-    <p class="tagline">Find the greatest common divisor using repeated division — one of the oldest algorithms in existence.</p>
-  </div>
-</div>
-<div class="content">
-  <div class="explain">
-    <p>The Euclidean algorithm finds the GCD of two numbers by repeatedly replacing the larger with the remainder of division. The key insight: GCD(a, b) = GCD(b, a mod b), because any common divisor of a and b also divides a - k·b.</p>
-    <p>Geometrically, think of fitting the largest square into an a×b rectangle. After removing as many b×b squares as fit, you're left with a b×(a mod b) rectangle — the same problem scaled down. Eventually you're left with a square of side GCD(a,b).</p>
-    <p>The algorithm runs in O(log min(a,b)) steps — Fibonacci numbers are the worst case, requiring exactly the most divisions. Used everywhere: fraction simplification, RSA key generation, and lattice reduction algorithms.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Euclidean GCD</span></nav>
+  <span class="tag">Mathematical</span>
+  <h1>Euclidean GCD Algorithm</h1>
+  <p class="tagline">Greatest Common Divisor via repeated remainder — O(log min(a,b)).</p>
+  <div class="prose">
+    <p>gcd(a, b) = gcd(b, a mod b). When b=0, GCD = a. This works because any divisor of both a and b also divides (a mod b). Each step reduces the larger number to its remainder, converging extremely fast — O(log) steps.</p>
+    <p>The recursive call stack is shown. Each frame shows the current (a, b) pair and the result returned back up the chain.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">O(log N)</div><div class="lbl">Time complexity</div></div>
-    <div class="fact"><div class="val">300 BC</div><div class="lbl">Euclid's Elements</div></div>
-    <div class="fact"><div class="val">Fibonacci</div><div class="lbl">Worst-case inputs</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(log min(a,b))</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Invented</div><div class="fval">~300 BC</div></div>
+    <div class="fact"><div class="flabel">Key identity</div><div class="fval">gcd(a,b)=gcd(b,a%b)</div></div>
   </div>
-
-  <div class="panel">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div><label>a</label><input type="number" id="aInput" value="48" min="1"/></div>
-      <div><label>b</label><input type="number" id="bInput" value="18" min="1"/></div>
-      <button class="btn" onclick="runGCD()" style="align-self:flex-end">Compute GCD</button>
-      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
-    </div>
-    <div class="geo-vis">
-      <div class="rect-outer" id="geoRect">
-        <div class="rect-inner" id="geoA"></div>
-        <div class="rect-gcd" id="geoGCD"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="call-stack" id="callStack">Call stack will appear here.</div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>a:</label><input type="number" id="aVal" value="48" min="1" max="9999"/>
+        <label>b:</label><input type="number" id="bVal" value="18" min="0" max="9999"/>
+        <button class="btn btn-p" onclick="rebuild()">Compute GCD</button>
       </div>
-      <div class="geo-label" id="geoLabel">Rectangle visualization</div>
     </div>
-    <table>
-      <thead><tr><th>Step</th><th>a</th><th>b</th><th>a = q × b + r</th><th>remainder</th></tr></thead>
-      <tbody id="gcdTable"></tbody>
-    </table>
-    <div id="resultBox" style="font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;margin:.5rem 0;color:var(--accent)"></div>
   </div>
-
-  <div class="panel">
-    <h2>Step Log</h2>
-    <div id="log"><div class="hi">// Enter a and b then click "Compute GCD"</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function log(msg,cls=''){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  if(cls)div.className=cls;
-  div.textContent=msg;
-  d.appendChild(div);
-  d.scrollTop=d.scrollHeight;
-}
-
-function resetSim(){
-  document.getElementById('gcdTable').innerHTML='';
-  document.getElementById('resultBox').textContent='';
-  document.getElementById('geoLabel').textContent='Rectangle visualization';
-  document.getElementById('geoA').style.width='100%';
-  document.getElementById('geoGCD').style.width='0';
-  document.getElementById('log').innerHTML='<div class="hi">// Enter a and b then click "Compute GCD"</div>';
-}
-
-function runGCD(){
-  resetSim();
-  let a=Math.abs(parseInt(document.getElementById('aInput').value)||48);
-  let b=Math.abs(parseInt(document.getElementById('bInput').value)||18);
-  if(b>a){[a,b]=[b,a];}
-  const origA=a,origB=b;
-  log('=== Euclidean Algorithm ===','hi');
-  log(`gcd(${a}, ${b})`);
-
-  const steps=[];
-  let ca=a,cb=b;
-  while(cb!==0){
-    const q=Math.floor(ca/cb);
-    const r=ca%cb;
-    steps.push({a:ca,b:cb,q,r});
-    ca=cb;cb=r;
+var player=null;
+function generateSteps(a0,b0){
+  var steps=[], calls=[], result=-1;
+  function snap(depth,result){return {calls:calls.map(function(c){return Object.assign({},c);}),depth:depth,result:result};}
+  steps.push({title:'GCD('+a0+', '+b0+')',
+    what:'gcd(a,b) = gcd(b, a mod b). Base case: gcd(a,0)=a.',
+    why:'Every common divisor of a and b also divides a mod b.',
+    ...snap(0,-1)});
+  var a=a0,b=b0;
+  while(b!==0){
+    calls.push({a:a,b:b,rem:a%b,returning:-1});
+    steps.push({title:'gcd('+a+', '+b+')',
+      what:''+a+' = '+b+' × '+Math.floor(a/b)+' + '+(a%b)+'. Next: gcd('+b+', '+(a%b)+').',
+      why:'Replace (a,b) with (b, a mod b).',
+      ...snap(calls.length-1,-1)});
+    var tmp=a%b; a=b; b=tmp;
   }
-  const gcd=ca;
-
-  const tbody=document.getElementById('gcdTable');
-  steps.forEach((s,i)=>{
-    const tr=document.createElement('tr');
-    tr.id=`gr-${i}`;
-    tr.innerHTML=`<td>${i+1}</td><td>${s.a}</td><td>${s.b}</td><td>${s.a} = ${s.q} × ${s.b} + ${s.r}</td><td>${s.r}</td>`;
-    tbody.appendChild(tr);
-  });
-  // Result row
-  const tr=document.createElement('tr');tr.className='result-row';
-  tr.innerHTML=`<td>–</td><td>${gcd}</td><td>0</td><td>GCD found!</td><td>–</td>`;
-  tbody.appendChild(tr);
-
-  document.getElementById('resultBox').textContent=`GCD(${origA}, ${origB}) = ${gcd}`;
-  document.getElementById('geoA').style.width='100%';
-  document.getElementById('geoGCD').style.width=`${(gcd/origA)*100}%`;
-  document.getElementById('geoLabel').textContent=`Rectangle ${origA}×1: GCD ${gcd} fits ${Math.floor(origA/gcd)} times`;
-
-  // Animate rows
-  steps.forEach((s,i)=>{
-    setTimeout(()=>{
-      document.querySelectorAll('tr.active').forEach(r=>r.classList.remove('active'));
-      const r=document.getElementById(`gr-${i}`);
-      if(r) r.classList.add('active');
-      log(`Step ${i+1}: gcd(${s.a},${s.b}) → ${s.a} = ${s.q}×${s.b} + ${s.r}`);
-    },i*500);
-  });
-  setTimeout(()=>log(`GCD(${origA}, ${origB}) = ${gcd}`,'ok'),steps.length*500);
+  result=a;
+  calls.push({a:a,b:b,rem:0,returning:result});
+  steps.push({title:'gcd('+a+', 0) = '+a+' (base case)',
+    what:'b=0, so GCD = '+a+'.',
+    why:'When b=0, a is divisible by itself and was the last non-zero remainder.',
+    ...snap(calls.length-1,result)});
+  for(var i=calls.length-2;i>=0;i--){
+    calls[i].returning=result;
+    steps.push({title:'gcd('+calls[i].a+', '+calls[i].b+') → '+result,
+      what:'Return '+result+' up the call stack.',
+      why:'GCD propagates unchanged back through all recursive frames.',
+      ...snap(i,result)});
+  }
+  steps.push({title:'GCD('+a0+', '+b0+') = '+result,
+    what:'Final answer: '+result+'. Verification: '+a0+'/'+result+'='+(a0/result)+', '+b0+'/'+result+'='+(b0/result)+'.',
+    why:'Euclidean algorithm terminates in O(log min(a,b)) steps.',
+    ...snap(-1,result)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
+function renderStep(step){
+  var cs=document.getElementById('callStack'); if(!cs) return;
+  var h='';
+  step.calls.forEach(function(c,i){
+    var isCur=i===step.depth;
+    var indent='&nbsp;&nbsp;'.repeat(i);
+    var ret=c.returning>=0?' → <b>'+c.returning+'</b>':'';
+    h+='<div class="call-row '+(isCur?'cur':'')+'">'+indent+'<span>gcd('+c.a+', '+c.b+')</span>'+
+      '<span class="arrow"> → </span><span>gcd('+c.b+', '+c.rem+')</span>'+ret+'</div>';
+  });
+  cs.innerHTML=h||'<span style="color:var(--m)">Starting...</span>';
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='GCD result: '+(step.result>0?step.result:'computing...')+'  |  Steps: '+step.calls.length;
+}
+function rebuild(){
+  var a=parseInt(document.getElementById('aVal').value)||48;
+  var b=parseInt(document.getElementById('bVal').value)||18;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(a,b),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

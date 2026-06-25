@@ -1,262 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Incidence Matrix — DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Incidence Matrix</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #f7f6f2; color: #1a1a2e; font-family: 'Inter', sans-serif; min-height: 100vh; }
-  a { color: #7b4fd4; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .breadcrumb { padding: 18px 40px; font-size: 13px; color: #5a5a72; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .breadcrumb span { color: #c0bdb5; }
-  .hero { background: #fff; border-bottom: 1px solid #e2e0da; padding: 48px 40px 36px; }
-  .tag { display: inline-block; background: #ede8f9; color: #7b4fd4; font-size: 11px; font-weight: 600; letter-spacing:.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
-  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.4rem; line-height: 1.15; margin-bottom: 10px; }
-  .hero p { color: #5a5a72; font-size: 1.05rem; max-width: 640px; }
-  .content { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
-  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.35rem; margin-bottom: 12px; }
-  .prose p { color: #3a3a52; line-height: 1.75; margin-bottom: 14px; font-size: .97rem; }
-  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 28px 0; }
-  .fact-card { background: #fff; border: 1px solid #e2e0da; border-radius: 10px; padding: 18px; }
-  .fact-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.07em; color: #5a5a72; margin-bottom: 8px; }
-  .fact-card .value { font-family: 'JetBrains Mono', monospace; font-size: .95rem; color: #7b4fd4; font-weight: 600; }
-  .fact-card .sub { font-size: .8rem; color: #5a5a72; margin-top: 4px; }
-
-  .sim-box { background: #fff; border: 1px solid #e2e0da; border-radius: 12px; overflow: hidden; margin: 32px 0; }
-  .sim-header { padding: 14px 20px; border-bottom: 1px solid #e2e0da; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .sim-title { font-weight: 600; font-size: .97rem; margin-right: auto; }
-  .btn { padding: 7px 14px; border-radius: 7px; border: 1.5px solid #7b4fd4; background: #fff; color: #7b4fd4; font-weight: 600; cursor: pointer; font-size: .84rem; font-family: 'Inter', sans-serif; transition: background .15s, color .15s; }
-  .btn:hover { background: #7b4fd4; color: #fff; }
-
-  .sim-body { display: grid; grid-template-columns: 1fr 1fr; }
-  @media (max-width: 620px) { .sim-body { grid-template-columns: 1fr; } }
-  .canvas-panel { border-right: 1px solid #e2e0da; padding: 12px; }
-  canvas { display: block; width: 100%; background: #faf9f7; border-radius: 8px; cursor: pointer; }
-  .matrix-panel { padding: 18px 16px; overflow-x: auto; }
-  .matrix-panel h3 { font-size: .85rem; font-weight: 600; color: #5a5a72; margin-bottom: 12px; letter-spacing:.05em; }
-
-  table.inc { border-collapse: collapse; }
-  table.inc th, table.inc td { width: 42px; height: 38px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: .82rem; border: 1px solid #e2e0da; transition: background .18s; }
-  table.inc th { background: #f0eef8; color: #7b4fd4; font-weight: 700; }
-  table.inc td { color: #1a1a2e; }
-  table.inc td.pos { background: #7b4fd4; color: #fff; font-weight: 700; }
-  table.inc td.neg { background: #9c72e8; color: #fff; font-weight: 700; }
-  table.inc td.one { background: #ede8f9; color: #7b4fd4; font-weight: 700; }
-  table.inc td.hl { outline: 2px solid #7b4fd4; }
-  .row-hdr { background: #f0eef8 !important; color: #7b4fd4 !important; font-weight: 700; }
-
-  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; font-size: .8rem; }
-  .leg-item { display: flex; align-items: center; gap: 6px; }
-  .leg-dot { width: 14px; height: 14px; border-radius: 3px; }
-
-  .formula { margin-top: 14px; background: #faf9f7; border: 1px solid #e2e0da; border-radius: 8px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: #5a5a72; line-height: 1.7; }
-  .formula b { color: #7b4fd4; }
-
-  .log-box { background: #1a1a2e; min-height: 80px; max-height: 120px; overflow-y: auto; padding: 12px 18px; }
-  .log-line { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #a8a4c8; margin-bottom: 4px; }
-  .log-line .ts { color: #5a5a72; margin-right: 8px; }
-  .log-line .hi { color: #b993ff; }
-
-  .back-link { display: inline-flex; align-items: center; gap: 6px; color: #7b4fd4; font-size: .9rem; font-weight: 500; margin-top: 20px; }
-  .info-strip { background: #ede8f9; border-left: 3px solid #7b4fd4; border-radius: 0 8px 8px 0; padding: 10px 16px; margin-bottom: 20px; font-size: .87rem; color: #3a2060; }
-
-  .edge-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 10px 16px; border-top: 1px solid #e2e0da; background: #faf9f7; }
-  .edge-chip { padding: 5px 12px; border-radius: 20px; border: 1.5px solid #b0a8d0; background: #fff; color: #5a5a72; font-size: .82rem; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-weight: 600; transition: all .15s; }
-  .edge-chip:hover { border-color: #7b4fd4; color: #7b4fd4; }
-  .edge-chip.directed-on { background: #7b4fd4; color: #fff; border-color: #7b4fd4; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.mat-wrap{overflow-x:auto;margin:.5rem 0}
+table.im{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+table.im td,table.im th{border:1px solid var(--b);padding:.25rem .55rem;text-align:center;min-width:32px}
+table.im th{background:var(--bg);font-weight:700;color:var(--m)}
+table.im td.cur{background:#fff176}
+table.im td.inc{background:#c3b1e1}
+table.im td.zero{color:#bbb}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>/</span>
-  <a href="../index.html">Data Structures</a><span>/</span>
-  <strong>Incidence Matrix</strong>
-</nav>
-
-<header class="hero">
-  <div style="max-width:900px;margin:0 auto;">
-    <div class="tag">Graph Representation</div>
-    <h1>Incidence Matrix</h1>
-    <p>A V×E matrix that records which vertices are endpoints of which edges — powerful for directed graphs and circuit analysis.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Incidence Matrix</span></nav>
+  <span class="tag">Graph</span>
+  <h1>Incidence Matrix</h1>
+  <p class="tagline">V×E matrix — row=vertex, col=edge. Entry=1 if vertex is endpoint of edge.</p>
+  <div class="prose">
+    <p>An incidence matrix is V×E where M[v][e]=1 if vertex v is an endpoint of edge e (0 otherwise). For directed graphs: +1 for tail (source), -1 for head (destination). Space is O(V×E). Rarely used for algorithms but useful for linear algebraic analysis of graph properties (cycle detection, cut spaces). Each column has exactly 2 ones.</p>
+    <p>Yellow = currently examining. Purple = incidence (vertex is endpoint). Steps show vertex-by-edge traversal.</p>
   </div>
-</header>
-
-<main class="content">
-  <section class="prose" style="margin-bottom:28px;">
-    <div class="section-title">How it Works</div>
-    <p>The incidence matrix is V rows × E columns. Column <strong>j</strong> represents edge <strong>j</strong>. For an <strong>undirected</strong> edge between vertices i and k, both cells [i][j] and [k][j] = 1. For a <strong>directed</strong> edge from i to k: cell [i][j] = +1 (source) and cell [k][j] = −1 (destination). All other cells = 0.</p>
-    <p>Real use: electrical circuit analysis (Kirchhoff's laws), network flow, and linear algebra on graphs. The incidence matrix reveals structure that adjacency matrices cannot — like identifying self-loops (a +1 and −1 in the same row) or parallel edges as separate columns.</p>
-  </section>
-
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Space</div><div class="value">O(V × E)</div><div class="sub">Typically larger than adj list</div></div>
-    <div class="fact-card"><div class="label">Edge lookup</div><div class="value">O(V)</div><div class="sub">Scan the column</div></div>
-    <div class="fact-card"><div class="label">Vertex degree</div><div class="value">O(E)</div><div class="sub">Count non-zero in row</div></div>
-    <div class="fact-card"><div class="label">Use Cases</div><div class="value" style="font-size:.78rem;line-height:1.5;">Circuit analysis,<br>network flow, linear algebra</div></div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V×E)</div></div>
+    <div class="fact"><div class="flabel">Edge check</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Column sum</div><div class="fval">Always 2</div></div>
+    <div class="fact"><div class="flabel">Used for</div><div class="fval">Graph algebraic analysis</div></div>
   </div>
-
-  <div class="info-strip">Click an <strong>edge chip</strong> below the graph to toggle it between directed and undirected. The incidence matrix updates instantly.</div>
-
-  <div class="sim-box">
-    <div class="sim-header">
-      <span class="sim-title">Graph ↔ Incidence Matrix (4 vertices, 5 edges)</span>
-      <button class="btn" id="btnReset">Reset</button>
-    </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <div class="canvas-panel">
-        <canvas id="gc" height="240"></canvas>
-      </div>
-      <div class="matrix-panel">
-        <h3>INCIDENCE MATRIX  M[v][e]</h3>
-        <div id="matWrap"></div>
-        <div class="legend">
-          <div class="leg-item"><div class="leg-dot" style="background:#7b4fd4;"></div>+1 source / undirected endpoint</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#9c72e8;"></div>−1 destination</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#ede8f9;"></div>1 (undirected both ends)</div>
-        </div>
-        <div class="formula"><b>M[v][e]</b> = +1 if v is source of directed edge e<br><b>M[v][e]</b> = −1 if v is destination of directed edge e<br><b>M[v][e]</b> =  1 if v is an endpoint of undirected edge e<br><b>M[v][e]</b> =  0 otherwise</div>
+      <div class="mat-wrap"><div id="matDiv"></div></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Examine vertex:</label>
+        <select id="vertSel"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
+        <button class="btn btn-p" onclick="rebuild()">Find Incident Edges</button>
       </div>
     </div>
-    <div class="edge-controls" id="edgeControls"></div>
-    <div class="log-box" id="logBox"></div>
   </div>
-
-  <a class="back-link" href="../index.html">&#8592; Back to Data Structures</a>
-</main>
-
+  <a class="back" href="../index.html">Back to Data Structures</a>
+</div>
 <script>
-const V = 4, ACCENT = '#7b4fd4', R = 22;
-// edges: { src, dst, directed }
-let edges = [
-  {src:0,dst:1,directed:false},
-  {src:0,dst:2,directed:true},
-  {src:1,dst:2,directed:false},
-  {src:1,dst:3,directed:true},
-  {src:2,dst:3,directed:false}
-];
-
-const canvas = document.getElementById('gc');
-const ctx = canvas.getContext('2d');
-function resize() { canvas.width = canvas.parentElement.clientWidth; }
-resize();
-window.addEventListener('resize', () => { resize(); positionNodes(); drawGraph(); });
-
-let nodePos = [];
-function positionNodes() {
-  const cx = canvas.width/2, cy = canvas.height/2, rad = Math.min(canvas.width, canvas.height)*0.34;
-  nodePos = Array.from({length:V}, (_,i) => {
-    const a = (i/V)*Math.PI*2 - Math.PI/2;
-    return { x: cx+rad*Math.cos(a), y: cy+rad*Math.sin(a) };
-  });
-}
-positionNodes();
-
-function vlabel(i) { return String.fromCharCode(65+i); }
-function elabel(i) { return 'e'+(i+1); }
-
-function log(msg) {
-  const d=new Date();
-  const ts=`${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
-  const lb=document.getElementById('logBox');
-  const line=document.createElement('div'); line.className='log-line';
-  line.innerHTML=`<span class="ts">${ts}</span>${msg}`;
-  lb.appendChild(line); lb.scrollTop=lb.scrollHeight;
-}
-
-function drawArrow(x1,y1,x2,y2,color) {
-  const ang=Math.atan2(y2-y1,x2-x1);
-  const ex=x2-R*Math.cos(ang), ey=y2-R*Math.sin(ang);
-  ctx.beginPath();
-  ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-10*Math.cos(ang-0.4), ey-10*Math.sin(ang-0.4));
-  ctx.lineTo(ex-10*Math.cos(ang+0.4), ey-10*Math.sin(ang+0.4));
-  ctx.closePath(); ctx.fillStyle=color; ctx.fill();
-}
-
-function drawGraph() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  edges.forEach((e,i) => {
-    const p1=nodePos[e.src], p2=nodePos[e.dst];
-    ctx.beginPath();
-    ctx.strokeStyle = '#7b4fd4'; ctx.lineWidth=2;
-    ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
-    const mx=(p1.x+p2.x)/2, my=(p1.y+p2.y)/2;
-    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(mx,my,10,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#b0a8d0'; ctx.lineWidth=1; ctx.stroke();
-    ctx.fillStyle='#7b4fd4'; ctx.font='600 10px JetBrains Mono,monospace';
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(elabel(i),mx,my);
-    if(e.directed) drawArrow(p1.x,p1.y,p2.x,p2.y,'#7b4fd4');
-  });
-  nodePos.forEach((p,i) => {
-    ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2);
-    ctx.fillStyle='#fff'; ctx.fill(); ctx.strokeStyle=ACCENT; ctx.lineWidth=2.5; ctx.stroke();
-    ctx.fillStyle=ACCENT; ctx.font='700 14px Inter,sans-serif';
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(vlabel(i),p.x,p.y);
-  });
-}
-
-function buildMatrix() {
-  const E=edges.length;
-  const wrap=document.getElementById('matWrap');
-  const table=document.createElement('table'); table.className='inc';
-  const hr=document.createElement('tr');
-  hr.appendChild(Object.assign(document.createElement('th'),{textContent:''}));
-  edges.forEach((_,j) => hr.appendChild(Object.assign(document.createElement('th'),{textContent:elabel(j)})));
-  table.appendChild(hr);
-  for(let v=0;v<V;v++) {
-    const tr=document.createElement('tr');
-    const rh=document.createElement('td'); rh.textContent=vlabel(v); rh.className='row-hdr'; tr.appendChild(rh);
-    edges.forEach((e,j) => {
-      const td=document.createElement('td');
-      let val=0;
-      if(e.directed) {
-        if(e.src===v) { val=1; td.classList.add('pos'); }
-        else if(e.dst===v) { val=-1; td.classList.add('neg'); }
-      } else {
-        if(e.src===v||e.dst===v) { val=1; td.classList.add('one'); }
-      }
-      td.textContent=val===0?'0':val;
-      tr.appendChild(td);
-    });
-    table.appendChild(tr);
+var player=null;
+var VLABELS=['A','B','C','D'];
+var EDGES_IM=[{u:0,v:1,lbl:'e1'},{u:0,v:2,lbl:'e2'},{u:1,v:2,lbl:'e3'},{u:1,v:3,lbl:'e4'},{u:2,v:3,lbl:'e5'}];
+var V=4, E=EDGES_IM.length;
+var INC_MAT=[];
+for(var r=0;r<V;r++){INC_MAT.push(new Array(E).fill(0));}
+EDGES_IM.forEach(function(e,j){INC_MAT[e.u][j]=1;INC_MAT[e.v][j]=1;});
+function generateSteps(startV){
+  var steps=[], curRow=-1, curCol=-1;
+  function snap(r,c){return {curRow:r,curCol:c,N_V:V,N_E:E};}
+  steps.push({title:'Incidence Matrix: V='+V+', E='+E,
+    what:'Row=vertex, Col=edge. M[v][e]=1 if vertex v is endpoint of edge e.',
+    why:'Algebraic graph representation. Each column has exactly 2 ones (undirected).',
+    ...snap(-1,-1)});
+  for(var j=0;j<E;j++){
+    steps.push({title:'Examine M['+VLABELS[startV]+']['+EDGES_IM[j].lbl+'] = '+INC_MAT[startV][j],
+      what:INC_MAT[startV][j]===1?'Edge '+EDGES_IM[j].lbl+' = ('+VLABELS[EDGES_IM[j].u]+'–'+VLABELS[EDGES_IM[j].v]+'). Vertex '+VLABELS[startV]+' IS incident to this edge.':'Vertex '+VLABELS[startV]+' is NOT incident to '+EDGES_IM[j].lbl+'.',
+      why:'M[v][e]=1 iff edge e connects vertex v.',
+      ...snap(startV,j)});
   }
-  wrap.innerHTML=''; wrap.appendChild(table);
+  var incEdges=[];
+  for(var j=0;j<E;j++) if(INC_MAT[startV][j]===1) incEdges.push(EDGES_IM[j].lbl);
+  steps.push({title:'Vertex '+VLABELS[startV]+' incident to: ['+incEdges.join(',')+']',
+    what:'Found '+incEdges.length+' edges incident to '+VLABELS[startV]+'.',
+    why:'Row sum = degree of vertex.',
+    ...snap(-1,-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function buildEdgeControls() {
-  const ctrl=document.getElementById('edgeControls');
-  ctrl.innerHTML='<span style="font-size:.82rem;color:#5a5a72;margin-right:4px;">Toggle edge direction:</span>';
-  edges.forEach((e,i) => {
-    const chip=document.createElement('button');
-    chip.className='edge-chip'+(e.directed?' directed-on':'');
-    chip.textContent=elabel(i)+' '+vlabel(e.src)+(e.directed?'→':'↔')+vlabel(e.dst);
-    chip.addEventListener('click',() => {
-      e.directed=!e.directed;
-      const dir=e.directed?'directed':'undirected';
-      const src=e.directed?`vertex ${vlabel(e.src)}=+1, vertex ${vlabel(e.dst)}=−1`:`vertex ${vlabel(e.src)}=1, vertex ${vlabel(e.dst)}=1`;
-      log(`<span class="hi">${elabel(i)}</span> now <span class="hi">${dir}</span>: ${src}`);
-      buildMatrix(); buildEdgeControls(); drawGraph();
-    });
-    ctrl.appendChild(chip);
-  });
+function renderStep(step){
+  var md=document.getElementById('matDiv'); if(!md) return;
+  var html='<table class="im"><tr><th>Vertex\\Edge</th>';
+  for(var j=0;j<step.N_E;j++) html+='<th>'+EDGES_IM[j].lbl+'</th>';
+  html+='</tr>';
+  for(var r=0;r<step.N_V;r++){
+    html+='<tr><th>'+VLABELS[r]+'</th>';
+    for(var c=0;c<step.N_E;c++){
+      var isCur=r===step.curRow&&c===step.curCol;
+      var v=INC_MAT[r][c];
+      html+='<td class="'+(isCur?'cur':v===1?'inc':'zero')+'">'+v+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</table>';md.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Row: '+(step.curRow>=0?VLABELS[step.curRow]:'—')+'  |  Col: '+(step.curCol>=0?EDGES_IM[step.curCol].lbl:'—')+'  |  Value: '+(step.curRow>=0&&step.curCol>=0?INC_MAT[step.curRow][step.curCol]:'—');
 }
-
-document.getElementById('btnReset').addEventListener('click',() => {
-  edges=[
-    {src:0,dst:1,directed:false},{src:0,dst:2,directed:true},
-    {src:1,dst:2,directed:false},{src:1,dst:3,directed:true},
-    {src:2,dst:3,directed:false}
-  ];
-  log('Reset to default'); buildMatrix(); buildEdgeControls(); drawGraph();
-});
-
-buildMatrix(); buildEdgeControls(); drawGraph();
-log('Graph loaded — click edge chips to toggle direction');
+function rebuild(){
+  var v=parseInt(document.getElementById('vertSel').value)||0;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(v),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

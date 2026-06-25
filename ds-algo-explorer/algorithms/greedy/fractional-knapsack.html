@@ -1,199 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fractional Knapsack – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fractional Knapsack</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-  .container{max-width:900px;margin:0 auto;padding:0 24px;}
-  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
-  .breadcrumb span{margin:0 6px;}
-  .hero{padding:48px 0 32px;}
-  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
-  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
-  .explanation p{margin-bottom:14px;padding-top:4px;}
-  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
-  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
-  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
-  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
-  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px;}
-  .cap-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:18px;}
-  .cap-row label{font-size:.8rem;font-weight:600;color:var(--muted);}
-  .cap-row input{font-family:'JetBrains Mono',monospace;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;width:80px;background:var(--bg);}
-  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
-  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
-  table.items{border-collapse:collapse;width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin-bottom:20px;}
-  table.items th,table.items td{border:1px solid var(--border);padding:8px 14px;text-align:center;}
-  table.items th{background:var(--bg);color:var(--muted);font-weight:600;}
-  table.items tr.selected td{background:#fff8e0;font-weight:600;}
-  table.items tr.partial td{background:#fff3ed;}
-  table.items tr.skip td{color:#bbb;}
-  .bar-wrap{height:36px;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:14px 0;position:relative;}
-  .bar-fill{height:100%;background:var(--accent);transition:width .5s ease;display:flex;align-items:center;padding-left:10px;}
-  .bar-label{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#fff;font-weight:600;white-space:nowrap;}
-  .bar-cap{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
-  .result-note{font-size:.95rem;margin-top:8px;}
-  .result-note strong{color:var(--accent);}
-  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
-  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
-  .log-box p.highlight{color:#f5d87c;}
-  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.item-table{overflow-x:auto;margin:.5rem 0}
+table.it{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+table.it td,table.it th{border:1px solid var(--b);padding:.25rem .55rem;text-align:right}
+table.it th{background:var(--bg);font-weight:700;color:var(--m);text-align:left}
+table.it tr.cur td{background:#fff176}
+table.it tr.full td{background:#a8e6a3}
+table.it tr.part td{background:#c3b1e1}
+table.it tr.skip td{background:#e5e7eb;color:#888}
+.knap-bar{height:28px;background:#e5e7eb;border-radius:6px;margin:.5rem 0;overflow:hidden;display:flex}
+.knap-fill{height:100%;background:#7b4fd4;transition:width .2s;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font:bold 10px JetBrains Mono,monospace;color:#fff}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.35rem .6rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+input[type=text].w-lg{width:280px} input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:80px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Fractional Knapsack
-  </nav>
-
-  <div class="hero">
-    <span class="tag">Greedy</span>
-    <h1>Fractional Knapsack</h1>
-    <p class="tagline">Fill a knapsack to maximum value — fractions allowed, greedy by value/weight ratio.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Fractional Knapsack</span></nav>
+  <span class="tag">Greedy</span>
+  <h1>Fractional Knapsack</h1>
+  <p class="tagline">Maximize value in capacity W — greedy: take highest value/weight ratio first.</p>
+  <div class="prose">
+    <p>Unlike the 0/1 knapsack (DP needed), fractional knapsack allows taking fractions of items. Sort by value/weight ratio descending. Take each item fully if it fits; otherwise take the fraction that fills remaining capacity. This greedy approach is provably optimal.</p>
+    <p>Green = taken fully. Purple = taken partially. Gray = skipped. Yellow = currently considering. The capacity bar shows remaining space.</p>
   </div>
-
-  <div class="explanation">
-    <p>You have a knapsack with a weight limit and a set of items, each with a weight and value. Unlike the 0/1 knapsack (where you must take or leave an item whole), here you can take any fraction of an item — like a thief scooping gold dust.</p>
-    <p>The greedy strategy is exact for this variant: compute the value-per-unit-weight ratio for every item, sort by ratio descending, then greedily take as much of each item as the remaining capacity allows.</p>
-    <p>This works because each unit of weight should carry the highest possible value, so we fill with the most "profitable" material first. The algorithm runs in O(n log n) and achieves the true optimum.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="val">O(n log n)</div><div class="label">Time Complexity</div></div>
-    <div class="fact-card"><div class="val">Optimal</div><div class="label">Greedy Result</div></div>
-    <div class="fact-card"><div class="val">v/w Ratio</div><div class="label">Greedy Key</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Greedy choice</div><div class="fval">Max value/weight</div></div>
+    <div class="fact"><div class="flabel">Optimal</div><div class="fval">Yes (fractional)</div></div>
+    <div class="fact"><div class="flabel">0/1 knapsack</div><div class="fval">Needs DP</div></div>
   </div>
-
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <div class="cap-row">
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <label>Knapsack Capacity</label>
-        <input type="number" id="capInput" value="50">
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <p style="font-size:.78rem;color:var(--m);margin-bottom:.3rem">Capacity used:</p>
+      <div class="knap-bar"><div class="knap-fill" id="knapFill" style="width:0%">0</div></div>
+      <div class="item-table"><div id="itemTable"></div></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Values:</label><input type="text" class="w-lg" id="vals" value="60,100,120"/>
+        <label>Weights:</label><input type="text" class="w-lg" id="wts" value="10,20,30"/>
+        <label>Capacity:</label><input type="number" id="cap" value="50" min="1" max="999"/>
+        <button class="btn btn-p" onclick="rebuild()">Solve</button>
       </div>
-      <button class="btn" id="solveBtn" onclick="startSolve()">Solve</button>
     </div>
-
-    <table class="items" id="itemTable"></table>
-
-    <div class="bar-wrap">
-      <div class="bar-fill" id="barFill" style="width:0%">
-        <span class="bar-label" id="barLabel"></span>
-      </div>
-      <span class="bar-cap" id="barCap"></span>
-    </div>
-
-    <div class="result-note" id="resultNote"></div>
   </div>
-
-  <div class="sim-box" style="padding:20px;">
-    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
-    <div class="log-box" id="logBox"></div>
-  </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-const ITEMS=[
-  {id:1,name:'Item 1',w:30,v:120},
-  {id:2,name:'Item 2',w:10,v:60},
-  {id:3,name:'Item 3',w:20,v:100},
-  {id:4,name:'Item 4',w:5,v:40},
-  {id:5,name:'Item 5',w:15,v:45},
-];
-
-function log(msg,h=false){
-  const lb=document.getElementById('logBox');
-  const p=document.createElement('p');
-  if(h)p.classList.add('highlight');
-  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
-}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-function buildTable(items,states={}){
-  const tbl=document.getElementById('itemTable');
-  tbl.innerHTML='<tr><th>#</th><th>Name</th><th>Weight</th><th>Value</th><th>v/w Ratio</th><th>Taken</th></tr>';
-  items.forEach((item,i)=>{
-    const tr=tbl.insertRow();
-    const st=states[item.id]||'idle';
-    if(st==='selected') tr.classList.add('selected');
-    else if(st==='partial') tr.classList.add('partial');
-    else if(st==='skip') tr.classList.add('skip');
-    [i+1,item.name,item.w,item.v,(item.v/item.w).toFixed(2),states[item.id+'_taken']||'–'].forEach(v=>{
-      const td=tr.insertCell();td.textContent=v;
-    });
-  });
-}
-
-async function startSolve(){
-  const btn=document.getElementById('solveBtn');
-  btn.disabled=true;
-  document.getElementById('logBox').innerHTML='';
-  document.getElementById('resultNote').innerHTML='';
-
-  let cap=parseInt(document.getElementById('capInput').value)||50;
-  const totalCap=cap;
-
-  // Sort by ratio
-  const sorted=[...ITEMS].map(it=>({...it,ratio:it.v/it.w})).sort((a,b)=>b.ratio-a.ratio);
-  buildTable(sorted);
-  log(`Capacity: ${cap}. Sort by ratio: ${sorted.map(it=>`${it.name}(ratio=${it.ratio.toFixed(2)})`).join(' > ')}`);
-
-  document.getElementById('barCap').textContent=`cap ${totalCap}`;
-  document.getElementById('barFill').style.width='0%';
-  document.getElementById('barLabel').textContent='';
-  await sleep(400);
-
-  const states={};
-  let totalValue=0;
-  for(const item of sorted){
-    if(cap<=0){states[item.id]='skip';states[item.id+'_taken']='0';continue;}
-    if(item.w<=cap){
-      // Take fully
-      cap-=item.w;totalValue+=item.v;
-      states[item.id]='selected';
-      states[item.id+'_taken']=`${item.w}/${item.w} (full)`;
-      log(`Item ${item.id} (w=${item.w},v=${item.v},ratio=${item.ratio.toFixed(2)}): take fully. Cap left=${cap}.`);
+var player=null;
+function generateSteps(vals,wts,W){
+  var n=vals.length;
+  var items=vals.map(function(v,i){return {i:i,v:v,w:wts[i],r:v/wts[i]};});
+  items.sort(function(a,b){return b.r-a.r;});
+  var state=new Array(n).fill(''), taken=new Array(n).fill(0), totalV=0, capUsed=0, curIdx=-1;
+  function snap(){return {items:items.slice(),state:state.slice(),taken:taken.slice(),totalV:totalV,capUsed:capUsed,curIdx:curIdx,W:W};}
+  var steps=[];
+  steps.push({title:'Fractional Knapsack: capacity='+W,
+    what:'Items sorted by value/weight ratio: '+items.map(function(it){return it.i+'('+it.r.toFixed(2)+')';}).join(', ')+'.',
+    why:'Greedy: highest ratio first maximizes value per unit weight.',
+    ...snap()});
+  for(var k=0;k<items.length;k++){
+    var it=items[k]; curIdx=k; state[k]='cur';
+    var rem=W-capUsed;
+    steps.push({title:'Item '+it.i+': v='+it.v+', w='+it.w+', r='+it.r.toFixed(2)+'. Remaining cap='+rem.toFixed(1),
+      what:'value/weight='+it.r.toFixed(2)+'. Remaining capacity='+rem.toFixed(1)+'.',
+      why:'Best remaining ratio item.',
+      ...snap()});
+    if(rem<=0){state[k]='skip';}
+    else if(it.w<=rem){
+      taken[k]=1; totalV+=it.v; capUsed+=it.w; state[k]='full';
+      steps.push({title:'Take all of item '+it.i+' (+'+it.v+' value)',
+        what:'Item fits fully. totalValue='+totalV+', capUsed='+capUsed+'.',
+        why:'Full item fits in remaining capacity.',
+        ...snap()});
     } else {
-      // Take fraction
-      const frac=cap/item.w;
-      const partVal=frac*item.v;
-      totalValue+=partVal;
-      states[item.id]='partial';
-      states[item.id+'_taken']=`${cap}/${item.w} (${(frac*100).toFixed(0)}%)`;
-      log(`Item ${item.id} (w=${item.w},v=${item.v},ratio=${item.ratio.toFixed(2)}): take ${cap}/${item.w}=${(frac*100).toFixed(0)}% fraction. Value added=${partVal.toFixed(1)}.`);
-      cap=0;
+      var frac=rem/it.w; taken[k]=frac; totalV+=it.v*frac; capUsed+=rem; state[k]='part';
+      steps.push({title:'Take '+(frac*100).toFixed(0)+'% of item '+it.i+' (+'+(it.v*frac).toFixed(1)+' value)',
+        what:'Take fraction '+frac.toFixed(3)+' of item '+it.i+'. totalValue='+totalV.toFixed(1)+'. Capacity full.',
+        why:'Cannot fit full item; take fraction to fill remaining capacity.',
+        ...snap()});
+      break;
     }
-    buildTable(sorted,states);
-    const pct=((totalCap-cap)/totalCap*100).toFixed(1);
-    document.getElementById('barFill').style.width=pct+'%';
-    document.getElementById('barLabel').textContent=`${totalValue.toFixed(1)} value`;
-    document.getElementById('barCap').textContent=`cap left: ${cap}`;
-    await sleep(600);
   }
-
-  // Mark remaining as skip
-  sorted.forEach(item=>{ if(!states[item.id]){states[item.id]='skip';states[item.id+'_taken']='0';}});
-  buildTable(sorted,states);
-
-  document.getElementById('resultNote').innerHTML=
-    `<strong>Max Value: ${totalValue.toFixed(2)}</strong> — Knapsack ${(((totalCap-cap)/totalCap)*100).toFixed(0)}% full.`;
-  log(`Done. Total value = ${totalValue.toFixed(2)} in capacity ${totalCap}.`,true);
-  btn.disabled=false;
+  steps.push({title:'Optimal value: '+totalV.toFixed(2)+' (capacity '+capUsed.toFixed(1)+'/'+W+')',
+    what:'Total value='+totalV.toFixed(2)+'. Fractional greedy is optimal.',
+    why:'No other selection can achieve higher value in this capacity.',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-buildTable(ITEMS.map(it=>({...it,ratio:(it.v/it.w).toFixed(2)})));
+function renderStep(step){
+  var tb=document.getElementById('itemTable'); if(!tb) return;
+  var html='<table class="it"><tr><th>Item</th><th>Value</th><th>Weight</th><th>v/w</th><th>Taken</th><th>Status</th></tr>';
+  step.items.forEach(function(it,k){
+    var st=step.state[k];
+    html+='<tr class="'+st+'"><td>'+it.i+'</td><td>'+it.v+'</td><td>'+it.w+'</td><td>'+it.r.toFixed(2)+'</td><td>'+(step.taken[k]>0?(step.taken[k]===1?'100%':(step.taken[k]*100).toFixed(0)+'%'):'0%')+'</td><td>'+(st==='full'?'✓ Full':st==='part'?'~Partial':st==='cur'?'← checking':st==='skip'?'✗ Skip':'—')+'</td></tr>';
+  });
+  html+='</table>'; tb.innerHTML=html;
+  var kf=document.getElementById('knapFill');
+  if(kf){var pct=Math.min(100,(step.capUsed/step.W)*100).toFixed(1);kf.style.width=pct+'%';kf.textContent=pct+'%';}
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Total value: '+step.totalV.toFixed(2)+'  |  Capacity used: '+step.capUsed.toFixed(1)+'/'+step.W;
+}
+function rebuild(){
+  var vals=document.getElementById('vals').value.split(',').map(function(x){return parseFloat(x.trim());}).filter(function(x){return !isNaN(x);}).slice(0,8);
+  var wts=document.getElementById('wts').value.split(',').map(function(x){return parseFloat(x.trim());}).filter(function(x){return !isNaN(x);}).slice(0,8);
+  var W=parseFloat(document.getElementById('cap').value)||50;
+  var n=Math.min(vals.length,wts.length);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(vals.slice(0,n),wts.slice(0,n),W),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

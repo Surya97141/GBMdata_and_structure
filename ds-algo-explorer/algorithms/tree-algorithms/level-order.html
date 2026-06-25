@@ -3,207 +3,147 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Level-Order Traversal – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Level Order (BFS) Traversal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-.queue-label{font-size:.8rem;font-weight:600;color:var(--m);margin-top:.8rem;margin-bottom:.3rem;}
-.queue-bar{display:flex;gap:.3rem;flex-wrap:wrap;min-height:2rem;}
-.q-cell{font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:.3rem .6rem;border-radius:6px;background:#eef8f2;border:1px solid #b6e3ca;color:#1a5c38;font-weight:600;transition:all .3s;}
-.q-cell.front{background:#27a060;color:#fff;border-color:#27a060;}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
-.btn-neu{background:#eee;color:#444;border:1px solid #ddd;}.btn-neu:hover{background:#e5e5e5;}
-.output-row{margin-top:.6rem;font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--ink);background:#f0fbf5;border:1px solid #b6e3ca;border-radius:8px;padding:.6rem 1rem;min-height:2rem;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.queue-vis{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.3rem .6rem;background:var(--bg);border:1px solid var(--b);border-radius:6px;margin:.4rem 0}
+.order-vis{font-family:'JetBrains Mono',monospace;font-size:.8rem;display:flex;flex-wrap:wrap;gap:4px;margin:.5rem 0}
+.order-chip{padding:.2rem .5rem;border-radius:4px;border:1px solid var(--b);background:#c3b1e1;font-weight:700}
+.order-chip.cur{background:#fff176;border-color:#f59e0b}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Algorithms</a><span>/</span>
-    Level-Order Traversal
-  </nav>
-  <header class="hero">
-    <span class="tag">Tree Algorithm</span>
-    <h1>Level-Order Traversal</h1>
-    <p>BFS on a tree — visits nodes level by level, left to right, using a queue to process them in the order they were discovered.</p>
-  </header>
-  <section class="prose">
-    <p><strong>Level-order traversal</strong> (BFS on a tree) visits nodes level by level from top to bottom: first the root (level 0), then its children (level 1), then their children (level 2), and so on. A queue drives the process: dequeue a node, visit it, enqueue its children. The FIFO order of the queue guarantees level-by-level processing.</p>
-    <p>Think of a waterfall cascade. Water hits the root rock first, then splits to rocks on level 1, then level 2. Level-order traversal mimics this top-down spreading. It's the basis for finding the shortest path in an unweighted graph, serializing binary trees (e.g., heap array storage), and computing tree width or height level-by-level.</p>
-    <p>Unlike DFS traversals that dive deep before backtracking, BFS stays as shallow as possible. This means if you're looking for a value in a balanced tree and it's near the root, BFS finds it faster than DFS — making it the right choice for "shallowest solution" problems.</p>
-  </section>
-  <div class="facts">
-    <div class="fact"><div class="fact-label">Time Complexity</div><div class="fact-val">O(n)</div></div>
-    <div class="fact"><div class="fact-label">Space (queue)</div><div class="fact-val">O(w) — max width</div></div>
-    <div class="fact"><div class="fact-label">Data Structure</div><div class="fact-val">Queue (FIFO)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Shortest path, Serialization, Tree width</div></div>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Level Order</span></nav>
+  <span class="tag">Tree Algorithms</span>
+  <h1>Level Order Traversal (BFS)</h1>
+  <p class="tagline">Visit all nodes level by level using a queue — O(n) time and space.</p>
+  <div class="prose">
+    <p>Level order traversal visits nodes level by level, left to right. It uses a queue: start with root. For each node dequeued, visit it and enqueue its children. This gives the BFS tree structure. Used for finding shortest paths in unweighted trees, printing tree levels, and serialization.</p>
+    <p>Yellow = currently dequeued. Orange = in queue (waiting). Green = visited. Queue contents shown below the tree.</p>
   </div>
-
+  <div class="facts">
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(w) — max width</div></div>
+    <div class="fact"><div class="flabel">Uses queue</div><div class="fval">FIFO</div></div>
+    <div class="fact"><div class="flabel">Application</div><div class="fval">Shortest path (unweighted)</div></div>
+  </div>
   <div class="sim-panel">
-    <div class="sim-title">BFS Level-Order Visualization</div>
-    <canvas id="cv" height="280"></canvas>
-    <div class="queue-label">Queue (front → back):</div>
-    <div class="queue-bar" id="queueBar"></div>
-    <div class="output-row" id="outputRow">Visit order will appear here…</div>
-    <div class="controls">
-      <button class="btn btn-pri" onclick="doRun()">Run</button>
-      <button class="btn btn-sec" onclick="doStep()">Step</button>
-      <button class="btn btn-neu" onclick="doReset()">Reset</button>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="640" height="280"></canvas>
+      <div class="queue-vis" id="queueVis">Queue: []</div>
+      <div class="order-vis" id="orderVis"></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Level Order BFS</button>
+      </div>
     </div>
   </div>
-
-  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const TREE={v:1,level:0,l:{v:2,level:1,l:{v:4,level:2,l:null,r:null},r:{v:5,level:2,l:null,r:null}},r:{v:3,level:1,l:{v:6,level:2,l:null,r:null},r:{v:7,level:2,l:null,r:null}}};
-const LEVEL_COLORS=['#27a060','#2ecc71','#82e0aa','#d5f5e3'];
-
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=280; canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr); render();
+var player=null;
+var TREE_VALS=[1,2,3,4,5,6,7];
+var POS={1:[320,40],2:[160,120],3:[480,120],4:[80,200],5:[240,200],6:[400,200],7:[560,200]};
+var CHILDREN={1:[2,3],2:[4,5],3:[6,7],4:[],5:[],6:[],7:[]};
+function generateSteps(){
+  var steps=[], order=[], queueSnap=[], visited={};
+  function snap(cur,q){return {order:order.slice(),visited:Object.assign({},visited),cur:cur,queue:q.slice()};}
+  steps.push({title:'Level Order (BFS) Traversal',
+    what:'Enqueue root=1. Dequeue, visit, enqueue children repeatedly.',
+    why:'FIFO queue ensures level-by-level (breadth-first) ordering.',
+    ...snap(-1,[])});
+  var queue=[1];
+  steps.push({title:'Enqueue root=1. Queue=[1]',
+    what:'Start with root in queue.',
+    why:'BFS starts from root.',
+    ...snap(-1,queue.slice())});
+  while(queue.length>0){
+    var cur=queue.shift();
+    visited[cur]=true; order.push(cur);
+    var children=CHILDREN[cur];
+    children.forEach(function(c){queue.push(c);});
+    steps.push({title:'Dequeue '+cur+'. Visit. Enqueue children ['+children.join(',')+'].',
+      what:'Visit '+cur+'. Queue now: ['+queue.join(',')+'].',
+      why:'BFS: process node, then add children to queue.',
+      ...snap(cur,queue.slice())});
+  }
+  steps.push({title:'Level order: ['+order.join(',')+']',
+    what:'All '+order.length+' nodes visited level by level.',
+    why:'Level 0: [1], Level 1: [2,3], Level 2: [4,5,6,7].',
+    ...snap(-1,[])});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-window.addEventListener('resize',resize);
-
-function assignPos(node,x,y,spread){
-  if(!node) return;
-  node._x=x; node._y=y;
-  if(node.l) assignPos(node.l,x-spread,y+70,spread/2);
-  if(node.r) assignPos(node.r,x+spread,y+70,spread/2);
-}
-
-let visited=new Set();
-let currentNode=null;
-let bfsQueue=[];
-let outputSeq=[];
-let running=false;
-
-function render(){
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=280, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  assignPos(TREE,W/2,36,W/4.5);
-  function drawEdges(n){
-    if(!n) return;
-    if(n.l){ ctx.beginPath();ctx.moveTo(n._x,n._y);ctx.lineTo(n.l._x,n.l._y);ctx.strokeStyle='#c8c6be';ctx.lineWidth=1.5;ctx.stroke(); drawEdges(n.l); }
-    if(n.r){ ctx.beginPath();ctx.moveTo(n._x,n._y);ctx.lineTo(n.r._x,n.r._y);ctx.strokeStyle='#c8c6be';ctx.lineWidth=1.5;ctx.stroke(); drawEdges(n.r); }
-  }
-  drawEdges(TREE);
-  function drawNodes(n){
-    if(!n) return;
-    const isCur=n===currentNode;
-    const isVis=visited.has(n.v);
-    const lvlColor=LEVEL_COLORS[Math.min(n.level,LEVEL_COLORS.length-1)];
-    ctx.beginPath();ctx.arc(n._x,n._y,20,0,Math.PI*2);
-    ctx.fillStyle=isCur?'#f0a500':isVis?lvlColor:'#e8f5ee';
-    ctx.fill(); ctx.strokeStyle=isCur?'#c87800':isVis?'#1a5c38':'#bbb'; ctx.lineWidth=2; ctx.stroke();
-    ctx.fillStyle=(isCur||isVis)?'#fff':'#1a1a2e';
-    ctx.font="bold 14px 'JetBrains Mono',monospace";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(n.v,n._x,n._y);
-    // Level indicator
-    ctx.fillStyle='#888'; ctx.font="9px 'Inter',sans-serif";
-    ctx.fillText('L'+n.level,n._x,n._y+24);
-    drawNodes(n.l); drawNodes(n.r);
-  }
-  drawNodes(TREE);
-  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.fillText('Orange = current  |  Colors by level (L0 dark → L2 light)',8,H-20);
+  var edges=[[1,2],[1,3],[2,4],[2,5],[3,6],[3,7]];
+  edges.forEach(function(e){
+    var p=POS[e[0]], q=POS[e[1]];
+    ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(p[0]*SCALE,p[1]);ctx.lineTo(q[0]*SCALE,q[1]);ctx.stroke();
+  });
+  Object.keys(POS).forEach(function(k){
+    var v=parseInt(k), pos=POS[v];
+    var cx=pos[0]*SCALE, cy=pos[1];
+    var inQ=step.queue.indexOf(v)>=0;
+    ctx.fillStyle=v===step.cur?'#fff176':step.visited[v]?'#a8e6a3':inQ?'#fb923c':'#e5e7eb';
+    ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 14px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(v,cx,cy+5);
+  });
+  var qv=document.getElementById('queueVis');
+  if(qv) qv.textContent='Queue: ['+step.queue.join(', ')+']';
+  var ov=document.getElementById('orderVis');
+  if(ov) ov.innerHTML=step.order.map(function(v,i){
+    var isCur=i===step.order.length-1&&step.cur>=0;
+    return '<div class="order-chip'+(isCur?' cur':'')+'">'+v+'</div>';
+  }).join('');
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Current: '+(step.cur>=0?step.cur:'—')+'  |  Queue: ['+step.queue.join(',')+']  |  Visited: ['+step.order.join(',')+']';
 }
-
-function updateQueueBar(){
-  const el=document.getElementById('queueBar');
-  if(bfsQueue.length===0){ el.innerHTML='<span style="color:#aaa;font-size:.82rem;">empty</span>'; return; }
-  el.innerHTML=bfsQueue.map((n,i)=>`<span class="q-cell${i===0?' front':''}">${n.v}</span>`).join('');
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
-}
-
-function doReset(){
-  visited.clear(); currentNode=null; bfsQueue=[]; outputSeq=[]; running=false;
-  document.getElementById('outputRow').textContent='Visit order will appear here…';
-  updateQueueBar(); render();
-}
-
-function doRun(){
-  doReset();
-  bfsQueue=[TREE];
-  log('Start BFS: enqueue root [1]');
-  updateQueueBar();
-  function step(){
-    if(bfsQueue.length===0){ currentNode=null; render(); log('BFS complete. Output: '+outputSeq.join(' → ')); document.getElementById('outputRow').textContent=outputSeq.join(' → '); return; }
-    const node=bfsQueue.shift();
-    currentNode=node; visited.add(node.v); outputSeq.push(node.v);
-    let childMsg='';
-    if(node.l){ bfsQueue.push(node.l); childMsg+=node.l.v+' '; }
-    if(node.r){ bfsQueue.push(node.r); childMsg+=node.r.v; }
-    log(`Dequeue ${node.v} (L${node.level}).${childMsg?' Enqueue: ['+childMsg.trim()+']':' (leaf — no children)'}`);
-    document.getElementById('outputRow').textContent=outputSeq.join(' → ')+'…';
-    updateQueueBar(); render(); setTimeout(step,650);
-  }
-  step();
-}
-
-let stepMode=false;
-function doStep(){
-  if(!stepMode||bfsQueue.length===0&&!visited.size){
-    stepMode=true; doReset();
-    bfsQueue=[TREE]; log('Step BFS: enqueue root [1]'); updateQueueBar(); render(); return;
-  }
-  if(bfsQueue.length===0){ currentNode=null; render(); log('BFS complete. Output: '+outputSeq.join(' → ')); document.getElementById('outputRow').textContent=outputSeq.join(' → ')+(outputSeq.length?' (done)':''); stepMode=false; return; }
-  const node=bfsQueue.shift();
-  currentNode=node; visited.add(node.v); outputSeq.push(node.v);
-  let childMsg='';
-  if(node.l){ bfsQueue.push(node.l); childMsg+=node.l.v+' '; }
-  if(node.r){ bfsQueue.push(node.r); childMsg+=node.r.v; }
-  log(`Dequeue ${node.v} (L${node.level}).${childMsg?' Enqueue children: ['+childMsg.trim()+']':' leaf'}`);
-  document.getElementById('outputRow').textContent=outputSeq.join(' → ');
-  updateQueueBar(); render();
-}
-
-resize();
-updateQueueBar();
-log('7-node binary tree loaded. Click Run or Step to begin BFS level-order traversal.');
+rebuild();
 </script>
 </body>
 </html>

@@ -3,166 +3,127 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Extended Euclidean Algorithm – DS-Algo Explorer</title>
+<title>Extended Euclidean Algorithm</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
-.breadcrumb span{margin:0 .4rem}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
-.hero-inner{max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
-.hero p.tagline{color:var(--muted);font-size:1.05rem}
-.content{max-width:860px;margin:0 auto;padding:2rem}
-.explain p{margin-bottom:1rem;color:#333}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
-.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
-label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
-input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:130px}
-input[type=number]:focus{outline:none;border-color:var(--accent)}
-.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
-.btn:hover{opacity:.85}
-.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.83rem;margin:.8rem 0}
-th{background:var(--bg);padding:.45rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
-td{padding:.4rem .6rem;border-bottom:1px solid #f0eeea;transition:background .3s}
-tr.active td{background:#fff3e0}
-tr.result-row td{background:#fde8e2;font-weight:700;color:var(--accent)}
-.bezout-box{background:#fde8e2;border:1.5px solid var(--accent);border-radius:8px;padding:1rem;margin:.8rem 0;font-family:'JetBrains Mono',monospace;font-size:.95rem}
-.bezout-box .hl{color:var(--accent);font-weight:700;font-size:1.1rem}
-.verify{font-size:.82rem;color:#555;margin-top:.3rem}
-#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
-#log div{margin-bottom:.3rem}
-#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
-.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.table-wrap{overflow-x:auto;margin:.6rem 0}
+table.ext{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+table.ext td,table.ext th{border:1px solid var(--b);padding:.28rem .6rem;text-align:right}
+table.ext th{background:var(--bg);font-weight:700;color:var(--m);text-align:left}
+table.ext tr.cur td{background:#fff176}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:90px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Extended Euclidean
-</nav>
-<div class="hero">
-  <div class="hero-inner">
-    <span class="tag">Mathematical</span>
-    <h1>Extended Euclidean Algorithm</h1>
-    <p class="tagline">Find integers x, y such that ax + by = gcd(a, b) — the foundation of modular inverse and RSA.</p>
-  </div>
-</div>
-<div class="content">
-  <div class="explain">
-    <p>Bezout's identity guarantees that for any integers a and b, there exist integers x and y such that ax + by = gcd(a, b). The extended Euclidean algorithm finds these Bezout coefficients by tracking extra "bookkeeping" numbers through the standard Euclidean steps.</p>
-    <p>Think of it as running Euclidean GCD but recording each division step as a linear combination. When we reach the base case (r = 0), we back-substitute the equations to express gcd as a combination of the original inputs.</p>
-    <p>Critical application: modular inverse. If gcd(a, m) = 1, then x from the equation ax + my = 1 is exactly a⁻¹ mod m — used in RSA decryption, CRT reconstruction, and elliptic curve cryptography.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Extended Euclidean</span></nav>
+  <span class="tag">Mathematical</span>
+  <h1>Extended Euclidean Algorithm</h1>
+  <p class="tagline">Find GCD and Bézout coefficients x, y such that ax + by = gcd(a,b).</p>
+  <div class="prose">
+    <p>The Extended Euclidean Algorithm not only computes gcd(a,b) but also finds integers x and y such that ax + by = gcd(a,b) (Bézout's identity). This is essential for finding modular inverses: if gcd(a,m)=1, then x is a's inverse mod m.</p>
+    <p>The table shows each step: quotient q, remainder r, and coefficients x and y tracked via back-substitution. Current row is highlighted yellow.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">O(log N)</div><div class="lbl">Time complexity</div></div>
-    <div class="fact"><div class="val">ax+by=gcd</div><div class="lbl">Bezout identity</div></div>
-    <div class="fact"><div class="val">RSA</div><div class="lbl">Key application</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(log min(a,b))</div></div>
+    <div class="fact"><div class="flabel">Output</div><div class="fval">gcd, x, y</div></div>
+    <div class="fact"><div class="flabel">Bézout</div><div class="fval">ax + by = gcd</div></div>
+    <div class="fact"><div class="flabel">Used for</div><div class="fval">Mod inverse, CRT</div></div>
   </div>
-
-  <div class="panel">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div><label>a</label><input type="number" id="aInput" value="48" min="1"/></div>
-      <div><label>b</label><input type="number" id="bInput" value="18" min="1"/></div>
-      <button class="btn" onclick="runExt()" style="align-self:flex-end">Compute</button>
-      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="table-wrap"><div id="extTable"></div></div>
+      <div class="info-bar" id="infoBar">Extended Euclidean table above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>a:</label><input type="number" id="aVal" value="35" min="1" max="9999"/>
+        <label>b:</label><input type="number" id="bVal" value="15" min="1" max="9999"/>
+        <button class="btn btn-p" onclick="rebuild()">Compute</button>
+      </div>
     </div>
-    <table>
-      <thead><tr><th>Step</th><th>a</th><th>b</th><th>q</th><th>r</th><th>x</th><th>y</th></tr></thead>
-      <tbody id="extTable"></tbody>
-    </table>
-    <div id="bezoutBox" class="bezout-box" style="display:none"></div>
   </div>
-
-  <div class="panel">
-    <h2>Step Log</h2>
-    <div id="log"><div class="hi">// Enter a and b then click "Compute"</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function log(msg,cls=''){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  if(cls)div.className=cls;
-  div.textContent=msg;
-  d.appendChild(div);
-  d.scrollTop=d.scrollHeight;
-}
-
-function resetSim(){
-  document.getElementById('extTable').innerHTML='';
-  const bb=document.getElementById('bezoutBox');
-  bb.style.display='none';bb.innerHTML='';
-  document.getElementById('log').innerHTML='<div class="hi">// Enter a and b then click "Compute"</div>';
-}
-
-function runExt(){
-  resetSim();
-  const origA=Math.abs(parseInt(document.getElementById('aInput').value)||48);
-  const origB=Math.abs(parseInt(document.getElementById('bInput').value)||18);
-  log('=== Extended Euclidean Algorithm ===','hi');
-  log(`a=${origA}, b=${origB}`);
-
-  // Iterative extended Euclidean
-  let a=origA,b=origB;
-  let x0=1,x1=0,y0=0,y1=1;
-  const steps=[];
+var player=null;
+function generateSteps(a0,b0){
+  var steps=[];
+  var rows=[], curRow=-1;
+  var a=a0,b=b0,x0=1,x1=0,y0=0,y1=1;
+  function snap(){return {rows:rows.map(function(r){return Object.assign({},r);}),curRow:curRow};}
+  steps.push({title:'Extended GCD: a='+a0+', b='+b0,
+    what:'Find x,y such that '+a0+'x + '+b0+'y = gcd('+a0+','+b0+').',
+    why:'Bézout identity — used for modular inverse and CRT.',
+    ...snap()});
   while(b!==0){
-    const q=Math.floor(a/b);
-    const r=a%b;
-    steps.push({a,b,q,r,x:x0,y:y0});
-    [a,b]=[b,r];
-    [x0,x1]=[x1,x0-q*x1];
-    [y0,y1]=[y1,y0-q*y1];
+    var q=Math.floor(a/b), r=a%b;
+    rows.push({a:a,b:b,q:q,r:r,x:x0,y:y0});
+    curRow=rows.length-1;
+    steps.push({title:''+a+' = '+b+' × '+q+' + '+r,
+      what:'Quotient '+q+', remainder '+r+'. Coefficients x='+x0+', y='+y0+'.',
+      why:'Back-substitute: next x = old_x1 - q*x0.',
+      ...snap()});
+    var x2=x1-q*x0, y2=y1-q*y0;
+    a=b; b=r; x1=x0; y1=y0; x0=x2; y0=y2;
   }
-  const gcd=a;
-  const xFinal=x0,yFinal=y0;
-
-  const tbody=document.getElementById('extTable');
-  steps.forEach((s,i)=>{
-    const tr=document.createElement('tr');
-    tr.id=`er-${i}`;
-    tr.innerHTML=`<td>${i+1}</td><td>${s.a}</td><td>${s.b}</td><td>${s.q}</td><td>${s.r}</td><td>${s.x}</td><td>${s.y}</td>`;
-    tbody.appendChild(tr);
-  });
-  const rtr=document.createElement('tr');rtr.className='result-row';
-  rtr.innerHTML=`<td>–</td><td>${gcd}</td><td>0</td><td>–</td><td>GCD</td><td>${xFinal}</td><td>${yFinal}</td>`;
-  tbody.appendChild(rtr);
-
-  // Show Bezout
-  const bb=document.getElementById('bezoutBox');
-  bb.style.display='block';
-  const verify=origA*xFinal+origB*yFinal;
-  bb.innerHTML=`<div class="hl">Bezout's Identity: ${origA}×(${xFinal}) + ${origB}×(${yFinal}) = ${gcd}</div><div class="verify">Verification: ${origA}×${xFinal} + ${origB}×${yFinal} = ${origA*xFinal} + ${origB*yFinal} = ${verify} ✓</div>`;
-
-  // Animate
-  steps.forEach((s,i)=>{
-    setTimeout(()=>{
-      document.querySelectorAll('tr.active').forEach(r=>r.classList.remove('active'));
-      const r=document.getElementById(`er-${i}`);
-      if(r) r.classList.add('active');
-      log(`Step ${i+1}: ${s.a} = ${s.q}×${s.b} + ${s.r} | x=${s.x}, y=${s.y}`);
-    },i*500);
-  });
-  setTimeout(()=>{
-    log(`GCD=${gcd}. Bezout: ${origA}×${xFinal} + ${origB}×${yFinal} = ${gcd}`,'ok');
-    if(origB!==0&&gcd===1) log(`Modular inverse of ${origA} mod ${origB} = ${((xFinal%origB)+origB)%origB}`,'ok');
-  },steps.length*500);
+  rows.push({a:a,b:0,q:0,r:0,x:x0,y:y0,final:true});
+  curRow=rows.length-1;
+  steps.push({title:'gcd('+a0+','+b0+') = '+a+' = '+a0+'×('+x1+') + '+b0+'×('+y1+')',
+    what:'Bézout coefficients: x='+x1+', y='+y1+'. Verify: '+a0+'×'+x1+'+'+b0+'×'+y1+'='+(a0*x1+b0*y1)+'.',
+    why:'Back-substitution complete. x1='+x1+' is modular inverse of '+a0+' mod '+(b0/a)+' if gcd=1.',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
+function renderStep(step){
+  var tb=document.getElementById('extTable'); if(!tb) return;
+  var html='<table class="ext"><tr><th>a</th><th>b</th><th>q = ⌊a/b⌋</th><th>r = a mod b</th><th>x</th><th>y</th></tr>';
+  step.rows.forEach(function(r,i){
+    var isCur=i===step.curRow;
+    html+='<tr class="'+(isCur?'cur':'')+'"><td>'+r.a+'</td><td>'+r.b+'</td><td>'+(r.final?'—':r.q)+'</td><td>'+(r.final?'0':r.r)+'</td><td>'+r.x+'</td><td>'+r.y+'</td></tr>';
+  });
+  html+='</table>'; tb.innerHTML=html;
+  var last=step.rows[step.rows.length-1];
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Step '+(step.curRow+1)+'  |  Current: a='+last.a+', b='+last.b;
+}
+function rebuild(){
+  var a=parseInt(document.getElementById('aVal').value)||35;
+  var b=parseInt(document.getElementById('bVal').value)||15;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(a,b),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

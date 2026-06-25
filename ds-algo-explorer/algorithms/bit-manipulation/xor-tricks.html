@@ -1,170 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>XOR Tricks — DS/Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>XOR Tricks</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#264653;--r:14px}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
-.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
 .bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
 h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
-.tagline{color:var(--m);margin-bottom:1.5rem}
-.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
 .flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
-.demo-card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.3rem;margin:1rem 0}
-.demo-title{font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:.6rem}
-.demo-sub{font-size:.82rem;color:var(--m);margin-bottom:.8rem}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.6rem 0;align-items:center}
-.btn{padding:.38rem .9rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;border:none}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.arr-row{display:flex;gap:5px;flex-wrap:wrap;margin:.4rem 0}
+.arr-cell{padding:.3rem .5rem;min-width:32px;border:1.5px solid var(--b);border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;text-align:center;transition:background .15s}
+.arr-cell.cur{background:#fff176;border-color:#d97706}
+.arr-cell.done{background:#c3b1e1;border-color:#7b4fd4}
+.arr-cell.unique{background:#a8e6a3;border-color:#16a34a}
+.xor-state{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;padding:.4rem .7rem;background:var(--bg);border:1px solid var(--b);border-radius:6px;margin:.3rem 0}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;
+  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:220px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
 .btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
-input[type=text],input[type=number]{padding:.38rem .6rem;border:1.5px solid var(--b);border-radius:8px;font-size:.8rem;background:var(--s);color:var(--ink);outline:none}
-input:focus{border-color:var(--a)}
-.num-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
-.chip{padding:.2rem .65rem;border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:.8rem;border:1.5px solid var(--b);background:var(--bg)}
-.chip.dup{background:#fdecea;border-color:#c0392b;color:#c0392b;text-decoration:line-through}
-.chip.single{background:#e6f7ee;border-color:#27a060;color:#27a060;font-weight:700}
-.xor-chain{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--m);margin:.5rem 0;word-break:break-all}
-.res{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.5rem .8rem;border-radius:8px;margin-top:.5rem;background:var(--bg);border:1px solid var(--b)}
-.res.good{background:#e6f7ee;color:#27a060;border-color:#27a060}
-.swap-row{display:flex;gap:.6rem;align-items:center;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:.4rem 0;flex-wrap:wrap}
-.swap-box{width:60px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:2px solid var(--b);font-weight:700;transition:background .3s,border-color .3s}
-.swap-box.active{background:var(--a);color:#fff;border-color:var(--a)}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
-.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
-.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
 .back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>XOR Tricks</span></nav>
-  <div class="hero">
-    <span class="tag">Bit Manipulation</span>
-    <h1>XOR Tricks</h1>
-    <p class="tagline">XOR's self-inverse property powers swap-without-temp, missing number, and duplicate detection — all in O(n) time O(1) space.</p>
-  </div>
-  <div class="explain">
-    <p>XOR (exclusive-or) has a magical property: <code>a ^ a = 0</code> and <code>a ^ 0 = a</code>. This means if you XOR all elements in an array where every element appears twice except one, the duplicates cancel out, leaving only the unique element — no extra memory needed.</p>
-    <p>Swapping two numbers without a temporary variable — <code>a^=b; b^=a; a^=b</code> — is a classic interview trick. Each step transforms (a,b) until they exchange values using only XOR operations on the original storage locations.</p>
-    <p>Finding the missing number in 1..n follows the same principle: XOR all array elements with all numbers 1..n. Pairs cancel, the lone survivor is the missing number.</p>
+  <span class="tag">Bit Manipulation</span>
+  <h1>XOR Tricks</h1>
+  <p class="tagline">Find the single non-duplicate element in O(n) time, O(1) space using XOR.</p>
+  <div class="prose">
+    <p>XOR key identities: x⊕x=0, x⊕0=x, commutative and associative. If every element appears twice except one, XOR-ing all elements cancels all pairs, leaving the unique element. No extra space needed. Also used for: swap without temp (a⊕=b; b⊕=a; a⊕=b), detect two non-duplicates, bit position tricks.</p>
+    <p>Yellow = currently XOR-ing. Purple = paired/cancelled. Green = final unique element found.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="flabel">Single Number</div><div class="fval">O(n)</div><div class="fsub">XOR all elements</div></div>
-    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div><div class="fsub">No extra array needed</div></div>
-    <div class="fact"><div class="flabel">Key Property</div><div class="fsub">a^a=0, a^0=a, commutative, associative</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Key identity</div><div class="fval">x ⊕ x = 0</div></div>
+    <div class="fact"><div class="flabel">Application</div><div class="fval">Find single element, swap</div></div>
   </div>
-
-  <!-- Demo 1 -->
-  <div class="demo-card">
-    <div class="demo-title">1. Find the Single Non-Duplicate</div>
-    <div class="demo-sub">Every element appears twice except one. XOR all — duplicates cancel.</div>
-    <div class="controls">
-      <input type="text" id="snarr" value="3,1,4,1,3,9,4" style="width:200px" placeholder="comma-separated"/>
-      <button class="btn btn-p" onclick="findSingle()">Find Single</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="arr-row" id="arrRow"></div>
+      <div class="xor-state" id="xorState">acc = 0</div>
+      <div class="info-bar" id="infoBar">Run to find the unique element.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Array (one unique):</label>
+        <input type="text" id="arrInput" value="4,1,2,1,2"/>
+        <button class="btn btn-p" onclick="rebuild()">Find Unique</button>
+      </div>
     </div>
-    <div class="num-chips" id="snchips"></div>
-    <div class="xor-chain" id="snchain"></div>
-    <div class="res" id="snres">Enter array and click Find Single.</div>
   </div>
-
-  <!-- Demo 2 -->
-  <div class="demo-card">
-    <div class="demo-title">2. Swap Without Temp</div>
-    <div class="demo-sub">a ^= b; b ^= a; a ^= b — no temporary variable.</div>
-    <div class="controls">
-      <label>a:</label><input type="number" id="swa" value="42" style="width:70px"/>
-      <label>b:</label><input type="number" id="swb" value="17" style="width:70px"/>
-      <button class="btn btn-p" onclick="xorSwap()">Swap</button>
-    </div>
-    <div id="swapvis" style="margin:.6rem 0"></div>
-    <div class="res" id="swapres">Enter values and click Swap.</div>
-  </div>
-
-  <!-- Demo 3 -->
-  <div class="demo-card">
-    <div class="demo-title">3. Find Missing Number in 1..n</div>
-    <div class="demo-sub">XOR array elements with 1..n. Missing number survives.</div>
-    <div class="controls">
-      <input type="text" id="msarr" value="1,2,4,5,6" style="width:200px" placeholder="e.g. 1,2,4,5,6"/>
-      <button class="btn btn-p" onclick="findMissing()">Find Missing</button>
-    </div>
-    <div class="xor-chain" id="mschain"></div>
-    <div class="res" id="msres">Enter array (missing one number from 1..n) and click.</div>
-  </div>
-
-  <div class="log-panel">
-    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
-    <div class="log-body" id="log"><div class="le li">Use the demos above.</div></div>
-  </div>
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
-function clearLog(){document.getElementById('log').innerHTML=''}
-
-function findSingle(){
-  const arr=document.getElementById('snarr').value.split(',').map(x=>parseInt(x.trim())).filter(x=>!isNaN(x));
-  const chips=document.getElementById('snchips');
-  chips.innerHTML='';
-  const counts={};
-  arr.forEach(v=>{counts[v]=(counts[v]||0)+1});
-  arr.forEach(v=>{
-    const c=document.createElement('div');
-    c.className='chip'+(counts[v]>1?' dup':' single');
-    c.textContent=v;
-    chips.appendChild(c);
-  });
-  let xorVal=0,chain=[];
-  arr.forEach(v=>{chain.push(v);xorVal^=v});
-  document.getElementById('snchain').textContent=chain.join(' ⊕ ')+' = '+xorVal;
-  const r=document.getElementById('snres');
-  r.className='res good';r.textContent=`Single element = ${xorVal}`;
-  log(`XOR all: ${arr.join('⊕')} = ${xorVal}  → single = ${xorVal}`,'ld');
-}
-
-async function xorSwap(){
-  let a=parseInt(document.getElementById('swa').value)||0;
-  let b=parseInt(document.getElementById('swb').value)||0;
-  const vis=document.getElementById('swapvis');
-  function render(av,bv,msg){
-    vis.innerHTML=`<div class="swap-row"><div class="swap-box" style="border-color:var(--a);background:#f0f7f4">a=${av}</div><div class="swap-box" style="border-color:#7b4fd4;background:#f5f0ff">b=${bv}</div><span style="color:var(--m);font-size:.78rem;margin-left:.5rem">${msg}</span></div>`;
+var player=null;
+function generateSteps(arr){
+  var steps=[], acc=0, states=new Array(arr.length).fill('default');
+  function snap(i,a){return {arr:arr.slice(),acc:a,idx:i,states:states.slice()};}
+  steps.push({title:'XOR trick: find unique element in ['+arr.join(',')+']',
+    what:'XOR all elements. Pairs cancel (x⊕x=0), unique remains (x⊕0=x).',
+    why:'O(n) time, O(1) space. No hash map or sorting needed.',
+    ...snap(-1,0)});
+  for(var i=0;i<arr.length;i++){
+    var prev=acc; acc^=arr[i];
+    states[i]='cur';
+    steps.push({title:'acc = acc ⊕ arr['+i+'] = '+prev+' ⊕ '+arr[i]+' = '+acc,
+      what:prev.toString(2)+' XOR '+arr[i].toString(2)+' = '+acc.toString(2)+'.',
+      why:prev===0?'acc was 0; result='+arr[i]:arr[i]===prev?prev+' ⊕ '+arr[i]+'=0 (cancelled pair)':'Running XOR: duplicates will cancel.',
+      ...snap(i,acc)});
+    states[i]='done';
   }
-  render(a,b,'initial');log(`Initial: a=${a}, b=${b}`,'ls');
-  await new Promise(r=>setTimeout(r,500));
-  a^=b; render(a,b,'a ^= b'); log(`a ^= b  →  a=${a}`,'ls');
-  await new Promise(r=>setTimeout(r,500));
-  b^=a; render(a,b,'b ^= a'); log(`b ^= a  →  b=${b}`,'ls');
-  await new Promise(r=>setTimeout(r,500));
-  a^=b; render(a,b,'a ^= b (done)'); log(`a ^= b  →  a=${a}`,'ls');
-  const r=document.getElementById('swapres');
-  r.className='res good';r.textContent=`Swapped! a=${a}, b=${b}`;
-  log(`✓ Swap complete: a=${a}, b=${b}`,'ld');
+  steps.push({title:'Unique element = '+acc,
+    what:'All pairs cancelled. acc = '+acc+' is the element that appears once.',
+    why:'x⊕x=0 cancels all duplicates; x⊕0=x preserves the unique one.',
+    arr:arr.slice(),acc:acc,idx:-1,states:arr.map(function(v){return v===acc?'unique':'done';})});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function findMissing(){
-  const arr=document.getElementById('msarr').value.split(',').map(x=>parseInt(x.trim())).filter(x=>!isNaN(x));
-  const n=arr.length+1;
-  let xorVal=0;
-  const steps=[];
-  for(let i=1;i<=n;i++){xorVal^=i;steps.push(`${i}`)}
-  arr.forEach(v=>{xorVal^=v;steps.push(`${v}`)});
-  document.getElementById('mschain').textContent='XOR(1..'+n+') ⊕ XOR(arr) = '+steps.join('⊕')+' = '+xorVal;
-  const r=document.getElementById('msres');
-  r.className='res good';r.textContent=`Missing number = ${xorVal}`;
-  log(`Missing from [${arr.join(',')}] in 1..${n} = ${xorVal}`,'ld');
+function renderStep(step){
+  var ar=document.getElementById('arrRow'), xs=document.getElementById('xorState');
+  if(!ar||!xs) return;
+  ar.innerHTML=step.arr.map(function(v,i){
+    var cls=step.states[i]==='cur'?'cur':step.states[i]==='unique'?'unique':step.states[i]==='done'?'done':'';
+    return '<div class="arr-cell '+cls+'">'+v+'</div>';
+  }).join('');
+  xs.textContent='acc = '+step.acc+' (binary: '+step.acc.toString(2)+')';
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Index: '+(step.idx>=0?step.idx:'—')+'  |  acc='+step.acc+'  |  Unique: '+(step.idx<0&&step.acc>0?step.acc:'?');
 }
+function rebuild(){
+  var raw=document.getElementById('arrInput').value.split(',').map(function(x){return parseInt(x.trim());}).filter(function(x){return !isNaN(x);}).slice(0,14);
+  if(raw.length<3) raw=[4,1,2,1,2];
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(raw),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

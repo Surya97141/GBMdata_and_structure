@@ -1,167 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Monte Carlo Algorithms — DS/Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Monte Carlo Algorithm</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#6d6875;--r:14px}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
-.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 4rem}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
 .bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
 h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
-.tagline{color:var(--m);margin-bottom:1.5rem}
-.explain p{color:var(--m);max-width:66ch;margin-bottom:.8rem}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
 .flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem}.fsub{font-size:.78rem;color:var(--m)}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
-.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block}
-.sim-body{padding:1.4rem}
-canvas{display:block;border-radius:10px;background:#fff;border:1px solid var(--b);max-width:100%}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0;align-items:center}
-.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.estimate-bar{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.4rem .7rem;background:var(--bg);border:1px solid var(--b);border-radius:6px;margin:.4rem 0;text-align:center;font-weight:700}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
 .btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink)}.btn-o:hover{background:var(--bg)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.8rem;margin:.8rem 0}
-.sbox{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:.6rem 1rem;text-align:center}
-.sv{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--a)}
-.sl{font-size:.72rem;color:var(--m);margin-top:.15rem}
-.pi-bar{height:8px;border-radius:4px;background:var(--b);margin-top:.5rem;overflow:hidden}
-.pi-fill{height:100%;background:var(--a);border-radius:4px;transition:width .3s}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9}
-.le{border-bottom:1px solid var(--b);padding:1px 0}.le:last-child{border:none}
-.ls{color:var(--ink)}.ld{color:#27a060;font-weight:700}.li{color:var(--m)}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
 .back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Monte Carlo Algorithms</span></nav>
-  <div class="hero">
-    <span class="tag">Randomized</span>
-    <h1>Monte Carlo Algorithms</h1>
-    <p class="tagline">Always fast, probably correct — use random sampling to estimate or decide with controllable error probability.</p>
-  </div>
-  <div class="explain">
-    <p>Monte Carlo algorithms run in bounded time and always terminate, but their answers might be wrong with some small probability. The classic example: estimating π by throwing random darts at a unit square and counting how many land inside the inscribed circle. With more darts, the estimate converges to π — you control the accuracy by choosing how many samples to use.</p>
-    <p>Unlike Las Vegas algorithms (always correct), Monte Carlo accepts some probability of error in exchange for guaranteed speed. By repeating a Monte Carlo algorithm k times and taking the majority vote, the error probability drops exponentially with k — making the failure probability arbitrarily small.</p>
-    <p>Applications include numerical integration, primality testing (Miller-Rabin), rendering in computer graphics, physics simulation, option pricing in finance, and machine learning sampling methods like MCMC.</p>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Monte Carlo</span></nav>
+  <span class="tag">Randomized</span>
+  <h1>Monte Carlo Algorithm</h1>
+  <p class="tagline">Fixed runtime, probabilistic correctness — estimate π by sampling random points.</p>
+  <div class="prose">
+    <p>A Monte Carlo algorithm always terminates in fixed time, but may produce an incorrect (or approximate) answer with some probability. Estimating π: sample uniform random points in [-1,1]². Count those inside the unit circle (x²+y²≤1). Ratio ≈ π/4. More samples → higher accuracy. Error decreases as O(1/√n).</p>
+    <p>Green dots = inside circle. Red dots = outside circle. The estimate converges toward π as sample count grows.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="flabel">Runtime</div><div class="fval">O(n)</div><div class="fsub">Always terminates on time</div></div>
-    <div class="fact"><div class="flabel">Accuracy</div><div class="fval">O(1/√n)</div><div class="fsub">Error shrinks with samples</div></div>
-    <div class="fact"><div class="flabel">vs Las Vegas</div><div class="fsub">MC: fast+maybe wrong. LV: slow+always right</div></div>
+    <div class="fact"><div class="flabel">Correctness</div><div class="fval">Approximate</div></div>
+    <div class="fact"><div class="flabel">Runtime</div><div class="fval">Fixed (n samples)</div></div>
+    <div class="fact"><div class="flabel">Error</div><div class="fval">O(1/√n)</div></div>
+    <div class="fact"><div class="flabel">vs Las Vegas</div><div class="fval">Fast, not exact</div></div>
   </div>
   <div class="sim-panel">
-    <div class="sim-hdr"><span class="dot"></span> Estimating π with Monte Carlo</div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:flex-start">
-        <canvas id="cv" width="300" height="300" style="width:280px;height:280px;flex-shrink:0"></canvas>
-        <div style="flex:1;min-width:200px">
-          <div class="stats">
-            <div class="sbox"><div class="sv" id="sPi">—</div><div class="sl">π estimate</div></div>
-            <div class="sbox"><div class="sv" id="sErr">—</div><div class="sl">Error %</div></div>
-            <div class="sbox"><div class="sv" id="sN">0</div><div class="sl">Samples</div></div>
-            <div class="sbox"><div class="sv" id="sIn">0</div><div class="sl">Inside circle</div></div>
-          </div>
-          <div style="font-size:.78rem;color:var(--m);margin:.5rem 0">Accuracy vs sample count:</div>
-          <div class="pi-bar"><div class="pi-fill" id="accBar" style="width:0%"></div></div>
-          <div style="font-size:.72rem;color:var(--m);margin-top:.3rem" id="accLbl">0% accuracy</div>
-        </div>
-      </div>
-      <div class="controls">
-        <button class="btn btn-p" id="btnRun" onclick="startMC()">Run (100 pts)</button>
-        <button class="btn btn-p" onclick="runMC(1000)">Run (1000 pts)</button>
-        <button class="btn btn-o" onclick="resetMC()">Reset</button>
+      <canvas id="canvas" width="300" height="300"></canvas>
+      <div class="estimate-bar" id="estBar">π ≈ ?</div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Sample 50 Points</button>
       </div>
     </div>
   </div>
-  <div class="log-panel">
-    <div class="log-hdr">Step Log <button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem" onclick="clearLog()">Clear</button></div>
-    <div class="log-body" id="log"><div class="le li">Ready.</div></div>
-  </div>
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-let totalN=0,inCircle=0,running=false;
-const pts=[];
-
-function log(msg,cls='ls'){const el=document.getElementById('log');const d=document.createElement('div');d.className=`le ${cls}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
-function clearLog(){document.getElementById('log').innerHTML=''}
-
-function drawCanvas(){
-  const canvas=document.getElementById('cv');
-  const S=280;canvas.width=S*devicePixelRatio;canvas.height=S*devicePixelRatio;
-  const ctx=canvas.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);
-  ctx.strokeStyle='var(--b)';ctx.lineWidth=1;ctx.strokeRect(0,0,S,S);
-  ctx.beginPath();ctx.arc(S/2,S/2,S/2,0,Math.PI*2);
-  ctx.strokeStyle='#6d6875';ctx.lineWidth=2;ctx.stroke();
-  pts.forEach(p=>{
-    ctx.beginPath();ctx.arc(p.x*S,p.y*S,2.5,0,Math.PI*2);
-    ctx.fillStyle=p.inside?'#457b9d88':'#e8622a55';ctx.fill();
+var player=null;
+var PRESAMPLED=(function(){
+  var pts=[];
+  var s=99991;
+  for(var i=0;i<50;i++){
+    s=(s*1664525+1013904223)&0xffffffff; var x=(s/2147483648)-1;
+    s=(s*1664525+1013904223)&0xffffffff; var y=(s/2147483648)-1;
+    pts.push([x,y]);
+  }
+  return pts;
+})();
+function generateSteps(){
+  var steps=[], inside=0, pts=PRESAMPLED;
+  steps.push({title:'Monte Carlo π estimation: 50 uniform random samples',
+    what:'Each sample is a point (x,y) in [-1,1]². Check if x²+y²≤1.',
+    why:'Monte Carlo: fixed runtime, approximate answer. Error ~ 1/√n.',
+    inside:0,total:0,points:[]});
+  for(var i=0;i<pts.length;i++){
+    var x=pts[i][0], y=pts[i][1];
+    var inCirc=x*x+y*y<=1;
+    if(inCirc) inside++;
+    var est=4*inside/(i+1);
+    steps.push({title:'Sample '+(i+1)+': ('+x.toFixed(3)+', '+y.toFixed(3)+') → '+(inCirc?'INSIDE':'OUTSIDE'),
+      what:'x²+y²='+(x*x+y*y).toFixed(4)+(inCirc?'≤1 (inside circle)':'>1 (outside)'),
+      why:'π ≈ 4×(inside/'+(i+1)+') = '+est.toFixed(4)+' (true π=3.14159...)',
+      inside:inside,total:i+1,est:est,cx:x,cy:y,inCirc:inCirc,
+      points:pts.slice(0,i+1).map(function(p,j){return {x:p[0],y:p[1],in:p[0]*p[0]+p[1]*p[1]<=1};})});
+  }
+  var finalEst=4*inside/pts.length;
+  steps.push({title:'Final estimate: π ≈ '+finalEst.toFixed(4)+' (true: 3.14159)',
+    what:inside+' of '+pts.length+' points fell inside unit circle.',
+    why:'More samples → estimate converges. Error = |'+finalEst.toFixed(4)+'-π| = '+Math.abs(finalEst-Math.PI).toFixed(4)+'.',
+    inside:inside,total:pts.length,est:finalEst,cx:null,cy:null,
+    points:pts.map(function(p){return {x:p[0],y:p[1],in:p[0]*p[0]+p[1]*p[1]<=1};})});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
+}
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var S=cv.offsetWidth||300, DPR=window.devicePixelRatio||1;
+  cv.width=S*DPR; cv.height=S*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,S,S);
+  var M=20, W=S-2*M;
+  ctx.strokeStyle='#ddd';ctx.lineWidth=1;ctx.strokeRect(M,M,W,W);
+  ctx.strokeStyle='#7b4fd4';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(M+W/2,M+W/2,W/2,0,2*Math.PI);ctx.stroke();
+  if(step.points) step.points.forEach(function(p){
+    var px=M+W/2+p.x*W/2, py=M+W/2+p.y*W/2;
+    ctx.fillStyle=p.in?'#16a34a':'#ef4444';
+    ctx.beginPath();ctx.arc(px,py,3,0,2*Math.PI);ctx.fill();
   });
-}
-
-function update(){
-  const pi=totalN?4*inCircle/totalN:0;
-  const err=Math.abs(pi-Math.PI)/Math.PI*100;
-  const acc=Math.max(0,100-err);
-  document.getElementById('sPi').textContent=pi.toFixed(5);
-  document.getElementById('sErr').textContent=err.toFixed(2)+'%';
-  document.getElementById('sN').textContent=totalN;
-  document.getElementById('sIn').textContent=inCircle;
-  document.getElementById('accBar').style.width=Math.min(acc,100)+'%';
-  document.getElementById('accLbl').textContent=acc.toFixed(1)+'% accuracy';
-}
-
-function addPoints(n){
-  for(let i=0;i<n;i++){
-    const x=Math.random(),y=Math.random();
-    const dx=x-0.5,dy=y-0.5;
-    const inside=(dx*dx+dy*dy)<=0.25;
-    pts.push({x,y,inside});
-    if(inside)inCircle++;totalN++;
+  if(step.cx!=null){
+    var cpx=M+W/2+step.cx*W/2, cpy=M+W/2+step.cy*W/2;
+    ctx.fillStyle=step.inCirc?'#a8e6a3':'#fca5a5';
+    ctx.strokeStyle='#1a1a2e';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cpx,cpy,5,0,2*Math.PI);ctx.fill();ctx.stroke();
   }
+  var eb=document.getElementById('estBar');
+  if(eb) eb.textContent='π ≈ '+(step.est?step.est.toFixed(5):'?')+'  (inside: '+step.inside+' / '+step.total+')';
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Samples: '+step.total+'/50  |  Error: '+(step.est?Math.abs(step.est-Math.PI).toFixed(5):'?');
 }
-
-async function startMC(){
-  if(running)return;running=true;clearLog();
-  log('Throwing 100 random darts...','ls');
-  for(let batch=0;batch<10;batch++){
-    addPoints(10);drawCanvas();update();
-    await new Promise(r=>setTimeout(r,80));
-  }
-  const pi=(4*inCircle/totalN).toFixed(5);
-  log('After '+totalN+' samples: π ≈ '+pi+' (error '+(Math.abs(pi-Math.PI)/Math.PI*100).toFixed(2)+'%)','ld');
-  running=false;
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-async function runMC(n){
-  if(running)return;running=true;clearLog();
-  log('Throwing '+n+' random darts...','ls');
-  const batch=50;
-  for(let i=0;i<n;i+=batch){
-    addPoints(Math.min(batch,n-i));drawCanvas();update();
-    await new Promise(r=>setTimeout(r,30));
-  }
-  const pi=(4*inCircle/totalN).toFixed(5);
-  log('After '+totalN+' samples: π ≈ '+pi,'ld');
-  running=false;
-}
-
-function resetMC(){pts.length=0;totalN=0;inCircle=0;running=false;drawCanvas();update();clearLog();}
-
-drawCanvas();update();
+rebuild();
 </script>
 </body>
 </html>

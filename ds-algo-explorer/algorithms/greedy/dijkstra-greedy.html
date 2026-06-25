@@ -1,237 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dijkstra (Greedy) – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dijkstra's Algorithm (Greedy)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-  .container{max-width:960px;margin:0 auto;padding:0 24px;}
-  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
-  .breadcrumb span{margin:0 6px;}
-  .hero{padding:48px 0 32px;}
-  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
-  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
-  .explanation{padding:24px 0;}
-  .explanation p{margin-bottom:14px;}
-  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
-  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
-  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
-  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
-  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px;}
-  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;margin-bottom:16px;}
-  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
-  .viz-row{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;}
-  canvas{display:block;border-radius:8px;border:1px solid var(--border);}
-  table.dist{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.85rem;align-self:start;}
-  table.dist th,table.dist td{border:1px solid var(--border);padding:8px 14px;text-align:center;}
-  table.dist th{background:var(--bg);color:var(--muted);font-weight:600;}
-  table.dist td.settled{background:#fff8e0;font-weight:700;color:var(--accent);}
-  table.dist td.current{background:var(--accent);color:#fff;font-weight:700;}
-  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
-  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
-  .log-box p.highlight{color:#f5d87c;}
-  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.dist-row{font-family:'JetBrains Mono',monospace;font-size:.78rem;display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
+.dist-chip{padding:.2rem .5rem;border-radius:4px;border:1px solid var(--b);background:var(--bg)}
+.dist-chip.done{background:#a8e6a3}.dist-chip.cur{background:#fff176}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Dijkstra (Greedy)
-  </nav>
-
-  <div class="hero">
-    <span class="tag">Greedy</span>
-    <h1>Dijkstra's Algorithm</h1>
-    <p class="tagline">Find shortest paths greedily — always settle the nearest unsettled node first.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Dijkstra</span></nav>
+  <span class="tag">Greedy</span>
+  <h1>Dijkstra's Shortest Path</h1>
+  <p class="tagline">Single-source shortest paths — greedy: always extract minimum-distance unvisited node.</p>
+  <div class="prose">
+    <p>Dijkstra's algorithm maintains a distance array d[]. Initially d[src]=0, all others ∞. Repeatedly extract the unvisited node u with minimum d[u]. Relax all edges from u: if d[u]+w(u,v) < d[v], update d[v]. Greedy choice works because all edges have non-negative weights.</p>
+    <p>Yellow = currently processing. Green = finalized (visited). Orange = relaxed neighbor. Distances shown above each node.</p>
   </div>
-
-  <div class="explanation">
-    <p>Dijkstra's algorithm finds the shortest path from a source node to every other node in a weighted graph (non-negative weights). It is fundamentally greedy: at each step, pick the unvisited node with the smallest current tentative distance and "settle" it.</p>
-    <p>The greedy choice is safe because edge weights are non-negative — if a node has the minimum tentative distance among unsettled nodes, no future path through other nodes can improve it. This exchange-argument reasoning gives us an O((V+E) log V) algorithm with a priority queue.</p>
-    <p>Dijkstra is the backbone of GPS routing, network routing protocols (OSPF), and any problem reducible to shortest paths on non-negative weighted graphs.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="val">O(E log V)</div><div class="label">Time (priority queue)</div></div>
-    <div class="fact-card"><div class="val">Non-negative</div><div class="label">Weight Requirement</div></div>
-    <div class="fact-card"><div class="val">Greedy+DP</div><div class="label">Hybrid Technique</div></div>
+    <div class="fact"><div class="flabel">Time (min-heap)</div><div class="fval">O((V+E) log V)</div></div>
+    <div class="fact"><div class="flabel">Time (array)</div><div class="fval">O(V²)</div></div>
+    <div class="fact"><div class="flabel">Requires</div><div class="fval">Non-neg weights</div></div>
+    <div class="fact"><div class="flabel">vs Bellman-Ford</div><div class="fval">Faster, no neg edges</div></div>
   </div>
-
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <button class="btn" id="runBtn" onclick="runDijkstra()">Run Dijkstra (Greedy)</button>
-
-    <div class="viz-row">
-      <canvas id="graphCanvas" width="540" height="340"></canvas>
-      <table class="dist" id="distTable"></table>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="640" height="320"></canvas>
+      <div class="dist-row" id="distRow"></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Dijkstra</button>
+      </div>
     </div>
   </div>
-
-  <div class="sim-box" style="padding:20px;">
-    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
-    <div class="log-box" id="logBox"></div>
-  </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-// Graph definition (node 0 is source)
-const NODES=[
-  {id:0,label:'A',x:80,y:160},
-  {id:1,label:'B',x:200,y:60},
-  {id:2,label:'C',x:200,y:270},
-  {id:3,label:'D',x:360,y:60},
-  {id:4,label:'E',x:360,y:270},
-  {id:5,label:'F',x:480,y:160},
-];
-const EDGES=[
-  {u:0,v:1,w:4},{u:0,v:2,w:2},{u:1,v:2,w:5},{u:1,v:3,w:10},
-  {u:2,v:4,w:3},{u:3,v:5,w:11},{u:4,v:3,w:4},{u:4,v:5,w:6},
-];
-
-let nodeStates, dist, settled;
-
-function log(msg,h=false){
-  const lb=document.getElementById('logBox');
-  const p=document.createElement('p');
-  if(h)p.classList.add('highlight');
-  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
-}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-function getAdj(){
-  const adj=Array.from({length:6},()=>[]);
-  EDGES.forEach(e=>{adj[e.u].push({to:e.v,w:e.w});adj[e.v].push({to:e.u,w:e.w});});
-  return adj;
-}
-
-function drawGraph(currentNode=-1, settledEdges=[]){
-  const canvas=document.getElementById('graphCanvas');
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // Draw edges
-  EDGES.forEach(e=>{
-    const isSettled=settledEdges.some(se=>(se[0]===e.u&&se[1]===e.v)||(se[0]===e.v&&se[1]===e.u));
-    ctx.strokeStyle=isSettled?'#d4a017':'#d0ccc4';
-    ctx.lineWidth=isSettled?3:1.5;
-    ctx.beginPath();
-    ctx.moveTo(NODES[e.u].x,NODES[e.u].y);
-    ctx.lineTo(NODES[e.v].x,NODES[e.v].y);
-    ctx.stroke();
-    // Weight label
-    const mx=(NODES[e.u].x+NODES[e.v].x)/2;
-    const my=(NODES[e.u].y+NODES[e.v].y)/2;
-    ctx.fillStyle='#5a5a72';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
-    ctx.fillText(e.w,mx,my-4);
-  });
-
-  // Draw nodes
-  NODES.forEach(n=>{
-    const st=nodeStates?nodeStates[n.id]:'idle';
-    let fill='#1a1a2e';
-    if(st==='settled') fill='#d4a017';
-    else if(st==='current') fill='#e8622a';
-    else if(st==='queued') fill='#5a5a72';
-
-    ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-    ctx.fillStyle=fill;ctx.fill();
-    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
-
-    ctx.fillStyle='#fff';ctx.font='bold 13px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(n.label,n.x,n.y);ctx.textBaseline='alphabetic';
-
-    // Distance label
-    const d=dist?dist[n.id]:Infinity;
-    const dLabel=d===Infinity?'∞':d;
-    ctx.fillStyle=fill==='#d4a017'?'#a87d10':'#5a5a72';
-    ctx.font='11px JetBrains Mono';ctx.textAlign='center';
-    ctx.fillText(dLabel,n.x,n.y+34);
-  });
-}
-
-function buildDistTable(currentNode=-1){
-  const tbl=document.getElementById('distTable');
-  tbl.innerHTML='<tr><th>Node</th><th>Dist</th><th>State</th></tr>';
-  NODES.forEach(n=>{
-    const tr=tbl.insertRow();
-    const st=nodeStates?nodeStates[n.id]:'unsettled';
-    if(n.id===currentNode) tr.cells[0]&&tr.cells[0].classList.add('current');
-    const d=dist?dist[n.id]:Infinity;
-    [n.label,d===Infinity?'∞':d,st].forEach((v,i)=>{
-      const td=tr.insertCell();td.textContent=v;
-      if(st==='settled') td.classList.add('settled');
-      if(n.id===currentNode) td.classList.add('current');
-    });
-  });
-}
-
-async function runDijkstra(){
-  const btn=document.getElementById('runBtn');
-  btn.disabled=true;
-  document.getElementById('logBox').innerHTML='';
-
-  dist=new Array(6).fill(Infinity);
+var player=null;
+var NODES=5;
+var EDGES=[[0,1,10],[0,2,3],[1,2,1],[1,3,2],[2,1,4],[2,3,8],[2,4,2],[3,4,5],[4,3,1]];
+var POS=[[80,160],[240,80],[240,240],[400,80],[400,240]];
+function generateSteps(){
+  var n=NODES, INF=1e9;
+  var dist=new Array(n).fill(INF), prev=new Array(n).fill(-1), visited=new Array(n).fill(false);
+  var nodeState=new Array(n).fill('unvis'), edgeState={};
   dist[0]=0;
-  nodeStates=Array.from({length:6},()=>'unsettled');
-  const settledEdges=[];
-  const adj=getAdj();
-  let prev=new Array(6).fill(-1);
-
-  drawGraph(-1,settledEdges);
-  buildDistTable(-1);
-  log('Init: dist[A]=0, all others=∞. Source=A.');
-  await sleep(400);
-
-  for(let iter=0;iter<6;iter++){
-    // Pick min unsettled
-    let u=-1, minD=Infinity;
-    for(let i=0;i<6;i++){
-      if(nodeStates[i]!=='settled'&&dist[i]<minD){minD=dist[i];u=i;}
-    }
-    if(u===-1) break;
-
-    nodeStates[u]='current';
-    drawGraph(u,settledEdges);buildDistTable(u);
-    log(`Greedy pick: node ${NODES[u].label}, dist=${dist[u]}.`);
-    await sleep(600);
-
-    // Relax neighbours
-    for(const {to,w} of adj[u]){
-      if(nodeStates[to]==='settled') continue;
-      const newD=dist[u]+w;
-      if(newD<dist[to]){
-        const old=dist[to]===Infinity?'∞':dist[to];
-        dist[to]=newD;prev[to]=u;
-        log(`  Relax: ${NODES[u].label}→${NODES[to].label}: ${dist[u]}+${w}=${newD} < ${old} → update.`);
+  function snap(cur,relaxed){return {dist:dist.slice(),prev:prev.slice(),visited:visited.slice(),nodeState:nodeState.slice(),edgeState:Object.assign({},edgeState),cur:cur,relaxed:relaxed};}
+  var steps=[];
+  steps.push({title:'Dijkstra from node 0',
+    what:'d=['+dist.map(function(v){return v===INF?'∞':v;}).join(',')+'].',
+    why:'Extract min-dist unvisited node; relax edges.',
+    ...snap(-1,[])});
+  for(var iter=0;iter<n;iter++){
+    var u=-1, minD=INF;
+    for(var v=0;v<n;v++) if(!visited[v]&&dist[v]<minD){minD=dist[v];u=v;}
+    if(u<0) break;
+    visited[u]=true; nodeState[u]='cur';
+    steps.push({title:'Extract u='+u+' (d['+u+']='+dist[u]+')',
+      what:'Closest unvisited node = '+u+' with dist='+dist[u]+'. Finalize.',
+      why:'Greedy: finalized node has true shortest distance (non-neg weights).',
+      ...snap(u,[])});
+    nodeState[u]='done';
+    var relaxed=[];
+    EDGES.forEach(function(e){
+      if(e[0]===u&&!visited[e[1]]){
+        var nd=dist[u]+e[2];
+        edgeState[e[0]+','+e[1]]='cur';
+        if(nd<dist[e[1]]){
+          dist[e[1]]=nd; prev[e[1]]=u; relaxed.push(e[1]);
+          nodeState[e[1]]='relaxed';
+          steps.push({title:'Relax edge '+u+'→'+e[1]+' (w='+e[2]+'): d['+e[1]+']='+nd,
+            what:'d['+u+']+'+e[2]+'='+nd+' < d['+e[1]+'] (prev). Update d['+e[1]+']='+nd+'.',
+            why:'Found shorter path to node '+e[1]+' via '+u+'.',
+            ...snap(u,relaxed)});
+          edgeState[e[0]+','+e[1]]='relaxed';
+        } else {
+          edgeState[e[0]+','+e[1]]='no';
+        }
       }
-    }
-
-    nodeStates[u]='settled';
-    if(prev[u]>=0) settledEdges.push([prev[u],u]);
-    drawGraph(-1,settledEdges);buildDistTable(-1);
-    await sleep(500);
+    });
   }
-
-  log('Done. Final shortest distances from A:',false);
-  log(NODES.map(n=>`${n.label}=${dist[n.id]===Infinity?'∞':dist[n.id]}`).join('  '),true);
-  btn.disabled=false;
+  steps.push({title:'Dijkstra complete. Distances: ['+dist.map(function(v){return v===INF?'∞':v;}).join(',')+']',
+    what:'Shortest paths from 0: '+dist.map(function(v,i){return i+'='+( v===INF?'∞':v);}).join(', ')+'.',
+    why:'All reachable nodes finalized.',
+    ...snap(-1,[])});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-nodeStates=Array.from({length:6},()=>'unsettled');
-dist=new Array(6).fill(Infinity);dist[0]=0;
-drawGraph();buildDistTable();
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=320, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  EDGES.forEach(function(e){
+    var key=e[0]+','+e[1];
+    var es=step.edgeState[key];
+    ctx.strokeStyle=es==='relaxed'?'#fb923c':es==='cur'?'#f59e0b':'#ccc';
+    ctx.lineWidth=es?2:1.5;
+    var p=POS[e[0]],q=POS[e[1]];
+    var px=p[0]*SCALE,py=p[1],qx=q[0]*SCALE,qy=q[1];
+    ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(qx,qy);ctx.stroke();
+    ctx.fillStyle='#555';ctx.font='10px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillText(e[2],(px+qx)/2,(py+qy)/2-5);
+  });
+  POS.forEach(function(pos,i){
+    var cx=pos[0]*SCALE, cy=pos[1];
+    var st=step.nodeState[i];
+    ctx.fillStyle=st==='done'?'#a8e6a3':st==='cur'?'#fff176':st==='relaxed'?'#fb923c':'#c3b1e1';
+    ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 13px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(i,cx,cy+5);
+    ctx.font='11px JetBrains Mono,monospace';
+    ctx.fillText(step.dist[i]===1e9?'∞':step.dist[i],cx,cy-28);
+  });
+  var dr=document.getElementById('distRow');
+  if(dr){
+    dr.innerHTML=step.dist.map(function(v,i){
+      var st=step.nodeState[i];
+      return '<div class="dist-chip '+(st==='done'?'done':st==='cur'?'cur':'')+'">d['+i+']='+(v===1e9?'∞':v)+'</div>';
+    }).join('');
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Current node: '+(step.cur>=0?step.cur:'—')+'  |  Distances: ['+step.dist.map(function(v){return v===1e9?'∞':v;}).join(',')+']';
+}
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

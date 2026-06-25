@@ -1,167 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quick Sort – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Quick Sort</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.depth-bar{font-size:13px;color:#5a5a72;margin-left:8px}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
-.log{margin-top:16px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:300px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Quick Sort
-  </nav>
-  <div class="hero">
-    <div class="category-tag">Divide &amp; Conquer</div>
-    <h1>Quick Sort</h1>
-    <p class="tagline">Pick a pivot, partition around it, recurse on each half.</p>
-  </div>
-  <div class="explanation">
-    <p>Quick sort selects a pivot element and partitions the array into two groups: elements smaller than the pivot (left) and elements larger (right). It then recursively applies the same process to each partition. The pivot ends up in its final sorted position after each partition step.</p>
-    <p>The divide-and-conquer nature is clear: the pivot divides the problem into two independent sub-problems. Unlike merge sort, the heavy work happens during division (partitioning) rather than during combination, and no extra memory is needed — partitioning is done in-place.</p>
-    <p>Quick sort achieves O(n log n) average time with excellent cache performance, making it the fastest comparison sort in practice. The worst case O(n²) occurs when the pivot is always the smallest or largest element (already sorted input with naive pivot selection), avoided by randomized or median-of-three pivot strategies.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Quick Sort</span></nav>
+  <span class="tag">Divide & Conquer</span>
+  <h1>Quick Sort</h1>
+  <p class="tagline">Choose pivot, partition around it, recurse — O(n log n) average, O(n²) worst.</p>
+  <div class="prose">
+    <p>Quick sort selects a pivot, partitions the array so all smaller values are left and larger are right, then recurses on both halves. In-place and cache-friendly. Worst case O(n²) on sorted input — avoided by random pivot selection.</p>
+    <p>Orange = pivot. Yellow = elements being compared to pivot. Purple = in left partition (≤ pivot). Green = fully sorted.</p>
   </div>
   <div class="facts">
-    <div class="fact-card"><div class="label">Time (Average)</div><div class="value">O(n log n)</div></div>
-    <div class="fact-card"><div class="label">Time (Worst)</div><div class="value">O(n²)</div></div>
-    <div class="fact-card"><div class="label">Space</div><div class="value">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Average</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Worst case</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">In-place</div><div class="fval">Yes</div></div>
   </div>
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button class="btn btn-primary" onclick="startSort()">Sort</button>
-      <button class="btn btn-secondary" onclick="resetSort()">Shuffle &amp; Reset</button>
-      <span class="depth-bar" id="depthLabel">Recursion depth: 0</span>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="640" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Array:</label>
+        <input type="text" id="arr" value="10,80,30,90,40,50,70"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort</button>
+      </div>
     </div>
-    <canvas id="cvs" width="840" height="260"></canvas>
-    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const ACCENT='#27a060',PIVOT='#e84393',COMPARE='#fbbf24',SORTED='#d1fae5',DEFAULT='#fff',LESS='#bbf7d0',GREATER='#fce7f3';
-let arr=[64,34,25,12,22,11,90,45];
-let running=false,maxDepth=0;
-let state=arr.map(()=>'default');
-let pivotIdx=-1,sortedSet=new Set();
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-
-function drawBars(lo=-1,hi=-1,depth=0){
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  const n=arr.length,w=cvs.width,h=cvs.height;
-  const barW=Math.floor((w-80)/n)-4,maxVal=Math.max(...arr);
-  // Depth indicator
-  ctx.fillStyle='#5a5a72';ctx.font='12px Inter';ctx.textAlign='left';
-  ctx.fillText(`Recursion depth: ${depth} / max: ${maxDepth}`,10,18);
-  // Range bracket
-  if(lo>=0&&hi>=0){
-    const lx=40+lo*(barW+4),rx=40+hi*(barW+4)+barW;
-    ctx.strokeStyle='#27a060';ctx.lineWidth=2;ctx.setLineDash([4,3]);
-    ctx.beginPath();ctx.moveTo(lx-2,24);ctx.lineTo(rx+2,24);ctx.stroke();
-    ctx.setLineDash([]);
+var player=null;
+function generateSteps(arr){
+  var a=arr.slice(), steps=[], n=a.length;
+  var states=new Array(n).fill('');
+  function snap(lo,hi,pivot,i,j){return {a:a.slice(),states:states.slice(),lo:lo,hi:hi,pivot:pivot,pi:i,pj:j,n:n};}
+  steps.push({title:'Quick Sort: ['+arr.join(',')+']',
+    what:'Choose last element as pivot. Partition. Recurse.',
+    why:'Average O(n log n) comparisons with O(log n) stack space.',
+    ...snap(-1,-1,-1,-1,-1)});
+  function swap(i,j){var t=a[i];a[i]=a[j];a[j]=t;}
+  function partition(lo,hi){
+    var piv=a[hi], i=lo-1;
+    states[hi]='pivot';
+    steps.push({title:'Pivot='+piv+' (a['+hi+']). Partition ['+lo+'..'+hi+'].',
+      what:'Pivot='+piv+'. i='+( lo-1)+'. Compare each element to pivot.',
+      why:'Elements ≤ pivot go left; > pivot go right.',
+      ...snap(lo,hi,hi,i,-1)});
+    for(var j=lo;j<hi;j++){
+      states[j]='cur';
+      steps.push({title:'a['+j+']='+a[j]+' vs pivot='+piv,
+        what:'a['+j+']='+a[j]+' '+(a[j]<=piv?'≤ pivot: swap with a['+(i+1)+']':'> pivot: leave')+'.',
+        why:a[j]<=piv?'Move to left partition.':'Already in right partition.',
+        ...snap(lo,hi,hi,i,j)});
+      if(a[j]<=piv){i++;swap(i,j);states[i]='left';}
+      else states[j]='right';
+    }
+    swap(i+1,hi);
+    states[i+1]='done';
+    steps.push({title:'Pivot '+piv+' placed at index '+(i+1),
+      what:'Swap pivot to position '+(i+1)+'. Left: a['+lo+'..'+(i)+']. Right: a['+(i+2)+'..'+hi+'].',
+      why:'Pivot is now in its final sorted position.',
+      ...snap(lo,hi,i+1,i+1,-1)});
+    return i+1;
   }
-  arr.forEach((v,i)=>{
-    const bh=Math.round((v/maxVal)*(h-70));
-    const x=40+i*(barW+4),y=h-20-bh;
-    let fill=DEFAULT;
-    if(sortedSet.has(i))fill=ACCENT;
-    else if(state[i]==='pivot')fill=PIVOT;
-    else if(state[i]==='less')fill=LESS;
-    else if(state[i]==='greater')fill=GREATER;
-    else if(state[i]==='compare')fill=COMPARE;
-    ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,barW,bh,4);ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,0.08)';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=(fill===PIVOT||fill===ACCENT)?'#fff':'#1a1a2e';
-    ctx.font='bold 13px Inter';ctx.textAlign='center';
-    ctx.fillText(v,x+barW/2,y-4);
-    ctx.fillStyle='#5a5a72';ctx.font='10px Inter';
-    ctx.fillText(i,x+barW/2,h-4);
-  });
-}
-
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function partition(lo,hi,depth){
-  const pivotVal=arr[hi];
-  state[hi]='pivot';drawBars(lo,hi,depth);
-  log(`Depth ${depth}: Pivot=${pivotVal} at [${lo}..${hi}]`);
-  await sleep(500);
-  let i=lo-1;
-  for(let j=lo;j<hi;j++){
-    state[j]='compare';drawBars(lo,hi,depth);await sleep(300);
-    if(arr[j]<=pivotVal){
-      i++;[arr[i],arr[j]]=[arr[j],arr[i]];
-      state[j]='less';state[i]='less';
-    } else {state[j]='greater';}
-    drawBars(lo,hi,depth);await sleep(200);
+  function qsort(lo,hi){
+    if(lo>=hi){if(lo===hi)states[lo]='done';return;}
+    var pi=partition(lo,hi);
+    qsort(lo,pi-1); qsort(pi+1,hi);
   }
-  [arr[i+1],arr[hi]]=[arr[hi],arr[i+1]];
-  for(let k=lo;k<=hi;k++)state[k]='default';
-  sortedSet.add(i+1);drawBars(lo,hi,depth);
-  log(`Pivot ${pivotVal} placed at index ${i+1}`);
-  await sleep(400);
-  return i+1;
+  qsort(0,n-1);
+  steps.push({title:'Sorted: ['+a.join(',')+']',
+    what:'Array fully sorted.',
+    why:'All pivots placed in final positions.',
+    ...snap(-1,-1,-1,-1,-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-async function quickSort(lo,hi,depth){
-  if(lo>=hi){if(lo===hi)sortedSet.add(lo);drawBars(lo,hi,depth);return;}
-  maxDepth=Math.max(maxDepth,depth);
-  document.getElementById('depthLabel').textContent=`Recursion depth: ${depth} / max: ${maxDepth}`;
-  const p=await partition(lo,hi,depth);
-  await quickSort(lo,p-1,depth+1);
-  await quickSort(p+1,hi,depth+1);
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=280, DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  var n=step.n, a=step.a, st=step.states;
+  var max=Math.max.apply(null,a)||1;
+  var bW=Math.floor((W-40)/n)-2, pad=20;
+  for(var i=0;i<n;i++){
+    var bH=Math.max(4,((a[i]/max)*(H-60)));
+    var x=pad+i*(bW+2), y=H-40-bH;
+    var color=i===step.pivot?'#fb923c':i===step.pj?'#fff176':st[i]==='done'?'#a8e6a3':st[i]==='left'?'#c3b1e1':st[i]==='right'?'#fca5a5':'#7b4fd4';
+    ctx.fillStyle=color; ctx.fillRect(x,y,bW,bH);
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=1; ctx.strokeRect(x,y,bW,bH);
+    ctx.fillStyle='#1a1a2e'; ctx.font='bold 11px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(a[i],x+bW/2,y-4);
+    ctx.fillText(i,x+bW/2,H-22);
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Pivot: '+(step.pivot>=0?step.a[step.pivot]:'—')+' at ['+(step.lo>=0?step.lo:'—')+'..'+(step.hi>=0?step.hi:'—')+']';
 }
-
-async function startSort(){
-  if(running)return;running=true;maxDepth=0;
-  state=arr.map(()=>'default');sortedSet=new Set();
-  document.getElementById('logEntries').innerHTML='';
-  log('Quick Sort started — D&C: each pivot divides into independent sub-problems');
-  await quickSort(0,arr.length-1,0);
-  for(let i=0;i<arr.length;i++)sortedSet.add(i);
-  drawBars();log('Sort complete!');running=false;
+function rebuild(){
+  var arr=document.getElementById('arr').value.split(',').map(function(x){return parseInt(x.trim());}).filter(function(x){return !isNaN(x);}).slice(0,12);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),renderStep,'explanation','sim-bar');
 }
-
-function resetSort(){
-  running=false;arr=[64,34,25,12,22,11,90,45].sort(()=>Math.random()-.5).map(Math.round);
-  state=arr.map(()=>'default');sortedSet=new Set();maxDepth=0;
-  document.getElementById('logEntries').innerHTML='';
-  document.getElementById('depthLabel').textContent='Recursion depth: 0';
-  drawBars();
-}
-drawBars();
+rebuild();
 </script>
 </body>
 </html>

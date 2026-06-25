@@ -1,167 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Strassen's Algorithm – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Strassen Matrix Multiplication</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:920px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.matrix-area{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:24px;align-items:start}
-.matrix-label{font-size:12px;font-weight:600;color:#5a5a72;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
-table.mat{border-collapse:collapse}
-table.mat td{width:44px;height:38px;text-align:center;border:1px solid #e2e0da;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;background:#fff;border-radius:4px;transition:background .3s,color .3s}
-table.mat td.highlight{background:#27a060;color:#fff}
-table.mat td input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#1a1a2e;outline:none}
-.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
-.product-card{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:12px;transition:background .3s,border-color .3s}
-.product-card.active{background:#d1fae5;border-color:#27a060}
-.product-card .p-label{font-size:11px;font-weight:700;color:#27a060;margin-bottom:4px}
-.product-card .p-formula{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a5a72;margin-bottom:4px}
-.product-card .p-value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#1a1a2e}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-.log{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
-.compare-note{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px;font-size:13px;color:#92400e;margin-bottom:16px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.matrices{display:flex;gap:1.5rem;flex-wrap:wrap;margin:.5rem 0}
+.mat-box{font-family:'JetBrains Mono',monospace;font-size:.78rem}
+.mat-box .mat-label{font-weight:700;color:var(--a);margin-bottom:.3rem}
+.mat-box table{border-collapse:collapse}
+.mat-box td{border:1px solid var(--b);padding:.22rem .5rem;text-align:right;min-width:32px;background:var(--bg)}
+.mat-box td.hi{background:#fff176}
+.formula-row{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.4rem .6rem;background:var(--bg);border:1px solid var(--b);border-radius:6px;margin:.4rem 0}
+.formula-row.cur{background:#c3b1e1}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.35rem .6rem;border:1.5px solid var(--b);border-radius:8px;width:200px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Strassen's Algorithm
-  </nav>
-  <div class="hero">
-    <div class="category-tag">Divide &amp; Conquer</div>
-    <h1>Strassen's Algorithm</h1>
-    <p class="tagline">Multiply 2×2 matrices with 7 multiplications instead of 8.</p>
-  </div>
-  <div class="explanation">
-    <p>Strassen's algorithm is a divide-and-conquer approach to matrix multiplication. For 2×2 matrices, naïve multiplication requires 8 scalar multiplications and 4 additions. Strassen showed in 1969 that 7 multiplications (P1–P7) suffice — the result matrix entries are computed from these 7 products using only additions and subtractions.</p>
-    <p>The divide-and-conquer structure: split each n×n matrix into four n/2×n/2 sub-matrices, recursively apply Strassen's 7-multiplication scheme to the sub-matrices, and combine. The recurrence T(n) = 7T(n/2) + O(n²) yields complexity O(n^log₂7) ≈ O(n^2.807), beating the naive O(n³).</p>
-    <p>Though Strassen is asymptotically faster, the smaller constant factor of naive multiplication and cache effects make Strassen practical only for matrices larger than roughly 100×100. It is, however, theoretically important and spawned a rich line of research into sub-cubic matrix multiplication.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Strassen</span></nav>
+  <span class="tag">Divide & Conquer</span>
+  <h1>Strassen Matrix Multiplication</h1>
+  <p class="tagline">Multiply 2×2 matrices using 7 multiplications instead of 8 — O(n^2.807).</p>
+  <div class="prose">
+    <p>Strassen's algorithm computes 2×2 matrix product using 7 multiplications (vs standard 8). Recursively applied, this gives O(n^log₂7) ≈ O(n^2.807). The 7 products M1..M7 are computed from sums/differences of submatrices, then combined additively to get C.</p>
+    <p>Each of the 7 Strassen products is shown with its formula. The final matrix C is built by combining them.</p>
   </div>
   <div class="facts">
-    <div class="fact-card"><div class="label">Multiplications</div><div class="value">7 (vs 8 naïve)</div></div>
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n^2.807)</div></div>
-    <div class="fact-card"><div class="label">Space</div><div class="value">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Multiplications</div><div class="fval">7 (vs 8)</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n^2.807)</div></div>
+    <div class="fact"><div class="flabel">vs Naive</div><div class="fval">O(n³)</div></div>
+    <div class="fact"><div class="flabel">Invented</div><div class="fval">1969 by Strassen</div></div>
   </div>
-  <div class="sim-section">
-    <h2>Interactive Simulation — 2×2 Matrix Multiplication</h2>
-    <div class="compare-note">Naïve: 8 multiplications | Strassen: 7 multiplications (saves 1 per level of recursion)</div>
-    <div class="controls">
-      <button class="btn btn-primary" onclick="runStrassen()">Compute (Strassen)</button>
-      <button class="btn btn-secondary" onclick="resetMatrices()">Reset</button>
-    </div>
-    <div class="matrix-area">
-      <div>
-        <div class="matrix-label">Matrix A</div>
-        <table class="mat" id="matA">
-          <tr><td><input id="a11" value="2"></td><td><input id="a12" value="3"></td></tr>
-          <tr><td><input id="a21" value="1"></td><td><input id="a22" value="4"></td></tr>
-        </table>
-      </div>
-      <div>
-        <div class="matrix-label">Matrix B</div>
-        <table class="mat" id="matB">
-          <tr><td><input id="b11" value="5"></td><td><input id="b12" value="6"></td></tr>
-          <tr><td><input id="b21" value="7"></td><td><input id="b22" value="8"></td></tr>
-        </table>
-      </div>
-      <div>
-        <div class="matrix-label">Result C = A×B</div>
-        <table class="mat" id="matC">
-          <tr><td id="c11">?</td><td id="c12">?</td></tr>
-          <tr><td id="c21">?</td><td id="c22">?</td></tr>
-        </table>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="matrices" id="matrices"></div>
+      <div class="info-bar" id="infoBar">Strassen 2×2 simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>A (row1,row2):</label>
+        <input type="text" id="matA" value="1,2,3,4"/>
+        <label>B (row1,row2):</label>
+        <input type="text" id="matB" value="5,6,7,8"/>
+        <button class="btn btn-p" onclick="rebuild()">Multiply</button>
       </div>
     </div>
-    <div class="products-grid" id="products">
-      <div class="product-card" id="pc1"><div class="p-label">P1</div><div class="p-formula">A11 × (B12 - B22)</div><div class="p-value">—</div></div>
-      <div class="product-card" id="pc2"><div class="p-label">P2</div><div class="p-formula">(A11 + A12) × B22</div><div class="p-value">—</div></div>
-      <div class="product-card" id="pc3"><div class="p-label">P3</div><div class="p-formula">(A21 + A22) × B11</div><div class="p-value">—</div></div>
-      <div class="product-card" id="pc4"><div class="p-label">P4</div><div class="p-formula">A22 × (B21 - B11)</div><div class="p-value">—</div></div>
-      <div class="product-card" id="pc5"><div class="p-label">P5</div><div class="p-formula">(A11 + A22) × (B11 + B22)</div><div class="p-value">—</div></div>
-      <div class="product-card" id="pc6"><div class="p-label">P6</div><div class="p-formula">(A12 - A22) × (B21 + B22)</div><div class="p-value">—</div></div>
-      <div class="product-card" id="pc7"><div class="p-label">P7</div><div class="p-formula">(A11 - A21) × (B11 + B12)</div><div class="p-value">—</div></div>
-    </div>
-    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function getVal(id){return parseFloat(document.getElementById(id).value)||0;}
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function runStrassen(){
-  document.getElementById('logEntries').innerHTML='';
-  ['c11','c12','c21','c22'].forEach(id=>document.getElementById(id).textContent='?');
-  for(let i=1;i<=7;i++){const c=document.getElementById('pc'+i);c.classList.remove('active');c.querySelector('.p-value').textContent='—';}
-  const a11=getVal('a11'),a12=getVal('a12'),a21=getVal('a21'),a22=getVal('a22');
-  const b11=getVal('b11'),b12=getVal('b12'),b21=getVal('b21'),b22=getVal('b22');
-  log(`A = [[${a11},${a12}],[${a21},${a22}]]`);
-  log(`B = [[${b11},${b12}],[${b21},${b22}]]`);
-  log(`Computing 7 Strassen products...`);
-  const steps=[
-    {id:'pc1',label:'P1',formula:`${a11} × (${b12} - ${b22})`,val:a11*(b12-b22)},
-    {id:'pc2',label:'P2',formula:`(${a11}+${a12}) × ${b22}`,val:(a11+a12)*b22},
-    {id:'pc3',label:'P3',formula:`(${a21}+${a22}) × ${b11}`,val:(a21+a22)*b11},
-    {id:'pc4',label:'P4',formula:`${a22} × (${b21}-${b11})`,val:a22*(b21-b11)},
-    {id:'pc5',label:'P5',formula:`(${a11}+${a22}) × (${b11}+${b22})`,val:(a11+a22)*(b11+b22)},
-    {id:'pc6',label:'P6',formula:`(${a12}-${a22}) × (${b21}+${b22})`,val:(a12-a22)*(b21+b22)},
-    {id:'pc7',label:'P7',formula:`(${a11}-${a21}) × (${b11}+${b12})`,val:(a11-a21)*(b11+b12)},
+var player=null;
+function generateSteps(A,B){
+  var steps=[], M=new Array(8).fill(0), C=[0,0,0,0];
+  var a=A[0],b=A[1],c=A[2],d=A[3], e=B[0],f=B[1],g=B[2],h=B[3];
+  var mBuilt=new Array(8).fill(false), cBuilt=new Array(4).fill(false);
+  function snap(cur){return {A:A.slice(),B:B.slice(),M:M.slice(),C:C.slice(),mBuilt:mBuilt.slice(),cBuilt:cBuilt.slice(),cur:cur};}
+  steps.push({title:'Strassen: A×B with 7 multiplications',
+    what:'A=[['+a+','+b+'],['+c+','+d+']], B=[['+e+','+f+'],['+g+','+h+']].',
+    why:'7 mults instead of 8: saves 1 mult per recursion level → O(n^2.807) vs O(n³).',
+    ...snap(-1)});
+  var formulas=[
+    ['M1','(a+d)(e+h)','a+d='+( a+d)+', e+h='+(e+h),'M1='],
+    ['M2','(c+d)e','c+d='+( c+d)+', e='+e,'M2='],
+    ['M3','a(f-h)','f-h='+( f-h)+', a='+a,'M3='],
+    ['M4','d(g-e)','g-e='+( g-e)+', d='+d,'M4='],
+    ['M5','(a+b)h','a+b='+( a+b)+', h='+h,'M5='],
+    ['M6','(c-a)(e+f)','c-a='+( c-a)+', e+f='+(e+f),'M6='],
+    ['M7','(b-d)(g+h)','b-d='+( b-d)+', g+h='+(g+h),'M7=']
   ];
-  let vals={};
-  for(const s of steps){
-    const card=document.getElementById(s.id);card.classList.add('active');
-    card.querySelector('.p-value').textContent=`= ${s.val}`;
-    vals[s.label]=s.val;
-    log(`${s.label} = ${s.formula} = ${s.val}`);
-    await sleep(600);
-    card.classList.remove('active');
+  var vals=[(a+d)*(e+h),(c+d)*e,a*(f-h),d*(g-e),(a+b)*h,(c-a)*(e+f),(b-d)*(g+h)];
+  for(var i=0;i<7;i++){
+    M[i+1]=vals[i]; mBuilt[i+1]=true;
+    steps.push({title:formulas[i][0]+' = '+formulas[i][1]+' = '+vals[i],
+      what:formulas[i][2]+'. '+formulas[i][3]+vals[i]+'.',
+      why:'Strassen\'s clever combination to reduce multiplications.',
+      ...snap(i+1)});
   }
-  const {P1,P2,P3,P4,P5,P6,P7}=vals;
-  const c11=P5+P4-P2+P6,c12=P1+P2,c21=P3+P4,c22=P5+P1-P3-P7;
-  log(`C11 = P5+P4-P2+P6 = ${P5}+${P4}-${P2}+${P6} = ${c11}`);
-  log(`C12 = P1+P2 = ${P1}+${P2} = ${c12}`);
-  log(`C21 = P3+P4 = ${P3}+${P4} = ${c21}`);
-  log(`C22 = P5+P1-P3-P7 = ${P5}+${P1}-${P3}-${P7} = ${c22}`);
-  document.getElementById('c11').textContent=c11;
-  document.getElementById('c12').textContent=c12;
-  document.getElementById('c21').textContent=c21;
-  document.getElementById('c22').textContent=c22;
-  ['c11','c12','c21','c22'].forEach(id=>{const el=document.getElementById(id);el.classList.add('highlight');});
-  log(`Result C = [[${c11},${c12}],[${c21},${c22}]] ✓`);
+  C[0]=M[1]+M[4]-M[5]+M[7]; cBuilt[0]=true;
+  steps.push({title:'C[0,0] = M1+M4-M5+M7 = '+C[0],
+    what:'C[0][0]='+M[1]+'+'+M[4]+'-'+M[5]+'+'+M[7]+'='+C[0]+'.',
+    why:'Strassen combination formula for top-left element.',
+    ...snap(10)});
+  C[1]=M[3]+M[5]; cBuilt[1]=true;
+  steps.push({title:'C[0,1] = M3+M5 = '+C[1],what:'C[0][1]='+M[3]+'+'+M[5]+'='+C[1]+'.',why:'Top-right element.',...snap(11)});
+  C[2]=M[2]+M[4]; cBuilt[2]=true;
+  steps.push({title:'C[1,0] = M2+M4 = '+C[2],what:'C[1][0]='+M[2]+'+'+M[4]+'='+C[2]+'.',why:'Bottom-left element.',...snap(12)});
+  C[3]=M[1]-M[2]+M[3]+M[6]; cBuilt[3]=true;
+  steps.push({title:'C[1,1] = M1-M2+M3+M6 = '+C[3],what:'C[1][1]='+M[1]+'-'+M[2]+'+'+M[3]+'+'+M[6]+'='+C[3]+'.',why:'Bottom-right element.',...snap(13)});
+  var naive=[a*e+b*g,a*f+b*h,c*e+d*g,c*f+d*h];
+  steps.push({title:'Result C = [['+C[0]+','+C[1]+'],['+C[2]+','+C[3]+']]',
+    what:'C=[['+C.join(',')+']]. Naive result: [['+naive.join(',')+']]. '+(C.join(',')===naive.join(',')? '✓ Correct!':'Values match: '+(C.every(function(v,i){return v===naive[i];})?'Yes':'Error')),
+    why:'7 mults vs 8 (naive). Same result using Strassen\'s algebraic identity.',
+    ...snap(-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function resetMatrices(){
-  document.getElementById('logEntries').innerHTML='';
-  ['c11','c12','c21','c22'].forEach(id=>{const el=document.getElementById(id);el.textContent='?';el.classList.remove('highlight');});
-  for(let i=1;i<=7;i++){const c=document.getElementById('pc'+i);c.classList.remove('active');c.querySelector('.p-value').textContent='—';}
+function renderStep(step){
+  var mc=document.getElementById('matrices'); if(!mc) return;
+  function matHtml(label,data,hi){
+    var h='<div class="mat-box"><div class="mat-label">'+label+'</div><table>';
+    for(var r=0;r<2;r++){h+='<tr>';for(var c=0;c<2;c++){var idx=r*2+c;h+='<td'+(hi===idx?' class="hi"':'')+'>'+data[idx]+'</td>';}h+='</tr>';}
+    return h+'</table></div>';
+  }
+  var mLabels=['','M1','M2','M3','M4','M5','M6','M7'];
+  var mc_h=matHtml('A',step.A,-1)+matHtml('B',step.B,-1);
+  mc_h+='<div class="mat-box"><div class="mat-label">Products M1..M7</div>';
+  for(var i=1;i<=7;i++) mc_h+='<div class="formula-row'+(step.cur===i?' cur':'')+'">'+mLabels[i]+'='+(step.mBuilt[i]?step.M[i]:'?')+'</div>';
+  mc_h+='</div>';
+  mc_h+=matHtml('C (Result)',[step.cBuilt[0]?step.C[0]:'?',step.cBuilt[1]?step.C[1]:'?',step.cBuilt[2]?step.C[2]:'?',step.cBuilt[3]?step.C[3]:'?'],-1);
+  mc.innerHTML=mc_h;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Computing: '+(step.cur>=1&&step.cur<=7?'M'+step.cur:step.cur>=10?'C['+(step.cur-10)+']':'—');
 }
+function rebuild(){
+  var A=document.getElementById('matA').value.split(',').map(function(x){return parseInt(x.trim())||0;}).slice(0,4);
+  var B=document.getElementById('matB').value.split(',').map(function(x){return parseInt(x.trim())||0;}).slice(0,4);
+  while(A.length<4)A.push(0); while(B.length<4)B.push(0);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(A,B),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

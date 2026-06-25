@@ -1,214 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Convex Hull – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Convex Hull (Graham Scan)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-a{color:#457b9d;text-decoration:none}
-a:hover{text-decoration:underline}
-.breadcrumb{font-size:.85rem;color:#5a5a72;padding:1.2rem 2rem;border-bottom:1px solid #e2e0da}
-.breadcrumb span{margin:0 .4rem;color:#c0bdb5}
-.hero{padding:3rem 2rem 2rem;max-width:860px;margin:0 auto}
-.hero .tag{display:inline-block;background:#457b9d22;color:#457b9d;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px;margin-bottom:1rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:.8rem}
-.hero p.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
-.content{max-width:860px;margin:0 auto;padding:0 2rem 2rem}
-.prose p{color:#1a1a2e;margin-bottom:1rem;font-size:1rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.2rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#457b9d}
-.fact .lbl{font-size:.8rem;color:#5a5a72;margin-top:.3rem}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:1.5rem;margin:2rem 0}
-.sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1rem}
-.controls{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
-.btn{background:#457b9d;color:#fff;border:none;border-radius:8px;padding:.5rem 1.2rem;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:background .2s}
-.btn:hover{background:#356080}
-.btn.secondary{background:#fff;color:#457b9d;border:1px solid #457b9d}
-.btn.secondary:hover{background:#457b9d11}
-.btn.active{background:#356080}
-canvas{border:1px solid #e2e0da;border-radius:8px;display:block;cursor:crosshair;background:#fafaf8}
-.log-box{background:#1a1a2e;border-radius:12px;padding:1rem;margin-top:1rem;max-height:160px;overflow-y:auto}
-.log-box p{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8d8ea;margin-bottom:.3rem;line-height:1.4}
-.log-box p.accent{color:#7ec8e3}
-.log-box p.dim{color:#5a7a8a}
-.back{display:inline-block;margin:1rem 0 2rem;color:#457b9d;font-size:.9rem}
-select{padding:.4rem .8rem;border-radius:8px;border:1px solid #e2e0da;font-family:'Inter',sans-serif;font-size:.9rem;color:#1a1a2e;background:#fff}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.stack-vis{font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.3rem .6rem;background:var(--bg);border:1px solid var(--b);border-radius:6px;margin:.3rem 0}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Convex Hull
-</div>
-<div class="hero">
-  <div class="tag">Computational Geometry</div>
-  <h1>Convex Hull</h1>
-  <p class="tagline">Find the smallest convex polygon enclosing a set of points — the rubber-band boundary of a cloud of nails.</p>
-</div>
-<div class="content">
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Convex Hull</span></nav>
+  <span class="tag">Computational Geometry</span>
+  <h1>Convex Hull (Graham Scan)</h1>
+  <p class="tagline">O(n log n) Graham Scan — sort by polar angle, maintain left-turn stack.</p>
   <div class="prose">
-    <p>Imagine stretching a rubber band around a set of nails hammered into a board. When released, it snaps to the outermost nails — that shape is the <strong>convex hull</strong>. Every interior point is "hidden" behind some combination of hull vertices, and no part of the boundary curves inward.</p>
-    <p><strong>Graham Scan</strong> sorts points by polar angle around the lowest point, then sweeps through them maintaining a stack where every turn is a left (counter-clockwise) turn — popping points that create a right turn. <strong>Jarvis March</strong> (gift wrapping) repeatedly picks the most counter-clockwise point from the current position, like wrapping a gift with tape.</p>
-    <p>Real-world uses include collision detection in games, geographic boundary computation, image processing (finding the bounding shape of a region), and robot path planning where you need the outermost safe boundary.</p>
+    <p>Graham Scan: (1) Find the bottommost point P0. (2) Sort all other points by polar angle from P0. (3) Maintain a stack — push each point. While top-3 make a right turn (clockwise), pop the middle. Only left turns (counter-clockwise) remain on the hull. O(n log n) due to sorting.</p>
+    <p>Green = on hull stack. Yellow = currently considering. Red = popped (right turn). Blue dots = sorted input points.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">O(n log n)</div><div class="lbl">Graham Scan time</div></div>
-    <div class="fact"><div class="val">O(nh)</div><div class="lbl">Jarvis March (h = hull size)</div></div>
-    <div class="fact"><div class="val">O(n)</div><div class="lbl">Space complexity</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Method</div><div class="fval">Polar-angle sort + stack</div></div>
+    <div class="fact"><div class="flabel">Key check</div><div class="fval">Cross product sign</div></div>
   </div>
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button class="btn" id="btnCompute">Compute Hull</button>
-      <button class="btn secondary" id="btnClear">Clear</button>
-      <button class="btn secondary" id="btnRandom">Random Points</button>
-      <select id="algoSel"><option value="graham">Graham Scan</option><option value="jarvis">Jarvis March</option></select>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="400" height="320"></canvas>
+      <div class="stack-vis" id="stackVis">Stack: []</div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Run Graham Scan</button>
+      </div>
     </div>
-    <canvas id="cvs" width="700" height="400"></canvas>
-    <div class="log-box" id="log"></div>
   </div>
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-const log=document.getElementById('log');
-let pts=[],hull=[],animStep=0,animTimer=null,steps=[];
-
-function addLog(msg,cls=''){
-  const p=document.createElement('p');
-  if(cls)p.className=cls;
-  p.textContent=msg;
-  log.prepend(p);
-  if(log.children.length>40)log.removeChild(log.lastChild);
-}
-
-cvs.addEventListener('click',e=>{
-  const r=cvs.getBoundingClientRect();
-  pts.push({x:e.clientX-r.left,y:e.clientY-r.top});
-  hull=[];steps=[];
-  draw();
-  addLog(`Added point (${Math.round(pts[pts.length-1].x)}, ${Math.round(pts[pts.length-1].y)})`, 'dim');
-});
-
-function cross(O,A,B){return(A.x-O.x)*(B.y-O.y)-(A.y-O.y)*(B.x-O.x)}
-function dist2(a,b){return(a.x-b.x)**2+(a.y-b.y)**2}
-
-function grahamScan(points){
-  const n=points.length;
-  if(n<3)return points.slice();
-  let start=points.reduce((a,b)=>b.y>a.y||(b.y===a.y&&b.x<a.x)?b:a);
-  const sorted=points.filter(p=>p!==start).sort((a,b)=>{
-    const ca=Math.atan2(a.y-start.y,a.x-start.x);
-    const cb=Math.atan2(b.y-start.y,b.x-start.x);
-    return ca!==cb?ca-cb:dist2(a,start)-dist2(b,start);
+var player=null;
+var FIXED_PTS=[{x:100,y:220},{x:160,y:80},{x:240,y:180},{x:300,y:260},{x:220,y:300},{x:60,y:300},{x:180,y:140},{x:340,y:120},{x:80,y:160},{x:260,y:50}];
+function cross(O,A,B){return (A.x-O.x)*(B.y-O.y)-(A.y-O.y)*(B.x-O.x);}
+function generateSteps(){
+  var steps=[], pts=FIXED_PTS.slice(), hull=[];
+  var pointStates=new Array(pts.length).fill('default');
+  function snap(h){return {pts:pts.slice(),hull:h.slice(),pointStates:pointStates.slice()};}
+  steps.push({title:'Graham Scan: '+pts.length+' points',
+    what:'Find bottommost point, sort by polar angle, sweep with left-turn stack.',
+    why:'Graham Scan: O(n log n). Only points on convex hull remain in stack.',
+    ...snap([])});
+  var pivot=0;
+  for(var i=1;i<pts.length;i++) if(pts[i].y>pts[pivot].y||(pts[i].y===pts[pivot].y&&pts[i].x<pts[pivot].x)) pivot=i;
+  var t=pts[0];pts[0]=pts[pivot];pts[pivot]=t;
+  var p0=pts[0]; pointStates[0]='hull';
+  steps.push({title:'Pivot = ('+p0.x+','+p0.y+') — bottommost point',
+    what:'P0 is the bottommost (lowest y, leftmost if tie). Sort rest by polar angle from P0.',
+    why:'Starting from bottommost guarantees all angles are in [0°,180°].',
+    ...snap([0])});
+  pts=pts.slice(1).sort(function(a,b){
+    var c=cross(p0,a,b);
+    if(c!==0) return c>0?-1:1;
+    return (a.x-p0.x)*(a.x-p0.x)+(a.y-p0.y)*(a.y-p0.y)-(b.x-p0.x)*(b.x-p0.x)-(b.y-p0.y)*(b.y-p0.y);
   });
-  const stack=[start,sorted[0]];
-  const logSteps=[];
-  logSteps.push({msg:`Graham Scan: anchor=(${Math.round(start.x)},${Math.round(start.y)}), sorted ${n-1} points by polar angle.`,hull:[]});
-  for(let i=1;i<sorted.length;i++){
-    while(stack.length>1&&cross(stack[stack.length-2],stack[stack.length-1],sorted[i])<=0){
-      const popped=stack.pop();
-      logSteps.push({msg:`Right-turn detected, popped (${Math.round(popped.x)},${Math.round(popped.y)}).`,hull:stack.slice()});
+  pts.unshift(p0);
+  steps.push({title:'Points sorted by polar angle from P0',
+    what:'Order: '+pts.map(function(p){return '('+p.x+','+p.y+')'}).join(' → ')+'.',
+    why:'Polar angle sort enables single-pass left-turn sweep.',
+    ...snap([])});
+  var stk=[pts[0],pts[1]]; pointStates[0]=pointStates[1]='hull';
+  steps.push({title:'Push pts[0] and pts[1]',
+    what:'Seed stack with first two sorted points.',
+    why:'Need at least 2 points to check turn direction.',
+    ...snap(stk.slice())});
+  for(var i=2;i<pts.length;i++){
+    var p=pts[i]; pointStates[i]='cur';
+    while(stk.length>1&&cross(stk[stk.length-2],stk[stk.length-1],p)<=0){
+      var popped=stk.pop();
+      var pidx=pts.indexOf(popped); if(pidx>=0) pointStates[pidx]='popped';
+      steps.push({title:'Right turn: pop ('+popped.x+','+popped.y+')',
+        what:'cross('+stk[stk.length-1].x+','+stk[stk.length-1].y+' | '+popped.x+','+popped.y+' | '+p.x+','+p.y+')≤0. Pop right turn.',
+        why:'Right or collinear turn means middle point is inside convex hull.',
+        ...snap(stk.slice())});
     }
-    stack.push(sorted[i]);
-    logSteps.push({msg:`Added (${Math.round(sorted[i].x)},${Math.round(sorted[i].y)}) — left-turn, keep.`,hull:stack.slice()});
+    stk.push(p); pointStates[i]='hull';
+    steps.push({title:'Push ('+p.x+','+p.y+'). Stack size='+stk.length,
+      what:'Left turn confirmed. Add ('+p.x+','+p.y+') to hull stack.',
+      why:'Left turns (CCW) stay on the convex hull.',
+      ...snap(stk.slice())});
   }
-  return{hull:stack,steps:logSteps};
+  steps.push({title:'Convex hull has '+stk.length+' points',
+    what:'Hull: '+stk.map(function(p){return '('+p.x+','+p.y+')'}).join(' → ')+'.',
+    why:'All right turns removed. Remaining stack is the convex hull.',
+    ...snap(stk.slice())});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function jarvisMarch(points){
-  const n=points.length;
-  if(n<3)return{hull:points.slice(),steps:[]};
-  let start=points.reduce((a,b)=>b.x<a.x?b:a);
-  const result=[],logSteps=[];
-  let cur=start;
-  do{
-    result.push(cur);
-    let next=points[0];
-    for(let i=1;i<n;i++){
-      const c=cross(cur,next,points[i]);
-      if(next===cur||c<0||(c===0&&dist2(points[i],cur)>dist2(next,cur)))next=points[i];
-    }
-    logSteps.push({msg:`Jarvis: from (${Math.round(cur.x)},${Math.round(cur.y)}) → most CCW = (${Math.round(next.x)},${Math.round(next.y)}).`,hull:result.slice()});
-    cur=next;
-  }while(cur!==start&&result.length<=n);
-  return{hull:result,steps:logSteps};
-}
-
-function draw(hullOverride){
-  ctx.clearRect(0,0,700,400);
-  const h=hullOverride||hull;
-  // Draw hull polygon
-  if(h.length>2){
-    ctx.beginPath();
-    ctx.moveTo(h[0].x,h[0].y);
-    h.forEach(p=>ctx.lineTo(p.x,p.y));
-    ctx.closePath();
-    ctx.fillStyle='#457b9d18';
-    ctx.fill();
-    ctx.strokeStyle='#457b9d';
-    ctx.lineWidth=2;
-    ctx.stroke();
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||400, H=320, DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  if(step.hull&&step.hull.length>2){
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.fillStyle='rgba(123,79,212,0.08)';
+    ctx.beginPath();ctx.moveTo(step.hull[0].x,step.hull[0].y);
+    for(var i=1;i<step.hull.length;i++) ctx.lineTo(step.hull[i].x,step.hull[i].y);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
   }
-  // Draw points
-  const hullSet=new Set(h);
-  pts.forEach(p=>{
-    const onHull=h.some(hp=>hp===p);
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,onHull?7:5,0,Math.PI*2);
-    ctx.fillStyle=onHull?'#457b9d':'#5a5a72';
-    ctx.fill();
-    ctx.strokeStyle='#fff';
-    ctx.lineWidth=1.5;
-    ctx.stroke();
+  step.pts.forEach(function(p,i){
+    var s=step.pointStates[i];
+    ctx.fillStyle=s==='hull'?'#a8e6a3':s==='cur'?'#fff176':s==='popped'?'#fca5a5':'#93c5fd';
+    ctx.strokeStyle='#333';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(p.x,p.y,7,0,2*Math.PI);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='10px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(i,p.x,p.y-10);
   });
+  var sv=document.getElementById('stackVis');
+  if(sv) sv.textContent='Stack: ['+step.hull.map(function(p){return '('+p.x+','+p.y+')'}).join(', ')+']';
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Stack size: '+step.hull.length+'  |  Points processed: '+step.pts.filter(function(p,i){return step.pointStates[i]!=='default';}).length+'/'+step.pts.length;
 }
-
-function animateSteps(){
-  if(animStep>=steps.length){
-    hull=steps[steps.length-1]?.hull||hull;
-    draw();
-    addLog('Hull complete.','accent');
-    return;
-  }
-  const s=steps[animStep];
-  addLog(s.msg);
-  draw(s.hull);
-  animStep++;
-  animTimer=setTimeout(animateSteps,420);
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-document.getElementById('btnCompute').onclick=()=>{
-  if(pts.length<3){addLog('Need at least 3 points!','accent');return;}
-  clearTimeout(animTimer);
-  animStep=0;
-  const algo=document.getElementById('algoSel').value;
-  const res=algo==='graham'?grahamScan(pts):jarvisMarch(pts);
-  hull=res.hull;steps=res.steps;
-  addLog(`Running ${algo==='graham'?'Graham Scan':'Jarvis March'} on ${pts.length} points...`,'accent');
-  animateSteps();
-};
-
-document.getElementById('btnClear').onclick=()=>{
-  pts=[];hull=[];steps=[];clearTimeout(animTimer);
-  ctx.clearRect(0,0,700,400);
-  addLog('Canvas cleared.','dim');
-};
-
-document.getElementById('btnRandom').onclick=()=>{
-  pts=[];hull=[];
-  for(let i=0;i<15;i++)pts.push({x:40+Math.random()*620,y:40+Math.random()*320});
-  draw();
-  addLog(`Generated 15 random points.`,'dim');
-};
-
-draw();
+rebuild();
 </script>
 </body>
 </html>

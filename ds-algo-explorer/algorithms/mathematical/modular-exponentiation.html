@@ -3,190 +3,135 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Modular Exponentiation – DS-Algo Explorer</title>
+<title>Modular Exponentiation</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
-.breadcrumb span{margin:0 .4rem}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
-.hero-inner{max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
-.hero p.tagline{color:var(--muted);font-size:1.05rem}
-.content{max-width:860px;margin:0 auto;padding:2rem}
-.explain p{margin-bottom:1rem;color:#333}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
-.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
-label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
-input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:110px}
-input[type=number]:focus{outline:none;border-color:var(--accent)}
-.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
-.btn:hover{opacity:.85}
-.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
-.binary-row{display:flex;gap:4px;margin:.7rem 0;flex-wrap:wrap}
-.bit{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;border:2px solid var(--border);background:var(--bg)}
-.bit.one{background:var(--accent);color:#fff;border-color:var(--accent)}
-.bit.zero{background:var(--bg);color:var(--muted)}
-.bit.cur{box-shadow:0 0 0 3px #e9c46a}
-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.83rem;margin:.8rem 0}
-th{background:var(--bg);padding:.45rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
-td{padding:.4rem .6rem;border-bottom:1px solid #f0eeea;transition:background .3s}
-tr.active td{background:#fff3e0}
-tr.result-row td{background:#fde8e2;font-weight:700;color:var(--accent)}
-#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
-#log div{margin-bottom:.3rem}
-#log .hi{color:#79c0ff}#log .ok{color:#56d364}
-.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.table-wrap{overflow-x:auto;margin:.6rem 0}
+table.mod{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+table.mod td,table.mod th{border:1px solid var(--b);padding:.28rem .6rem;text-align:right}
+table.mod th{background:var(--bg);font-weight:700;color:var(--m);text-align:left}
+table.mod tr.cur td{background:#fff176}
+table.mod tr.mul td{background:#c3b1e1}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:90px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Modular Exponentiation
-</nav>
-<div class="hero">
-  <div class="hero-inner">
-    <span class="tag">Mathematical</span>
-    <h1>Modular Exponentiation</h1>
-    <p class="tagline">Compute base^exp mod m in O(log exp) using the square-and-multiply technique.</p>
-  </div>
-</div>
-<div class="content">
-  <div class="explain">
-    <p>Naive computation of 2^1000 mod m would require 999 multiplications and huge intermediate numbers. Modular exponentiation solves this by exploiting the binary representation of the exponent: instead of multiplying 1000 times, we square and multiply at most 20 times (log₂ 1000 ≈ 10).</p>
-    <p>The algorithm reads the binary digits of the exponent from most significant to least significant. For each bit: always square the running value; if the bit is 1, also multiply by base. All operations reduce mod m, keeping numbers bounded.</p>
-    <p>This is the core operation of RSA encryption/decryption, Diffie-Hellman key exchange, and primality testing. Without it, public-key cryptography would be computationally infeasible.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Modular Exponentiation</span></nav>
+  <span class="tag">Mathematical</span>
+  <h1>Modular Exponentiation</h1>
+  <p class="tagline">Compute base^exp mod m in O(log exp) — the core of RSA and Diffie-Hellman.</p>
+  <div class="prose">
+    <p>Fast modular exponentiation uses repeated squaring: if the exponent bit is 0, just square; if 1, square and multiply by base. Taking mod at each step keeps numbers small. This replaces O(exp) multiplications with O(log exp).</p>
+    <p>The table shows each bit of the exponent, the running square, and the accumulated result (multiplied in only when bit=1). Yellow = current step, purple = multiplied into result.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">O(log exp)</div><div class="lbl">Time complexity</div></div>
-    <div class="fact"><div class="val">O(1)</div><div class="lbl">Space (iterative)</div></div>
-    <div class="fact"><div class="val">RSA</div><div class="lbl">Core application</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(log exp)</div></div>
+    <div class="fact"><div class="flabel">Multiplications</div><div class="fval">~2 log₂ exp</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">RSA, Fermat test</div></div>
+    <div class="fact"><div class="flabel">Key trick</div><div class="fval">Repeated squaring</div></div>
   </div>
-
-  <div class="panel">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div><label>Base</label><input type="number" id="baseIn" value="2" min="0"/></div>
-      <div><label>Exponent</label><input type="number" id="expIn" value="13" min="0"/></div>
-      <div><label>Modulus</label><input type="number" id="modIn" value="1000" min="1"/></div>
-      <button class="btn" onclick="runModExp()" style="align-self:flex-end">Compute</button>
-      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="table-wrap"><div id="modTable"></div></div>
+      <div class="info-bar" id="infoBar">Modular exponentiation table above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>base:</label><input type="number" id="base" value="3" min="1" max="999"/>
+        <label>exp:</label><input type="number" id="exp" value="13" min="0" max="255"/>
+        <label>mod:</label><input type="number" id="mod" value="7" min="2" max="9999"/>
+        <button class="btn btn-p" onclick="rebuild()">Compute</button>
+      </div>
     </div>
-    <div style="font-size:.8rem;color:var(--muted);margin:.4rem 0">Binary representation of exponent:</div>
-    <div id="binaryViz" class="binary-row"></div>
-    <table>
-      <thead><tr><th>Bit pos</th><th>Bit</th><th>Square (base²)</th><th>Result after multiply</th><th>Running result</th></tr></thead>
-      <tbody id="stepTable"></tbody>
-    </table>
-    <div id="answerBox" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);margin:.5rem 0"></div>
   </div>
-
-  <div class="panel">
-    <h2>Step Log</h2>
-    <div id="log"><div class="hi">// Enter base, exponent, modulus and click Compute</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function log(msg,cls=''){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  if(cls)div.className=cls;
-  div.textContent=msg;
-  d.appendChild(div);
-  d.scrollTop=d.scrollHeight;
-}
-
-function resetSim(){
-  document.getElementById('binaryViz').innerHTML='';
-  document.getElementById('stepTable').innerHTML='';
-  document.getElementById('answerBox').textContent='';
-  document.getElementById('log').innerHTML='<div class="hi">// Enter values and click Compute</div>';
-}
-
-function runModExp(){
-  resetSim();
-  const base=parseInt(document.getElementById('baseIn').value)||2;
-  const exp=parseInt(document.getElementById('expIn').value)||13;
-  const mod=parseInt(document.getElementById('modIn').value)||1000;
-  log('=== Modular Exponentiation ===','hi');
-  log(`${base}^${exp} mod ${mod}`);
-
-  const bits=exp.toString(2).split('');
-  log(`${exp} in binary = ${bits.join('')} (${bits.length} bits)`);
-
-  // Render binary
-  const bviz=document.getElementById('binaryViz');
-  const bitEls=bits.map((b,i)=>{
-    const el=document.createElement('div');
-    el.className=`bit ${b==='1'?'one':'zero'}`;
-    el.id=`bit-${i}`;el.textContent=b;
-    bviz.appendChild(el);return el;
-  });
-
-  // Compute steps
-  const steps=[];
-  let result=1;
-  let base_mod=base%mod;
-  // Right-to-left binary method (cleaner for display)
-  let e=exp,b=base%mod,res=1;
-  const bitsRL=[];
-  let tmp=exp;
-  while(tmp>0){bitsRL.unshift(tmp&1);tmp>>=1;}
-  // Use left-to-right (MSB first) for display
-  let sq=base%mod,r=1;
-  const displaySteps=[];
-  // Recompute using square-and-multiply (MSB first)
-  for(let i=0;i<bits.length;i++){
-    const prevR=r;
-    r=(BigInt(r)*BigInt(r))%BigInt(mod);
-    const sqVal=Number(r);
-    let mulVal=Number(r);
-    if(bits[i]==='1'){
-      r=(r*BigInt(base))%BigInt(mod);
-      mulVal=Number(r);
+var player=null;
+function generateSteps(base,exp,mod){
+  var steps=[], rows=[], result=1, sq=base%mod, curRow=-1;
+  function snap(){return {rows:rows.map(function(r){return Object.assign({},r);}),curRow:curRow,result:result};}
+  steps.push({title:''+base+'^'+exp+' mod '+mod,
+    what:'Binary of exponent '+exp+' = '+exp.toString(2)+'. Process from LSB.',
+    why:'Repeated squaring: each bit halves remaining work.',
+    ...snap()});
+  var e=exp;
+  while(e>0){
+    var bit=e&1;
+    var newResult=bit?(result*sq)%mod:result;
+    var newSq=(sq*sq)%mod;
+    rows.push({bit:bit,sq:sq,result:newResult,e:e});
+    curRow=rows.length-1;
+    if(bit){
+      steps.push({title:'Bit=1: result = result × '+sq+' mod '+mod+' = '+newResult,
+        what:'Exponent bit is 1. Multiply result by current square ('+sq+'). '+result+' × '+sq+' mod '+mod+' = '+newResult+'.',
+        why:'Bit=1 means this power of 2 is included in the exponent.',
+        ...snap()});
+    } else {
+      steps.push({title:'Bit=0: skip multiply (result stays '+result+')',
+        what:'Exponent bit is 0. Just square base. result unchanged = '+result+'.',
+        why:'Bit=0 means this power of 2 is not included.',
+        ...snap()});
     }
-    displaySteps.push({i,bit:bits[i],sqVal,mulVal,r:Number(r)});
+    result=newResult; sq=newSq; e>>=1;
   }
-
-  const tbody=document.getElementById('stepTable');
-  displaySteps.forEach((s,idx)=>{
-    const tr=document.createElement('tr');
-    tr.id=`sr-${idx}`;
-    const multiplied=s.bit==='1'?`×${base} mod ${mod} = ${s.mulVal}`:'(skip, bit=0)';
-    tr.innerHTML=`<td>${s.i} (MSB+${s.i})</td><td>${s.bit}</td><td>${s.sqVal}</td><td>${multiplied}</td><td>${s.r}</td>`;
-    tbody.appendChild(tr);
-  });
-  const finalR=displaySteps.length>0?displaySteps[displaySteps.length-1].r:(base===0?0:1);
-  const rtr=document.createElement('tr');rtr.className='result-row';
-  rtr.innerHTML=`<td colspan="4">Final Answer</td><td>${finalR}</td>`;
-  tbody.appendChild(rtr);
-  document.getElementById('answerBox').textContent=`${base}^${exp} mod ${mod} = ${finalR}`;
-
-  // Animate
-  displaySteps.forEach((s,idx)=>{
-    setTimeout(()=>{
-      document.querySelectorAll('tr.active').forEach(r=>r.classList.remove('active'));
-      bitEls.forEach(el=>el.classList.remove('cur'));
-      bitEls[s.i]&&bitEls[s.i].classList.add('cur');
-      const r=document.getElementById(`sr-${idx}`);
-      if(r) r.classList.add('active');
-      log(`Bit ${s.i} (${s.bit}): sq=${s.sqVal}${s.bit==='1'?`, ×${base}=${s.mulVal}`:''} → result=${s.r}`);
-    },idx*500);
-  });
-  setTimeout(()=>log(`Answer: ${base}^${exp} mod ${mod} = ${finalR}`,'ok'),displaySteps.length*500+100);
+  steps.push({title:''+base+'^'+exp+' mod '+mod+' = '+result,
+    what:'Final result = '+result+'. Verify: '+base+'^'+exp+'='+Math.round(Math.pow(base,exp))+', mod '+mod+' = '+(Math.round(Math.pow(base,exp))%mod)+'.',
+    why:'All significant bits processed. O(log '+exp+') = '+Math.ceil(Math.log2(exp||1))+' squarings.',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
+function renderStep(step){
+  var tb=document.getElementById('modTable'); if(!tb) return;
+  var html='<table class="mod"><tr><th>#</th><th>exp bit</th><th>square</th><th>result</th></tr>';
+  step.rows.forEach(function(r,i){
+    var isCur=i===step.curRow;
+    var isMul=r.bit===1;
+    html+='<tr class="'+(isCur?'cur':isMul?'mul':'')+'"><td>'+(i+1)+'</td><td>'+r.bit+'</td><td>'+r.sq+'</td><td>'+r.result+'</td></tr>';
+  });
+  html+='</table>'; tb.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Running result: '+step.result+'  |  Steps so far: '+step.rows.length;
+}
+function rebuild(){
+  var b=parseInt(document.getElementById('base').value)||3;
+  var e=parseInt(document.getElementById('exp').value)||13;
+  var m=parseInt(document.getElementById('mod').value)||7;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(b,e,m),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

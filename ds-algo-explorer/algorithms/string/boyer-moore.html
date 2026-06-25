@@ -1,188 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Boyer-Moore Algorithm – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Boyer-Moore – String Matching</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#2a9d8f;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
-.breadcrumb{font-size:.85rem;color:#5a5a72;margin-bottom:2rem}.breadcrumb span{margin:0 .4rem}
-.cat-tag{display:inline-block;background:#2a9d8f;color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .75rem;border-radius:20px;margin-bottom:.9rem}
-h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:.6rem}
-.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
-.prose p{line-height:1.75;margin-bottom:1rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:1.2rem;text-align:center}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:#2a9d8f;display:block;margin-bottom:.3rem}
-.fact-lbl{font-size:.8rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.06em}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.8rem;margin-bottom:1.5rem}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1.2rem}
-.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin-bottom:1.2rem}
-label{font-size:.85rem;font-weight:500;color:#5a5a72;display:block;margin-bottom:.3rem}
-input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.9rem;border:1px solid #e2e0da;border-radius:7px;padding:.5rem .8rem;width:240px;background:#f7f6f2;color:#1a1a2e;outline:none}
-input[type=text]:focus{border-color:#2a9d8f}
-button{background:#2a9d8f;color:#fff;border:none;border-radius:7px;padding:.55rem 1.3rem;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s}
-button:hover{background:#21867a}
-button.sec{background:#f7f6f2;color:#1a1a2e;border:1px solid #e2e0da}button.sec:hover{background:#e2e0da}
-.char-row{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:.6rem;align-items:center}
-.char-label{font-size:.75rem;color:#5a5a72;font-family:'JetBrains Mono',monospace;width:70px;flex-shrink:0}
-.ch{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:2px solid #e2e0da;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;background:#f7f6f2;transition:background .3s,border-color .3s}
-.ch.active{background:#fff3cd;border-color:#ffc107}
-.ch.match{background:#d4edda;border-color:#28a745;color:#155724}
-.ch.mismatch{background:#f8d7da;border-color:#dc3545}
-.heuristic-box{background:#f7f6f2;border:1px solid #e2e0da;border-radius:8px;padding:.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:.8rem 0}
-.heuristic-box .hl{color:#2a9d8f;font-weight:600}
-.bc-table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.8rem;margin-top:.6rem}
-.bc-table th,.bc-table td{border:1px solid #e2e0da;padding:.35rem .55rem;text-align:center}
-.bc-table th{background:#f7f6f2;color:#5a5a72}
-.bc-table td.highlight{color:#2a9d8f;font-weight:600}
-#log{background:#1a1a2e;color:#e2e0da;font-family:'JetBrains Mono',monospace;font-size:.8rem;border-radius:8px;padding:1rem;max-height:180px;overflow-y:auto;line-height:1.7}
-#log .lg-ok{color:#2a9d8f}#log .lg-info{color:#ffc107}#log .lg-err{color:#ff6b6b}
-.back-link{display:inline-block;margin-top:2rem;color:#2a9d8f;font-weight:500}
-@media(max-width:600px){.facts{grid-template-columns:1fr 1fr}h1{font-size:1.9rem}input[type=text]{width:100%}}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.str-vis{font-family:'JetBrains Mono',monospace;font-size:.9rem;margin:.5rem 0;overflow-x:auto;white-space:nowrap}
+.str-vis .ch{display:inline-flex;flex-direction:column;align-items:center;width:28px;margin:0 1px}
+.str-vis .ch .c{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--b);border-radius:5px;font-weight:700;background:var(--bg)}
+.str-vis .ch .c.win{background:#c3b1e1}.str-vis .ch .c.cur{background:#fff176;border-color:#f59e0b}
+.str-vis .ch .c.mismatch{background:#fca5a5}.str-vis .ch .c.match{background:#a8e6a3;outline:2px solid #16a34a}
+.str-vis .ch .idx{font-size:.58rem;color:#888;margin-top:2px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+input[type=text].w-sm{width:140px} input[type=text].w-lg{width:240px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span><a href="../index.html">Algorithms</a><span>›</span>Boyer-Moore
-  </nav>
-  <div class="hero" style="margin-bottom:2.5rem">
-    <span class="cat-tag">String Algorithms</span>
-    <h1>Boyer-Moore Algorithm</h1>
-    <p class="tagline">Sub-linear pattern matching in practice — match right-to-left and use two heuristics to skip large chunks of text.</p>
-  </div>
-  <div class="prose" style="margin-bottom:2rem">
-    <p>Boyer-Moore is the algorithm most text editors use for "Find". It matches the pattern <strong>right-to-left</strong> and, on mismatch, applies two heuristics to skip as many text positions as possible: the <strong>Bad Character Rule</strong> (shift so the bad char aligns with its last occurrence in the pattern) and the <strong>Good Suffix Rule</strong> (shift so a matching suffix aligns with its next occurrence).</p>
-    <p>Imagine reading a name badge right-to-left. If the last character doesn't match what you expected, you immediately know you can slide the badge sideways by a large amount. This skipping is why Boyer-Moore is sub-linear in practice — it often reads only a fraction of the text characters.</p>
-    <p>Used in grep, text editors, antivirus scanners, and database query optimisers. For large alphabets (English text), the bad-character heuristic alone gives near O(n/m) average performance.</p>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Boyer-Moore</span></nav>
+  <span class="tag">String Algorithms</span>
+  <h1>Boyer-Moore (Bad Character)</h1>
+  <p class="tagline">Sub-linear string search using bad character heuristic.</p>
+  <div class="prose">
+    <p>Boyer-Moore compares the pattern right-to-left within each window. On a mismatch, the Bad Character heuristic skips the window: if the mismatched text character appears in the pattern, shift to align it; if it doesn't appear at all, skip the entire window. In practice this is sub-linear — often O(n/m) for large alphabets.</p>
+    <p>This implementation uses the Bad Character rule only (simplified version). Pattern scans right-to-left per window; window advances left-to-right.</p>
   </div>
   <div class="facts">
-    <div class="fact"><span class="fact-val">O(n/m)</span><span class="fact-lbl">Best/Avg Case</span></div>
-    <div class="fact"><span class="fact-val">O(nm)</span><span class="fact-lbl">Worst Case</span></div>
-    <div class="fact"><span class="fact-val">1977</span><span class="fact-lbl">Boyer & Moore</span></div>
+    <div class="fact"><div class="flabel">Best case</div><div class="fval">O(n/m)</div></div>
+    <div class="fact"><div class="flabel">Worst case</div><div class="fval">O(nm)</div></div>
+    <div class="fact"><div class="flabel">Direction</div><div class="fval">Right to left</div></div>
+    <div class="fact"><div class="flabel">Heuristic</div><div class="fval">Bad character</div></div>
   </div>
-
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div><label>Text</label><input type="text" id="inp-text" value="ABCABCDABABCDABCDABDE"></div>
-      <div><label>Pattern</label><input type="text" id="inp-pat" value="ABCDABD"></div>
-      <button id="btn-search">Search</button>
-      <button class="sec" id="btn-reset">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <p style="font-size:.78rem;color:var(--m);margin-bottom:.3rem">Text:</p>
+      <div id="textVis" class="str-vis"></div>
+      <p style="font-size:.78rem;color:var(--m);margin:.5rem 0 .3rem">Pattern (scanned right-to-left):</p>
+      <div id="patVis" class="str-vis"></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Text:</label><input type="text" class="w-lg" id="txt" value="ABCABABCABC"/>
+        <label>Pattern:</label><input type="text" class="w-sm" id="pat" value="ABABC"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
+      </div>
     </div>
-    <div class="char-row"><span class="char-label">Text:</span><div id="text-row" class="char-row"></div></div>
-    <div class="char-row"><span class="char-label">Pattern:</span><div id="pat-row" class="char-row"></div></div>
-    <div class="heuristic-box" id="hbox">Bad Character Table will appear here…</div>
-    <div id="bc-wrap"></div>
   </div>
-
-  <div class="card">
-    <h2>Step Log</h2>
-    <div id="log"><span class="lg-info">Press Search to begin…</span></div>
-  </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function logLine(msg,cls=''){const s=document.createElement('div');if(cls)s.className=cls;s.textContent=msg;const l=document.getElementById('log');l.appendChild(s);l.scrollTop=l.scrollHeight;}
-function clearLog(){document.getElementById('log').innerHTML='';}
-
-function badCharTable(pat){
-  const bc={};
-  for(let i=0;i<pat.length;i++) bc[pat[i]]=i;
+var player=null;
+function buildBadChar(pat){
+  var bc={};
+  for(var i=0;i<pat.length;i++) bc[pat[i]]=i;
   return bc;
 }
-
-function renderChars(id,str){
-  const c=document.getElementById(id);c.innerHTML='';
-  for(let i=0;i<str.length;i++){
-    const sp=document.createElement('span');sp.className='ch';sp.textContent=str[i];sp.id=id+'-'+i;c.appendChild(sp);
+function generateSteps(text,pat){
+  var steps=[],n=text.length,m=pat.length;
+  var bc=buildBadChar(pat);
+  var matches=[],tState=new Array(n).fill(''),pState=new Array(m).fill('');
+  function snap(s,j,skip){
+    return {tState:tState.slice(),pState:pState.slice(),s:s,j:j,skip:skip,matches:matches.slice()};
   }
-}
-function resetClasses(id,n){for(let i=0;i<n;i++){const e=document.getElementById(id+'-'+i);if(e)e.className='ch';}}
-
-function renderBCTable(bc,pat){
-  const wrap=document.getElementById('bc-wrap');wrap.innerHTML='';
-  const tbl=document.createElement('table');tbl.className='bc-table';
-  const h=document.createElement('tr');
-  Object.keys(bc).concat(['*']).forEach(ch=>{const th=document.createElement('th');th.textContent=ch;h.appendChild(th);});
-  const r=document.createElement('tr');
-  Object.keys(bc).forEach(ch=>{const td=document.createElement('td');td.textContent=bc[ch];td.className='highlight';r.appendChild(td);});
-  const td2=document.createElement('td');td2.textContent='-1';r.appendChild(td2);
-  const thead=document.createElement('thead');thead.appendChild(h);
-  const tbody=document.createElement('tbody');tbody.appendChild(r);
-  tbl.appendChild(thead);tbl.appendChild(tbody);wrap.appendChild(tbl);
-}
-
-let timer=null;
-document.getElementById('btn-reset').onclick=()=>{
-  if(timer)clearTimeout(timer);
-  const t=document.getElementById('inp-text').value;
-  const p=document.getElementById('inp-pat').value;
-  renderChars('text-row',t);renderChars('pat-row',p);
-  document.getElementById('hbox').textContent='Bad Character Table will appear here…';
-  document.getElementById('bc-wrap').innerHTML='';
-  clearLog();logLine('Reset.','lg-info');
-};
-
-document.getElementById('btn-search').onclick=()=>{
-  if(timer)clearTimeout(timer);
-  const t=document.getElementById('inp-text').value.trim();
-  const p=document.getElementById('inp-pat').value.trim();
-  if(!t||!p||p.length>t.length){logLine('Invalid input.','lg-err');return;}
-  renderChars('text-row',t);renderChars('pat-row',p);
-  clearLog();
-  const n=t.length,m=p.length;
-  const bc=badCharTable(p);
-  renderBCTable(bc,p);
-  document.getElementById('hbox').innerHTML='<span class="hl">Bad Character Rule:</span> On mismatch at text[i] with pattern[j], shift = max(1, j - bc[text[i]])';
-  logLine(`Pattern="${p}", BC table built.`,'lg-info');
-
-  // Collect steps
-  const steps=[];
-  let s=0;
+  steps.push({title:'Boyer-Moore Bad Character: "'+pat+'" in "'+text+'"',
+    what:'Bad char table: '+JSON.stringify(bc)+'. Scan right-to-left per window.',
+    why:'Right-to-left scan lets us skip more characters on mismatch.',
+    ...snap(0,m-1,0)});
+  var s=0;
   while(s<=n-m){
-    let j=m-1;
-    while(j>=0 && p[j]===t[s+j]) j--;
+    for(var k=s;k<s+m;k++) tState[k]='win';
+    var j=m-1;
+    while(j>=0&&pat[j]===text[s+j]) j--;
     if(j<0){
-      steps.push({type:'found',s,j,shift:0});
-      s+=(s+m<n)?(m - (bc[t[s+m]]??-1)):1;
-    } else {
-      const badChar=t[s+j];
-      const shift=Math.max(1, j-(bc[badChar]??-1));
-      steps.push({type:'mismatch',s,j,badChar,shift});
+      for(var k=s;k<s+m;k++) tState[k]='match';
+      matches.push(s);
+      steps.push({title:'MATCH at index '+s,
+        what:'All characters matched at window ['+s+'..'+(s+m-1)+'].',
+        why:'Complete pattern found.',
+        ...snap(s,j,0)});
+      var shift=bc[text[s+m]]!==undefined?m-bc[text[s+m]]:1;
       s+=shift;
-    }
-  }
-
-  let si=0;
-  function next(){
-    if(si>=steps.length){logLine('Search complete.','lg-ok');return;}
-    resetClasses('text-row',n);resetClasses('pat-row',m);
-    const st=steps[si++];
-    if(st.type==='found'){
-      for(let k=st.s;k<st.s+m;k++){const e=document.getElementById('text-row-'+k);if(e)e.className='ch match';}
-      for(let k=0;k<m;k++){const e=document.getElementById('pat-row-'+k);if(e)e.className='ch match';}
-      logLine(`★ Match at index ${st.s}! Full pattern matched right-to-left.`,'lg-ok');
     } else {
-      const ti=st.s+st.j;
-      const e=document.getElementById('text-row-'+ti);if(e)e.className='ch mismatch';
-      const ep=document.getElementById('pat-row-'+st.j);if(ep)ep.className='ch mismatch';
-      for(let k=st.j+1;k<m;k++){
-        const et=document.getElementById('text-row-'+(st.s+k));if(et)et.className='ch match';
-        const ep2=document.getElementById('pat-row-'+k);if(ep2)ep2.className='ch match';
-      }
-      logLine(`Mismatch at j=${st.j}: text['${st.badChar}'] vs pattern['${p[st.j]}']. Bad char '${st.badChar}' → shift ${st.shift}. Skip.`,'lg-info');
+      var tc=text[s+j], bcShift=bc[tc]!==undefined?j-bc[tc]:j+1;
+      bcShift=Math.max(1,bcShift);
+      tState[s+j]='mismatch';
+      steps.push({title:'Mismatch at text['+(s+j)+']="'+tc+'" vs pat['+j+']="'+pat[j]+'"',
+        what:'Bad char "'+tc+'" last seen in pattern at index '+(bc[tc]!==undefined?bc[tc]:'(none)')+'. Shift: '+bcShift+'.',
+        why:bc[tc]!==undefined?'Align "'+tc+'" in pattern with text.':'Char not in pattern — skip entire window.',
+        ...snap(s,j,bcShift)});
+      for(var k=s;k<s+m;k++) if(tState[k]==='win') tState[k]='';
+      s+=bcShift;
     }
-    timer=setTimeout(next,700);
   }
-  next();
-};
-document.getElementById('btn-reset').click();
+  steps.push({title:'Boyer-Moore done: '+matches.length+' match'+(matches.length!==1?'es':''),
+    what:'Matches at: ['+matches.join(', ')+'].',
+    why:'Bad character skips often avoid most comparisons.',
+    ...snap(s,0,0)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
+}
+function renderStep(step,text,pat){
+  var tv=document.getElementById('textVis');
+  if(tv){
+    var h='';
+    text.split('').forEach(function(c,i){
+      var cl=step.tState[i]==='match'?'match':step.tState[i]==='mismatch'?'mismatch':step.tState[i]==='win'?'win':'';
+      h+='<span class="ch"><span class="c '+cl+'">'+c+'</span><span class="idx">'+i+'</span></span>';
+    });
+    tv.innerHTML=h;
+  }
+  var pv=document.getElementById('patVis');
+  if(pv){
+    var h='';
+    pat.split('').forEach(function(c,i){
+      h+='<span class="ch"><span class="c '+(i===step.j?'cur':'')+'">'+c+'</span><span class="idx">'+i+'</span></span>';
+    });
+    pv.innerHTML=h;
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Window start: '+step.s+'  |  Comparing pat['+step.j+']  |  Shift: '+step.skip+'  |  Matches: ['+step.matches.join(',')+']';
+}
+function rebuild(){
+  var text=document.getElementById('txt').value.toUpperCase().slice(0,35);
+  var pat=document.getElementById('pat').value.toUpperCase().slice(0,12);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(text,pat),function(s){renderStep(s,text,pat);},'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

@@ -3,201 +3,122 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Fermat's Little Theorem – DS-Algo Explorer</title>
+<title>Fermat's Little Theorem</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e76f51}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
-.breadcrumb span{margin:0 .4rem}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
-.hero-inner{max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
-.hero p.tagline{color:var(--muted);font-size:1.05rem}
-.content{max-width:860px;margin:0 auto;padding:2rem}
-.explain p{margin-bottom:1rem;color:#333}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
-.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
-label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
-input[type=number]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:110px}
-input[type=number]:focus{outline:none;border-color:var(--accent)}
-.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
-.btn:hover{opacity:.85}
-.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;margin:.6rem 0}
-th{background:var(--bg);padding:.4rem .6rem;text-align:left;font-size:.75rem;color:var(--muted);border-bottom:1.5px solid var(--border)}
-td{padding:.38rem .6rem;border-bottom:1px solid #f0eeea;transition:background .3s}
-tr.active td{background:#fff3e0}
-.theorem-box{background:#fde8e2;border:2px solid var(--accent);border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.95rem;margin:.6rem 0}
-.theorem-box .big{font-size:1.2rem;font-weight:700;color:var(--accent)}
-.inv-box{background:#e8f5e9;border:2px solid #4caf50;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.95rem;margin:.6rem 0}
-.inv-box .big{font-size:1.1rem;font-weight:700;color:#2e7d32}
-#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
-#log div{margin-bottom:.3rem}
-#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
-.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.power-row{font-family:'JetBrains Mono',monospace;font-size:.78rem;display:flex;flex-wrap:wrap;gap:4px;margin:.5rem 0}
+.pow-cell{padding:.2rem .4rem;border-radius:4px;border:1px solid var(--b);background:var(--bg)}
+.pow-cell.cur{background:#fff176;border-color:#f59e0b}
+.pow-cell.one{background:#a8e6a3;border-color:#16a34a}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:90px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Fermat's Little Theorem
-</nav>
-<div class="hero">
-  <div class="hero-inner">
-    <span class="tag">Mathematical</span>
-    <h1>Fermat's Little Theorem</h1>
-    <p class="tagline">If p is prime and gcd(a,p)=1, then a^(p-1) ≡ 1 (mod p) — and a^(p-2) is a's modular inverse.</p>
-  </div>
-</div>
-<div class="content">
-  <div class="explain">
-    <p>Fermat's Little Theorem (1640) states that if p is prime and a is not divisible by p, then a^(p-1) ≡ 1 (mod p). Think of it as: the multiplicative group modulo a prime p has order p-1, so by Lagrange's theorem, any element raised to p-1 gives the identity.</p>
-    <p>A powerful corollary: a^(p-2) ≡ a⁻¹ (mod p). Since a × a^(p-2) = a^(p-1) ≡ 1 (mod p), we can compute modular inverses without the extended Euclidean algorithm — just by fast exponentiation. This requires p to be prime.</p>
-    <p>Fermat's theorem is the basis of Fermat primality tests, ElGamal encryption, and is used in competitive programming to compute modular inverse in O(log p) when the modulus is prime (e.g., mod 10⁹+7).</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Fermat's Little Theorem</span></nav>
+  <span class="tag">Mathematical</span>
+  <h1>Fermat's Little Theorem</h1>
+  <p class="tagline">If p is prime and gcd(a,p)=1, then a^(p-1) ≡ 1 (mod p).</p>
+  <div class="prose">
+    <p>Fermat's Little Theorem states that a^(p-1) ≡ 1 (mod p) when p is prime and gcd(a,p)=1. This means a^(-1) ≡ a^(p-2) (mod p) — giving a simple formula for modular inverse. It is also the basis for the Fermat primality test.</p>
+    <p>The simulation shows powers a^1, a^2, … mod p, demonstrating the cycle and that a^(p-1) = 1. Yellow = current power. Green = value = 1.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">a^(p-1)≡1</div><div class="lbl">Core identity</div></div>
-    <div class="fact"><div class="val">a^(p-2)</div><div class="lbl">Modular inverse</div></div>
-    <div class="fact"><div class="val">1640</div><div class="lbl">Pierre de Fermat</div></div>
+    <div class="fact"><div class="flabel">Statement</div><div class="fval">a^(p-1)≡1 mod p</div></div>
+    <div class="fact"><div class="flabel">Modular inv</div><div class="fval">a^(p-2) mod p</div></div>
+    <div class="fact"><div class="flabel">Requires</div><div class="fval">p prime, gcd(a,p)=1</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">Primality tests, RSA</div></div>
   </div>
-
-  <div class="panel">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div><label>Prime p</label><input type="number" id="pInput" value="7" min="2"/></div>
-      <div><label>a (base)</label><input type="number" id="aInput" value="3" min="1"/></div>
-      <button class="btn" onclick="verify()" style="align-self:flex-end">Verify</button>
-      <button class="btn sec" onclick="findInv()" style="align-self:flex-end">Find Inverse</button>
-      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <p style="font-size:.78rem;color:var(--m);margin-bottom:.3rem">Powers of a mod p:</p>
+      <div class="power-row" id="powerRow"></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>a:</label><input type="number" id="aVal" value="3" min="2" max="99"/>
+        <label>p (prime):</label><input type="number" id="pVal" value="7" min="3" max="97"/>
+        <button class="btn btn-p" onclick="rebuild()">Show Powers</button>
+      </div>
     </div>
-    <div id="theoremBox" style="display:none" class="theorem-box"></div>
-    <div id="invBox" style="display:none" class="inv-box"></div>
-    <table>
-      <thead><tr><th>Step</th><th>Operation</th><th>Value mod p</th></tr></thead>
-      <tbody id="stepTable"></tbody>
-    </table>
   </div>
-
-  <div class="panel">
-    <h2>Step Log</h2>
-    <div id="log"><div class="hi">// Enter prime p and base a, then click Verify or Find Inverse</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function log(msg,cls=''){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  if(cls)div.className=cls;
-  div.textContent=msg;
-  d.appendChild(div);
-  d.scrollTop=d.scrollHeight;
-}
-
-function resetSim(){
-  document.getElementById('stepTable').innerHTML='';
-  document.getElementById('theoremBox').style.display='none';
-  document.getElementById('invBox').style.display='none';
-  document.getElementById('log').innerHTML='<div class="hi">// Enter prime p and base a, then click Verify or Find Inverse</div>';
-}
-
-function isPrime(n){if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i===0)return false;return true;}
-
-function modpow(base,exp,mod){
-  let result=1n;base=BigInt(base)%BigInt(mod);exp=BigInt(exp);mod=BigInt(mod);
-  while(exp>0n){if(exp%2n===1n)result=(result*base)%mod;exp/=2n;base=(base*base)%mod;}
-  return Number(result);
-}
-
-function computeSteps(base,exp,mod){
-  const steps=[];
-  let r=1,b=base%mod,e=exp;
-  while(e>0){
-    if(e&1){const nr=(r*b)%mod;steps.push({op:`r×${b} mod ${mod}`,val:nr,prev:r});r=nr;}
-    const nb=(b*b)%mod;
-    if(e>>1>0) steps.push({op:`base²: ${b}²=${b*b} mod ${mod}`,val:nb,prev:b});
-    b=nb;e>>=1;
+var player=null;
+function generateSteps(a,p){
+  var steps=[], cells=[], curIdx=-1;
+  function snap(){return {cells:cells.slice(),curIdx:curIdx,a:a,p:p};}
+  steps.push({title:'Fermat: a='+a+', p='+p,
+    what:'Show powers of '+a+' mod '+p+'.',
+    why:'a^(p-1) mod p must equal 1 if p is prime and gcd(a,p)=1.',
+    ...snap()});
+  var pow=1;
+  for(var i=1;i<=p-1;i++){
+    pow=(pow*a)%p;
+    cells.push({exp:i,val:pow});
+    curIdx=cells.length-1;
+    steps.push({title:'a^'+i+' = '+pow+' mod '+p+(pow===1?' ✓ = 1':''),
+      what:a+'^'+i+' mod '+p+' = '+pow+'.',
+      why:i===p-1?'Fermat\'s theorem: a^(p-1)=1. Inverse of '+a+' = '+a+'^'+(p-2)+' mod '+p+' = '+function(){var r=1,b=a,e=p-2;while(e>0){if(e&1)r=(r*b)%p;b=(b*b)%p;e>>=1;}return r;}():'Power of '+a+' in Z_p.',
+      ...snap()});
   }
-  return {steps,result:r};
+  var inv=function(){var r=1,b=a,e=p-2;while(e>0){if(e&1)r=(r*b)%p;b=(b*b)%p;e>>=1;}return r;}();
+  steps.push({title:'a^(p-1)='+a+'^'+(p-1)+'=1 mod '+p+'. Inverse of '+a+' = '+inv,
+    what:'Confirmed: '+a+'^'+(p-1)+' mod '+p+'=1. Modular inverse = '+a+'^'+(p-2)+' = '+inv+'.',
+    why:'a^(-1) = a^(p-2) mod p by Fermat. Verify: '+a+'×'+inv+' mod '+p+'='+(a*inv%p)+'.',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function verify(){
-  resetSim();
-  const p=parseInt(document.getElementById('pInput').value)||7;
-  const a=parseInt(document.getElementById('aInput').value)||3;
-  if(!isPrime(p)){log(`${p} is NOT prime! Fermat's theorem requires a prime.`,'warn');return;}
-  if(a%p===0){log(`${a} is divisible by ${p}. Theorem requires gcd(a,p)=1.`,'warn');return;}
-
-  log('=== Fermat\'s Little Theorem ===','hi');
-  log(`p=${p} (prime), a=${a}`);
-  log(`Computing a^(p-1) = ${a}^${p-1} mod ${p}`);
-
-  const result=modpow(a,p-1,p);
-  const {steps}=computeSteps(a,p-1,p);
-  const tbody=document.getElementById('stepTable');
-  tbody.innerHTML='';
-  steps.forEach((s,i)=>{
-    const tr=document.createElement('tr');tr.id=`st-${i}`;
-    tr.innerHTML=`<td>${i+1}</td><td>${s.op}</td><td>${s.val}</td>`;
-    tbody.appendChild(tr);
-  });
-
-  steps.forEach((s,i)=>setTimeout(()=>{
-    document.querySelectorAll('tr.active').forEach(r=>r.classList.remove('active'));
-    document.getElementById(`st-${i}`)?.classList.add('active');
-    log(`Step ${i+1}: ${s.op} → ${s.val}`);
-  },i*400));
-
-  setTimeout(()=>{
-    const tb=document.getElementById('theoremBox');
-    tb.style.display='block';
-    tb.innerHTML=`<div>${a}^${p-1} mod ${p} = <span class="big">${result}</span>${result===1?' ✓ Confirmed: a^(p-1) ≡ 1 (mod p)':' ✗ Unexpected (is p actually prime?)'}</div>`;
-    log(`${a}^${p-1} mod ${p} = ${result}. ${result===1?'Theorem verified!':'Check if p is prime.'}`,result===1?'ok':'warn');
-  },steps.length*400+300);
+function renderStep(step){
+  var pr=document.getElementById('powerRow'); if(!pr) return;
+  var h=step.cells.map(function(c,i){
+    var isCur=i===step.curIdx;
+    var isOne=c.val===1;
+    return '<div class="pow-cell '+(isCur?'cur':isOne?'one':'')+'">'+step.a+'^'+c.exp+'='+c.val+'</div>';
+  }).join('');
+  pr.innerHTML=h||'Powers will appear here.';
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='a='+step.a+', p='+step.p+'  |  a^'+(step.cells.length)+'='+( step.cells.length>0?step.cells[step.cells.length-1].val:'?')+'  |  Expect a^'+(step.p-1)+'=1';
 }
-
-function findInv(){
-  resetSim();
-  const p=parseInt(document.getElementById('pInput').value)||7;
-  const a=parseInt(document.getElementById('aInput').value)||3;
-  if(!isPrime(p)){log(`${p} is NOT prime!`,'warn');return;}
-  if(a%p===0){log(`${a} divisible by ${p} — no inverse exists.`,'warn');return;}
-
-  log('=== Modular Inverse via Fermat ===','hi');
-  log(`a^(-1) mod p = a^(p-2) mod p = ${a}^${p-2} mod ${p}`);
-  const inv=modpow(a,p-2,p);
-  const {steps}=computeSteps(a,p-2,p);
-  const tbody=document.getElementById('stepTable');
-  tbody.innerHTML='';
-  steps.forEach((s,i)=>{
-    const tr=document.createElement('tr');tr.id=`si-${i}`;
-    tr.innerHTML=`<td>${i+1}</td><td>${s.op}</td><td>${s.val}</td>`;
-    tbody.appendChild(tr);
-  });
-  steps.forEach((s,i)=>setTimeout(()=>{
-    document.querySelectorAll('tr.active').forEach(r=>r.classList.remove('active'));
-    document.getElementById(`si-${i}`)?.classList.add('active');
-    log(`Step ${i+1}: ${s.op} → ${s.val}`);
-  },i*400));
-  setTimeout(()=>{
-    const ib=document.getElementById('invBox');
-    ib.style.display='block';
-    const verify=(a*inv)%p;
-    ib.innerHTML=`<div>${a}^(${p}-2) mod ${p} = <span class="big">${inv}</span></div><div style="font-size:.82rem;margin-top:.3rem">Verify: ${a}×${inv} mod ${p} = ${a*inv} mod ${p} = ${verify} ${verify===1?'✓':'✗'}</div>`;
-    log(`Inverse of ${a} mod ${p} = ${inv}. Verify: ${a}×${inv} mod ${p} = ${(a*inv)%p}`,'ok');
-  },steps.length*400+300);
+function rebuild(){
+  var a=parseInt(document.getElementById('aVal').value)||3;
+  var p=parseInt(document.getElementById('pVal').value)||7;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(a,p),renderStep,'explanation','sim-bar');
 }
+rebuild();
 </script>
 </body>
 </html>

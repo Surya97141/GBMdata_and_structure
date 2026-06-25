@@ -1,197 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Sequencing – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Job Sequencing with Deadlines</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-  .container{max-width:900px;margin:0 auto;padding:0 24px;}
-  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
-  .breadcrumb span{margin:0 6px;}
-  .hero{padding:48px 0 32px;}
-  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
-  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
-  .explanation{padding:24px 0;}
-  .explanation p{margin-bottom:14px;}
-  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
-  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
-  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
-  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
-  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:16px;}
-  .btn{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;margin-bottom:16px;}
-  .btn:hover{opacity:.85;}.btn:disabled{opacity:.4;cursor:not-allowed;}
-  table.jobs{border-collapse:collapse;width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin-bottom:20px;}
-  table.jobs th,table.jobs td{border:1px solid var(--border);padding:8px 14px;text-align:center;}
-  table.jobs th{background:var(--bg);color:var(--muted);font-weight:600;}
-  table.jobs tr.selected td{background:#fff8e0;font-weight:600;}
-  table.jobs tr.skip td{color:#bbb;}
-  canvas{display:block;border-radius:8px;border:1px solid var(--border);max-width:100%;margin-top:8px;}
-  .result-note{font-size:.95rem;margin-top:12px;}
-  .result-note strong{color:var(--accent);}
-  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
-  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
-  .log-box p.highlight{color:#f5d87c;}
-  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.schedule{display:flex;gap:4px;margin:.5rem 0;font-family:'JetBrains Mono',monospace}
+.slot{width:52px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;border:1.5px solid var(--b);background:var(--bg);font-size:.78rem;font-weight:700}
+.slot.filled{background:#a8e6a3;border-color:#16a34a}
+.slot.cur{background:#fff176;border-color:#f59e0b;outline:2px solid #d97706}
+.slot .slt{font-size:.6rem;color:#888}
+.job-table{overflow-x:auto;margin:.5rem 0}
+table.jt{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+table.jt td,table.jt th{border:1px solid var(--b);padding:.22rem .5rem;text-align:right}
+table.jt th{background:var(--bg);font-weight:700;color:var(--m)}
+table.jt tr.cur td{background:#fff176}
+table.jt tr.sch td{background:#a8e6a3}
+table.jt tr.skip td{background:#e5e7eb;color:#888}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.35rem .6rem;border:1.5px solid var(--b);border-radius:8px;width:240px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Job Sequencing
-  </nav>
-
-  <div class="hero">
-    <span class="tag">Greedy</span>
-    <h1>Job Sequencing with Deadlines</h1>
-    <p class="tagline">Maximize profit by scheduling unit-time jobs before their deadlines.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Job Sequencing</span></nav>
+  <span class="tag">Greedy</span>
+  <h1>Job Sequencing with Deadlines</h1>
+  <p class="tagline">Maximize profit by scheduling jobs before their deadlines.</p>
+  <div class="prose">
+    <p>Each job has a deadline and profit. All jobs take 1 unit of time. Sort by profit descending. For each job, assign it to the latest available slot ≤ its deadline (latest-first greedy). This maximizes profit by deferring high-profit jobs as late as possible, keeping early slots for future high-profit jobs.</p>
+    <p>Green = scheduled. Yellow = currently placing. Gray = skipped (no slot available before deadline).</p>
   </div>
-
-  <div class="explanation">
-    <p>Each job takes exactly one unit of time, has a deadline (latest time-slot it can occupy), and yields a profit if completed. A single machine processes one job at a time, starting at time 0. How do you pick jobs to maximize total profit?</p>
-    <p>The greedy strategy: sort jobs by profit in descending order. For each job, try to place it in the latest available slot at or before its deadline. This greedy choice is optimal — by processing high-profit jobs first and assigning them to the last valid slot, we keep earlier slots free for other jobs.</p>
-    <p>The result is a schedule shown on a Gantt chart, with gaps shown as idle time if no job could fill a slot.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="val">O(n²)</div><div class="label">Time Complexity</div></div>
-    <div class="fact-card"><div class="val">O(d)</div><div class="label">Space (d=max deadline)</div></div>
-    <div class="fact-card"><div class="val">Profit-Desc</div><div class="label">Greedy Order</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">With DSU</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Greedy choice</div><div class="fval">Highest profit first</div></div>
+    <div class="fact"><div class="flabel">Optimal</div><div class="fval">Yes</div></div>
   </div>
-
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <button class="btn" id="solveBtn" onclick="startSolve()">Schedule Jobs</button>
-
-    <table class="jobs" id="jobTable"></table>
-    <canvas id="gantt" height="80"></canvas>
-    <div class="result-note" id="resultNote"></div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <p style="font-size:.78rem;color:var(--m);margin-bottom:.2rem">Schedule (slots 1..maxDeadline):</p>
+      <div class="schedule" id="schedule"></div>
+      <div class="job-table"><div id="jobTable"></div></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Jobs [profit,deadline] (space-sep):</label>
+        <input type="text" id="jobs" value="100,2 19,1 27,2 25,1 15,3"/>
+        <button class="btn btn-p" onclick="rebuild()">Schedule</button>
+      </div>
+    </div>
   </div>
-
-  <div class="sim-box" style="padding:20px;">
-    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
-    <div class="log-box" id="logBox"></div>
-  </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-const JOBS=[
-  {id:'J1',profit:100,deadline:2},
-  {id:'J2',profit:19,deadline:1},
-  {id:'J3',profit:27,deadline:2},
-  {id:'J4',profit:25,deadline:1},
-  {id:'J5',profit:15,deadline:3},
-  {id:'J6',profit:60,deadline:1},
-];
-
-function log(msg,h=false){
-  const lb=document.getElementById('logBox');
-  const p=document.createElement('p');
-  if(h)p.classList.add('highlight');
-  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
-}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-function buildJobTable(jobs,states={}){
-  const tbl=document.getElementById('jobTable');
-  tbl.innerHTML='<tr><th>Job</th><th>Profit</th><th>Deadline</th><th>Status</th></tr>';
-  jobs.forEach(job=>{
-    const tr=tbl.insertRow();
-    const st=states[job.id]||'–';
-    if(st.startsWith('Slot')) tr.classList.add('selected');
-    else if(st==='Skipped') tr.classList.add('skip');
-    [job.id,job.profit,job.deadline,st].forEach(v=>{tr.insertCell().textContent=v;});
-  });
-}
-
-function drawGantt(schedule, maxD){
-  const canvas=document.getElementById('gantt');
-  const W=canvas.width,H=canvas.height;
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,W,H);
-  const cellW=W/maxD;
-  const COLORS=['#d4a017','#e8c96d','#a87d10','#f0d87a','#c89010','#b87000'];
-  for(let t=0;t<maxD;t++){
-    const x=t*cellW;
-    if(schedule[t]){
-      const ci=schedule[t].idx%COLORS.length;
-      ctx.fillStyle=COLORS[ci];
-      ctx.fillRect(x+1,8,cellW-2,H-24);
-      ctx.fillStyle='#1a1a2e';ctx.font='bold 12px JetBrains Mono';ctx.textAlign='center';
-      ctx.fillText(schedule[t].id,x+cellW/2,H/2+4);
-    } else {
-      ctx.fillStyle='#e2e0da';ctx.fillRect(x+1,8,cellW-2,H-24);
-      ctx.fillStyle='#aaa';ctx.font='11px Inter';ctx.textAlign='center';
-      ctx.fillText('idle',x+cellW/2,H/2+4);
-    }
-    ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;
-    ctx.strokeRect(x,8,cellW,H-24);
-    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';ctx.textAlign='center';
-    ctx.fillText(`t${t+1}`,x+cellW/2,H-2);
-  }
-}
-
-async function startSolve(){
-  const btn=document.getElementById('solveBtn');
-  btn.disabled=true;
-  document.getElementById('logBox').innerHTML='';
-  document.getElementById('resultNote').innerHTML='';
-
-  const sorted=[...JOBS].sort((a,b)=>b.profit-a.profit);
-  const maxD=Math.max(...JOBS.map(j=>j.deadline));
-  const schedule=new Array(maxD).fill(null);
-  const states={};
-
-  buildJobTable(sorted,states);
-  log(`Sort by profit: ${sorted.map(j=>`${j.id}(p=${j.profit},d=${j.deadline})`).join(' > ')}`);
-  await sleep(400);
-
-  const canvas=document.getElementById('gantt');
-  canvas.width=Math.max(600,canvas.offsetWidth||600);
-  drawGantt(schedule,maxD);
-
-  let totalProfit=0;
-  for(let i=0;i<sorted.length;i++){
-    const job=sorted[i];
-    // Find latest free slot ≤ deadline
-    let placed=false;
-    for(let t=Math.min(job.deadline,maxD)-1;t>=0;t--){
-      if(!schedule[t]){
-        schedule[t]={id:job.id,idx:i};
-        placed=true;
-        totalProfit+=job.profit;
-        states[job.id]=`Slot ${t+1}`;
-        log(`${job.id}(p=${job.profit},d=${job.deadline}): assign to slot ${t+1} (latest free ≤ deadline). Profit so far: ${totalProfit}.`);
+var player=null;
+function generateSteps(jobs){
+  jobs.sort(function(a,b){return b.p-a.p;});
+  var n=jobs.length, maxD=Math.max.apply(null,jobs.map(function(j){return j.d;}));
+  var slots=new Array(maxD+1).fill(null), state=new Array(n).fill(''), totalP=0, curIdx=-1;
+  function snap(){return {jobs:jobs.slice(),slots:slots.slice(),state:state.slice(),totalP:totalP,curIdx:curIdx,maxD:maxD};}
+  var steps=[];
+  steps.push({title:'Job Sequencing: '+n+' jobs, maxDeadline='+maxD,
+    what:'Sorted by profit desc: '+jobs.map(function(j){return j.id+'(p='+j.p+',d='+j.d+')';}).join(', ')+'.',
+    why:'Greedy: highest profit first. Assign to latest available slot ≤ deadline.',
+    ...snap()});
+  for(var k=0;k<n;k++){
+    var job=jobs[k]; curIdx=k; state[k]='cur';
+    steps.push({title:'Consider job '+job.id+' (p='+job.p+', d='+job.d+')',
+      what:'Find latest free slot ≤ '+job.d+'.',
+      why:'Latest-first: leave earlier slots for future jobs with smaller deadlines.',
+      ...snap()});
+    var placed=false;
+    for(var t=job.d;t>=1;t--){
+      if(!slots[t]){slots[t]=job.id;state[k]='sch';totalP+=job.p;placed=true;
+        steps.push({title:'Job '+job.id+' scheduled at slot '+t+' (profit +'+job.p+')',
+          what:'Placed at slot '+t+'. Total profit='+totalP+'.',
+          why:'Latest available slot ≤ deadline = '+job.d+'.',
+          ...snap()});
         break;
       }
     }
-    if(!placed){
-      states[job.id]='Skipped';
-      log(`${job.id}(p=${job.profit},d=${job.deadline}): no free slot ≤ ${job.deadline} → skip.`);
-    }
-    buildJobTable(sorted,states);
-    drawGantt(schedule,maxD);
-    await sleep(500);
+    if(!placed){state[k]='skip';
+      steps.push({title:'Job '+job.id+' skipped — no slot before deadline '+job.d,
+        what:'All slots 1..'+job.d+' occupied.',
+        why:'Cannot be scheduled without missing its deadline.',
+        ...snap()});}
   }
-
-  document.getElementById('resultNote').innerHTML=
-    `<strong>Total Profit: ${totalProfit}</strong> — Scheduled: ${schedule.filter(Boolean).map(j=>j.id).join(', ')}`;
-  log(`Done. Scheduled jobs in order: ${schedule.map(j=>j?j.id:'idle').join(' → ')}. Total profit = ${totalProfit}.`,true);
-  btn.disabled=false;
+  steps.push({title:'Total profit: '+totalP+'. Schedule: '+slots.slice(1).map(function(s,i){return (i+1)+':'+(s||'—');}).join(', '),
+    what:'Jobs scheduled: '+slots.slice(1).filter(Boolean).join(', ')+'. Max profit='+totalP+'.',
+    why:'Greedy algorithm produces optimal profit schedule.',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-buildJobTable(JOBS);
+function renderStep(step){
+  var sc=document.getElementById('schedule');
+  if(sc){
+    var h='';
+    for(var t=1;t<=step.maxD;t++){
+      var filled=step.slots[t];
+      h+='<div class="slot '+(filled?'filled':'')+'"><span class="slt">t'+t+'</span>'+(filled||'—')+'</div>';
+    }
+    sc.innerHTML=h;
+  }
+  var tb=document.getElementById('jobTable');
+  if(tb){
+    var html='<table class="jt"><tr><th>Job</th><th>Profit</th><th>Deadline</th><th>Status</th></tr>';
+    step.jobs.forEach(function(j,k){
+      var st=step.state[k];
+      html+='<tr class="'+st+'"><td>'+j.id+'</td><td>'+j.p+'</td><td>'+j.d+'</td><td>'+(st==='sch'?'✓ Scheduled':st==='skip'?'✗ Skipped':st==='cur'?'← considering':'—')+'</td></tr>';
+    });
+    html+='</table>'; tb.innerHTML=html;
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Total profit: '+step.totalP+'  |  Scheduled: '+step.slots.slice(1).filter(Boolean).length+'/'+step.maxD+' slots';
+}
+function rebuild(){
+  var raw=document.getElementById('jobs').value.trim().split(/\s+/);
+  var jobs=raw.map(function(p,i){var ab=p.split(',');return {id:'J'+(i+1),p:parseInt(ab[0]),d:parseInt(ab[1])};}).filter(function(j){return !isNaN(j.p)&&!isNaN(j.d);}).slice(0,8);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(jobs),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

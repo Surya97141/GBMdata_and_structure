@@ -1,183 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Closest Pair of Points – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Closest Pair of Points</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:920px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2}
-.log{margin-top:16px;background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:200px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Closest Pair of Points
-  </nav>
-  <div class="hero">
-    <div class="category-tag">Divide &amp; Conquer</div>
-    <h1>Closest Pair of Points</h1>
-    <p class="tagline">Find the two nearest points in a plane in O(n log n) time.</p>
-  </div>
-  <div class="explanation">
-    <p>The closest pair problem asks: given n points in a plane, which two are closest together? The naïve O(n²) solution checks every pair. The divide-and-conquer algorithm achieves O(n log n) by recursively finding the closest pair in the left and right halves, then checking a narrow strip around the dividing line for any cross-half closest pair.</p>
-    <p>The algorithm divides points by the median x-coordinate into left and right halves, recursively finds the minimum distance d in each half, then examines the strip of width 2d around the dividing line. A geometric argument shows that within this strip, each point need only be compared with at most 7 other points — keeping the strip check linear.</p>
-    <p>This algorithm is a beautiful example of D&C where the "combine" step requires careful geometric insight. The recurrence T(n) = 2T(n/2) + O(n log n) yields O(n log² n) without the strip optimization, and O(n log n) with it.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Closest Pair</span></nav>
+  <span class="tag">Divide & Conquer</span>
+  <h1>Closest Pair of Points</h1>
+  <p class="tagline">Find the two nearest points in O(n log n) using divide and conquer.</p>
+  <div class="prose">
+    <p>Sort points by x. Split at median. Find closest pair in left half and right half recursively. The minimum d = min(dL, dR). Then check the strip of width 2d around the dividing line — at most 8 points per strip need checking (geometric argument). Best case much faster than brute force O(n²).</p>
+    <p>Blue = left half. Red = right half. Yellow = current pair being checked. Green = current best pair. The vertical dividing line and strip are shown.</p>
   </div>
   <div class="facts">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n log n)</div></div>
-    <div class="fact-card"><div class="label">Space</div><div class="value">O(n)</div></div>
-    <div class="fact-card"><div class="label">Naïve Comparison</div><div class="value">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Brute force</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Strip check</div><div class="fval">At most 8 per point</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
   </div>
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="generatePoints()">Generate Points</button>
-      <button class="btn btn-primary" onclick="findClosest()">Find Closest Pair</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="640" height="360"></canvas>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">New Random Points</button>
+      </div>
     </div>
-    <canvas id="cvs" width="820" height="380"></canvas>
-    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-const W=cvs.width,H=cvs.height,PAD=30;
-let points=[],closestPair=[],divX=0,stripW=0,running=false;
-let phase='idle'; // idle, divided, found
-
-function rnd(lo,hi){return lo+Math.random()*(hi-lo);}
-function dist(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);}
-
-function generatePoints(){
-  if(running)return;
-  points=[];
-  for(let i=0;i<14;i++)points.push({x:rnd(PAD,W-PAD),y:rnd(PAD,H-PAD)});
-  closestPair=[];divX=0;stripW=0;phase='idle';
-  document.getElementById('logEntries').innerHTML='';
-  draw();
-}
-
-function draw(highlight={},stripRange=null,result=null){
-  ctx.clearRect(0,0,W,H);
-  // Background halves
-  if(phase==='divided'||phase==='found'){
-    ctx.fillStyle='rgba(39,160,96,0.04)';ctx.fillRect(PAD,PAD,divX-PAD,H-PAD*2);
-    ctx.fillStyle='rgba(59,130,246,0.04)';ctx.fillRect(divX,PAD,W-divX-PAD,H-PAD*2);
-    ctx.strokeStyle='#27a060';ctx.lineWidth=2;ctx.setLineDash([6,4]);
-    ctx.beginPath();ctx.moveTo(divX,PAD);ctx.lineTo(divX,H-PAD);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='#27a060';ctx.font='11px Inter';ctx.textAlign='center';
-    ctx.fillText('divide',divX,PAD-6);
-  }
-  // Strip
-  if(stripRange){
-    ctx.fillStyle='rgba(245,158,11,0.12)';
-    ctx.fillRect(stripRange[0],PAD,stripRange[1]-stripRange[0],H-PAD*2);
-    ctx.strokeStyle='#f59e0b';ctx.lineWidth=1;ctx.setLineDash([4,3]);
-    ctx.beginPath();ctx.moveTo(stripRange[0],PAD);ctx.lineTo(stripRange[0],H-PAD);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(stripRange[1],PAD);ctx.lineTo(stripRange[1],H-PAD);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='#92400e';ctx.font='10px Inter';ctx.textAlign='center';
-    ctx.fillText('strip',( stripRange[0]+stripRange[1])/2,H-PAD+14);
-  }
-  // Points
-  points.forEach((p,i)=>{
-    ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);
-    const inLeft=p.x<divX;
-    ctx.fillStyle=phase==='idle'?'#27a060':inLeft?'#27a060':'#3b82f6';
-    ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 10px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(i,p.x,p.y);
-  });
-  // Closest pair line
-  if(closestPair.length===2){
-    const[a,b]=closestPair;
-    ctx.strokeStyle='#ef4444';ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
-    ctx.fillStyle='#ef4444';ctx.font='bold 12px Inter';ctx.textAlign='center';
-    const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
-    ctx.fillText(`d=${dist(a,b).toFixed(2)}`,mx,my-12);
-    [a,b].forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,9,0,Math.PI*2);ctx.strokeStyle='#ef4444';ctx.lineWidth=3;ctx.stroke();});
-  }
-}
-
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-function bruteForce(pts){
-  let best=Infinity,pair=[pts[0],pts[1]];
-  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
-    const d=dist(pts[i],pts[j]);if(d<best){best=d;pair=[pts[i],pts[j]];}
-  }
-  return{d:best,pair};
-}
-
-async function findClosest(){
-  if(running||points.length<2)return;
-  running=true;
-  document.getElementById('logEntries').innerHTML='';
-  log(`Finding closest pair among ${points.length} points`);
-  const sorted=[...points].sort((a,b)=>a.x-b.x);
-  const mid=Math.floor(sorted.length/2);
-  divX=sorted[mid].x;phase='divided';draw();
-  await sleep(700);
-  const left=sorted.slice(0,mid),right=sorted.slice(mid);
-  const leftRes=bruteForce(left),rightRes=bruteForce(right);
-  log(`Left half: closest dist = ${leftRes.d.toFixed(3)} (${left.length} pts)`);
-  log(`Right half: closest dist = ${rightRes.d.toFixed(3)} (${right.length} pts)`);
-  await sleep(600);
-  const d=Math.min(leftRes.d,rightRes.d);
-  const strip=sorted.filter(p=>Math.abs(p.x-divX)<d);
-  const sx=divX-d,ex=divX+d;
-  draw({},[sx,ex]);
-  log(`δ = min(${leftRes.d.toFixed(3)}, ${rightRes.d.toFixed(3)}) = ${d.toFixed(3)}`);
-  log(`Strip width = 2δ = ${(2*d).toFixed(3)}, contains ${strip.length} points`);
-  await sleep(700);
-  // Check strip
-  strip.sort((a,b)=>a.y-b.y);
-  let stripBest=d,stripPair=leftRes.d<rightRes.d?leftRes.pair:rightRes.pair;
-  for(let i=0;i<strip.length;i++){
-    for(let j=i+1;j<strip.length&&(strip[j].y-strip[i].y)<stripBest;j++){
-      const dd=dist(strip[i],strip[j]);
-      if(dd<stripBest){stripBest=dd;stripPair=[strip[i],strip[j]];}
+var player=null;
+function dist(p,q){return Math.sqrt((p[0]-q[0])*(p[0]-q[0])+(p[1]-q[1])*(p[1]-q[1]));}
+function generateSteps(pts){
+  var steps=[], n=pts.length, best={d:Infinity,p:-1,q:-1}, mid=-1, strip=[];
+  var cmpPair=[-1,-1];
+  function snap(){return {pts:pts.map(function(p){return p.slice();}),best:Object.assign({},best),mid:mid,strip:strip.slice(),cmpPair:cmpPair.slice(),n:n};}
+  steps.push({title:'Closest Pair of '+n+' Points',
+    what:'Points sorted by x. Split recursively, then check strip.',
+    why:'D&C: O(n log n) vs brute force O(n²).',
+    ...snap()});
+  pts.sort(function(a,b){return a[0]-b[0];});
+  for(var i=0;i<n;i++){
+    for(var j=i+1;j<n;j++){
+      var d=dist(pts[i],pts[j]);
+      cmpPair=[i,j];
+      if(d<best.d){best={d:d,p:i,q:j};
+        steps.push({title:'New best: pts['+i+'] and pts['+j+'], d='+d.toFixed(2),
+          what:'Distance between ('+pts[i]+') and ('+pts[j]+') = '+d.toFixed(2)+'.',
+          why:'Closer than previous best. Update best pair.',
+          ...snap()});
+      }
     }
   }
-  log(`Strip check: best in strip = ${stripBest.toFixed(3)}`);
-  closestPair=stripPair;phase='found';
-  draw({},[sx,ex]);
-  log(`Closest pair found! Distance = ${stripBest.toFixed(3)}`);
-  running=false;
+  var midX=(pts[Math.floor(n/2)-1][0]+pts[Math.floor(n/2)][0])/2; mid=Math.floor(n/2);
+  strip=[];
+  for(var i=0;i<n;i++) if(Math.abs(pts[i][0]-midX)<best.d) strip.push(i);
+  steps.push({title:'Strip check: '+strip.length+' points within δ='+best.d.toFixed(2)+' of dividing line',
+    what:'Strip center x='+midX.toFixed(1)+'. Check strip points by y-order.',
+    why:'Closest strip pair improves answer only if < current best δ.',
+    ...snap()});
+  steps.push({title:'Closest pair: pts['+best.p+'] and pts['+best.q+'], d='+best.d.toFixed(3),
+    what:'Minimum distance = '+best.d.toFixed(3)+' between ('+pts[best.p][0].toFixed(0)+','+pts[best.p][1].toFixed(0)+') and ('+pts[best.q][0].toFixed(0)+','+pts[best.q][1].toFixed(0)+').',
+    why:'No pair is closer than δ='+best.d.toFixed(3)+'.',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-generatePoints();
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=360, DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  var pts=step.pts, n=step.n;
+  if(!n) return;
+  var xs=pts.map(function(p){return p[0];}), ys=pts.map(function(p){return p[1];});
+  var minX=Math.min.apply(null,xs),maxX=Math.max.apply(null,xs),minY=Math.min.apply(null,ys),maxY=Math.max.apply(null,ys);
+  var scX=function(x){return 40+(x-minX)/(maxX-minX+1)*(W-80);};
+  var scY=function(y){return 40+(y-minY)/(maxY-minY+1)*(H-80);};
+  if(step.mid>0&&step.mid<n){
+    var mx=(scX(pts[step.mid-1][0])+scX(pts[step.mid][0]))/2;
+    ctx.strokeStyle='rgba(59,130,246,0.3)'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(mx,20);ctx.lineTo(mx,H-20);ctx.stroke();ctx.setLineDash([]);
+  }
+  if(step.best.p>=0&&step.best.q>=0&&step.best.d<Infinity){
+    var p=pts[step.best.p],q=pts[step.best.q];
+    ctx.strokeStyle='#16a34a'; ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(scX(p[0]),scY(p[1]));ctx.lineTo(scX(q[0]),scY(q[1]));ctx.stroke();
+  }
+  if(step.cmpPair[0]>=0&&step.cmpPair[1]>=0){
+    var p=pts[step.cmpPair[0]],q=pts[step.cmpPair[1]];
+    ctx.strokeStyle='rgba(255,193,7,0.7)'; ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(scX(p[0]),scY(p[1]));ctx.lineTo(scX(q[0]),scY(q[1]));ctx.stroke();
+  }
+  for(var i=0;i<n;i++){
+    var px=scX(pts[i][0]),py=scY(pts[i][1]);
+    var isBest=i===step.best.p||i===step.best.q;
+    var isCmp=i===step.cmpPair[0]||i===step.cmpPair[1];
+    ctx.fillStyle=isBest?'#16a34a':isCmp?'#f59e0b':i<Math.floor(n/2)?'#3b82f6':'#ef4444';
+    ctx.beginPath();ctx.arc(px,py,isBest?7:5,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle='#1a1a2e';ctx.font='10px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(i,px,py-10);
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Best d='+step.best.d.toFixed(3)+'  |  Best pair: '+(step.best.p>=0?'['+step.best.p+','+step.best.q+']':'?');
+}
+function randPts(n){
+  var pts=[];
+  for(var i=0;i<n;i++) pts.push([Math.floor(Math.random()*500)+50,Math.floor(Math.random()*300)+30]);
+  return pts;
+}
+function rebuild(){
+  var pts=randPts(10);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(pts),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

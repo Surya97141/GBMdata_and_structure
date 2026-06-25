@@ -3,209 +3,140 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Suffix Automaton – DS-Algo Explorer</title>
+<title>Suffix Automaton – String Algorithms</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#2a9d8f}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
-.breadcrumb span{margin:0 .4rem}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
-.hero-inner{max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
-.hero p.tagline{color:var(--muted);font-size:1.05rem}
-.content{max-width:860px;margin:0 auto;padding:2rem}
-.explain p{margin-bottom:1rem;color:#333}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
-.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
-label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
-input[type=text]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:180px}
-input[type=text]:focus{outline:none;border-color:var(--accent)}
-.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
-.btn:hover{opacity:.85}
-.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
-.sam-graph{overflow-x:auto;padding:.5rem 0;min-height:140px}
-.state-node{display:inline-flex;flex-direction:column;align-items:center;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:.5rem .8rem;margin:.3rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;min-width:70px;text-align:center;transition:all .3s;vertical-align:top}
-.state-node.last-node{border-color:var(--accent);background:#e8f8f5}
-.state-node.new-node{border-color:#e9c46a;background:#fff9e6}
-.state-node .snum{font-size:.7rem;color:var(--muted)}
-.state-node .slen{font-size:.65rem;color:var(--accent);font-weight:700}
-.trans-line{font-size:.72rem;color:#555;margin-top:.2rem}
-.link-line{font-size:.65rem;color:#b57bee;font-style:italic;margin-top:.1rem}
-.char-progress{display:flex;gap:4px;margin:.8rem 0;flex-wrap:wrap}
-.cp{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;border:2px solid var(--border);background:var(--bg)}
-.cp.done{background:var(--accent);color:#fff;border-color:var(--accent)}
-.cp.current{background:#e9c46a;border-color:#e9c46a}
-#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:220px;overflow-y:auto}
-#log div{margin-bottom:.3rem}
-#log .hi{color:#79c0ff}#log .ok{color:#56d364}#log .warn{color:#e3b341}
-.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.state-table{overflow-x:auto;margin:.6rem 0}
+table.st{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.68rem}
+table.st td,table.st th{border:1px solid var(--b);padding:.2rem .45rem;text-align:left}
+table.st th{background:var(--bg);font-weight:700;color:var(--m)}
+table.st tr.cur td{background:#fff176}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:200px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Suffix Automaton
-</nav>
-<div class="hero">
-  <div class="hero-inner">
-    <span class="tag">String</span>
-    <h1>Suffix Automaton (SAM)</h1>
-    <p class="tagline">The smallest DFA that recognizes all substrings — built incrementally in O(n) time with suffix links.</p>
-  </div>
-</div>
-<div class="content">
-  <div class="explain">
-    <p>A Suffix Automaton (SAM) is the most compact structure for representing all substrings of a string. Unlike a suffix trie (which has O(n²) nodes), the SAM has at most 2n-1 states. Think of it as a subway map where every station represents a set of substrings, and you can reach every substring by following directed edges.</p>
-    <p>Each state has a <strong>len</strong> (longest substring it represents), a <strong>link</strong> (suffix link to the state representing proper suffix classes), and <strong>transitions</strong> (labeled edges to next states). The algorithm adds one character at a time, creating at most 2 new states per character.</p>
-    <p>Applications include counting distinct substrings in O(n), finding the longest common substring of two strings, and string matching — all fundamental in competitive programming and bioinformatics.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Suffix Automaton</span></nav>
+  <span class="tag">String Algorithms</span>
+  <h1>Suffix Automaton (SAM)</h1>
+  <p class="tagline">Minimal DFA accepting all suffixes — built online in O(n).</p>
+  <div class="prose">
+    <p>A Suffix Automaton (SAM) is the smallest DFA that accepts all suffixes of a string. It is built online: extend character by character, creating at most 2 new states per character. Each state represents an equivalence class of substrings. The SAM has at most 2n-1 states and 3n-4 transitions.</p>
+    <p>The simulation shows the state table growing as each character is added. Each state has transitions (edges), a link (suffix link), and len (longest suffix length in this class).</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">O(n)</div><div class="lbl">Build time</div></div>
-    <div class="fact"><div class="val">2n-1</div><div class="lbl">Max states</div></div>
-    <div class="fact"><div class="val">3n-4</div><div class="lbl">Max transitions</div></div>
+    <div class="fact"><div class="flabel">States</div><div class="fval">At most 2n-1</div></div>
+    <div class="fact"><div class="flabel">Build</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Applications</div><div class="fval">Substrings, LCS</div></div>
+    <div class="fact"><div class="flabel">Transitions</div><div class="fval">At most 3n-4</div></div>
   </div>
-
-  <div class="panel">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div>
-        <label>Input String</label>
-        <input type="text" id="strInput" value="abab"/>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="state-table"><div id="stateTable"></div></div>
+      <div class="info-bar" id="infoBar">SAM state table above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>String (max 8):</label>
+        <input type="text" id="str" value="abcbc"/>
+        <button class="btn btn-p" onclick="rebuild()">Build SAM</button>
       </div>
-      <button class="btn" onclick="buildSAM()" style="align-self:flex-end">Build SAM</button>
-      <button class="btn sec" onclick="resetSim()" style="align-self:flex-end">Reset</button>
     </div>
-    <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem">Character progress:</div>
-    <div id="charProgress" class="char-progress"></div>
-    <div class="sam-graph" id="samGraph"></div>
   </div>
-
-  <div class="panel">
-    <h2>Step Log</h2>
-    <div id="log"><div class="hi">// Enter a string and click "Build SAM" to see step-by-step construction</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-let states, last, size;
-
-function newState(len){
-  states.push({len,link:-1,trans:{},isClone:false});
-  return states.length-1;
-}
-
-function log(msg,cls=''){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  if(cls)div.className=cls;
-  div.textContent=msg;
-  d.appendChild(div);
-  d.scrollTop=d.scrollHeight;
-}
-
-function resetSim(){
-  states=null;last=0;size=0;
-  document.getElementById('samGraph').innerHTML='';
-  document.getElementById('charProgress').innerHTML='';
-  document.getElementById('log').innerHTML='<div class="hi">// Enter a string and click "Build SAM"</div>';
-}
-
-function buildSAM(){
-  resetSim();
-  const s=document.getElementById('strInput').value.trim();
-  if(!s){alert('Enter a string');return;}
-  states=[];last=0;
-  newState(0);states[0].link=-1; // root
-  log('=== Building Suffix Automaton ===','hi');
-  log(`String: "${s}"`);
-  log('State 0 (root) created. len=0, link=-1.');
-
-  // Render char progress
-  const cp=document.getElementById('charProgress');
-  const cpEls=s.split('').map((c,i)=>{
-    const el=document.createElement('div');el.className='cp';el.textContent=c;el.id=`cp-${i}`;
-    cp.appendChild(el);return el;
-  });
-
-  let delay=0;
-  for(let i=0;i<s.length;i++){
-    const ch=s[i];
-    ((ci,c)=>{
-      setTimeout(()=>{
-        cpEls[ci].className='cp current';
-        extendSAM(c,ci);
-        cpEls[ci].className='cp done';
-        renderGraph();
-      }, delay);
-    })(i,ch);
-    delay+=600;
-  }
-  setTimeout(()=>{log('SAM construction complete!','ok');},delay);
-}
-
-function extendSAM(c,ci){
-  const cur=newState(states[last].len+1);
-  log(`--- Add '${c}' ---`);
-  log(`  New state ${cur}: len=${states[cur].len}`);
-  let p=last;
-  while(p!==-1&&!states[p].trans[c]){
-    states[p].trans[c]=cur;
-    p=states[p].link;
-  }
-  if(p===-1){
-    states[cur].link=0;
-    log(`  Walked to root. link[${cur}]=0`);
-  } else {
-    const q=states[p].trans[c];
-    if(states[p].len+1===states[q].len){
-      states[cur].link=q;
-      log(`  p=${p}, q=${q}: len[p]+1==len[q]. link[${cur}]=${q}`);
-    } else {
-      const clone=newState(states[p].len+1);
-      states[clone].link=states[q].link;
-      states[clone].trans={...states[q].trans};
-      states[clone].isClone=true;
-      log(`  Clone state ${clone} from ${q}: len=${states[clone].len}`);
-      while(p!==-1&&states[p].trans[c]===q){
-        states[p].trans[c]=clone;
-        p=states[p].link;
+var player=null;
+function generateSteps(s){
+  var steps=[];
+  var sa={states:[{len:0,link:-1,next:{}}],last:0,size:1};
+  function extend(c){
+    var cur=sa.size++; sa.states.push({len:sa.states[sa.last].len+1,link:-1,next:{}});
+    var p=sa.last;
+    while(p!==-1&&!sa.states[p].next[c]){ sa.states[p].next[c]=cur; p=sa.states[p].link; }
+    if(p===-1){ sa.states[cur].link=0; }
+    else {
+      var q=sa.states[p].next[c];
+      if(sa.states[p].len+1===sa.states[q].len){ sa.states[cur].link=q; }
+      else {
+        var clone=sa.size++; sa.states.push({len:sa.states[p].len+1,link:sa.states[q].link,next:Object.assign({},sa.states[q].next)});
+        while(p!==-1&&sa.states[p].next[c]===q){ sa.states[p].next[c]=clone; p=sa.states[p].link; }
+        sa.states[q].link=clone; sa.states[cur].link=clone;
       }
-      states[q].link=clone;
-      states[cur].link=clone;
-      log(`  link[${q}]=${clone}, link[${cur}]=${clone}`);
     }
+    sa.last=cur;
   }
-  last=cur;
-  const transStr=Object.entries(states[cur].trans).map(([k,v])=>`${k}→${v}`).join(', ');
-  log(`  last=${last}. Transitions from ${cur}: {${transStr||'none'}}`,transStr?'ok':'');
+  function snap(addedChar,newStates){
+    return {states:sa.states.map(function(st){return {len:st.len,link:st.link,next:Object.assign({},st.next)};}),last:sa.last,char:addedChar,newStates:newStates};
+  }
+  steps.push({title:'Suffix Automaton for "'+s+'"',
+    what:'Initial state 0 (root). Add characters one by one.',
+    why:'SAM accepts all suffixes; built online in O(n) amortized.',
+    ...snap('',0)});
+  for(var i=0;i<s.length;i++){
+    var before=sa.size;
+    extend(s[i]);
+    var added=sa.size-before;
+    steps.push({title:'Add "'+s[i]+'": '+(added===2?'created states '+(before)+' and '+(before+1):added===1?'created state '+before:'no new state'),
+      what:'After adding "'+s.slice(0,i+1)+'": '+sa.size+' states. Last='+sa.last+'.',
+      why:added===2?'Clone needed: split state to maintain suffix link tree.':'Extend: new state for new suffix end.',
+      ...snap(s[i],added)});
+  }
+  steps.push({title:'SAM complete: '+sa.size+' states for "'+s+'"',
+    what:'Final SAM has '+sa.size+' states (max 2n-1='+(2*s.length-1)+').',
+    why:'Minimal DFA that accepts all '+s.length+' suffixes.',
+    ...snap('',0)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function renderGraph(){
-  const viz=document.getElementById('samGraph');
-  viz.innerHTML='';
-  states.forEach((st,i)=>{
-    const node=document.createElement('div');
-    node.className='state-node'+(i===last?' last-node':st.isClone?' new-node':'');
-    const snum=document.createElement('div');snum.className='snum';snum.textContent=`S${i}`;
-    const slen=document.createElement('div');slen.className='slen';slen.textContent=`len=${st.len}`;
-    node.appendChild(snum);node.appendChild(slen);
-    const trans=Object.entries(st.trans).map(([k,v])=>`${k}→S${v}`).join(', ');
-    if(trans){const tl=document.createElement('div');tl.className='trans-line';tl.textContent=trans;node.appendChild(tl);}
-    if(st.link>=0){const ll=document.createElement('div');ll.className='link-line';ll.textContent=`↑S${st.link}`;node.appendChild(ll);}
-    viz.appendChild(node);
+function renderStep(step){
+  var tb=document.getElementById('stateTable'); if(!tb) return;
+  var html='<table class="st"><tr><th>State</th><th>len</th><th>link</th><th>Transitions</th></tr>';
+  step.states.forEach(function(st,i){
+    var isCur=i===step.last;
+    var trans=Object.keys(st.next).map(function(c){return c+':'+st.next[c];}).join(' ');
+    html+='<tr class="'+(isCur?'cur':'')+'"><td>'+i+(i===0?' (root)':i===step.last?' (last)':'')+'</td><td>'+st.len+'</td><td>'+st.link+'</td><td>'+trans+'</td></tr>';
   });
+  html+='</table>'; tb.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='States: '+step.states.length+'  |  Last state: '+step.last+'  |  Just added: "'+(step.char||'(init)') +'"';
 }
+function rebuild(){
+  var s=document.getElementById('str').value.toLowerCase().slice(0,8);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(s),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

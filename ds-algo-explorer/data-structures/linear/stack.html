@@ -1,259 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stack — DS/Algo Explorer</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;--r:14px;}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;min-height:100vh;}
-    .wrap{max-width:860px;margin:0 auto;padding:32px 20px 60px;}
-    .bc{font-size:.82rem;color:var(--muted);margin-bottom:28px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-    .bc a{color:var(--muted);text-decoration:none;}.bc a:hover{color:var(--accent);}
-    .bc .curr{color:var(--ink);font-weight:600;}
-    .hero{margin-bottom:28px;}
-    .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin-bottom:10px;}
-    h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--ink);line-height:1.15;margin-bottom:8px;}
-    .tagline{color:var(--muted);font-size:1.05rem;}
-    .explain{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px 28px;margin-bottom:22px;}
-    .explain p{color:var(--muted);margin-bottom:10px;font-size:.97rem;}.explain p:last-child{margin-bottom:0;}
-    .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
-    .fact{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
-    .flabel{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:6px;}
-    .fval{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:4px;}
-    .fsub{font-size:.82rem;color:var(--muted);}
-    .sim-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px;}
-    .sim-hdr{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
-    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);display:inline-block;}
-    .sim-body{padding:20px;}
-    canvas{display:block;width:100%;max-width:700px;margin:0 auto 18px;border-radius:8px;background:#f9f8f5;border:1px solid var(--border);}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    .controls input{font-family:'JetBrains Mono',monospace;font-size:.92rem;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);width:90px;outline:none;}
-    .controls input:focus{border-color:var(--accent);}
-    .btn{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;padding:8px 18px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s,transform .1s;}
-    .btn:active{transform:scale(.97);}
-    .btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover{opacity:.88;}
-    .btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border);}.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-    .log-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:28px;}
-    .log-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
-    .log-hdr button{font-size:.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;}
-    .log-hdr button:hover{border-color:var(--accent);color:var(--accent);}
-    .log-body{max-height:180px;overflow-y:auto;padding:12px 20px;display:flex;flex-direction:column;gap:5px;}
-    .log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:5px 10px;border-radius:6px;background:var(--bg);}
-    .log-entry.ok{border-left:3px solid #27ae60;}.log-entry.err{border-left:3px solid #e74c3c;}.log-entry.info{border-left:3px solid var(--accent);}
-    .log-empty{font-size:.82rem;color:var(--muted);font-style:italic;}
-    .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .15s;}
-    .back:hover{color:var(--accent);}
-    @media(max-width:600px){.facts{grid-template-columns:1fr 1fr;}.controls{gap:8px;}}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Stack Data Structure</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.stack-vis{display:flex;flex-direction:column-reverse;align-items:flex-start;gap:3px;min-height:180px;padding:.5rem;border:2px solid var(--b);border-radius:8px;width:140px;background:var(--bg);position:relative}
+.stack-slot{width:120px;height:40px;border:1.5px solid var(--b);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;transition:background .15s}
+.stack-slot.top{background:#fff176;border-color:#d97706}
+.stack-slot.pushed{background:#a8e6a3;border-color:#16a34a}
+.stack-slot.popped{background:#fca5a5;border-color:#ef4444}
+.stack-slot.default{background:var(--s)}
+.top-label{position:absolute;right:-50px;font-size:.7rem;font-weight:700;color:var(--a);font-family:'JetBrains Mono',monospace}
+.stack-bottom{font-size:.7rem;color:var(--m);text-align:center;width:120px;padding-top:.3rem}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;
+  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:80px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span class="curr">Stack</span></nav>
-
-  <div class="hero">
-    <span class="tag">Linear</span>
-    <h1>Stack</h1>
-    <p class="tagline">Last In, First Out (LIFO) — the most recent item pushed is always the first to be popped.</p>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Stack</span></nav>
+  <span class="tag">Linear</span>
+  <h1>Stack</h1>
+  <p class="tagline">LIFO — Last In, First Out. Push and pop from top in O(1).</p>
+  <div class="prose">
+    <p>A stack is a LIFO structure: the most recently pushed element is the first to be popped. Operations: push (add to top), pop (remove from top), peek (view top). All are O(1). Used for function call stacks, undo operations, expression evaluation, DFS iterative, bracket matching.</p>
+    <p>Yellow = current top. Green = just pushed. Red = being popped. Stack grows upward.</p>
   </div>
-
-  <div class="explain">
-    <p>A stack works exactly like a stack of dinner plates. You place new plates on top (push) and always take from the top first (pop). You cannot grab a plate from the middle without removing everything above it — that is the LIFO (Last In, First Out) guarantee.</p>
-    <p>This simple rule makes stacks invaluable for tracking state that must be "unwound" in reverse order. Your browser's back-button history is a stack. Function call frames sit on the call stack. Expression parsers use stacks to match brackets and evaluate operators. Undo/redo in any editor is two stacks.</p>
-    <p>Both push and pop operate in O(1) time because they only touch the top element. A stack can be implemented as a dynamic array (push/pop at the end) or a singly linked list (push/pop at the head).</p>
-  </div>
-
   <div class="facts">
-    <div class="fact">
-      <div class="flabel">Time Complexity</div>
-      <div class="fval">O(1)</div>
-      <div class="fsub">push, pop, peek — all constant time</div>
-    </div>
-    <div class="fact">
-      <div class="flabel">Space Complexity</div>
-      <div class="fval">O(n)</div>
-      <div class="fsub">One slot per element</div>
-    </div>
-    <div class="fact">
-      <div class="flabel">Use Cases</div>
-      <div class="fsub">Call stack, undo/redo, bracket matching, DFS, expression eval</div>
-    </div>
+    <div class="fact"><div class="flabel">Push</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Pop</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Peek</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Order</div><div class="fval">LIFO</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-hdr"><span class="dot"></span> Interactive Simulation</div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <canvas id="cv" width="700" height="260"></canvas>
-      <div class="controls">
-        <input id="valInput" type="text" placeholder="Value" maxlength="4"/>
-        <button class="btn btn-primary" onclick="pushVal()">Push</button>
-        <button class="btn btn-secondary" onclick="popVal()">Pop</button>
-        <button class="btn btn-secondary" onclick="peekVal()">Peek</button>
-        <button class="btn btn-secondary" onclick="resetStack()">Reset</button>
+      <div class="stack-vis" id="stackVis"><div class="stack-bottom">⊥ bottom</div></div>
+      <div class="info-bar" id="infoBar">Select push or pop.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Value:</label>
+        <input type="number" id="valInput" value="42"/>
+        <button class="btn btn-p" onclick="buildOps('push')">Push</button>
+        <button class="btn btn-p" onclick="buildOps('pop')">Pop</button>
+        <button class="btn btn-p" onclick="buildOps('peek')">Peek</button>
       </div>
     </div>
   </div>
-
-  <div class="log-panel">
-    <div class="log-hdr">Step Log <button onclick="clearLog()">Clear</button></div>
-    <div class="log-body" id="log"><div class="log-empty">Ready. Use controls above to begin.</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-  const canvas = document.getElementById('cv');
-  const ctx = canvas.getContext('2d');
-  const DPR = window.devicePixelRatio || 1;
-  canvas.width = 700 * DPR; canvas.height = 260 * DPR;
-  canvas.style.width = '100%'; canvas.style.height = '260px';
-  ctx.scale(DPR, DPR);
-
-  const W = 700, H = 260;
-  const CW = 160, CH = 36, CGAP = 6;
-  const CX = W / 2 - CW / 2;
-  const BASE_Y = H - 40;
-  const MAX_ITEMS = 6;
-
-  const COL_ACCENT = '#e8622a', COL_INK = '#1a1a2e', COL_MUTED = '#5a5a72';
-  const COL_BORDER = '#e2e0da';
-
-  let stack = ['bottom', 'data', 'top'];
-  let hlTop = false;
-  let hlPeek = false;
-  let hlTimer = null;
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#f9f8f5';
-    ctx.fillRect(0, 0, W, H);
-
-    // Title
-    ctx.fillStyle = COL_INK;
-    ctx.font = '600 13px Inter, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('Stack  [size: ' + stack.length + ']', 20, 28);
-
-    // Base plate
-    ctx.fillStyle = '#e2e0da';
-    ctx.fillRect(CX - 10, BASE_Y, CW + 20, 8);
-
-    if (stack.length === 0) {
-      ctx.fillStyle = COL_MUTED;
-      ctx.font = 'italic 13px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Stack is empty', W / 2, BASE_Y - 20);
-    }
-
-    stack.forEach((val, i) => {
-      const isTop = i === stack.length - 1;
-      const y = BASE_Y - (i + 1) * (CH + CGAP);
-      const isHL = isTop && (hlTop || hlPeek);
-
-      // Frame
-      ctx.fillStyle = isHL ? '#fff3ee' : (isTop ? '#fffbf9' : '#fff');
-      ctx.strokeStyle = isHL ? COL_ACCENT : (isTop ? COL_ACCENT : COL_BORDER);
-      ctx.lineWidth = isHL ? 2.5 : (isTop ? 2 : 1.5);
-      roundRect(CX, y, CW, CH, 7);
-
-      // Value text
-      ctx.fillStyle = isHL ? COL_ACCENT : (isTop ? COL_ACCENT : COL_INK);
-      ctx.font = '600 15px "JetBrains Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(String(val), CX + CW / 2, y + CH / 2 + 6);
-
-      // TOP label
-      if (isTop) {
-        ctx.fillStyle = COL_ACCENT;
-        ctx.font = '700 10px Inter, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('TOP', CX + CW + 10, y + CH / 2 + 4);
-        // arrow pointing left
-        ctx.strokeStyle = COL_ACCENT;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(CX + CW + 9, y + CH / 2);
-        ctx.lineTo(CX + CW + 3, y + CH / 2);
-        ctx.stroke();
+var player=null;
+var CUR_STACK=[10,25,7,42,18];
+var OPS=[
+  {type:'push',val:99},
+  {type:'peek'},
+  {type:'pop'},
+  {type:'pop'},
+  {type:'push',val:55}
+];
+function generateSteps(stack,ops){
+  var steps=[], s=stack.slice(), states=new Array(s.length).fill('default');
+  function snap(){return {stack:s.slice(),states:states.slice()};}
+  steps.push({title:'Stack: ['+s.join(', ')+'] (top='+s[s.length-1]+')',
+    what:'LIFO stack with '+s.length+' elements. Top = '+s[s.length-1]+'.',
+    why:'LIFO: last pushed = first popped. All ops O(1).',
+    ...snap()});
+  ops.forEach(function(op){
+    if(op.type==='push'){
+      s.push(op.val); states=new Array(s.length).fill('default'); states[s.length-1]='pushed';
+      steps.push({title:'PUSH '+op.val,
+        what:'Add '+op.val+' to top. Stack: ['+s.join(',')+'].',
+        why:'O(1): increment top pointer, store value.',
+        ...snap()});
+      states[s.length-1]='default';
+    } else if(op.type==='pop'){
+      if(s.length>0){
+        states[s.length-1]='popped';
+        steps.push({title:'POP → '+s[s.length-1],
+          what:'Remove top='+s[s.length-1]+'. Stack: ['+s.slice(0,-1).join(',')+'].',
+          why:'O(1): decrement top pointer, return value.',
+          ...snap()});
+        s.pop(); states=new Array(s.length).fill('default');
+        steps.push({title:'After POP: top='+(s.length>0?s[s.length-1]:'(empty)'),
+          what:'Stack: ['+s.join(',')+'].',
+          why:'O(1) pop.',
+          ...snap()});
+      } else {
+        steps.push({title:'POP on empty stack',what:'Stack underflow!',why:'Must check isEmpty() before pop.',...snap()});
       }
-    });
-  }
-
-  function roundRect(x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  }
-
-  function pushVal() {
-    const inp = document.getElementById('valInput');
-    const v = inp.value.trim();
-    if (!v) { logStep('Enter a value first.', 'err'); return; }
-    if (stack.length >= MAX_ITEMS) { logStep('Stack full (max ' + MAX_ITEMS + ' for display).', 'err'); return; }
-    stack.push(v);
-    hlTop = true; hlPeek = false;
-    if (hlTimer) clearTimeout(hlTimer);
-    hlTimer = setTimeout(() => { hlTop = false; draw(); }, 700);
-    logStep('push("' + v + '") → stack size = ' + stack.length, 'ok');
-    inp.value = '';
-    draw();
-  }
-
-  function popVal() {
-    if (stack.length === 0) { logStep('pop() failed: stack is empty!', 'err'); return; }
-    const v = stack.pop();
-    hlTop = false; hlPeek = false;
-    logStep('pop() → removed "' + v + '", size now ' + stack.length, 'info');
-    draw();
-  }
-
-  function peekVal() {
-    if (stack.length === 0) { logStep('peek() failed: stack is empty!', 'err'); return; }
-    const v = stack[stack.length - 1];
-    hlPeek = true; hlTop = false;
-    if (hlTimer) clearTimeout(hlTimer);
-    hlTimer = setTimeout(() => { hlPeek = false; draw(); }, 900);
-    logStep('peek() → top = "' + v + '" (not removed)', 'info');
-    draw();
-  }
-
-  function resetStack() {
-    stack = [];
-    hlTop = false; hlPeek = false;
-    logStep('Stack reset to empty.', 'info');
-    draw();
-  }
-
-  function logStep(msg, type) {
-    const log = document.getElementById('log');
-    const empty = log.querySelector('.log-empty');
-    if (empty) empty.remove();
-    const entry = document.createElement('div');
-    entry.className = 'log-entry ' + (type || 'info');
-    const ts = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    entry.textContent = ts + '  ' + msg;
-    log.appendChild(entry);
-    log.scrollTop = log.scrollHeight;
-  }
-
-  function clearLog() {
-    document.getElementById('log').innerHTML = '<div class="log-empty">Log cleared.</div>';
-  }
-
-  document.getElementById('valInput').addEventListener('keydown', e => { if (e.key === 'Enter') pushVal(); });
-  draw();
+    } else if(op.type==='peek'){
+      if(s.length>0){
+        states[s.length-1]='top';
+        steps.push({title:'PEEK → '+s[s.length-1],
+          what:'View top='+s[s.length-1]+' without removing.',
+          why:'O(1): read top index without modifying stack.',
+          ...snap()});
+        states[s.length-1]='default';
+      }
+    }
+  });
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
+}
+function renderStep(step){
+  var sv=document.getElementById('stackVis'); if(!sv) return;
+  var slots=step.stack.map(function(v,i){
+    var isTp=i===step.stack.length-1;
+    var cls=step.states[i]==='pushed'?'pushed':step.states[i]==='popped'?'popped':step.states[i]==='top'?'top':isTp?'top':'default';
+    return '<div class="stack-slot '+cls+'" style="position:relative">'+v+(isTp?'<span class="top-label">← TOP</span>':'')+'</div>';
+  });
+  sv.innerHTML=slots.join('')+'<div class="stack-bottom">⊥ bottom</div>';
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Stack: ['+step.stack.join(', ')+']  |  Size: '+step.stack.length+'  |  Top: '+(step.stack.length>0?step.stack[step.stack.length-1]:'empty');
+}
+function buildOps(type){
+  var val=parseInt(document.getElementById('valInput').value)||42;
+  var ops=[{type:type,val:val}];
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(CUR_STACK.slice(),ops),renderStep,'explanation','sim-bar');
+}
+generateSteps(CUR_STACK,[{type:'peek'}]);
+(function(){if(player) player.destroy();player=new SimulationPlayer(generateSteps(CUR_STACK,[{type:'push',val:99},{type:'pop'},{type:'peek'}]),renderStep,'explanation','sim-bar');})();
 </script>
 </body>
 </html>

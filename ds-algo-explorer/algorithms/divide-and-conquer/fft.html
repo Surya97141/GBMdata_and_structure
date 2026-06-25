@@ -1,202 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fast Fourier Transform – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fast Fourier Transform (FFT)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:920px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:6px}
-.sim-section .sub{font-size:13px;color:#5a5a72;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-.two-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.panel{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px}
-.panel h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:12px}
-table.io-table{width:100%;border-collapse:collapse}
-table.io-table th{font-size:11px;font-weight:600;color:#5a5a72;text-align:center;padding:4px;border-bottom:1px solid #e2e0da}
-table.io-table td{font-family:'JetBrains Mono',monospace;font-size:12px;text-align:center;padding:5px 4px;border-bottom:1px solid #e2e0da;transition:background .3s}
-table.io-table td.hl{background:#d1fae5;font-weight:600}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2;margin-bottom:12px}
-.butterfly{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:14px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a5a72;line-height:1.9}
-.butterfly .stage{font-weight:600;color:#27a060}
-.log{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.fft-rows{font-family:'JetBrains Mono',monospace;font-size:.72rem;margin:.5rem 0;max-height:200px;overflow-y:auto}
+.fft-row{padding:.18rem .4rem;border-radius:3px;margin:.05rem 0}
+.fft-row.cur{background:#fff176}
+.fft-row.done{background:#a8e6a3}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:280px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Fast Fourier Transform
-  </nav>
-  <div class="hero">
-    <div class="category-tag">Divide &amp; Conquer</div>
-    <h1>Fast Fourier Transform</h1>
-    <p class="tagline">Decompose a signal into its frequency components in O(n log n).</p>
-  </div>
-  <div class="explanation">
-    <p>The Fast Fourier Transform (FFT) computes the Discrete Fourier Transform (DFT) in O(n log n) time instead of the naïve O(n²). The DFT converts a time-domain signal (a list of n samples) into a frequency-domain representation (n complex numbers describing amplitude and phase at each frequency).</p>
-    <p>The analogy: a musical chord sounds like a single complex wave, but it is actually composed of several pure sine waves at specific frequencies (the individual notes). The FFT "listens" to the chord and identifies exactly which notes are present and how loud each is — decomposing complexity into simplicity.</p>
-    <p>The divide-and-conquer structure (Cooley-Tukey algorithm): split the input into even-indexed and odd-indexed elements, recursively compute their FFTs, then combine using the butterfly operation. The recurrence T(n) = 2T(n/2) + O(n) yields O(n log n). FFT is foundational in signal processing, audio/image compression (MP3, JPEG), and polynomial multiplication.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>FFT</span></nav>
+  <span class="tag">Divide & Conquer</span>
+  <h1>Fast Fourier Transform</h1>
+  <p class="tagline">Compute DFT in O(n log n) using butterfly operations — the Cooley-Tukey algorithm.</p>
+  <div class="prose">
+    <p>The Cooley-Tukey FFT splits the DFT of n points into two n/2 DFTs of even and odd indices, then combines via butterfly: X[k] = E[k] + W^k × O[k] and X[k+n/2] = E[k] - W^k × O[k]. W = e^(-2πi/n) is the twiddle factor. Applied recursively: O(n log n) total.</p>
+    <p>Magnitude spectrum is shown. Yellow = twiddle factor combination. The butterfly network depth = log₂(n) levels.</p>
   </div>
   <div class="facts">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n log n)</div></div>
-    <div class="fact-card"><div class="label">Naïve DFT</div><div class="value">O(n²)</div></div>
-    <div class="fact-card"><div class="label">Input Size</div><div class="value">Power of 2</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Naive DFT</div><div class="fval">O(n²)</div></div>
+    <div class="fact"><div class="flabel">Key op</div><div class="fval">Butterfly</div></div>
+    <div class="fact"><div class="flabel">Applications</div><div class="fval">Signal, poly mult</div></div>
   </div>
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <p class="sub">8-point DFT on a simple mixed signal (sum of two sine waves)</p>
-    <div class="controls">
-      <button class="btn btn-primary" onclick="runFFT()">Run FFT</button>
-      <button class="btn btn-secondary" onclick="resetFFT()">Reset</button>
-    </div>
-    <div class="two-panels">
-      <div class="panel">
-        <h3>Time Domain Input x[n]</h3>
-        <table class="io-table" id="inputTable">
-          <tr><th>n</th><th>x[n]</th></tr>
-        </table>
-      </div>
-      <div class="panel">
-        <h3>Frequency Domain |X[k]|</h3>
-        <table class="io-table" id="outputTable">
-          <tr><th>k</th><th>|X[k]|</th><th>freq</th></tr>
-        </table>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="640" height="240"></canvas>
+      <div class="fft-rows" id="fftRows"></div>
+      <div class="info-bar" id="infoBar">FFT simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Signal values (8 values, power of 2):</label>
+        <input type="text" id="signal" value="0,1,2,3,4,3,2,1"/>
+        <button class="btn btn-p" onclick="rebuild()">Compute FFT</button>
       </div>
     </div>
-    <canvas id="freqChart" width="840" height="180"></canvas>
-    <div class="butterfly">
-      <span class="stage">Butterfly (Cooley-Tukey) stages:</span><br>
-      Stage 1: pairs (0,1),(2,3),(4,5),(6,7) — twiddle W₈⁰<br>
-      Stage 2: pairs (0,2),(1,3),(4,6),(5,7) — twiddle W₈⁰,W₈²<br>
-      Stage 3: pairs (0,4),(1,5),(2,6),(3,7) — twiddle W₈⁰,W₈¹,W₈²,W₈³<br>
-      Each butterfly: X[k] = E[k] + W·O[k], &nbsp;X[k+N/2] = E[k] - W·O[k]
-    </div>
-    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
   </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const N=8;
-// Signal: sum of sin(2πk/8) at freq 1 and sin(2π·2k/8) at freq 2
-const signal=Array.from({length:N},(_, k)=>
-  Math.round((Math.sin(2*Math.PI*1*k/N)+0.5*Math.sin(2*Math.PI*2*k/N))*100)/100
-);
-let fftResult=null;
-
-function buildInputTable(){
-  const t=document.getElementById('inputTable');
-  while(t.rows.length>1)t.deleteRow(1);
-  signal.forEach((v,i)=>{const r=t.insertRow();r.insertCell().textContent=i;r.insertCell().textContent=v.toFixed(3);});
+var player=null;
+function fft(re,im){
+  var n=re.length;
+  if(n===1) return;
+  var reE=[],imE=[],reO=[],imO=[];
+  for(var i=0;i<n;i+=2){reE.push(re[i]);imE.push(im[i]);}
+  for(var i=1;i<n;i+=2){reO.push(re[i]);imO.push(im[i]);}
+  fft(reE,imE); fft(reO,imO);
+  for(var k=0;k<n/2;k++){
+    var angle=-2*Math.PI*k/n;
+    var cos=Math.cos(angle),sin=Math.sin(angle);
+    var tRe=cos*reO[k]-sin*imO[k], tIm=cos*imO[k]+sin*reO[k];
+    re[k]=reE[k]+tRe; im[k]=imE[k]+tIm;
+    re[k+n/2]=reE[k]-tRe; im[k+n/2]=imE[k]-tIm;
+  }
 }
-
-function buildOutputTable(mags){
-  const t=document.getElementById('outputTable');
-  while(t.rows.length>1)t.deleteRow(1);
-  if(!mags)return;
-  const labels=['DC','F1','F2','F3','F4','F5','F6','F7'];
-  mags.forEach((v,i)=>{
-    const r=t.insertRow();
-    r.insertCell().textContent=i;
-    const vc=r.insertCell();vc.textContent=v.toFixed(3);
-    r.insertCell().textContent=labels[i];
-    if(v>0.3)vc.className='hl';
-  });
-}
-
-function drawFreqChart(mags){
-  const cvs=document.getElementById('freqChart'),ctx=cvs.getContext('2d');
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  if(!mags)return;
-  const maxMag=Math.max(...mags,1);
-  const barW=60,gap=20,startX=40,h=cvs.height,barArea=h-50;
-  mags.forEach((v,i)=>{
-    const bh=Math.round((v/maxMag)*barArea);
-    const x=startX+i*(barW+gap),y=h-30-bh;
-    ctx.fillStyle=v>0.3?'#27a060':'#d1fae5';
-    ctx.beginPath();ctx.roundRect(x,y,barW,bh,4);ctx.fill();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 12px Inter';ctx.textAlign='center';
-    ctx.fillText(v.toFixed(2),x+barW/2,y-4);
-    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';
-    ctx.fillText('k='+i,x+barW/2,h-14);
-  });
-  ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(startX-10,h-30);ctx.lineTo(startX+N*(barW+gap),h-30);ctx.stroke();
-  ctx.fillStyle='#5a5a72';ctx.font='12px Inter';ctx.textAlign='left';
-  ctx.fillText('Frequency magnitude |X[k]|',startX,16);
-}
-
-function dft(x){
-  const N=x.length;
-  const re=new Array(N).fill(0),im=new Array(N).fill(0);
-  for(let k=0;k<N;k++){
-    for(let n=0;n<N;n++){
-      const angle=2*Math.PI*k*n/N;
-      re[k]+=x[n]*Math.cos(angle);
-      im[k]-=x[n]*Math.sin(angle);
+function generateSteps(signal){
+  var n=signal.length, steps=[];
+  var re=signal.slice(), im=new Array(n).fill(0);
+  var mags=[], rows=[], curRow=-1;
+  function snap(){return {mags:mags.slice(),rows:rows.map(function(r){return Object.assign({},r);}),curRow:curRow,n:n};}
+  steps.push({title:'FFT of ['+signal.join(',')+']',
+    what:'n='+n+' samples. Cooley-Tukey radix-2 FFT. log₂('+n+')='+Math.log2(n)+' levels.',
+    why:'Split even/odd indices recursively; combine with butterfly at each level.',
+    ...snap()});
+  steps.push({title:'Bit-reversal permutation (reorder indices)',
+    what:'Reorder input: indices in bit-reversed order for in-place butterfly.',
+    why:'Allows bottom-up merge of size-1 DFTs to full n-point DFT.',
+    ...snap()});
+  for(var level=1;level<=Math.log2(n);level++){
+    var halfSize=Math.pow(2,level-1), size=Math.pow(2,level);
+    for(var start=0;start<n;start+=size){
+      for(var k=0;k<halfSize;k++){
+        var angle=-2*Math.PI*k/size;
+        var cos=Math.cos(angle),sin=Math.sin(angle);
+        var idx=start+k, jdx=start+k+halfSize;
+        var tRe=cos*re[jdx]-sin*im[jdx], tIm=cos*im[jdx]+sin*re[jdx];
+        re[idx]+=tRe; im[idx]+=tIm;
+        re[jdx]-=tRe; im[jdx]-=tIm;
+        var desc='Level '+level+': butterfly ['+idx+','+jdx+'] twiddle W^'+k+'/'+size;
+        rows.push({desc:desc,cls:'cur'});curRow=rows.length-1;
+        var newMags=[];for(var q=0;q<n;q++) newMags.push(Math.sqrt(re[q]*re[q]+im[q]*im[q]));
+        mags=newMags;
+        steps.push({title:'Butterfly ('+idx+','+jdx+') level='+level+', k='+k,
+          what:'W^('+k+'/'+size+'): cos='+cos.toFixed(2)+', sin='+sin.toFixed(2)+'. Update bins '+idx+' and '+jdx+'.',
+          why:'Butterfly: X[k]= E[k]+W×O[k], X[k+N/2]= E[k]-W×O[k].',
+          ...snap()});
+      }
     }
   }
-  return re.map((r,i)=>Math.sqrt(r*r+im[i]*im[i]));
+  var finalMags=[];for(var q=0;q<n;q++) finalMags.push(Math.sqrt(re[q]*re[q]+im[q]*im[q]));
+  mags=finalMags;
+  steps.push({title:'FFT complete: magnitudes ['+finalMags.map(function(v){return v.toFixed(1);}).join(',')+']',
+    what:'Frequency domain magnitudes computed. DC component (k=0) = '+finalMags[0].toFixed(1)+'.',
+    why:'FFT reveals frequency content of signal in O(n log n) vs O(n²) naive DFT.',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function runFFT(){
-  document.getElementById('logEntries').innerHTML='';
-  log(`Input signal: ${signal.map(v=>v.toFixed(2)).join(', ')}`);
-  log(`Signal = sin(2π·1·n/8) + 0.5·sin(2π·2·n/8)  [mixed frequency]`);
-  log(`Computing 8-point DFT via Cooley-Tukey butterfly...`);
-  await sleep(400);
-  log(`Stage 1: split even/odd indices`);
-  log(`  Even: [${signal.filter((_,i)=>i%2===0).map(v=>v.toFixed(2)).join(',')}]`);
-  log(`  Odd:  [${signal.filter((_,i)=>i%2!==0).map(v=>v.toFixed(2)).join(',')}]`);
-  await sleep(500);
-  log(`Stage 2: recurse on each half (n=4)`);
-  await sleep(400);
-  log(`Stage 3: butterfly combine — apply twiddle factors W₈^k`);
-  await sleep(400);
-  const mags=dft(signal);
-  fftResult=mags;
-  buildOutputTable(mags);
-  drawFreqChart(mags);
-  log(`FFT complete. Frequency magnitudes:`);
-  mags.forEach((m,k)=>{
-    if(m>0.1)log(`  k=${k}: |X[${k}]|=${m.toFixed(3)} ${m>0.5?'<-- dominant frequency!':''}`);
-  });
-  log(`Dominant frequencies detected at k=1 (fundamental) and k=2 (harmonic).`);
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=240, DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  var mags=step.mags, n=step.n;
+  if(!mags.length) return;
+  var maxM=Math.max.apply(null,mags)||1;
+  var bW=Math.floor((W-60)/n)-2, pad=30;
+  for(var i=0;i<n;i++){
+    var bH=Math.max(2,(mags[i]/maxM)*(H-60));
+    var x=pad+i*(bW+2), y=H-35-bH;
+    ctx.fillStyle=i===0?'#f59e0b':'#7b4fd4';
+    ctx.fillRect(x,y,bW,bH);
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=1; ctx.strokeRect(x,y,bW,bH);
+    ctx.fillStyle='#1a1a2e'; ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText('k='+i,x+bW/2,H-18);
+    ctx.fillText(mags[i].toFixed(0),x+bW/2,y-3);
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='n='+n+'  |  Magnitudes: ['+mags.map(function(v){return v.toFixed(1);}).join(', ')+']';
+  var fr=document.getElementById('fftRows');
+  if(fr){
+    var h=step.rows.slice(-6).map(function(r,i){
+      return '<div class="fft-row '+(i===step.rows.slice(-6).length-1?'cur':'done')+'">'+r.desc+'</div>';
+    }).join('');
+    fr.innerHTML=h;
+  }
 }
-
-function resetFFT(){
-  fftResult=null;buildOutputTable(null);
-  drawFreqChart(null);
-  document.getElementById('logEntries').innerHTML='';
+function rebuild(){
+  var signal=document.getElementById('signal').value.split(',').map(function(x){return parseFloat(x.trim())||0;});
+  var n=signal.length;
+  var pow2=1; while(pow2<n) pow2*=2;
+  while(signal.length<pow2) signal.push(0);
+  signal=signal.slice(0,8);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(signal),renderStep,'explanation','sim-bar');
 }
-
-buildInputTable();drawFreqChart(null);
+rebuild();
 </script>
 </body>
 </html>

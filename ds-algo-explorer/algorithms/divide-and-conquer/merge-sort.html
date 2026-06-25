@@ -1,170 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Merge Sort – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Merge Sort</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#27a060;text-decoration:none}a:hover{text-decoration:underline}
-.container{max-width:900px;margin:0 auto;padding:32px 24px}
-.breadcrumb{font-size:13px;color:#5a5a72;margin-bottom:28px}
-.breadcrumb span{margin:0 6px}
-.hero{margin-bottom:36px}
-.category-tag{display:inline-block;background:#27a060;color:#fff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:1.05rem;color:#5a5a72}
-.explanation p{line-height:1.75;margin-bottom:14px;color:#2e2e42}
-.explanation{margin-bottom:32px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
-.fact-card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:20px;text-align:center}
-.fact-card .label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:8px}
-.fact-card .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1a1a2e}
-.sim-section{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:28px;margin-bottom:28px}
-.sim-section h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.btn{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
-.btn-primary{background:#27a060;color:#fff}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:#e2e0da;color:#1a1a2e}.btn-secondary:hover{opacity:.75}
-canvas{display:block;border-radius:10px;border:1px solid #e2e0da;background:#f7f6f2;margin-bottom:12px}
-.log{background:#f7f6f2;border:1px solid #e2e0da;border-radius:10px;padding:16px;max-height:180px;overflow-y:auto}
-.log h3{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2e2e42;padding:3px 0;border-bottom:1px solid #e2e0da}
-.log-entry:last-child{border-bottom:none}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#27a060;margin-top:8px}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;width:300px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Merge Sort
-  </nav>
-
-  <div class="hero">
-    <div class="category-tag">Divide &amp; Conquer</div>
-    <h1>Merge Sort</h1>
-    <p class="tagline">Divide into halves recursively, then merge sorted halves together.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Merge Sort</span></nav>
+  <span class="tag">Divide & Conquer</span>
+  <h1>Merge Sort</h1>
+  <p class="tagline">Divide array in half, sort each half, merge — O(n log n) guaranteed.</p>
+  <div class="prose">
+    <p>Merge sort recursively splits the array into halves until single elements, then merges sorted halves by comparing elements. It is stable, O(n log n) in all cases, and the basis for external sorting (tapes, large files).</p>
+    <p>Bars represent array values. Yellow = elements being compared during merge. Green = placed in correct position. Purple = left/right subarrays in current merge.</p>
   </div>
-
-  <div class="explanation">
-    <p>Merge sort is the quintessential divide-and-conquer algorithm. It recursively splits the array in half until each sub-array has one element (trivially sorted), then merges pairs of sorted sub-arrays back together. The merge step is the workhorse: it compares elements from two sorted halves and interleaves them in order.</p>
-    <p>Think of sorting a large deck of cards. You split the deck in half repeatedly until you have single cards. Then you pick up two single cards and sort them, then pick up two sorted pairs and merge them into a sorted quad, and so on — always merging two already-sorted piles into one larger sorted pile.</p>
-    <p>Merge sort guarantees O(n log n) in all cases — best, average, and worst — unlike quicksort. It is a stable sort (equal elements retain their original order) and is the preferred algorithm for sorting linked lists or external data (data too large to fit in RAM) due to its sequential access patterns.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="label">Time Complexity</div><div class="value">O(n log n)</div></div>
-    <div class="fact-card"><div class="label">Space Complexity</div><div class="value">O(n)</div></div>
-    <div class="fact-card"><div class="label">Stable Sort</div><div class="value">Yes</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Stable</div><div class="fval">Yes</div></div>
+    <div class="fact"><div class="flabel">Guaranteed</div><div class="fval">Always O(n log n)</div></div>
   </div>
-
-  <div class="sim-section">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button class="btn btn-primary" onclick="startSort()">Sort</button>
-      <button class="btn btn-secondary" onclick="resetSort()">Shuffle &amp; Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="640" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Array:</label>
+        <input type="text" id="arr" value="38,27,43,3,9,82,10"/>
+        <button class="btn btn-p" onclick="rebuild()">Sort</button>
+      </div>
     </div>
-    <canvas id="treeCanvas" width="840" height="140"></canvas>
-    <canvas id="barCanvas" width="840" height="160"></canvas>
-    <div class="log"><h3>Step Log</h3><div id="logEntries"></div></div>
   </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-const ACCENT='#27a060',MERGE_COLOR='#86efac',COMPARE='#fbbf24',DEFAULT='#d1fae5';
-let arr=[38,27,43,3,9,82,10,52];
-let running=false;
-const barCvs=document.getElementById('barCanvas'),barCtx=barCvs.getContext('2d');
-const treeCvs=document.getElementById('treeCanvas'),treeCtx=treeCvs.getContext('2d');
-let highlights={};
-let treeData=[];
-
-function drawBars(){
-  barCtx.clearRect(0,0,barCvs.width,barCvs.height);
-  const n=arr.length,w=barCvs.width,h=barCvs.height;
-  const barW=Math.floor((w-60)/(n))-4,maxVal=Math.max(...arr);
-  arr.forEach((v,i)=>{
-    const bh=Math.round((v/maxVal)*(h-40));
-    const x=30+i*(barW+4),y=h-10-bh;
-    const hl=highlights[i];
-    barCtx.fillStyle=hl==='merge'?MERGE_COLOR:hl==='compare'?COMPARE:hl==='sorted'?ACCENT:DEFAULT;
-    barCtx.beginPath();barCtx.roundRect(x,y,barW,bh,4);barCtx.fill();
-    barCtx.fillStyle='#1a1a2e';barCtx.font='bold 13px Inter';barCtx.textAlign='center';
-    barCtx.fillText(v,x+barW/2,y-4);
-    barCtx.fillStyle='#5a5a72';barCtx.font='10px Inter';barCtx.fillText(i,x+barW/2,h-2);
-  });
-}
-
-function drawTree(){
-  treeCtx.clearRect(0,0,treeCvs.width,treeCvs.height);
-  treeData.forEach(node=>{
-    treeCtx.fillStyle='#fff';treeCtx.strokeStyle='#27a060';treeCtx.lineWidth=1.5;
-    treeCtx.beginPath();treeCtx.roundRect(node.x-node.w/2,node.y,node.w,22,4);
-    treeCtx.fill();treeCtx.stroke();
-    treeCtx.fillStyle='#1a1a2e';treeCtx.font='10px JetBrains Mono';treeCtx.textAlign='center';
-    treeCtx.fillText('['+node.vals.join(',')+']',node.x,node.y+14);
-    if(node.parent){
-      treeCtx.strokeStyle='#27a060';treeCtx.lineWidth=1;
-      treeCtx.beginPath();treeCtx.moveTo(node.parent.x,node.parent.y+22);
-      treeCtx.lineTo(node.x,node.y);treeCtx.stroke();
+var player=null;
+function generateSteps(arr){
+  var a=arr.slice(), steps=[], n=a.length;
+  var states=new Array(n).fill('');
+  function snap(lo,mid,hi,cmpI,cmpJ){return {a:a.slice(),states:states.slice(),lo:lo,mid:mid,hi:hi,cmpI:cmpI,cmpJ:cmpJ,n:n};}
+  steps.push({title:'Merge Sort: ['+arr.join(',')+']',
+    what:'Recursively split, then merge sorted halves.',
+    why:'Divide and conquer: O(log n) levels, O(n) work per level = O(n log n).',
+    ...snap(-1,-1,-1,-1,-1)});
+  function merge(lo,mid,hi){
+    var left=a.slice(lo,mid+1), right=a.slice(mid+1,hi+1);
+    var i=0,j=0,k=lo;
+    for(var x=lo;x<=hi;x++) states[x]='sub';
+    while(i<left.length&&j<right.length){
+      states[lo+i]='cur'; states[mid+1+j]='cur';
+      if(left[i]<=right[j]){
+        a[k]=left[i]; states[k]='done'; i++;
+      } else {
+        a[k]=right[j]; states[k]='done'; j++;
+      }
+      steps.push({title:'Merge ['+lo+'..'+mid+'] and ['+(mid+1)+'..'+hi+']',
+        what:'Compare '+left[i-+(left[i]<=right[j-1]?0:1)]+'[L] vs '+right[j-(right[j]<=left[i]?0:1)]+'[R]. Pick smaller → a['+k+']='+a[k]+'.',
+        why:'Merge step: smaller of two pointers goes next.',
+        ...snap(lo,mid,hi,lo+i,mid+1+j)});
+      k++;
     }
-  });
-}
-
-function log(msg){const d=document.getElementById('logEntries');const e=document.createElement('div');e.className='log-entry';e.textContent=msg;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function mergeSort(a,lo,hi,depth,cx,cy,parent){
-  if(lo>=hi){
-    treeData.push({x:cx,y:cy,w:Math.max(30,(hi-lo+1)*24),vals:[a[lo]],parent});
-    drawTree();return;
+    while(i<left.length){a[k]=left[i];states[k]='done';i++;k++;}
+    while(j<right.length){a[k]=right[j];states[k]='done';j++;k++;}
   }
-  treeData.push({x:cx,y:cy,w:Math.max(40,(hi-lo+1)*22),vals:a.slice(lo,hi+1),parent});
-  drawTree();
-  const mid=Math.floor((lo+hi)/2);
-  const spread=(hi-lo)*28;
-  await sleep(300);
-  await mergeSort(a,lo,mid,depth+1,cx-spread/2,cy+50,{x:cx,y:cy});
-  await mergeSort(a,mid+1,hi,depth+1,cx+spread/2,cy+50,{x:cx,y:cy});
-  // Merge
-  log(`Merging [${lo}..${mid}] and [${mid+1}..${hi}]`);
-  let i=lo,j=mid+1,tmp=[];
-  while(i<=mid&&j<=hi){
-    highlights[i]='compare';highlights[j]='compare';drawBars();await sleep(250);
-    if(a[i]<=a[j]){tmp.push(a[i++]);}else{tmp.push(a[j++]);}
+  function msort(lo,hi){
+    if(lo>=hi) return;
+    var mid=Math.floor((lo+hi)/2);
+    steps.push({title:'Split ['+lo+'..'+hi+'] into ['+lo+'..'+mid+'] and ['+(mid+1)+'..'+hi+']',
+      what:'Divide at midpoint '+mid+'.',
+      why:'Halve problem size each level.',
+      ...snap(lo,mid,hi,-1,-1)});
+    msort(lo,mid); msort(mid+1,hi); merge(lo,mid,hi);
   }
-  while(i<=mid)tmp.push(a[i++]);
-  while(j<=hi)tmp.push(a[j++]);
-  for(let k=lo;k<=hi;k++){a[k]=tmp[k-lo];highlights[k]='merge';}
-  drawBars();
-  log(`Merged result: [${arr.slice(lo,hi+1).join(', ')}]`);
-  await sleep(350);
-  for(let k=lo;k<=hi;k++)highlights[k]='sorted';
-  drawBars();
+  msort(0,n-1);
+  steps.push({title:'Sorted: ['+a.join(',')+']',
+    what:'Array fully sorted.',
+    why:'O(n log n) total — '+n+' elements, ≈'+Math.ceil(n*Math.log2(n))+' comparisons.',
+    ...snap(-1,-1,-1,-1,-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-async function startSort(){
-  if(running)return;running=true;
-  highlights={};treeData=[];document.getElementById('logEntries').innerHTML='';
-  log('Starting Merge Sort — divide phase begins');
-  await mergeSort(arr,0,arr.length-1,0,treeCvs.width/2,10,null);
-  log('Sort complete!');running=false;
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=280, DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  var n=step.n, a=step.a, st=step.states;
+  var max=Math.max.apply(null,a)||1;
+  var bW=Math.floor((W-40)/n)-2, pad=20;
+  for(var i=0;i<n;i++){
+    var bH=Math.max(4,((a[i]/max)*(H-60)));
+    var x=pad+i*(bW+2), y=H-40-bH;
+    var color=st[i]==='done'?'#a8e6a3':st[i]==='cur'?'#fff176':st[i]==='sub'?'#c3b1e1':'#7b4fd4';
+    if(i===step.cmpI||i===step.cmpJ) color='#fff176';
+    ctx.fillStyle=color; ctx.fillRect(x,y,bW,bH);
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=1; ctx.strokeRect(x,y,bW,bH);
+    ctx.fillStyle='#1a1a2e'; ctx.font='bold 11px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(a[i],x+bW/2,y-4);
+    ctx.fillText(i,x+bW/2,H-22);
+  }
+  if(step.lo>=0&&step.hi>=0){
+    ctx.strokeStyle='rgba(123,79,212,0.5)'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    var x0=pad+step.lo*(bW+2), x1=pad+(step.hi+1)*(bW+2);
+    ctx.strokeRect(x0-2,20,x1-x0,H-60); ctx.setLineDash([]);
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Range: ['+(step.lo>=0?step.lo:'—')+'..'+(step.hi>=0?step.hi:'—')+']  |  Mid='+(step.mid>=0?step.mid:'—');
 }
-
-function resetSort(){
-  running=false;
-  arr=[38,27,43,3,9,82,10,52].sort(()=>Math.random()-.5).map(Math.round);
-  highlights={};treeData=[];
-  document.getElementById('logEntries').innerHTML='';
-  drawBars();drawTree();
+function rebuild(){
+  var arr=document.getElementById('arr').value.split(',').map(function(x){return parseInt(x.trim());}).filter(function(x){return !isNaN(x);}).slice(0,12);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(arr),renderStep,'explanation','sim-bar');
 }
-drawBars();
+rebuild();
 </script>
 </body>
 </html>

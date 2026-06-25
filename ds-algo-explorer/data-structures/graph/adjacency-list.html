@@ -1,273 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Adjacency List — DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Adjacency List</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #f7f6f2; color: #1a1a2e; font-family: 'Inter', sans-serif; min-height: 100vh; }
-  a { color: #7b4fd4; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  .breadcrumb { padding: 18px 40px; font-size: 13px; color: #5a5a72; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .breadcrumb span { color: #c0bdb5; }
-
-  .hero { background: #fff; border-bottom: 1px solid #e2e0da; padding: 48px 40px 36px; }
-  .tag { display: inline-block; background: #ede8f9; color: #7b4fd4; font-size: 11px; font-weight: 600; letter-spacing:.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
-  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.4rem; line-height: 1.15; margin-bottom: 10px; }
-  .hero p { color: #5a5a72; font-size: 1.05rem; max-width: 640px; }
-
-  .content { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
-  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.35rem; margin-bottom: 12px; }
-  .prose p { color: #3a3a52; line-height: 1.75; margin-bottom: 14px; font-size: .97rem; }
-
-  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 28px 0; }
-  .fact-card { background: #fff; border: 1px solid #e2e0da; border-radius: 10px; padding: 18px; }
-  .fact-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.07em; color: #5a5a72; margin-bottom: 8px; }
-  .fact-card .value { font-family: 'JetBrains Mono', monospace; font-size: .95rem; color: #7b4fd4; font-weight: 600; }
-  .fact-card .sub { font-size: .8rem; color: #5a5a72; margin-top: 4px; }
-
-  .sim-box { background: #fff; border: 1px solid #e2e0da; border-radius: 12px; overflow: hidden; margin: 32px 0; }
-  .sim-header { padding: 14px 20px; border-bottom: 1px solid #e2e0da; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .sim-title { font-weight: 600; font-size: .97rem; margin-right: auto; }
-  .btn { padding: 7px 14px; border-radius: 7px; border: 1.5px solid #7b4fd4; background: #fff; color: #7b4fd4; font-weight: 600; cursor: pointer; font-size: .84rem; font-family: 'Inter', sans-serif; transition: background .15s, color .15s; }
-  .btn:hover { background: #7b4fd4; color: #fff; }
-  .btn.danger { border-color: #c33; color: #c33; }
-  .btn.danger:hover { background: #c33; color: #fff; }
-  .select-pair { display: flex; gap: 6px; align-items: center; font-size: .84rem; color: #5a5a72; }
-  .select-pair select { padding: 5px 8px; border: 1.5px solid #e2e0da; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: .84rem; color: #1a1a2e; background: #fff; cursor: pointer; }
-
-  .sim-body { display: grid; grid-template-columns: 1fr 1fr; }
-  @media (max-width: 620px) { .sim-body { grid-template-columns: 1fr; } }
-  .canvas-panel { border-right: 1px solid #e2e0da; padding: 12px; }
-  canvas { display: block; width: 100%; background: #faf9f7; border-radius: 8px; cursor: pointer; }
-  .list-panel { padding: 18px 16px; overflow-y: auto; max-height: 280px; }
-  .list-panel h3 { font-size: .85rem; font-weight: 600; color: #5a5a72; margin-bottom: 12px; letter-spacing:.05em; }
-
-  .adj-row { display: flex; align-items: center; gap: 0; margin-bottom: 10px; transition: background .2s; border-radius: 8px; padding: 4px 6px; }
-  .adj-row.highlighted { background: #ede8f9; }
-  .adj-label { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 2px solid #7b4fd4; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; color: #7b4fd4; flex-shrink: 0; }
-  .arrow-sym { font-size: 1.1rem; color: #b0a8d0; margin: 0 6px; }
-  .adj-nodes { display: flex; flex-wrap: wrap; gap: 6px; }
-  .adj-node { background: #7b4fd4; color: #fff; border-radius: 6px; padding: 3px 10px; font-family: 'JetBrains Mono', monospace; font-size: .82rem; font-weight: 600; }
-  .adj-null { font-family: 'JetBrains Mono', monospace; font-size: .82rem; color: #c0bdb5; }
-
-  .space-note { background: #faf9f7; border: 1px solid #e2e0da; border-radius: 8px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: .82rem; color: #5a5a72; margin-top: 12px; }
-  .space-note b { color: #7b4fd4; }
-
-  .log-box { background: #1a1a2e; min-height: 80px; max-height: 120px; overflow-y: auto; padding: 12px 18px; }
-  .log-line { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #a8a4c8; margin-bottom: 4px; }
-  .log-line .ts { color: #5a5a72; margin-right: 8px; }
-  .log-line .hi { color: #b993ff; }
-
-  .back-link { display: inline-flex; align-items: center; gap: 6px; color: #7b4fd4; font-size: .9rem; font-weight: 500; margin-top: 20px; }
-  .info-strip { background: #ede8f9; border-left: 3px solid #7b4fd4; border-radius: 0 8px 8px 0; padding: 10px 16px; margin-bottom: 20px; font-size: .87rem; color: #3a2060; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.al-vis{margin:.5rem 0;font-family:'JetBrains Mono',monospace;font-size:.8rem}
+.al-row{display:flex;align-items:center;gap:6px;margin:.3rem 0}
+.al-vert{width:32px;height:32px;border:2px solid var(--a);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;background:var(--bg)}
+.al-vert.hl{background:#fff176;border-color:#d97706}
+.al-edge-node{padding:.2rem .5rem;border:1.5px solid var(--b);border-radius:5px;font-size:.75rem;transition:background .15s}
+.al-edge-node.cur{background:#c3b1e1;border-color:#7b4fd4}
+.al-arrow{color:var(--m);font-size:.7rem}
+.al-null{color:var(--m);font-size:.72rem;padding:.1rem .3rem;border:1px dashed var(--b);border-radius:4px}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>/</span>
-  <a href="../index.html">Data Structures</a><span>/</span>
-  <strong>Adjacency List</strong>
-</nav>
-
-<header class="hero">
-  <div style="max-width:900px;margin:0 auto;">
-    <div class="tag">Graph Representation</div>
-    <h1>Adjacency List</h1>
-    <p>Each vertex stores a list of its neighbours — memory-efficient for sparse graphs and the go-to for BFS and DFS.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Adjacency List</span></nav>
+  <span class="tag">Graph</span>
+  <h1>Adjacency List</h1>
+  <p class="tagline">Array of linked lists — O(V+E) space, O(degree) neighbor scan. Best for sparse graphs.</p>
+  <div class="prose">
+    <p>An adjacency list stores an array of V lists. Each list contains the neighbors (and weights) of that vertex. Space is O(V+E) — only existing edges are stored. Finding neighbors is O(degree) — ideal for sparse graphs where degree ≪ V. Used by BFS, DFS, Dijkstra, and most graph algorithms.</p>
+    <p>Yellow = currently active vertex row. Purple = current neighbor being visited. Arrows show the linked list structure.</p>
   </div>
-</header>
-
-<main class="content">
-  <section class="prose" style="margin-bottom:28px;">
-    <div class="section-title">How it Works</div>
-    <p>An adjacency list is an array of lists. Index <strong>i</strong> holds all neighbours of vertex <strong>i</strong>. If A is connected to B and C, then list[A] = [B, C]. For undirected graphs both directions are stored. Adding a vertex is O(1); finding all neighbours is O(degree).</p>
-    <p>Think of a contact list in your phone: each person has their own list of contacts. Much more space-efficient than a full grid when most pairs are NOT connected — which is true of most real-world graphs like road networks or social graphs.</p>
-  </section>
-
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Space</div><div class="value">O(V + E)</div><div class="sub">Only stores existing edges</div></div>
-    <div class="fact-card"><div class="label">Add Edge</div><div class="value">O(1)</div><div class="sub">Append to list</div></div>
-    <div class="fact-card"><div class="label">Find Neighbours</div><div class="value">O(deg)</div><div class="sub">Iterate the list</div></div>
-    <div class="fact-card"><div class="label">Edge Lookup</div><div class="value">O(deg)</div><div class="sub">Scan neighbour list</div></div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V+E)</div></div>
+    <div class="fact"><div class="flabel">Edge check</div><div class="fval">O(degree)</div></div>
+    <div class="fact"><div class="flabel">Neighbors</div><div class="fval">O(degree)</div></div>
+    <div class="fact"><div class="flabel">Best for</div><div class="fval">Sparse graphs</div></div>
   </div>
-
-  <div class="info-strip">Click a node in the graph to highlight its neighbour list. Use the dropdowns to add or remove edges interactively.</div>
-
-  <div class="sim-box">
-    <div class="sim-header">
-      <span class="sim-title">Graph ↔ Adjacency List (5 nodes)</span>
-      <div class="select-pair">
-        From <select id="selA"></select> To <select id="selB"></select>
-        <button class="btn" id="btnAdd">Add Edge</button>
-        <button class="btn danger" id="btnRemove">Remove Edge</button>
-        <button class="btn" id="btnReset">Reset</button>
-      </div>
-    </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <div class="canvas-panel">
-        <canvas id="gc" height="240"></canvas>
-      </div>
-      <div class="list-panel">
-        <h3>ADJACENCY LIST</h3>
-        <div id="adjList"></div>
-        <div class="space-note">Space: <b>O(V + E)</b> — V=<span id="spV">5</span>, E=<span id="spE">5</span>, Total=<span id="spT">10</span></div>
+      <div class="al-vis" id="alVis"></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Traverse neighbors of:</label>
+        <select id="vertSel"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option><option value="4">E</option></select>
+        <button class="btn btn-p" onclick="rebuild()">Traverse</button>
       </div>
     </div>
-    <div class="log-box" id="logBox"></div>
   </div>
-
-  <a class="back-link" href="../index.html">&#8592; Back to Data Structures</a>
-</main>
-
+  <a class="back" href="../index.html">Back to Data Structures</a>
+</div>
 <script>
-const N = 5;
-const ACCENT = '#7b4fd4';
-const R = 20;
-let adj = Array.from({length:N}, () => []);
-let selectedNode = null;
-
-const canvas = document.getElementById('gc');
-const ctx = canvas.getContext('2d');
-
-function resize() { canvas.width = canvas.parentElement.clientWidth; }
-resize();
-window.addEventListener('resize', () => { resize(); positionNodes(); drawGraph(); });
-
-let nodePos = [];
-function positionNodes() {
-  const cx = canvas.width/2, cy = canvas.height/2, rad = Math.min(canvas.width, canvas.height)*0.36;
-  nodePos = Array.from({length:N}, (_, i) => {
-    const a = (i/N)*Math.PI*2 - Math.PI/2;
-    return { x: cx + rad*Math.cos(a), y: cy + rad*Math.sin(a) };
+var player=null;
+var LABELS=['A','B','C','D','E'];
+var N=5;
+var ADJL=[[{to:1,w:4},{to:2,w:2}],[{to:0,w:4},{to:2,w:1},{to:3,w:5}],[{to:0,w:2},{to:1,w:1},{to:3,w:8},{to:4,w:10}],[{to:1,w:5},{to:2,w:8},{to:4,w:2}],[{to:2,w:10},{to:3,w:2}]];
+function generateSteps(startV){
+  var steps=[], curV=-1, curEI=-1;
+  function snap(v,ei){return {curV:v,curEI:ei,N:N};}
+  steps.push({title:'Adjacency List: traverse neighbors of '+LABELS[startV],
+    what:''+LABELS[startV]+' has '+ADJL[startV].length+' neighbors: ['+ADJL[startV].map(function(e){return LABELS[e.to]+'(w='+e.w+')';}).join(', ')+'].',
+    why:'Adj list: only stores O(degree) entries per vertex. Total O(V+E) space.',
+    ...snap(startV,-1)});
+  ADJL[startV].forEach(function(edge,i){
+    steps.push({title:'Visit neighbor '+LABELS[edge.to]+' (edge weight='+edge.w+')',
+      what:'Follow next pointer. Edge '+LABELS[startV]+'→'+LABELS[edge.to]+', weight '+edge.w+'.',
+      why:'O(degree) iteration: stop when NULL reached.',
+      ...snap(startV,i)});
   });
+  steps.push({title:'NULL — end of '+LABELS[startV]+' list. Found '+ADJL[startV].length+' neighbors.',
+    what:'Traversed all '+ADJL[startV].length+' neighbors of '+LABELS[startV]+'.',
+    why:'Total edges scanned = degree('+LABELS[startV]+') = '+ADJL[startV].length+'. Far better than O(V) for sparse graphs.',
+    ...snap(startV,-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-positionNodes();
-
-function label(i) { return String.fromCharCode(65+i); }
-
-function initSelects() {
-  ['selA','selB'].forEach(id => {
-    const s = document.getElementById(id);
-    s.innerHTML = '';
-    for(let i=0;i<N;i++) { const o = document.createElement('option'); o.value=i; o.textContent=label(i); s.appendChild(o); }
-  });
-  document.getElementById('selB').value = 1;
-}
-initSelects();
-
-// Initial edges
-[[0,1],[0,2],[1,3],[2,3],[3,4]].forEach(([a,b]) => { adj[a].push(b); adj[b].push(a); });
-
-function log(msg) {
-  const d = new Date();
-  const ts = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
-  const lb = document.getElementById('logBox');
-  const line = document.createElement('div'); line.className = 'log-line';
-  line.innerHTML = `<span class="ts">${ts}</span>${msg}`;
-  lb.appendChild(line); lb.scrollTop = lb.scrollHeight;
-}
-
-function countEdges() {
-  return adj.reduce((s,l) => s+l.length, 0) / 2;
-}
-
-function renderList() {
-  const container = document.getElementById('adjList');
-  container.innerHTML = '';
-  for(let i=0;i<N;i++) {
-    const row = document.createElement('div');
-    row.className = 'adj-row' + (i === selectedNode ? ' highlighted' : '');
-    const lbl = document.createElement('div'); lbl.className = 'adj-label'; lbl.textContent = label(i);
-    const arrow = document.createElement('span'); arrow.className = 'arrow-sym'; arrow.textContent = '→';
-    const nodes = document.createElement('div'); nodes.className = 'adj-nodes';
-    if(adj[i].length === 0) {
-      const n = document.createElement('span'); n.className = 'adj-null'; n.textContent = 'null'; nodes.appendChild(n);
-    } else {
-      const sorted = [...adj[i]].sort((a,b)=>a-b);
-      sorted.forEach(nb => {
-        const chip = document.createElement('span'); chip.className = 'adj-node'; chip.textContent = label(nb); nodes.appendChild(chip);
-      });
-    }
-    row.appendChild(lbl); row.appendChild(arrow); row.appendChild(nodes);
-    container.appendChild(row);
-  }
-  const E = countEdges();
-  document.getElementById('spV').textContent = N;
-  document.getElementById('spE').textContent = E;
-  document.getElementById('spT').textContent = N + E;
-}
-
-function drawGraph() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for(let i=0;i<N;i++) {
-    adj[i].forEach(j => {
-      if(j<=i) return;
-      ctx.beginPath();
-      const isSel = selectedNode !== null && (i===selectedNode || j===selectedNode);
-      ctx.strokeStyle = isSel ? ACCENT : '#b0a8d0';
-      ctx.lineWidth = isSel ? 2.5 : 1.8;
-      ctx.moveTo(nodePos[i].x, nodePos[i].y);
-      ctx.lineTo(nodePos[j].x, nodePos[j].y);
-      ctx.stroke();
+function renderStep(step){
+  var av=document.getElementById('alVis'); if(!av) return;
+  var html='';
+  for(var v=0;v<step.N;v++){
+    var isHL=v===step.curV;
+    html+='<div class="al-row"><div class="al-vert'+(isHL?' hl':'')+'" >'+LABELS[v]+'</div>';
+    html+='<span class="al-arrow">→</span>';
+    ADJL[v].forEach(function(e,i){
+      var isCur=isHL&&i===step.curEI;
+      html+='<div class="al-edge-node'+(isCur?' cur':'')+'">'+LABELS[e.to]+'('+e.w+')</div>';
+      html+='<span class="al-arrow">→</span>';
     });
+    html+='<div class="al-null">NULL</div></div>';
   }
-  nodePos.forEach((p,i) => {
-    ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2);
-    const isSel = i===selectedNode;
-    ctx.fillStyle = isSel ? ACCENT : '#fff'; ctx.fill();
-    ctx.strokeStyle = ACCENT; ctx.lineWidth=2.5; ctx.stroke();
-    ctx.fillStyle = isSel ? '#fff' : ACCENT;
-    ctx.font = '700 13px Inter,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(label(i), p.x, p.y);
-  });
+  av.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Vertex: '+(step.curV>=0?LABELS[step.curV]:'—')+'  |  Neighbor #: '+(step.curEI>=0?step.curEI+1+'='+LABELS[ADJL[step.curV][step.curEI].to]:'—');
 }
-
-canvas.addEventListener('click', e => {
-  const r = canvas.getBoundingClientRect();
-  const x = (e.clientX-r.left)*(canvas.width/r.width);
-  const y = (e.clientY-r.top)*(canvas.height/r.height);
-  const ni = nodePos.findIndex(p => Math.hypot(p.x-x,p.y-y)<=R+4);
-  if(ni !== -1) {
-    selectedNode = (selectedNode===ni) ? null : ni;
-    const msg = selectedNode!==null ? `Node <span class="hi">${label(selectedNode)}</span> selected — neighbours: <span class="hi">[${adj[selectedNode].map(label).join(', ')||'none'}]</span>` : 'Selection cleared';
-    log(msg); renderList(); drawGraph();
-  }
-});
-
-document.getElementById('btnAdd').addEventListener('click', () => {
-  const a = +document.getElementById('selA').value;
-  const b = +document.getElementById('selB').value;
-  if(a===b) { log('Cannot add self-loop'); return; }
-  if(adj[a].includes(b)) { log(`Edge <span class="hi">${label(a)}↔${label(b)}</span> already exists`); return; }
-  adj[a].push(b); adj[b].push(a);
-  log(`Edge added: <span class="hi">${label(a)}</span> → list: [${adj[a].map(label).join(', ')}]`);
-  renderList(); drawGraph();
-});
-
-document.getElementById('btnRemove').addEventListener('click', () => {
-  const a = +document.getElementById('selA').value;
-  const b = +document.getElementById('selB').value;
-  if(!adj[a].includes(b)) { log(`Edge <span class="hi">${label(a)}↔${label(b)}</span> does not exist`); return; }
-  adj[a] = adj[a].filter(x=>x!==b); adj[b] = adj[b].filter(x=>x!==a);
-  log(`Edge removed: list[<span class="hi">${label(a)}</span>] = [${adj[a].map(label).join(', ')||'empty'}]`);
-  renderList(); drawGraph();
-});
-
-document.getElementById('btnReset').addEventListener('click', () => {
-  adj = Array.from({length:N}, () => []);
-  [[0,1],[0,2],[1,3],[2,3],[3,4]].forEach(([a,b]) => { adj[a].push(b); adj[b].push(a); });
-  selectedNode = null; log('Reset to default graph'); renderList(); drawGraph();
-});
-
-renderList();
-drawGraph();
-log('Default graph loaded — click nodes or add/remove edges');
+function rebuild(){
+  var v=parseInt(document.getElementById('vertSel').value)||0;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(v),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

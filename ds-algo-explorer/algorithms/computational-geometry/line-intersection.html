@@ -1,209 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Line Intersection – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Line Segment Intersection</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f6f2;color:#1a1a2e;font-family:'Inter',sans-serif;line-height:1.6}
-a{color:#457b9d;text-decoration:none}a:hover{text-decoration:underline}
-.breadcrumb{font-size:.85rem;color:#5a5a72;padding:1.2rem 2rem;border-bottom:1px solid #e2e0da}
-.breadcrumb span{margin:0 .4rem;color:#c0bdb5}
-.hero{padding:3rem 2rem 2rem;max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:#457b9d22;color:#457b9d;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px;margin-bottom:1rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:.8rem}
-.hero p.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
-.content{max-width:860px;margin:0 auto;padding:0 2rem 2rem}
-.prose p{margin-bottom:1rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.2rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#457b9d}
-.fact .lbl{font-size:.8rem;color:#5a5a72;margin-top:.3rem}
-.sim-box{background:#fff;border:1px solid #e2e0da;border-radius:16px;padding:1.5rem;margin:2rem 0}
-.sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1rem}
-.controls{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
-.btn{background:#457b9d;color:#fff;border:none;border-radius:8px;padding:.5rem 1.2rem;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:background .2s}
-.btn:hover{background:#356080}
-.btn.secondary{background:#fff;color:#457b9d;border:1px solid #457b9d}
-.btn.secondary:hover{background:#457b9d11}
-canvas{border:1px solid #e2e0da;border-radius:8px;display:block;background:#fafaf8}
-.log-box{background:#1a1a2e;border-radius:12px;padding:1rem;margin-top:1rem;max-height:160px;overflow-y:auto}
-.log-box p{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8d8ea;margin-bottom:.3rem;line-height:1.4}
-.log-box p.accent{color:#7ec8e3}
-.log-box p.dim{color:#5a7a8a}
-.math-display{background:#f0f4f8;border-left:3px solid #457b9d;border-radius:4px;padding:.7rem 1rem;margin:.8rem 0;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#1a1a2e;line-height:1.6}
-.back{display:inline-block;margin:1rem 0 2rem;color:#457b9d;font-size:.9rem}
-.hint{font-size:.82rem;color:#5a5a72;margin-top:.4rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Line Intersection
-</div>
-<div class="hero">
-  <div class="tag">Computational Geometry</div>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Line Intersection</span></nav>
+  <span class="tag">Computational Geometry</span>
   <h1>Line Segment Intersection</h1>
-  <p class="tagline">Determine whether two line segments cross using the cross-product orientation test.</p>
-</div>
-<div class="content">
+  <p class="tagline">CCW test using cross products — determine if two segments intersect in O(1).</p>
   <div class="prose">
-    <p>Two line segments AB and CD intersect if and only if A and B are on opposite sides of line CD, and C and D are on opposite sides of line AB. We test "which side" using the <strong>cross product</strong> (signed area of the triangle formed by three points).</p>
-    <p>The cross product d = (B−A) × (C−A) is positive if C is to the left of AB, negative if to the right, and zero if collinear. By computing four such values we can determine segment intersection without ever solving a system of equations — purely through sign checks.</p>
-    <p>This is the building block for sweep-line algorithms, polygon clipping (used in every graphics card), map overlay in GIS systems, and collision detection in physics engines where you check if a moving object's trajectory crosses a wall segment.</p>
+    <p>Two segments AB and CD intersect iff A and B are on opposite sides of line CD AND C and D are on opposite sides of line AB. Side test uses cross product: cross(CD,CA) × cross(CD,CB) &lt; 0. Handle collinear cases (cross = 0) by checking if endpoint lies on the segment. Total: O(1) per pair.</p>
+    <p>Steps show each cross product computation. Green dot = intersection point. Red segments = non-intersecting. Steps test each pair of pre-defined segments.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">O(1)</div><div class="lbl">Time complexity per test</div></div>
-    <div class="fact"><div class="val">4</div><div class="lbl">Cross products needed</div></div>
-    <div class="fact"><div class="val">±sign</div><div class="lbl">Intersection condition</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(1) per pair</div></div>
+    <div class="fact"><div class="flabel">Method</div><div class="fval">Cross product sign test</div></div>
+    <div class="fact"><div class="flabel">Collinear</div><div class="fval">Bounding box check</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">Sweep line, polygons, paths</div></div>
   </div>
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <button class="btn" id="btnCheck">Check Intersection</button>
-      <button class="btn secondary" id="btnRandom">New Random Segments</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="400" height="300"></canvas>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Test Pairs</button>
+      </div>
     </div>
-    <p class="hint">Drag the colored endpoints to reposition segments. Blue = Segment 1, Orange = Segment 2.</p>
-    <canvas id="cvs" width="700" height="380"></canvas>
-    <div class="math-display" id="mathDisplay">Click "Check Intersection" to see calculations.</div>
-    <div class="log-box" id="log"></div>
   </div>
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-const cvs=document.getElementById('cvs'),ctx=cvs.getContext('2d');
-const mathDisplay=document.getElementById('mathDisplay');
-const log=document.getElementById('log');
-
-let segs=[
-  {p1:{x:120,y:150},p2:{x:400,y:300},color:'#4472ca'},
-  {p1:{x:200,y:320},p2:{x:500,y:100},color:'#e07b39'}
+var player=null;
+var SEGMENTS=[
+  [{x:60,y:80},{x:200,y:220}],
+  [{x:60,y:220},{x:200,y:80}],
+  [{x:240,y:60},{x:380,y:80}],
+  [{x:240,y:160},{x:380,y:250}]
 ];
-let dragging=null,intersecting=false,ipt=null;
-const RADIUS=10;
-
-function addLog(msg,cls=''){
-  const p=document.createElement('p');
-  if(cls)p.className=cls;
-  p.textContent=msg;
-  log.prepend(p);
-  if(log.children.length>30)log.removeChild(log.lastChild);
+function cross2d(O,A,B){return (A.x-O.x)*(B.y-O.y)-(A.y-O.y)*(B.x-O.x);}
+function onSeg(P,Q,R){return Math.min(P.x,Q.x)<=R.x&&R.x<=Math.max(P.x,Q.x)&&Math.min(P.y,Q.y)<=R.y&&R.y<=Math.max(P.y,Q.y);}
+function segIntersect(A,B,C,D){
+  var d1=cross2d(C,D,A), d2=cross2d(C,D,B), d3=cross2d(A,B,C), d4=cross2d(A,B,D);
+  if(((d1>0&&d2<0)||(d1<0&&d2>0))&&((d3>0&&d4<0)||(d3<0&&d4>0))) return true;
+  if(d1===0&&onSeg(C,D,A)) return true;
+  if(d2===0&&onSeg(C,D,B)) return true;
+  if(d3===0&&onSeg(A,B,C)) return true;
+  if(d4===0&&onSeg(A,B,D)) return true;
+  return false;
 }
-
-function cross2d(O,A,B){return(A.x-O.x)*(B.y-O.y)-(A.y-O.y)*(B.x-O.x)}
-
-function onSegment(p,q,r){
-  return Math.min(p.x,r.x)<=q.x&&q.x<=Math.max(p.x,r.x)&&
-         Math.min(p.y,r.y)<=q.y&&q.y<=Math.max(p.y,r.y);
+function lineIntersectPt(A,B,C,D){
+  var r=(A.y-C.y)*(D.x-C.x)-(A.x-C.x)*(D.y-C.y);
+  var s=(A.y-C.y)*(B.x-A.x)-(A.x-C.x)*(B.y-A.y);
+  var denom=(B.x-A.x)*(D.y-C.y)-(B.y-A.y)*(D.x-C.x);
+  if(Math.abs(denom)<1e-10) return null;
+  var t=r/denom;
+  return {x:A.x+t*(B.x-A.x),y:A.y+t*(B.y-A.y)};
 }
-
-function segIntersect(p1,p2,p3,p4){
-  const d1=cross2d(p3,p4,p1);
-  const d2=cross2d(p3,p4,p2);
-  const d3=cross2d(p1,p2,p3);
-  const d4=cross2d(p1,p2,p4);
-  if(((d1>0&&d2<0)||(d1<0&&d2>0))&&((d3>0&&d4<0)||(d3<0&&d4>0)))return{intersects:true,d1,d2,d3,d4};
-  if(d1===0&&onSegment(p3,p1,p4))return{intersects:true,d1,d2,d3,d4};
-  if(d2===0&&onSegment(p3,p2,p4))return{intersects:true,d1,d2,d3,d4};
-  if(d3===0&&onSegment(p1,p3,p2))return{intersects:true,d1,d2,d3,d4};
-  if(d4===0&&onSegment(p1,p4,p2))return{intersects:true,d1,d2,d3,d4};
-  return{intersects:false,d1,d2,d3,d4};
+function generateSteps(){
+  var steps=[], pairs=[[0,1],[2,3],[0,2],[1,3]], pairResults=[];
+  steps.push({title:'Line Segment Intersection Test',
+    what:'4 segments. Test pairs using cross product sign. CCW(A,B,C)×CCW(A,B,D)<0 if C,D straddle AB.',
+    why:'O(1) per pair. Used in sweep line, polygon containment, pathfinding.',
+    segs:SEGMENTS,curPair:-1,results:[],intPt:null});
+  pairs.forEach(function(pair,pi){
+    var i=pair[0],j=pair[1];
+    var A=SEGMENTS[i][0],B=SEGMENTS[i][1],C=SEGMENTS[j][0],D=SEGMENTS[j][1];
+    var d1=cross2d(C,D,A), d2=cross2d(C,D,B), d3=cross2d(A,B,C), d4=cross2d(A,B,D);
+    steps.push({title:'Testing seg '+i+' vs seg '+j,
+      what:'cross(CD,A)='+d1.toFixed(0)+', cross(CD,B)='+d2.toFixed(0)+'. Opposite signs → A,B straddle CD.',
+      why:'Cross product sign tells which side of a line a point is on.',
+      segs:SEGMENTS,curPair:pi,results:pairResults.slice(),intPt:null});
+    var inter=segIntersect(A,B,C,D);
+    var pt=inter?lineIntersectPt(A,B,C,D):null;
+    pairResults.push({i:i,j:j,inter:inter,pt:pt});
+    steps.push({title:'Seg '+i+' and Seg '+j+': '+(inter?'INTERSECT':'DO NOT INTERSECT'),
+      what:inter?'Both straddle conditions satisfied. Intersection at ('+(pt?pt.x.toFixed(1)+','+pt.y.toFixed(1):'?')+').':'At least one straddle test fails. Segments do not cross.',
+      why:inter?'Segments cross.':'Segments are on same side or parallel.',
+      segs:SEGMENTS,curPair:pi,results:pairResults.slice(),intPt:pt});
+  });
+  steps.push({title:'All pairs tested.',
+    what:'Intersecting pairs: '+pairResults.filter(function(r){return r.inter;}).map(function(r){return r.i+'-'+r.j;}).join(', ')+'.',
+    why:'Cross product test: O(1) per pair, O(n²) to test all pairs naively.',
+    segs:SEGMENTS,curPair:-1,results:pairResults.slice(),intPt:null});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function lineIntersectionPoint(p1,p2,p3,p4){
-  const denom=(p1.x-p2.x)*(p3.y-p4.y)-(p1.y-p2.y)*(p3.x-p4.x);
-  if(Math.abs(denom)<1e-10)return null;
-  const t=((p1.x-p3.x)*(p3.y-p4.y)-(p1.y-p3.y)*(p3.x-p4.x))/denom;
-  return{x:p1.x+t*(p2.x-p1.x),y:p1.y+t*(p2.y-p1.y)};
-}
-
-function draw(){
-  ctx.clearRect(0,0,700,380);
-  segs.forEach((seg,i)=>{
-    ctx.beginPath();
-    ctx.moveTo(seg.p1.x,seg.p1.y);
-    ctx.lineTo(seg.p2.x,seg.p2.y);
-    ctx.strokeStyle=intersecting?seg.color:'#5a5a72';
-    ctx.lineWidth=intersecting?3:2.5;
-    ctx.setLineDash([]);
-    ctx.stroke();
-    // endpoints
-    [[seg.p1,'1'],[seg.p2,'2']].forEach(([pt,lbl])=>{
-      ctx.beginPath();ctx.arc(pt.x,pt.y,RADIUS,0,Math.PI*2);
-      ctx.fillStyle=seg.color;ctx.fill();
-      ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||400, H=300, DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  var COLORS=['#7b4fd4','#fb923c','#ef4444','#3b82f6'];
+  var pairs=[[0,1],[2,3],[0,2],[1,3]];
+  var curPairIdxs=step.curPair>=0?pairs[step.curPair]:[];
+  step.segs.forEach(function(seg,i){
+    var isCur=curPairIdxs.indexOf(i)>=0;
+    var r=step.results.find(function(r){return r.i===i||r.j===i;});
+    ctx.strokeStyle=isCur?'#7b4fd4':COLORS[i];
+    ctx.lineWidth=isCur?3:2;
+    ctx.beginPath();ctx.moveTo(seg[0].x,seg[0].y);ctx.lineTo(seg[1].x,seg[1].y);ctx.stroke();
+    [0,1].forEach(function(e){
+      ctx.fillStyle=isCur?'#fff176':'#fff';ctx.strokeStyle=COLORS[i];ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(seg[e].x,seg[e].y,5,0,2*Math.PI);ctx.fill();ctx.stroke();
     });
+    ctx.fillStyle='#1a1a2e';ctx.font='11px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('S'+i,(seg[0].x+seg[1].x)/2,(seg[0].y+seg[1].y)/2-8);
   });
-  if(intersecting&&ipt){
-    ctx.beginPath();ctx.arc(ipt.x,ipt.y,9,0,Math.PI*2);
-    ctx.fillStyle='#457b9d';ctx.fill();
-    ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle='#1a1a2e';ctx.font='bold 12px Inter,sans-serif';
-    ctx.fillText(`(${Math.round(ipt.x)},${Math.round(ipt.y)})`,ipt.x+12,ipt.y-8);
+  step.results.forEach(function(r){
+    if(r.inter&&r.pt){
+      ctx.fillStyle='#16a34a';ctx.strokeStyle='#fff';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(r.pt.x,r.pt.y,7,0,2*Math.PI);ctx.fill();ctx.stroke();
+    }
+  });
+  var ib=document.getElementById('infoBar');
+  if(ib){
+    var tested=step.results.length;
+    var inter=step.results.filter(function(r){return r.inter;}).length;
+    ib.textContent='Pair: '+(step.curPair>=0?pairs[step.curPair].join(' vs '):'—')+'  |  Tested: '+tested+'  |  Intersecting: '+inter;
   }
-  // Labels
-  ctx.font='600 12px Inter,sans-serif';
-  ['A','B'].forEach((l,i)=>{
-    const p=i===0?segs[0].p1:segs[0].p2;
-    ctx.fillStyle=segs[0].color;
-    ctx.fillText(l,p.x-4,p.y-15);
-  });
-  ['C','D'].forEach((l,i)=>{
-    const p=i===0?segs[1].p1:segs[1].p2;
-    ctx.fillStyle=segs[1].color;
-    ctx.fillText(l,p.x-4,p.y-15);
-  });
 }
-
-document.getElementById('btnCheck').onclick=()=>{
-  const {p1,p2}=segs[0],{p1:p3,p2:p4}=segs[1];
-  const res=segIntersect(p1,p2,p3,p4);
-  intersecting=res.intersects;
-  ipt=intersecting?lineIntersectionPoint(p1,p2,p3,p4):null;
-  const d1f=res.d1.toFixed(1),d2f=res.d2.toFixed(1),d3f=res.d3.toFixed(1),d4f=res.d4.toFixed(1);
-  mathDisplay.textContent=`d1 = (CD)×(CA) = ${d1f}  |  d2 = (CD)×(CB) = ${d2f}\nd3 = (AB)×(AC) = ${d3f}  |  d4 = (AB)×(AD) = ${d4f}\nSigns differ: d1&d2 → ${(res.d1>0&&res.d2<0)||(res.d1<0&&res.d2>0)?'YES':'NO'} | d3&d4 → ${(res.d3>0&&res.d4<0)||(res.d3<0&&res.d4>0)?'YES':'NO'}`;
-  const msg=intersecting
-    ?`Cross products d1=${d1f}, d2=${d2f}, d3=${d3f}, d4=${d4f}. Signs differ → INTERSECT at (${Math.round(ipt?.x??0)},${Math.round(ipt?.y??0)}).`
-    :`Cross products d1=${d1f}, d2=${d2f}, d3=${d3f}, d4=${d4f}. Signs do NOT all differ → NO intersection.`;
-  addLog(msg,intersecting?'accent':'dim');
-  draw();
-};
-
-document.getElementById('btnRandom').onclick=()=>{
-  segs=[
-    {p1:{x:60+Math.random()*250,y:50+Math.random()*280},p2:{x:350+Math.random()*250,y:50+Math.random()*280},color:'#4472ca'},
-    {p1:{x:60+Math.random()*250,y:50+Math.random()*280},p2:{x:350+Math.random()*250,y:50+Math.random()*280},color:'#e07b39'}
-  ];
-  intersecting=false;ipt=null;
-  mathDisplay.textContent='Click "Check Intersection" to see calculations.';
-  addLog('New random segments generated.','dim');
-  draw();
-};
-
-function getMousePos(e){const r=cvs.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
-function nearPoint(mp,pt){return Math.hypot(mp.x-pt.x,mp.y-pt.y)<RADIUS+4;}
-
-cvs.addEventListener('mousedown',e=>{
-  const mp=getMousePos(e);
-  for(let i=0;i<segs.length;i++){
-    if(nearPoint(mp,segs[i].p1)){dragging={si:i,ep:'p1'};return;}
-    if(nearPoint(mp,segs[i].p2)){dragging={si:i,ep:'p2'};return;}
-  }
-});
-cvs.addEventListener('mousemove',e=>{
-  if(!dragging)return;
-  const mp=getMousePos(e);
-  segs[dragging.si][dragging.ep]={x:mp.x,y:mp.y};
-  intersecting=false;ipt=null;
-  draw();
-});
-cvs.addEventListener('mouseup',()=>{dragging=null;});
-
-draw();
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

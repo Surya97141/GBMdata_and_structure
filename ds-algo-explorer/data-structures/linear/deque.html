@@ -1,318 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Deque — DS/Algo Explorer</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#e8622a;--r:14px;}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;min-height:100vh;}
-    .wrap{max-width:860px;margin:0 auto;padding:32px 20px 60px;}
-    .bc{font-size:.82rem;color:var(--muted);margin-bottom:28px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-    .bc a{color:var(--muted);text-decoration:none;}.bc a:hover{color:var(--accent);}
-    .bc .curr{color:var(--ink);font-weight:600;}
-    .hero{margin-bottom:28px;}
-    .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin-bottom:10px;}
-    h1{font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--ink);line-height:1.15;margin-bottom:8px;}
-    .tagline{color:var(--muted);font-size:1.05rem;}
-    .explain{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px 28px;margin-bottom:22px;}
-    .explain p{color:var(--muted);margin-bottom:10px;font-size:.97rem;}.explain p:last-child{margin-bottom:0;}
-    .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
-    .fact{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
-    .flabel{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:6px;}
-    .fval{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:4px;}
-    .fsub{font-size:.82rem;color:var(--muted);}
-    .sim-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px;}
-    .sim-hdr{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
-    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);display:inline-block;}
-    .sim-body{padding:20px;}
-    canvas{display:block;width:100%;max-width:700px;margin:0 auto 18px;border-radius:8px;background:#f9f8f5;border:1px solid var(--border);}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    .controls input{font-family:'JetBrains Mono',monospace;font-size:.92rem;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);width:90px;outline:none;}
-    .controls input:focus{border-color:var(--accent);}
-    .btn{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s,transform .1s;}
-    .btn:active{transform:scale(.97);}
-    .btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover{opacity:.88;}
-    .btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border);}.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-    .log-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:28px;}
-    .log-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;}
-    .log-hdr button{font-size:.78rem;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;}
-    .log-hdr button:hover{border-color:var(--accent);color:var(--accent);}
-    .log-body{max-height:180px;overflow-y:auto;padding:12px 20px;display:flex;flex-direction:column;gap:5px;}
-    .log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:5px 10px;border-radius:6px;background:var(--bg);}
-    .log-entry.ok{border-left:3px solid #27ae60;}.log-entry.err{border-left:3px solid #e74c3c;}.log-entry.info{border-left:3px solid var(--accent);}
-    .log-empty{font-size:.82rem;color:var(--muted);font-style:italic;}
-    .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .15s;}
-    .back:hover{color:var(--accent);}
-    @media(max-width:600px){.facts{grid-template-columns:1fr 1fr;}.controls{gap:8px;}}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Deque (Double-ended Queue)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.dq-vis{display:flex;align-items:center;gap:0;margin:.5rem 0;font-family:'JetBrains Mono',monospace}
+.end-lbl{font-size:.65rem;color:#fff;font-weight:700;padding:.15rem .35rem;border-radius:4px;background:#7b4fd4;margin:0 4px}
+.dq-slot{width:52px;height:48px;border:1.5px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;transition:background .15s}
+.dq-slot:first-of-type{border-radius:6px 0 0 6px}.dq-slot:last-of-type{border-radius:0 6px 6px 0}
+.dq-slot+.dq-slot{border-left:none}
+.dq-slot.front{background:#c3b1e1;border-color:#7b4fd4}
+.dq-slot.rear{background:#a8e6a3;border-color:#16a34a}
+.dq-slot.op{background:#fff176;border-color:#d97706}
+.dq-slot.removed{background:#fca5a5;border-color:#ef4444}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;
+  border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:80px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
+</style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span class="curr">Deque</span></nav>
-
-  <div class="hero">
-    <span class="tag">Linear</span>
-    <h1>Deque</h1>
-    <p class="tagline">Double-Ended Queue — O(1) insert and remove from both the front and the rear simultaneously.</p>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Deque</span></nav>
+  <span class="tag">Linear</span>
+  <h1>Deque</h1>
+  <p class="tagline">Double-ended queue — push/pop at both front and rear in O(1).</p>
+  <div class="prose">
+    <p>A deque (double-ended queue) supports O(1) insertion and deletion at both ends. It generalizes both stack (LIFO) and queue (FIFO). Used in sliding window maximum, palindrome checking, work-stealing schedulers, and BFS variants. Implemented with a circular buffer or doubly linked list.</p>
+    <p>Purple = front end. Green = rear end. Yellow = element being operated on. Red = element being removed.</p>
   </div>
-
-  <div class="explain">
-    <p>A deque (pronounced "deck") is short for Double-Ended Queue. Imagine a train where carriages can be added or removed from either end of the track. Unlike a regular queue where you can only join at the rear and leave from the front, a deque opens both doors — you can enqueue or dequeue at either end in constant time.</p>
-    <p>This flexibility lets a single deque act as both a stack and a queue. It is the data structure behind Python's <code style="font-family:JetBrains Mono,monospace;font-size:.9em;background:#f0ede6;padding:1px 5px;border-radius:4px;">collections.deque</code>, Java's <code style="font-family:JetBrains Mono,monospace;font-size:.9em;background:#f0ede6;padding:1px 5px;border-radius:4px;">ArrayDeque</code>, and the sliding-window maximum algorithm. Browser history (back and forward navigation) also benefits from a deque's bidirectional access.</p>
-    <p>Implemented as a doubly linked list, all four operations — addFront, addRear, removeFront, removeRear — run in O(1). A circular array implementation achieves the same with better cache performance in practice.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact">
-      <div class="flabel">Time Complexity</div>
-      <div class="fval">O(1)</div>
-      <div class="fsub">add/remove at front and rear — all constant</div>
-    </div>
-    <div class="fact">
-      <div class="flabel">Space Complexity</div>
-      <div class="fval">O(n)</div>
-      <div class="fsub">One slot per element</div>
-    </div>
-    <div class="fact">
-      <div class="flabel">Use Cases</div>
-      <div class="fsub">Sliding window max, palindrome check, work-stealing scheduler, browser history</div>
-    </div>
+    <div class="fact"><div class="flabel">Push front/rear</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Pop front/rear</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Peek</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Used for</div><div class="fval">Sliding window max</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-hdr"><span class="dot"></span> Interactive Simulation</div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <canvas id="cv" width="700" height="230"></canvas>
-      <div class="controls">
-        <input id="valInput" type="text" placeholder="Value" maxlength="4"/>
-        <button class="btn btn-primary" onclick="addFront()">Add Front</button>
-        <button class="btn btn-primary" onclick="addRear()">Add Rear</button>
-        <button class="btn btn-secondary" onclick="removeFront()">Remove Front</button>
-        <button class="btn btn-secondary" onclick="removeRear()">Remove Rear</button>
+      <div class="dq-vis" id="dqVis"></div>
+      <div class="info-bar" id="infoBar">Select an operation.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Value:</label>
+        <input type="number" id="valInput" value="88"/>
+        <button class="btn btn-p" onclick="buildOp('pushFront')">Push Front</button>
+        <button class="btn btn-p" onclick="buildOp('pushRear')">Push Rear</button>
+        <button class="btn btn-p" onclick="buildOp('popFront')">Pop Front</button>
+        <button class="btn btn-p" onclick="buildOp('popRear')">Pop Rear</button>
       </div>
     </div>
   </div>
-
-  <div class="log-panel">
-    <div class="log-hdr">Step Log <button onclick="clearLog()">Clear</button></div>
-    <div class="log-body" id="log"><div class="log-empty">Ready. Use controls above to begin.</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
 <script>
-  const canvas = document.getElementById('cv');
-  const ctx = canvas.getContext('2d');
-  const DPR = window.devicePixelRatio || 1;
-  canvas.width = 700 * DPR; canvas.height = 230 * DPR;
-  canvas.style.width = '100%'; canvas.style.height = '230px';
-  ctx.scale(DPR, DPR);
-
-  const W = 700, H = 230;
-  const CW = 66, CH = 52, CY = H / 2 - CH / 2 + 10;
-  const GAP = 8, SIDE_PAD = 55;
-  const MAX_ITEMS = 7;
-  const COL_ACCENT = '#e8622a', COL_INK = '#1a1a2e', COL_MUTED = '#5a5a72', COL_BORDER = '#e2e0da';
-  const COL_FRONT = '#e8622a', COL_REAR = '#7c5cfc';
-
-  let deque = ['mid', 'data', 'here'];
-  let hlFront = false, hlRear = false;
-  let hlTimer = null;
-
-  function clearHL(duration) {
-    if (hlTimer) clearTimeout(hlTimer);
-    hlTimer = setTimeout(() => { hlFront = false; hlRear = false; draw(); }, duration || 750);
-  }
-
-  function totalW() { return deque.length * (CW + GAP) - GAP; }
-  function startX() { return Math.max(SIDE_PAD, (W - totalW()) / 2); }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#f9f8f5';
-    ctx.fillRect(0, 0, W, H);
-
-    ctx.fillStyle = COL_INK;
-    ctx.font = '600 13px Inter, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('Deque  [size: ' + deque.length + ']', 20, 28);
-
-    if (deque.length === 0) {
-      ctx.fillStyle = COL_MUTED;
-      ctx.font = 'italic 14px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Deque is empty', W / 2, H / 2 + 8);
-      return;
+var player=null;
+var CUR_DQ=[10,25,7,42,18];
+function generateSteps(dq,op,val){
+  var steps=[], a=dq.slice(), states=new Array(a.length).fill('default');
+  function snap(){return {dq:a.slice(),states:states.slice()};}
+  steps.push({title:'Deque: ['+a.join(', ')+']',
+    what:'Double-ended queue. Front='+a[0]+', Rear='+a[a.length-1]+'.',
+    why:'O(1) at both ends. Generalizes stack (use front) and queue (use both).',
+    ...snap()});
+  if(op==='pushFront'){
+    a.unshift(val); states=new Array(a.length).fill('default'); states[0]='op';
+    steps.push({title:'PUSH_FRONT '+val,
+      what:'Add '+val+' to front. Deque: ['+a.join(',')+'].',
+      why:'O(1): decrement front pointer, store value.',
+      ...snap()});
+  } else if(op==='pushRear'){
+    a.push(val); states=new Array(a.length).fill('default'); states[a.length-1]='rear';
+    steps.push({title:'PUSH_REAR '+val,
+      what:'Add '+val+' to rear. Deque: ['+a.join(',')+'].',
+      why:'O(1): increment rear pointer, store value.',
+      ...snap()});
+  } else if(op==='popFront'){
+    if(a.length>0){
+      states[0]='removed';
+      steps.push({title:'POP_FRONT → '+a[0],
+        what:'Remove front='+a[0]+'. Deque: ['+a.slice(1).join(',')+'].',
+        why:'O(1): advance front pointer.',
+        ...snap()});
+      a.shift(); states=new Array(a.length).fill('default');
+      steps.push({title:'After POP_FRONT. Front='+( a.length>0?a[0]:'empty'),
+        what:'Deque: ['+a.join(',')+'].',
+        why:'O(1).',
+        ...snap()});
     }
-
-    const sx = startX();
-
-    // Left (FRONT) double-arrow
-    const frontX = sx;
-    ctx.strokeStyle = COL_FRONT;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(frontX - 8, CY + CH / 2);
-    ctx.lineTo(frontX - 36, CY + CH / 2);
-    ctx.stroke();
-    // left arrowhead (pointing left — remove)
-    ctx.fillStyle = COL_FRONT;
-    ctx.beginPath();
-    ctx.moveTo(frontX - 30, CY + CH / 2 - 5);
-    ctx.lineTo(frontX - 36, CY + CH / 2);
-    ctx.lineTo(frontX - 30, CY + CH / 2 + 5);
-    ctx.fill();
-    // right arrowhead (pointing right — add)
-    ctx.beginPath();
-    ctx.moveTo(frontX - 14, CY + CH / 2 - 5);
-    ctx.lineTo(frontX - 8, CY + CH / 2);
-    ctx.lineTo(frontX - 14, CY + CH / 2 + 5);
-    ctx.fill();
-    ctx.fillStyle = COL_FRONT;
-    ctx.font = '700 9px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('FRONT', frontX - 22, CY - 6);
-
-    deque.forEach((val, i) => {
-      const x = sx + i * (CW + GAP);
-      const isFront = i === 0;
-      const isRear = i === deque.length - 1;
-      const isHLFront = isFront && hlFront;
-      const isHLRear = isRear && hlRear;
-      const isHL = isHLFront || isHLRear;
-      const hlCol = isHLRear ? COL_REAR : COL_FRONT;
-
-      // Cell background and border
-      ctx.fillStyle = isHL ? (isHLRear ? '#f3f0ff' : '#fff3ee') : '#fff';
-      ctx.strokeStyle = isHL ? hlCol : (isFront ? COL_FRONT : isRear ? COL_REAR : COL_BORDER);
-      ctx.lineWidth = isHL ? 2.5 : (isFront || isRear ? 2 : 1.5);
-      roundRect(x, CY, CW, CH, 7);
-
-      // Value
-      ctx.fillStyle = isHL ? hlCol : COL_INK;
-      ctx.font = '600 14px "JetBrains Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(String(val), x + CW / 2, CY + CH / 2 + 6);
-
-      // Labels below
-      if (isFront) {
-        ctx.fillStyle = COL_FRONT;
-        ctx.font = '700 9px Inter, sans-serif';
-        ctx.fillText('FRONT', x + CW / 2, CY + CH + 16);
-      }
-      if (isRear) {
-        ctx.fillStyle = COL_REAR;
-        ctx.font = '700 9px Inter, sans-serif';
-        ctx.fillText('REAR', x + CW / 2, CY + CH + 16);
-      }
-    });
-
-    // Right (REAR) double-arrow
-    const rearX = sx + deque.length * (CW + GAP);
-    ctx.strokeStyle = COL_REAR;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(rearX + 4, CY + CH / 2);
-    ctx.lineTo(rearX + 36, CY + CH / 2);
-    ctx.stroke();
-    ctx.fillStyle = COL_REAR;
-    ctx.beginPath();
-    ctx.moveTo(rearX + 10, CY + CH / 2 - 5);
-    ctx.lineTo(rearX + 4, CY + CH / 2);
-    ctx.lineTo(rearX + 10, CY + CH / 2 + 5);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(rearX + 30, CY + CH / 2 - 5);
-    ctx.lineTo(rearX + 36, CY + CH / 2);
-    ctx.lineTo(rearX + 30, CY + CH / 2 + 5);
-    ctx.fill();
-    ctx.fillStyle = COL_REAR;
-    ctx.font = '700 9px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('REAR', rearX + 20, CY - 6);
+  } else if(op==='popRear'){
+    if(a.length>0){
+      states[a.length-1]='removed';
+      steps.push({title:'POP_REAR → '+a[a.length-1],
+        what:'Remove rear='+a[a.length-1]+'. Deque: ['+a.slice(0,-1).join(',')+'].',
+        why:'O(1): decrement rear pointer.',
+        ...snap()});
+      a.pop(); states=new Array(a.length).fill('default');
+      steps.push({title:'After POP_REAR. Rear='+(a.length>0?a[a.length-1]:'empty'),
+        what:'Deque: ['+a.join(',')+'].',
+        why:'O(1).',
+        ...snap()});
+    }
   }
-
-  function roundRect(x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  }
-
-  function addFront() {
-    const inp = document.getElementById('valInput');
-    const v = inp.value.trim();
-    if (!v) { logStep('Enter a value first.', 'err'); return; }
-    if (deque.length >= MAX_ITEMS) { logStep('Deque full (max ' + MAX_ITEMS + ' for display).', 'err'); return; }
-    deque.unshift(v);
-    hlFront = true; hlRear = false;
-    clearHL(750);
-    logStep('addFront("' + v + '") → new FRONT, size = ' + deque.length, 'ok');
-    inp.value = '';
-    draw();
-  }
-
-  function addRear() {
-    const inp = document.getElementById('valInput');
-    const v = inp.value.trim();
-    if (!v) { logStep('Enter a value first.', 'err'); return; }
-    if (deque.length >= MAX_ITEMS) { logStep('Deque full (max ' + MAX_ITEMS + ' for display).', 'err'); return; }
-    deque.push(v);
-    hlRear = true; hlFront = false;
-    clearHL(750);
-    logStep('addRear("' + v + '") → new REAR, size = ' + deque.length, 'ok');
-    inp.value = '';
-    draw();
-  }
-
-  function removeFront() {
-    if (deque.length === 0) { logStep('removeFront() failed: deque is empty!', 'err'); return; }
-    const v = deque.shift();
-    hlFront = false; hlRear = false;
-    logStep('removeFront() → removed "' + v + '", size now ' + deque.length, 'info');
-    draw();
-  }
-
-  function removeRear() {
-    if (deque.length === 0) { logStep('removeRear() failed: deque is empty!', 'err'); return; }
-    const v = deque.pop();
-    hlFront = false; hlRear = false;
-    logStep('removeRear() → removed "' + v + '", size now ' + deque.length, 'info');
-    draw();
-  }
-
-  function logStep(msg, type) {
-    const log = document.getElementById('log');
-    const empty = log.querySelector('.log-empty');
-    if (empty) empty.remove();
-    const entry = document.createElement('div');
-    entry.className = 'log-entry ' + (type || 'info');
-    const ts = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    entry.textContent = ts + '  ' + msg;
-    log.appendChild(entry);
-    log.scrollTop = log.scrollHeight;
-  }
-
-  function clearLog() {
-    document.getElementById('log').innerHTML = '<div class="log-empty">Log cleared.</div>';
-  }
-
-  document.getElementById('valInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addRear();
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
+}
+function renderStep(step){
+  var dv=document.getElementById('dqVis'); if(!dv) return;
+  var html='<span class="end-lbl">FRONT</span>';
+  step.dq.forEach(function(v,i){
+    var isF=i===0, isR=i===step.dq.length-1;
+    var cls=step.states[i]==='op'?'op':step.states[i]==='rear'?'rear':step.states[i]==='removed'?'removed':isF?'front':isR?'rear':'default';
+    html+='<div class="dq-slot '+cls+'">'+v+'</div>';
   });
-  draw();
+  html+='<span class="end-lbl">REAR</span>';
+  dv.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Deque: ['+step.dq.join(', ')+']  |  Size: '+step.dq.length+'  |  Front: '+(step.dq[0]||'—')+'  |  Rear: '+(step.dq[step.dq.length-1]||'—');
+}
+function buildOp(op){
+  var val=parseInt(document.getElementById('valInput').value)||88;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(CUR_DQ.slice(),op,val),renderStep,'explanation','sim-bar');
+}
+(function(){if(player) player.destroy();player=new SimulationPlayer(generateSteps(CUR_DQ,'pushRear',88),renderStep,'explanation','sim-bar');})();
 </script>
 </body>
 </html>

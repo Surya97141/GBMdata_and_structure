@@ -1,167 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Z-Algorithm – DS Algo Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Z-Algorithm – String Matching</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f7f6f2;color:#1a1a2e;min-height:100vh}
-a{color:#2a9d8f;text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
-.breadcrumb{font-size:.85rem;color:#5a5a72;margin-bottom:2rem}.breadcrumb span{margin:0 .4rem}
-.cat-tag{display:inline-block;background:#2a9d8f;color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .75rem;border-radius:20px;margin-bottom:.9rem}
-h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:.6rem}
-.tagline{font-size:1.1rem;color:#5a5a72;max-width:620px}
-.prose p{line-height:1.75;margin-bottom:1rem}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
-.fact{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:1.2rem;text-align:center}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:#2a9d8f;display:block;margin-bottom:.3rem}
-.fact-lbl{font-size:.8rem;color:#5a5a72;text-transform:uppercase;letter-spacing:.06em}
-.card{background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:1.8rem;margin-bottom:1.5rem}
-.card h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:1.2rem}
-.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin-bottom:1.2rem}
-label{font-size:.85rem;font-weight:500;color:#5a5a72;display:block;margin-bottom:.3rem}
-input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.9rem;border:1px solid #e2e0da;border-radius:7px;padding:.5rem .8rem;width:300px;background:#f7f6f2;color:#1a1a2e;outline:none}
-input[type=text]:focus{border-color:#2a9d8f}
-button{background:#2a9d8f;color:#fff;border:none;border-radius:7px;padding:.55rem 1.3rem;font-size:.9rem;font-weight:600;cursor:pointer}
-button:hover{background:#21867a}
-button.sec{background:#f7f6f2;color:#1a1a2e;border:1px solid #e2e0da}button.sec:hover{background:#e2e0da}
-.z-grid{display:flex;flex-wrap:wrap;gap:3px;margin:.6rem 0}
-.zch{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
-.zch .cc{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #e2e0da;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;background:#f7f6f2;transition:background .3s,border-color .3s}
-.zch .cv{width:30px;height:22px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#2a9d8f;font-weight:600}
-.zch .cc.zbox{background:#d4edda;border-color:#28a745}
-.zch .cc.current{background:#fff3cd;border-color:#ffc107}
-.zch .cc.mismatch{background:#f8d7da;border-color:#dc3545}
-.box-info{background:#f7f6f2;border:1px solid #e2e0da;border-radius:8px;padding:.8rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:.6rem 0;color:#1a1a2e}
-.box-info span{color:#2a9d8f;font-weight:600}
-#log{background:#1a1a2e;color:#e2e0da;font-family:'JetBrains Mono',monospace;font-size:.8rem;border-radius:8px;padding:1rem;max-height:180px;overflow-y:auto;line-height:1.7}
-#log .lg-ok{color:#2a9d8f}#log .lg-info{color:#ffc107}
-.back-link{display:inline-block;margin-top:2rem;color:#2a9d8f;font-weight:500}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.str-vis{font-family:'JetBrains Mono',monospace;font-size:.9rem;margin:.5rem 0;overflow-x:auto;white-space:nowrap}
+.str-vis .ch{display:inline-flex;flex-direction:column;align-items:center;width:28px;margin:0 1px}
+.str-vis .ch .c{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--b);border-radius:5px;font-weight:700;background:var(--bg)}
+.str-vis .ch .c.cur{background:#fff176;border-color:#f59e0b}
+.str-vis .ch .c.zbox{background:#c3b1e1}
+.str-vis .ch .c.match{background:#a8e6a3;outline:2px solid #16a34a}
+.str-vis .ch .zval{font-size:.6rem;color:var(--a);font-weight:700;margin-top:1px}
+.str-vis .ch .idx{font-size:.55rem;color:#888}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+input[type=text].w-sm{width:140px} input[type=text].w-lg{width:240px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span><a href="../index.html">Algorithms</a><span>›</span>Z-Algorithm
-  </nav>
-  <div class="hero" style="margin-bottom:2.5rem">
-    <span class="cat-tag">String Algorithms</span>
-    <h1>Z-Algorithm</h1>
-    <p class="tagline">Compute Z-values in O(n) — for each position, the length of the longest substring matching the string's prefix.</p>
-  </div>
-  <div class="prose" style="margin-bottom:2rem">
-    <p>The Z-array for a string S has Z[i] = length of the longest substring starting at S[i] that is also a prefix of S. Z[0] is defined as 0 (or n). The algorithm maintains a "Z-box" [l, r] — the rightmost segment known to match the prefix — and uses it to skip redundant comparisons.</p>
-    <p>Think of making a rubber stamp of a word and sliding it across the text. Wherever the stamp matches the text exactly, that length is the Z-value. The clever part: if you're inside a previously computed match window, you can copy values from the mirror position instead of re-checking character by character.</p>
-    <p>Z-algorithm is the conceptual twin of KMP. To use it for pattern search: build Z on "pattern + '$' + text"; any Z[i] ≥ m indicates a match. Used in suffix array construction, string periodicity detection, and bioinformatics.</p>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Z-Algorithm</span></nav>
+  <span class="tag">String Algorithms</span>
+  <h1>Z-Algorithm</h1>
+  <p class="tagline">Z-array: longest prefix of the string starting at each position.</p>
+  <div class="prose">
+    <p>The Z-algorithm computes Z[i] = length of the longest substring starting at position i that is also a prefix of the full string. For pattern matching, create S = pattern + "$" + text; positions where Z[i] == m indicate a match. The algorithm maintains a Z-box [L,R] to avoid redundant comparisons.</p>
+    <p>Z-box (purple) = current known matching range. Yellow = position being computed. Values above each cell = Z-value. Green = match found in combined string.</p>
   </div>
   <div class="facts">
-    <div class="fact"><span class="fact-val">O(n)</span><span class="fact-lbl">Time Complexity</span></div>
-    <div class="fact"><span class="fact-val">O(n)</span><span class="fact-lbl">Space</span></div>
-    <div class="fact"><span class="fact-val">Z-box</span><span class="fact-lbl">Key Optimization</span></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n + m)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n + m)</div></div>
+    <div class="fact"><div class="flabel">Z[0]</div><div class="fval">Undefined (len)</div></div>
+    <div class="fact"><div class="flabel">Match if</div><div class="fval">Z[i] == m</div></div>
   </div>
-
-  <div class="card">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div><label>String</label><input type="text" id="inp-str" value="aabxaacaabxaa"></div>
-      <button id="btn-run">Compute Z-Array</button>
-      <button class="sec" id="btn-reset">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <p style="font-size:.78rem;color:var(--m);margin-bottom:.3rem">Combined string S = pattern + "$" + text (Z-values shown above):</p>
+      <div id="strVis" class="str-vis"></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Text:</label><input type="text" class="w-lg" id="txt" value="AABXAABAAX"/>
+        <label>Pattern:</label><input type="text" class="w-sm" id="pat" value="AABA"/>
+        <button class="btn btn-p" onclick="rebuild()">Run Z-Algorithm</button>
+      </div>
     </div>
-    <div style="font-size:.8rem;color:#5a5a72;margin-bottom:.5rem">Characters (top) and Z-values (bottom):</div>
-    <div id="z-grid" class="z-grid"></div>
-    <div class="box-info" id="box-info">Z-box: <span>—</span></div>
   </div>
-
-  <div class="card">
-    <h2>Step Log</h2>
-    <div id="log"><span class="lg-info">Press Compute Z-Array to begin…</span></div>
-  </div>
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-function logLine(msg,cls=''){const s=document.createElement('div');if(cls)s.className=cls;s.textContent=msg;const l=document.getElementById('log');l.appendChild(s);l.scrollTop=l.scrollHeight;}
-function clearLog(){document.getElementById('log').innerHTML='';}
-
-function buildGrid(str, zVals){
-  const grid=document.getElementById('z-grid'); grid.innerHTML='';
-  for(let i=0;i<str.length;i++){
-    const wrap=document.createElement('div'); wrap.className='zch';
-    const cc=document.createElement('div'); cc.className='cc'; cc.textContent=str[i]; cc.id='cc-'+i;
-    const cv=document.createElement('div'); cv.className='cv'; cv.textContent=zVals?zVals[i]:''; cv.id='cv-'+i;
-    wrap.appendChild(cc); wrap.appendChild(cv); grid.appendChild(wrap);
+var player=null;
+function generateSteps(text,pat){
+  var steps=[],m=pat.length;
+  var s=pat+'$'+text, N=s.length;
+  var Z=new Array(N).fill(0), zBuilt=new Array(N).fill(-1);
+  var matches=[];
+  function snap(i,L,R){
+    return {Z:Z.slice(),zBuilt:zBuilt.slice(),i:i,L:L,R:R,matches:matches.slice(),N:N,m:m};
   }
+  steps.push({title:'Z-Algorithm on "'+s+'"',
+    what:'S = "'+pat+'"+"$"+"'+text+'". Compute Z[i] = longest prefix match starting at i.',
+    why:'Z[i]=='+m+' means pattern found at text position i-'+(m+1)+'.',
+    ...snap(0,0,-1)});
+  var L=0,R=-1;
+  for(var i=1;i<N;i++){
+    if(i<=R) Z[i]=Math.min(R-i+1,Z[i-L]);
+    while(i+Z[i]<N&&s[Z[i]]===s[i+Z[i]]) Z[i]++;
+    if(i+Z[i]-1>R){L=i;R=i+Z[i]-1;}
+    zBuilt[i]=Z[i];
+    var isMatch=Z[i]===m;
+    if(isMatch) matches.push(i-m-1);
+    steps.push({title:'Z['+i+']="'+s[i]+'" = '+Z[i]+(isMatch?' → MATCH at text['+(i-m-1)+']':''),
+      what:'Z['+i+']='+Z[i]+'. Z-box=['+L+','+R+']. s['+i+'..'+( i+Z[i]-1)+'] = "'+s.slice(i,i+Z[i])+'" matches prefix.',
+      why:isMatch?'Z[i]==m → pattern found at text position '+(i-m-1)+'.':'Prefix match of length '+Z[i]+'.',
+      ...snap(i,L,R)});
+  }
+  steps.push({title:'Z complete: '+matches.length+' match'+(matches.length!==1?'es':''),
+    what:'Matches at text indices: ['+matches.join(', ')+'].',
+    why:'Z[i]==m positions in combined string map back to text.',
+    ...snap(N,L,R)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-let timer=null;
-document.getElementById('btn-reset').onclick=()=>{
-  if(timer)clearTimeout(timer);
-  const s=document.getElementById('inp-str').value;
-  buildGrid(s,null);
-  document.getElementById('box-info').innerHTML='Z-box: <span>—</span>';
-  clearLog(); logLine('Reset.','lg-info');
-};
-
-document.getElementById('btn-run').onclick=()=>{
-  if(timer)clearTimeout(timer);
-  const s=document.getElementById('inp-str').value.trim();
-  if(!s){return;}
-  clearLog();
-  const n=s.length;
-  buildGrid(s,new Array(n).fill(0));
-
-  // Collect steps
-  const steps=[];
-  const Z=new Array(n).fill(0);
-  let l=0,r=0;
-  for(let i=1;i<n;i++){
-    let k=0;
-    if(i<r) k=Math.min(r-i,Z[i-l]);
-    let note='';
-    if(i<r) note=`Inside Z-box [${l},${r-1}]: mirror value = Z[${i-l}]=${Z[i-l]}, min(${r-i},${Z[i-l]})=${k}`;
-    else note=`Outside Z-box. Start from scratch.`;
-    while(i+k<n && s[k]===s[i+k]) k++;
-    if(i+k>r){l=i;r=i+k;}
-    Z[i]=k;
-    steps.push({i,z:k,l,r,note});
-  }
-  Z[0]=n; // convention
-
-  let si=0;
-  function next(){
-    if(si>=steps.length){
-      // Show final
-      buildGrid(s,Z);
-      logLine('Z-array complete.','lg-ok');
-      return;
-    }
-    const st=steps[si++];
-    // Update displays
-    for(let i=0;i<n;i++){
-      const cc=document.getElementById('cc-'+i);
-      if(!cc) continue;
-      cc.className='cc';
-    }
-    const cur=document.getElementById('cc-'+st.i);
-    if(cur) cur.className='cc current';
-    if(st.z>0){
-      for(let k=st.i;k<st.i+st.z && k<n;k++){
-        const e=document.getElementById('cc-'+k);if(e)e.className='cc zbox';
-      }
-    }
-    document.getElementById('cv-'+st.i).textContent=st.z;
-    document.getElementById('box-info').innerHTML=`Z-box: <span>[${st.l}, ${st.r-1}]</span>`;
-    logLine(`Z[${st.i}]=${st.z}: "${s.slice(st.i,st.i+st.z)}" matches prefix "${s.slice(0,st.z)}". ${st.note}`,'lg-ok');
-    timer=setTimeout(next,700);
-  }
-  // Show Z[0]
-  const cv0=document.getElementById('cv-0');if(cv0)cv0.textContent=n;
-  logLine(`Z[0]=${n} (full string length by definition)`,'lg-info');
-  next();
-};
-document.getElementById('btn-reset').click();
+function renderStep(step){
+  var sv=document.getElementById('strVis');
+  if(!sv) return;
+  var s_combined=document.getElementById('pat').value.toUpperCase().slice(0,12)+'$'+document.getElementById('txt').value.toUpperCase().slice(0,28);
+  var h='';
+  s_combined.split('').forEach(function(c,i){
+    var inZBox=i>=step.L&&i<=step.R&&step.R>=0;
+    var isCur=i===step.i;
+    var isMatch=step.matches.indexOf(i-step.m-1)>=0&&i>step.m;
+    var cl=isMatch?'match':isCur?'cur':inZBox?'zbox':'';
+    h+='<span class="ch">'+
+      '<span class="zval">'+(step.zBuilt[i]>=0?step.zBuilt[i]:'')+'</span>'+
+      '<span class="c '+cl+'">'+c+'</span>'+
+      '<span class="idx">'+i+'</span></span>';
+  });
+  sv.innerHTML=h;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='i='+step.i+'  |  Z-box=['+step.L+','+step.R+']  |  Matches at: ['+step.matches.join(',')+']';
+}
+function rebuild(){
+  var text=document.getElementById('txt').value.toUpperCase().slice(0,28);
+  var pat=document.getElementById('pat').value.toUpperCase().slice(0,12);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(text,pat),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

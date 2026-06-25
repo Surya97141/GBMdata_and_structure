@@ -3,285 +3,174 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Aho-Corasick Algorithm – DS-Algo Explorer</title>
+<title>Aho-Corasick – Multi-Pattern Search</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#2a9d8f}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-.breadcrumb{padding:1rem 2rem;font-size:.85rem;color:var(--muted)}
-.breadcrumb span{margin:0 .4rem;color:var(--border)}
-.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem 2rem}
-.hero-inner{max-width:860px;margin:0 auto}
-.tag{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;margin-bottom:.9rem}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;margin-bottom:.5rem}
-.hero p.tagline{color:var(--muted);font-size:1.05rem}
-.content{max-width:860px;margin:0 auto;padding:2rem}
-.explain p{margin-bottom:1rem;color:#333}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
-.fact{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
-.fact .val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent)}
-.fact .lbl{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.panel h2{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:1rem}
-.controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}
-label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
-input[type=text]{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;background:var(--bg);color:var(--ink);width:260px}
-input[type=text]:focus{outline:none;border-color:var(--accent)}
-.btn{padding:.55rem 1.2rem;border:none;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:opacity .2s}
-.btn:hover{opacity:.85}
-.btn.sec{background:var(--bg);color:var(--ink);border:1.5px solid var(--border)}
-.char-row{display:flex;flex-wrap:wrap;gap:4px;margin:1rem 0}
-.ch{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:600;border:2px solid var(--border);background:var(--bg);transition:all .3s}
-.ch.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.ch.matched{background:#e8f8f5;color:var(--accent);border-color:var(--accent)}
-.trie-area{overflow-x:auto;margin:1rem 0}
-.trie-node{display:inline-block;background:var(--surface);border:2px solid var(--border);border-radius:8px;padding:.3rem .6rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;margin:2px;position:relative}
-.trie-node.match{border-color:var(--accent);background:#e8f8f5}
-.trie-node.current{border-color:#e9c46a;background:#fff9e6}
-.trie-level{display:flex;flex-wrap:wrap;gap:6px;margin:.4rem 0}
-.trie-label{font-size:.75rem;color:var(--muted);margin-bottom:.3rem}
-.pattern-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
-.ptag{padding:.2rem .6rem;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#e8f8f5;color:var(--accent);border:1px solid var(--accent)}
-.match-result{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
-.mresult{padding:.2rem .6rem;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.8rem;background:var(--accent);color:#fff}
-#log{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c9d1d9;max-height:200px;overflow-y:auto}
-#log div{margin-bottom:.3rem;line-height:1.5}
-#log .hi{color:#79c0ff}
-#log .ok{color:#56d364}
-#log .warn{color:#e3b341}
-.back{display:inline-block;margin-top:1.5rem;color:var(--accent);font-weight:600;font-size:.9rem}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.str-vis{font-family:'JetBrains Mono',monospace;font-size:.9rem;margin:.5rem 0;overflow-x:auto;white-space:nowrap}
+.str-vis .ch{display:inline-flex;flex-direction:column;align-items:center;width:28px;margin:0 1px}
+.str-vis .ch .c{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--b);border-radius:5px;font-weight:700;background:var(--bg)}
+.str-vis .ch .c.cur{background:#fff176;border-color:#f59e0b}
+.str-vis .ch .c.match{background:#a8e6a3;outline:2px solid #16a34a}
+.str-vis .ch .idx{font-size:.58rem;color:#888;margin-top:2px}
+.trie-state{font-family:'JetBrains Mono',monospace;font-size:.75rem;padding:.4rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin:.4rem 0}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+input[type=text].w-sm{width:200px} input[type=text].w-lg{width:240px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>›</span>
-  <a href="../index.html">Algorithms</a><span>›</span>
-  Aho-Corasick
-</nav>
-<div class="hero">
-  <div class="hero-inner">
-    <span class="tag">String</span>
-    <h1>Aho-Corasick Algorithm</h1>
-    <p class="tagline">Multi-pattern string search using a trie with failure links — find all patterns simultaneously in linear time.</p>
-  </div>
-</div>
-<div class="content">
-  <div class="explain">
-    <p>Aho-Corasick is like a postal sorting machine that knows all zip codes at once. Instead of checking each pattern one by one (like KMP for each pattern separately), it builds a trie from all patterns, then adds <strong>failure links</strong> (suffix links) that let the automaton gracefully fall back to the longest proper suffix that is a prefix of some pattern.</p>
-    <p>During the search phase, the algorithm processes the text left-to-right exactly once. At each character, it either advances to a child node, follows a failure link, or uses a precomputed goto table that folds both transitions. The time complexity is O(N + M + Z) where N is text length, M is total pattern length, and Z is the number of matches.</p>
-    <p>Real-world uses include intrusion detection systems (Snort), biological sequence search (searching DNA for motifs), and search engines indexing against keyword blacklists.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Aho-Corasick</span></nav>
+  <span class="tag">String Algorithms</span>
+  <h1>Aho-Corasick</h1>
+  <p class="tagline">Multi-pattern string search in O(n + total matches).</p>
+  <div class="prose">
+    <p>Aho-Corasick builds a trie from all patterns, then computes failure (suffix) links similar to KMP's LPS. Searching the text follows trie edges, falling back via failure links on mismatch. All patterns are found in a single O(n) pass — ideal for searching many patterns simultaneously.</p>
+    <p>Used in network intrusion detection (Snort), antivirus scanning, and grep. Current trie node is shown. Matches are highlighted green in the text.</p>
   </div>
   <div class="facts">
-    <div class="fact"><div class="val">O(N+M+Z)</div><div class="lbl">Search time</div></div>
-    <div class="fact"><div class="val">O(M·Σ)</div><div class="lbl">Build time</div></div>
-    <div class="fact"><div class="val">Linear</div><div class="lbl">Text passes</div></div>
+    <div class="fact"><div class="flabel">Build</div><div class="fval">O(sum of m)</div></div>
+    <div class="fact"><div class="flabel">Search</div><div class="fval">O(n + matches)</div></div>
+    <div class="fact"><div class="flabel">Patterns</div><div class="fval">All at once</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">Snort, antivirus</div></div>
   </div>
-
-  <div class="panel">
-    <h2>Interactive Simulation</h2>
-    <div class="controls">
-      <div>
-        <label>Text</label>
-        <input type="text" id="txtInput" value="he is his sister"/>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <p style="font-size:.78rem;color:var(--m);margin-bottom:.3rem">Text:</p>
+      <div id="textVis" class="str-vis"></div>
+      <div class="trie-state" id="trieState">Trie state will appear here.</div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Text:</label><input type="text" class="w-lg" id="txt" value="ahishers"/>
+        <label>Patterns (comma-sep):</label><input type="text" class="w-sm" id="pats" value="he,she,his,hers"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
       </div>
-      <div>
-        <label>Patterns (comma-separated)</label>
-        <input type="text" id="patInput" value="he,she,his,hers"/>
-      </div>
-    </div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-      <button class="btn" onclick="buildAutomaton()">Build Automaton</button>
-      <button class="btn sec" onclick="searchText()">Search Text</button>
-      <button class="btn sec" onclick="resetAll()">Reset</button>
-    </div>
-
-    <div style="margin-top:1.2rem">
-      <div class="trie-label">Trie States (after build):</div>
-      <div id="trieViz" class="trie-area"></div>
-    </div>
-    <div style="margin-top:1rem">
-      <div class="trie-label">Text scanning:</div>
-      <div id="textViz" class="char-row"></div>
-    </div>
-    <div style="margin-top:.5rem">
-      <div class="trie-label">Matches found:</div>
-      <div id="matchViz" class="match-result"></div>
     </div>
   </div>
-
-  <div class="panel">
-    <h2>Step Log</h2>
-    <div id="log"><div class="hi">// Build automaton and search to see steps</div></div>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-let goto_fn={}, fail={}, output={}, stateCount=0;
-let builtPatterns=[];
-
-function log(msg,cls=''){
-  const d=document.getElementById('log');
-  const div=document.createElement('div');
-  if(cls)div.className=cls;
-  div.textContent=msg;
-  d.appendChild(div);
-  d.scrollTop=d.scrollHeight;
-}
-
-function resetAll(){
-  goto_fn={};fail={};output={};stateCount=0;builtPatterns=[];
-  document.getElementById('trieViz').innerHTML='';
-  document.getElementById('textViz').innerHTML='';
-  document.getElementById('matchViz').innerHTML='';
-  document.getElementById('log').innerHTML='<div class="hi">// Build automaton and search to see steps</div>';
-}
-
-function buildAutomaton(){
-  resetAll();
-  const patterns=document.getElementById('patInput').value.split(',').map(s=>s.trim()).filter(s=>s);
-  builtPatterns=patterns;
-  // Init root
-  goto_fn[0]={};output[0]=[];fail[0]=0;stateCount=1;
-
-  log('=== Building Trie ===','hi');
-  // Build trie
-  for(let p of patterns){
-    let cur=0;
-    for(let ch of p){
-      if(goto_fn[cur][ch]===undefined){
-        goto_fn[stateCount]={};output[stateCount]=[];fail[stateCount]=0;
-        goto_fn[cur][ch]=stateCount++;
-      }
-      cur=goto_fn[cur][ch];
+var player=null;
+function buildAC(patterns){
+  var goto_=[{}], fail=[0], output=[[]];
+  function newState(){ goto_.push({}); fail.push(0); output.push([]); return goto_.length-1; }
+  patterns.forEach(function(p){
+    var cur=0;
+    for(var i=0;i<p.length;i++){
+      var c=p[i];
+      if(goto_[cur][c]===undefined) goto_[cur][c]=newState();
+      cur=goto_[cur][c];
     }
     output[cur].push(p);
-    log(`Pattern "${p}": state ${cur} → output=${JSON.stringify(output[cur])}`);
-  }
-
-  // Fill missing transitions from root
-  for(let ch of 'abcdefghijklmnopqrstuvwxyz '.split('')){
-    if(goto_fn[0][ch]===undefined) goto_fn[0][ch]=0;
-  }
-
-  // BFS to build failure links
-  log('=== Building Failure Links (BFS) ===','hi');
-  const queue=[];
-  for(let ch in goto_fn[0]){
-    const s=goto_fn[0][ch];
-    if(s!==0){fail[s]=0;queue.push(s);}
-  }
-  while(queue.length){
-    const r=queue.shift();
-    for(let ch in goto_fn[r]){
-      const s=goto_fn[r][ch];
-      queue.push(s);
-      let state=fail[r];
-      while(state!==0 && goto_fn[state][ch]===undefined) state=fail[state];
-      fail[s]= (goto_fn[state][ch]!==undefined && goto_fn[state][ch]!==s) ? goto_fn[state][ch] : 0;
-      output[s]=[...output[s],...output[fail[s]]];
-      if(output[fail[s]].length>0)
-        log(`  State ${s}: fail→${fail[s]}, inherited output ${JSON.stringify(output[fail[s]])}`, 'ok');
-      else
-        log(`  State ${s}: fail→${fail[s]}`);
-    }
-  }
-
-  renderTrie();
-  log('Automaton built! Click "Search Text" to scan.','warn');
-}
-
-function renderTrie(){
-  const viz=document.getElementById('trieViz');
-  viz.innerHTML='';
-  // Show states as flat list with transitions
-  const info=document.createElement('div');
-  info.style.fontSize='.82rem';info.style.fontFamily='JetBrains Mono,monospace';
-  for(let s=0;s<stateCount;s++){
-    const trans=Object.entries(goto_fn[s]||{}).filter(([,v])=>v!==0||s===0).map(([k,v])=>`${k}→${v}`).join(', ');
-    const out=output[s]&&output[s].length?` [OUTPUT: ${output[s].join(',')}]`:'';
-    const fl=`  fail→${fail[s]||0}`;
-    const row=document.createElement('div');
-    row.id=`st-${s}`;
-    row.style.cssText='padding:.2rem .5rem;margin:2px 0;border-radius:4px;display:inline-block;margin-right:6px;border:1.5px solid var(--border);background:var(--bg)';
-    row.textContent=`S${s}${out} | {${trans}}${fl}`;
-    if(out) row.style.borderColor='var(--accent)',row.style.background='#e8f8f5';
-    info.appendChild(row);
-    info.appendChild(document.createElement('br'));
-  }
-  viz.appendChild(info);
-}
-
-function searchText(){
-  if(stateCount===0){alert('Build automaton first!');return;}
-  const text=document.getElementById('txtInput').value;
-  const tviz=document.getElementById('textViz');
-  tviz.innerHTML='';
-  document.getElementById('matchViz').innerHTML='';
-  const allChar=text.split('');
-  const spans=allChar.map((c,i)=>{
-    const sp=document.createElement('span');
-    sp.className='ch';sp.textContent=c;sp.id=`tc-${i}`;
-    tviz.appendChild(sp);
-    return sp;
   });
-
-  log('=== Searching Text ===','hi');
-  const matches=[];
-  let state=0;
-  let delay=0;
-  const step=(i)=>{
-    if(i>=text.length){
-      renderMatches(matches,text);
-      return;
+  var q=[];
+  for(var c in goto_[0]) q.push(goto_[0][c]);
+  while(q.length){
+    var r=q.shift();
+    for(var c in goto_[r]){
+      var s=goto_[r][c]; q.push(s);
+      var state=fail[r];
+      while(state>0&&goto_[state][c]===undefined) state=fail[state];
+      fail[s]=goto_[state][c]!==undefined&&goto_[state][c]!==s?goto_[state][c]:0;
+      output[s]=output[s].concat(output[fail[s]]);
     }
-    const ch=text[i].toLowerCase();
-    // Highlight current
-    spans.forEach(s=>s.classList.remove('active'));
-    spans[i].classList.add('active');
-    // Highlight current state
-    document.querySelectorAll('[id^="st-"]').forEach(el=>{
-      el.style.background='';el.style.borderColor='';
-    });
-    const stEl=document.getElementById(`st-${state}`);
-    if(stEl){stEl.style.background='#fff9e6';stEl.style.borderColor='#e9c46a';}
-
-    // Follow failure links if no transition
-    let nextState=state;
-    while(nextState!==0 && goto_fn[nextState][ch]===undefined) nextState=fail[nextState];
-    if(goto_fn[nextState][ch]!==undefined) nextState=goto_fn[nextState][ch];
-    else nextState=0;
-
-    log(`i=${i} ('${text[i]}'): S${state}→S${nextState}${output[nextState]&&output[nextState].length?' MATCH:'+JSON.stringify(output[nextState]):''}`);
-    state=nextState;
-
-    if(output[state]&&output[state].length){
-      output[state].forEach(p=>{
-        const start=i-p.length+1;
-        matches.push({start,end:i,pattern:p});
-        for(let k=start;k<=i;k++) spans[k]&&spans[k].classList.add('matched');
+  }
+  return {goto_:goto_,fail:fail,output:output};
+}
+function generateSteps(text,patterns){
+  var steps=[], ac=buildAC(patterns), n=text.length;
+  var tState=new Array(n).fill(''), matches=[];
+  function snap(ti,state){
+    return {tState:tState.slice(),ti:ti,state:state,matches:matches.slice(),ac:ac};
+  }
+  steps.push({title:'Aho-Corasick: patterns=['+patterns.join(',')+'] in "'+text+'"',
+    what:'Trie built with '+ac.goto_.length+' states. Failure links computed (KMP-style).',
+    why:'Single O(n) pass finds all pattern occurrences simultaneously.',
+    ...snap(0,0)});
+  var state=0;
+  for(var i=0;i<n;i++){
+    var c=text[i];
+    while(state>0&&ac.goto_[state][c]===undefined) state=ac.fail[state];
+    if(ac.goto_[state][c]!==undefined) state=ac.goto_[state][c];
+    var found=ac.output[state];
+    if(found.length>0){
+      found.forEach(function(p){
+        var start=i-p.length+1;
+        for(var k=start;k<=i;k++) tState[k]='match';
+        matches.push({pat:p,at:start});
       });
-      log(`  Output at S${state}: ${JSON.stringify(output[state])}`,'ok');
+      steps.push({title:'Match! "'+found.join(',')+'" at text['+i+']',
+        what:'Trie state '+state+' output: ['+found.join(',')+'] ending at index '+i+'.',
+        why:'Output links collect all patterns ending at this position.',
+        ...snap(i,state)});
+    } else {
+      tState[i]=tState[i]||'';
+      steps.push({title:'text['+i+']="'+c+'": trie state '+state,
+        what:'Follow trie edge "'+c+'" to state '+state+'. No match yet.',
+        why:'Failure links prevent backtracking in text.',
+        ...snap(i,state)});
     }
-    setTimeout(()=>step(i+1),400);
-  };
-  step(0);
+  }
+  steps.push({title:'Done: '+matches.length+' match'+(matches.length!==1?'es':''),
+    what:matches.map(function(m){return '"'+m.pat+'" at '+m.at;}).join(', ')||'No matches.',
+    why:'All patterns found in single O(n) scan.',
+    ...snap(n,0)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function renderMatches(matches,text){
-  const mv=document.getElementById('matchViz');
-  if(!matches.length){mv.textContent='No matches found.';return;}
-  matches.forEach(m=>{
-    const d=document.createElement('span');
-    d.className='mresult';
-    d.textContent=`"${m.pattern}" @${m.start}`;
-    mv.appendChild(d);
-  });
-  log(`Done. ${matches.length} match(es) found.`,'ok');
+function renderStep(step,text){
+  var tv=document.getElementById('textVis');
+  if(tv){
+    var h='';
+    text.split('').forEach(function(c,i){
+      var cl=step.tState[i]==='match'?'match':i===step.ti?'cur':'';
+      h+='<span class="ch"><span class="c '+cl+'">'+c+'</span><span class="idx">'+i+'</span></span>';
+    });
+    tv.innerHTML=h;
+  }
+  var ts=document.getElementById('trieState');
+  if(ts) ts.textContent='Current trie state: '+step.state+'  |  Matches so far: '+step.matches.length;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Position: '+step.ti+'  |  State: '+step.state+'  |  Matches: ['+step.matches.map(function(m){return '"'+m.pat+'"@'+m.at;}).join(', ')+']';
 }
+function rebuild(){
+  var text=document.getElementById('txt').value.toLowerCase().slice(0,40);
+  var patterns=document.getElementById('pats').value.split(',').map(function(p){return p.trim().toLowerCase();}).filter(Boolean).slice(0,6);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(text,patterns),function(s){renderStep(s,text);},'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

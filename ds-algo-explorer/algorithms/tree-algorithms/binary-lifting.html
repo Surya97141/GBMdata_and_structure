@@ -3,223 +3,138 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Binary Lifting – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Binary Lifting (Sparse Table on Trees)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-.table-wrap{overflow-x:auto;margin-top:.8rem;}
-table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem;width:100%;}
-th,td{padding:.3rem .55rem;border:1px solid var(--b);text-align:center;}
-th{background:#f2f1ec;color:var(--m);font-weight:600;}
-td.hi{background:#eef8f2;color:#1a5c38;font-weight:600;}
-.sel-row{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem;}
-.sel-row label{font-size:.9rem;font-weight:500;color:var(--m);}
-.sel-row select{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.4rem .7rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);}
-.result-box{margin-top:.7rem;font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);background:#f0fbf5;border:1px solid #b6e3ca;border-radius:8px;padding:.6rem 1rem;min-height:2rem;}
-.controls{display:flex;gap:.6rem;margin-top:.8rem;}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-neu{background:#eee;color:#444;border:1px solid #ddd;}.btn-neu:hover{background:#e5e5e5;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.table-wrap{overflow-x:auto;margin:.5rem 0}
+table.bl{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.75rem}
+table.bl td,table.bl th{border:1px solid var(--b);padding:.22rem .55rem;text-align:center;min-width:32px}
+table.bl th{background:var(--bg);font-weight:700;color:var(--m)}
+table.bl td.cur{background:#fff176}
+table.bl td.built{background:#c3b1e1}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Algorithms</a><span>/</span>
-    Binary Lifting
-  </nav>
-  <header class="hero">
-    <span class="tag">Tree Algorithm</span>
-    <h1>Binary Lifting</h1>
-    <p>Precompute 2^j-th ancestors for each node to answer LCA and ancestor queries in O(log n) by jumping in powers of two.</p>
-  </header>
-  <section class="prose">
-    <p><strong>Binary Lifting</strong> (also called sparse table on trees) preprocesses a table up[v][j] where up[v][j] is the 2^j-th ancestor of node v. To find the 5th ancestor, you decompose 5 = 4+1 = 2²+2⁰ and take two jumps instead of walking five steps. This reduces ancestor queries from O(n) to O(log n).</p>
-    <p>Think of an elevator that only stops at floors 1, 2, 4, 8, 16… Instead of pressing the button 13 times to reach floor 13, you press 8, then 4, then 1 — three presses. Binary lifting applies this idea to tree ancestors: represent any distance as a sum of powers of two, and precompute each "power-of-two jump" for every node.</p>
-    <p>For LCA queries: bring both nodes to the same depth using binary-lifting jumps, then simultaneously jump both up in powers of two until they would land on the same node. The answer is the parent of that landing point. This entire process takes O(log n) and makes binary lifting ideal for heavy competitive programming use cases.</p>
-  </section>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Binary Lifting</span></nav>
+  <span class="tag">Tree Algorithms</span>
+  <h1>Binary Lifting</h1>
+  <p class="tagline">Precompute 2^k-th ancestors for O(log n) LCA queries — sparse table on trees.</p>
+  <div class="prose">
+    <p>Binary lifting precomputes up[v][k] = 2^k-th ancestor of v. Built by: up[v][0] = parent[v], up[v][k] = up[up[v][k-1]][k-1]. For LCA queries: first equalize depths using powers of 2, then binary search for the highest bit where ancestors diverge. Each query is O(log n) after O(n log n) preprocessing.</p>
+    <p>The sparse table (up[node][k]) is shown. Purple = already computed. Yellow = currently filling.</p>
+  </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Preprocessing</div><div class="fact-val">O(n log n)</div></div>
-    <div class="fact"><div class="fact-label">LCA Query</div><div class="fact-val">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n log n)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">LCA, k-th ancestor, Path queries</div></div>
+    <div class="fact"><div class="flabel">Preprocess</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Query</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Used for</div><div class="fval">LCA, k-th ancestor</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-title">Binary Lifting — up[v][j] Table + LCA Query</div>
-    <canvas id="cv" height="300"></canvas>
-    <div class="table-wrap"><table id="upTable"></table></div>
-    <div class="sel-row" style="margin-top:.8rem;">
-      <label>Find LCA(</label>
-      <select id="selU"><option>4</option><option>8</option><option>5</option><option>6</option><option>7</option><option>2</option><option>3</option></select>
-      <label>,</label>
-      <select id="selV"><option>6</option><option>5</option><option>8</option><option>4</option><option>7</option><option>2</option><option>3</option></select>
-      <label>)</label>
-    </div>
-    <div class="result-box" id="resultBox">Select nodes and click Find LCA.</div>
-    <div class="controls">
-      <button class="btn btn-pri" onclick="doFind()">Find LCA</button>
-      <button class="btn btn-neu" onclick="doReset()">Reset</button>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <div class="table-wrap"><div id="blTable"></div></div>
+      <div class="info-bar" id="infoBar">Binary lifting sparse table above.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Build Sparse Table</button>
+      </div>
     </div>
   </div>
-
-  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
-  <a class="back" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
 <script>
-// 8-node tree (same as LCA page)
-const depth={1:0,2:1,3:1,4:2,5:2,6:2,7:2,8:3};
-const parent={1:0,2:1,3:1,4:2,5:2,6:3,7:3,8:4};
-const N=8; const LOG=4;
-const up={}; // up[v][j]
-for(let v=1;v<=N;v++){ up[v]=[]; up[v][0]=parent[v]||0; }
-for(let j=1;j<LOG;j++){
-  for(let v=1;v<=N;v++){
-    const p=up[v][j-1];
-    up[v][j]=p?up[p][j-1]:0;
+var player=null;
+var N=7, LOG=3;
+var PARENT=[-1,0,0,1,1,2,2]; // 0-indexed, 0 is root
+var DEPTH=[0,1,1,2,2,2,2];
+function generateSteps(){
+  var steps=[], up=[];
+  for(var i=0;i<N;i++){up.push(new Array(LOG).fill(-1));}
+  var builtMask=[];
+  for(var i=0;i<N;i++) builtMask.push(new Array(LOG).fill(false));
+  function snap(cNode,cK){return {up:up.map(function(r){return r.slice();}),builtMask:builtMask.map(function(r){return r.slice();}),cNode:cNode,cK:cK,N:N,LOG:LOG};}
+  steps.push({title:'Binary Lifting: build sparse table for 7-node tree',
+    what:'up[v][k] = 2^k-th ancestor of v. Base: up[v][0] = parent[v].',
+    why:'Allows O(log n) LCA queries and k-th ancestor queries.',
+    ...snap(-1,-1)});
+  for(var v=0;v<N;v++){
+    up[v][0]=PARENT[v]; builtMask[v][0]=true;
+    steps.push({title:'up['+v+'][0] = parent['+v+'] = '+PARENT[v],
+      what:'Direct parent: up['+v+'][0]='+PARENT[v]+' (depth '+DEPTH[v]+').',
+      why:'Base case: 2^0 = 1 hop = direct parent.',
+      ...snap(v,0)});
   }
-}
-
-const POS={
-  1:[0.5,0.05],
-  2:[0.25,0.3],3:[0.75,0.3],
-  4:[0.13,0.56],5:[0.37,0.56],6:[0.63,0.56],7:[0.87,0.56],
-  8:[0.08,0.82]
-};
-const PAD=24;
-
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-let hiNodes=new Set();
-
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=300; canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr); buildTable(); render();
-}
-window.addEventListener('resize',resize);
-
-function toXY(v){ const [rx,ry]=POS[v]; return [PAD+rx*(W-2*PAD),20+ry*(H-40)]; }
-
-function buildTable(){
-  const t=document.getElementById('upTable');
-  let html='<tr><th>v \\ j</th>';
-  for(let j=0;j<LOG;j++) html+=`<th>2^${j}=${Math.pow(2,j)}</th>`;
-  html+='<th>depth</th></tr>';
-  for(let v=1;v<=N;v++){
-    html+=`<tr><th>${v}</th>`;
-    for(let j=0;j<LOG;j++) html+=`<td id="c${v}_${j}">${up[v][j]||'—'}</td>`;
-    html+=`<td>${depth[v]}</td></tr>`;
-  }
-  t.innerHTML=html;
-}
-
-function render(){
-  ctx.clearRect(0,0,W,H);
-  const edges=[[1,2],[1,3],[2,4],[2,5],[3,6],[3,7],[4,8]];
-  for(const [u,v] of edges){
-    const [ux,uy]=toXY(u),[vx,vy]=toXY(v);
-    ctx.beginPath();ctx.moveTo(ux,uy);ctx.lineTo(vx,vy);
-    ctx.strokeStyle='#c8c6be';ctx.lineWidth=1.5;ctx.stroke();
-  }
-  for(let v=1;v<=N;v++){
-    const [x,y]=toXY(v);
-    const isHi=hiNodes.has(v);
-    ctx.beginPath();ctx.arc(x,y,18,0,Math.PI*2);
-    ctx.fillStyle=isHi?'#27a060':'#e8f5ee';
-    ctx.fill(); ctx.strokeStyle=isHi?'#1a5c38':'#bbb';ctx.lineWidth=isHi?2:1.5;ctx.stroke();
-    ctx.fillStyle=isHi?'#fff':'#1a1a2e';
-    ctx.font="bold 12px 'JetBrains Mono',monospace";
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(v,x,y);
-    ctx.fillStyle='#aaa';ctx.font="9px 'Inter',sans-serif";
-    ctx.fillText('d='+depth[v],x,y+22);
-  }
-  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.fillText('Green = nodes in LCA computation path',8,H-18);
-}
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
-}
-
-function lca(u,v){
-  const steps=[];
-  hiNodes=new Set([u,v]);
-  // Bring to same depth
-  let a=u,b=v;
-  if(depth[a]<depth[b]){[a,b]=[b,a];}
-  let diff=depth[a]-depth[b];
-  steps.push(`depth[${a}]=${depth[a]}, depth[${b}]=${depth[b]}. Lift deeper node ${a} by ${diff}`);
-  for(let j=0;j<LOG;j++){
-    if((diff>>j)&1){ steps.push(`  Jump ${a} by 2^${j}=${Math.pow(2,j)} → ${up[a][j]}`); a=up[a][j]; hiNodes.add(a); }
-  }
-  steps.push(`Now both at depth ${depth[b]}: a=${a}, b=${b}`);
-  if(a===b){ steps.push(`Same node → LCA=${a}`); return {lca:a,steps}; }
-  for(let j=LOG-1;j>=0;j--){
-    if(up[a][j]!==up[b][j]){
-      steps.push(`j=${j}: up[${a}][${j}]=${up[a][j]}, up[${b}][${j}]=${up[b][j]} — different, jump both`);
-      a=up[a][j]; b=up[b][j]; hiNodes.add(a); hiNodes.add(b);
+  for(var k=1;k<LOG;k++){
+    for(var v=0;v<N;v++){
+      if(up[v][k-1]>=0) up[v][k]=up[up[v][k-1]][k-1];
+      else up[v][k]=-1;
+      builtMask[v][k]=true;
+      steps.push({title:'up['+v+']['+k+'] = up[up['+v+']['+(k-1)+']]['+( k-1)+'] = '+(up[v][k]>=0?up[v][k]:'-'),
+        what:'2^'+k+'='+Math.pow(2,k)+' hops = two 2^'+(k-1)+' hops: up['+v+']['+(k-1)+']='+up[v][k-1]+', then up['+( up[v][k-1]>=0?up[v][k-1]:'-')+'['+(k-1)+']='+(up[v][k]>=0?up[v][k]:'-')+'.',
+        why:'Doubling: 2^k ancestor = 2^(k-1) ancestor of the 2^(k-1) ancestor.',
+        ...snap(v,k)});
     }
   }
-  const result=up[a][0];
-  hiNodes.add(result);
-  steps.push(`up[${a}][0]=${up[a][0]} = up[${b}][0]=${up[b][0]} → LCA=${result}`);
-  return {lca:result,steps};
+  steps.push({title:'Sparse table complete. O(n log n) preprocessing done.',
+    what:'Table: up[node][k] = 2^k-th ancestor. Ready for O(log n) LCA queries.',
+    why:'LCA(u,v): equalize depths using table bits, then binary search for join point.',
+    ...snap(-1,-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function doFind(){
-  const u=parseInt(document.getElementById('selU').value);
-  const v=parseInt(document.getElementById('selV').value);
-  const {lca:l,steps}=lca(u,v);
-  document.getElementById('resultBox').textContent=`LCA(${u}, ${v}) = ${l}  |  depth[LCA]=${depth[l]}  |  dist=${depth[u]+depth[v]-2*depth[l]}`;
-  for(const s of steps) log(s);
-  // Highlight table cells
-  for(let vv=1;vv<=N;vv++) for(let j=0;j<LOG;j++){
-    const el=document.getElementById(`c${vv}_${j}`);
-    if(el) el.classList.remove('hi');
+function renderStep(step){
+  var tb=document.getElementById('blTable'); if(!tb) return;
+  var html='<table class="bl"><tr><th>Node</th><th>depth</th>';
+  for(var k=0;k<step.LOG;k++) html+='<th>up[·]['+k+']<br>(2^'+k+'='+Math.pow(2,k)+'hops)</th>';
+  html+='</tr>';
+  for(var v=0;v<step.N;v++){
+    html+='<tr><td>'+v+'</td><td>'+DEPTH[v]+'</td>';
+    for(var k=0;k<step.LOG;k++){
+      var isCur=v===step.cNode&&k===step.cK;
+      var isBuilt=step.builtMask[v][k];
+      html+='<td class="'+(isCur?'cur':isBuilt?'built':'')+'">'+( isBuilt?(step.up[v][k]>=0?step.up[v][k]:'—'):'?')+'</td>';
+    }
+    html+='</tr>';
   }
-  hiNodes.forEach(vv=>{ for(let j=0;j<LOG;j++){ const el=document.getElementById(`c${vv}_${j}`); if(el) el.classList.add('hi'); } });
-  render();
+  html+='</table>'; tb.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Filling up['+(step.cNode>=0?step.cNode:'?')+']['+(step.cK>=0?step.cK:'?')+']  |  2^k hops = '+(step.cK>=0?Math.pow(2,step.cK):'?');
 }
-
-function doReset(){ hiNodes=new Set(); document.getElementById('resultBox').textContent='Select nodes and click Find LCA.'; render(); buildTable(); }
-
-resize();
-log('Binary lifting table built. up[v][j] = 2^j-th ancestor of v. Select nodes to query LCA.');
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

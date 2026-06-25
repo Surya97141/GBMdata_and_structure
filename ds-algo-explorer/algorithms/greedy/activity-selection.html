@@ -1,197 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Activity Selection – DS Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Activity Selection Problem</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  :root{--bg:#f7f6f2;--surface:#fff;--ink:#1a1a2e;--muted:#5a5a72;--border:#e2e0da;--accent:#d4a017;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-  .container{max-width:900px;margin:0 auto;padding:0 24px;}
-  .breadcrumb{padding:16px 0;font-size:.85rem;color:var(--muted);}
-  .breadcrumb span{margin:0 6px;}
-  .hero{padding:48px 0 32px;}
-  .tag{display:inline-block;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:12px;}
-  .hero p.tagline{font-size:1.1rem;color:var(--muted);}
-  .explanation{padding:24px 0;}
-  .explanation p{margin-bottom:14px;}
-  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0;}
-  .fact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-  .fact-card .val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);}
-  .fact-card .label{font-size:.8rem;color:var(--muted);margin-top:4px;}
-  .sim-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin:24px 0;}
-  .sim-box h2{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:18px;}
-  .btn-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
-  .btn{border:none;padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
-  .btn-primary{background:var(--accent);color:#fff;}
-  .btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border);}
-  .btn:hover{opacity:.82;}.btn:disabled{opacity:.38;cursor:not-allowed;}
-  canvas{display:block;border-radius:8px;border:1px solid var(--border);max-width:100%;}
-  .result-note{margin-top:14px;font-size:.95rem;}
-  .result-note strong{color:var(--accent);}
-  .log-box{background:#1a1a2e;border-radius:10px;padding:20px;margin:24px 0;min-height:120px;max-height:260px;overflow-y:auto;}
-  .log-box p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a8b4c0;margin-bottom:4px;line-height:1.5;}
-  .log-box p.highlight{color:#f5d87c;}
-  .back-link{display:inline-block;margin:8px 0 40px;font-size:.9rem;font-weight:500;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.35rem .6rem;border:1.5px solid var(--b);border-radius:8px;width:300px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="container">
-  <nav class="breadcrumb">
-    <a href="../../index.html">Home</a><span>›</span>
-    <a href="../index.html">Algorithms</a><span>›</span>
-    Activity Selection
-  </nav>
-
-  <div class="hero">
-    <span class="tag">Greedy</span>
-    <h1>Activity Selection</h1>
-    <p class="tagline">Schedule the maximum number of non-overlapping activities using a greedy finish-time strategy.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Algorithms</a><span>/</span><span>Activity Selection</span></nav>
+  <span class="tag">Greedy</span>
+  <h1>Activity Selection Problem</h1>
+  <p class="tagline">Select maximum non-overlapping activities — greedy choice: earliest finish time.</p>
+  <div class="prose">
+    <p>Sort activities by finish time. Greedily select each activity if its start time ≥ last selected finish time. This always yields the maximum number of non-overlapping activities. The greedy choice property holds because selecting the activity that finishes earliest leaves the most room for future activities.</p>
+    <p>Green = selected. Red = skipped (overlaps). Yellow = currently considering.</p>
   </div>
-
-  <div class="explanation">
-    <p>You have a list of activities, each with a start and finish time, sharing a single resource (a lecture hall, a machine). You want to select the <strong>maximum number of compatible activities</strong> — no two can overlap.</p>
-    <p>The greedy insight is non-obvious but provably optimal: always pick the activity that finishes earliest among those compatible with the last selected one. By finishing early, we leave the maximum room for future activities.</p>
-    <p>The algorithm runs in O(n log n): sort by finish time, then do a single linear scan. No DP needed — greedy gives the global optimum.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact-card"><div class="val">O(n log n)</div><div class="label">Time Complexity</div></div>
-    <div class="fact-card"><div class="val">O(1)</div><div class="label">Extra Space</div></div>
-    <div class="fact-card"><div class="val">Exchange Arg</div><div class="label">Proof Technique</div></div>
+    <div class="fact"><div class="flabel">Time</div><div class="fval">O(n log n)</div></div>
+    <div class="fact"><div class="flabel">Greedy choice</div><div class="fval">Earliest finish</div></div>
+    <div class="fact"><div class="flabel">Optimal</div><div class="fval">Yes (proven)</div></div>
+    <div class="fact"><div class="flabel">Used for</div><div class="fval">Scheduling, intervals</div></div>
   </div>
-
-  <div class="sim-box">
-    <h2>Interactive Simulation</h2>
-    <div class="btn-row">
-      <button class="btn btn-secondary" id="sortBtn" onclick="doSort()">1. Sort by Finish Time</button>
-      <button class="btn btn-primary" id="greedyBtn" onclick="doGreedy()" disabled>2. Select Greedily</button>
-      <button class="btn btn-secondary" onclick="reset()">Reset</button>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" width="640" height="280"></canvas>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Activities [start,end] (comma-sep pairs):</label>
+        <input type="text" id="acts" value="1,4 3,5 0,6 5,7 3,9 5,9 6,10 8,11 8,12 2,14 12,16"/>
+        <button class="btn btn-p" onclick="rebuild()">Select Activities</button>
+      </div>
     </div>
-    <canvas id="canvas" width="840" height="310"></canvas>
-    <div class="result-note" id="resultNote"></div>
   </div>
-
-  <div class="sim-box" style="padding:20px;">
-    <h2 style="font-size:1.1rem;margin-bottom:10px;">Step Log</h2>
-    <div class="log-box" id="logBox"></div>
-  </div>
-
-  <a class="back-link" href="../index.html">← Back to Algorithms</a>
+  <a class="back" href="../index.html">Back to Algorithms</a>
 </div>
-
 <script>
-const RAW=[
-  {name:'A',s:1,f:4},{name:'B',s:3,f:5},{name:'C',s:0,f:6},
-  {name:'D',s:5,f:7},{name:'E',s:3,f:9},{name:'F',s:5,f:9},
-  {name:'G',s:6,f:10},{name:'H',s:8,f:11}
-];
-
-let acts, sorted=false, done=false;
-
-function log(msg,h=false){
-  const lb=document.getElementById('logBox');
-  const p=document.createElement('p');
-  if(h)p.classList.add('highlight');
-  p.textContent=msg;lb.appendChild(p);lb.scrollTop=lb.scrollHeight;
-}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-function reset(){
-  acts=RAW.map(a=>({...a,state:'idle'}));
-  sorted=false;done=false;
-  document.getElementById('sortBtn').disabled=false;
-  document.getElementById('greedyBtn').disabled=true;
-  document.getElementById('resultNote').innerHTML='';
-  document.getElementById('logBox').innerHTML='';
-  draw();
-}
-
-function draw(){
-  const canvas=document.getElementById('canvas');
-  const W=canvas.width,H=canvas.height;
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,W,H);
-
-  const PAD_L=36,PAD_R=24,PAD_TOP=30,BAR_H=22,GAP=10;
-  const maxT=12;
-  const scaleX=(W-PAD_L-PAD_R)/maxT;
-
-  // Timeline grid
-  ctx.strokeStyle='#e2e0da';ctx.lineWidth=1;
-  for(let t=0;t<=maxT;t++){
-    const x=PAD_L+t*scaleX;
-    ctx.beginPath();ctx.moveTo(x,PAD_TOP-8);ctx.lineTo(x,H-20);ctx.stroke();
-    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';ctx.textAlign='center';
-    ctx.fillText(t,x,H-6);
-  }
-
-  // Activity bars
-  acts.forEach((a,i)=>{
-    const x=PAD_L+a.s*scaleX;
-    const w=(a.f-a.s)*scaleX;
-    const y=PAD_TOP+i*(BAR_H+GAP);
-
-    let fill='#d8d5cc';
-    if(a.state==='selected') fill='#4caf78';
-    else if(a.state==='skip') fill='#aaa';
-    else if(a.state==='current') fill='#d4a017';
-
-    ctx.fillStyle=fill;
-    ctx.beginPath();ctx.roundRect(x,y,w,BAR_H,4);ctx.fill();
-
-    ctx.fillStyle='#fff';ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
-    ctx.fillText(`${a.name}[${a.s},${a.f})`,x+w/2,y+BAR_H/2+4);
-
-    // index label
-    ctx.fillStyle='#5a5a72';ctx.font='11px Inter';ctx.textAlign='right';
-    ctx.fillText(i+1,PAD_L-4,y+BAR_H/2+4);
-  });
-}
-
-function doSort(){
-  acts=RAW.map(a=>({...a,state:'idle'}));
-  acts.sort((a,b)=>a.f-b.f||(a.s-b.s));
-  sorted=true;
-  document.getElementById('sortBtn').disabled=true;
-  document.getElementById('greedyBtn').disabled=false;
-  log('Sorted by finish time: '+acts.map(a=>`[${a.name}:${a.s}-${a.f}]`).join(' → '));
-  draw();
-}
-
-async function doGreedy(){
-  if(!sorted){doSort();}
-  document.getElementById('greedyBtn').disabled=true;
-  document.getElementById('sortBtn').disabled=true;
-  const selected=[];let lastFinish=-Infinity;
-
-  for(let i=0;i<acts.length;i++){
-    acts[i].state='current';draw();
-    await sleep(500);
-    if(acts[i].s>=lastFinish){
-      acts[i].state='selected';
-      selected.push(acts[i].name);
-      lastFinish=acts[i].f;
-      log(`Select ${acts[i].name} [${acts[i].s},${acts[i].f}). Last finish=${lastFinish}.`);
+var player=null;
+function generateSteps(activities){
+  var acts=activities.slice().sort(function(a,b){return a[1]-b[1];});
+  var n=acts.length, state=new Array(n).fill(''), selected=[], lastEnd=-1, curIdx=-1;
+  function snap(){return {acts:acts.map(function(a){return a.slice();}),state:state.slice(),selected:selected.slice(),lastEnd:lastEnd,curIdx:curIdx,n:n};}
+  steps=[];
+  steps.push({title:'Activity Selection: '+n+' activities sorted by finish time',
+    what:'Sort by finish time. Greedily pick each non-overlapping activity.',
+    why:'Earliest-finish greedy always yields maximum set.',
+    ...snap()});
+  for(var i=0;i<n;i++){
+    curIdx=i; state[i]='cur';
+    steps.push({title:'Consider activity '+i+' ['+acts[i][0]+','+acts[i][1]+']. Last end='+lastEnd,
+      what:'start='+acts[i][0]+' '+(acts[i][0]>=lastEnd?'>= lastEnd='+lastEnd+' → SELECT':'< lastEnd='+lastEnd+' → SKIP')+'.',
+      why:acts[i][0]>=lastEnd?'Non-overlapping: select it.':'Overlaps with last selected activity.',
+      ...snap()});
+    if(acts[i][0]>=lastEnd){
+      state[i]='sel'; selected.push(i); lastEnd=acts[i][1];
     } else {
-      acts[i].state='skip';
-      log(`Skip ${acts[i].name} [${acts[i].s},${acts[i].f}): overlaps (start ${acts[i].s} < last finish ${lastFinish}).`);
+      state[i]='skip';
     }
-    draw();
-    await sleep(400);
   }
-  document.getElementById('resultNote').innerHTML=
-    `<strong>${selected.length} activities selected:</strong> ${selected.join(', ')}`;
-  log(`Done. Selected: [${selected.join(', ')}]`,true);
-  done=true;
+  steps.push({title:'Selected '+selected.length+' activities: '+selected.map(function(i){return '['+acts[i][0]+','+acts[i][1]+']';}).join(', '),
+    what:'Maximum non-overlapping set has '+selected.length+' activities.',
+    why:'No other set can have more activities (greedy is optimal).',
+    ...snap()});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-reset();
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=280, DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  ctx.clearRect(0,0,W,H);
+  var n=step.n, acts=step.acts;
+  var maxT=Math.max.apply(null,acts.map(function(a){return a[1];}))||1;
+  var rowH=Math.floor((H-50)/n), pad=40;
+  var scX=function(t){return pad+t/maxT*(W-2*pad);};
+  for(var i=0;i<n;i++){
+    var y=20+i*rowH, x0=scX(acts[i][0]), x1=scX(acts[i][1]), bH=Math.max(6,rowH-4);
+    var st=step.state[i];
+    ctx.fillStyle=st==='sel'?'#a8e6a3':st==='skip'?'#fca5a5':st==='cur'?'#fff176':'#c3b1e1';
+    ctx.fillRect(x0,y,x1-x0,bH);
+    ctx.strokeStyle=st==='sel'?'#16a34a':st==='cur'?'#f59e0b':'#ccc'; ctx.lineWidth=1.5;
+    ctx.strokeRect(x0,y,x1-x0,bH);
+    ctx.fillStyle='#1a1a2e'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(i,x0+(x1-x0)/2,y+bH/2+3);
+    ctx.fillText(acts[i][0],x0,y+bH+12);
+    ctx.fillText(acts[i][1],x1,y+bH+12);
+  }
+  if(step.lastEnd>0){
+    ctx.strokeStyle='rgba(239,68,68,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(scX(step.lastEnd),10);ctx.lineTo(scX(step.lastEnd),H-20);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#ef4444';ctx.font='10px Inter,sans-serif';ctx.textAlign='center';ctx.fillText('end='+step.lastEnd,scX(step.lastEnd),H-8);
+  }
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Selected: '+step.selected.length+'  |  Last end: '+step.lastEnd+'  |  Considering: '+(step.curIdx>=0?step.curIdx:'—');
+}
+function rebuild(){
+  var raw=document.getElementById('acts').value.trim().split(/\s+/);
+  var acts=raw.map(function(p){var ab=p.split(',');return [parseInt(ab[0]),parseInt(ab[1])];}).filter(function(a){return !isNaN(a[0])&&!isNaN(a[1]);}).slice(0,14);
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(acts),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

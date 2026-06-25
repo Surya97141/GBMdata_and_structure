@@ -1,273 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Adjacency Matrix — DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Adjacency Matrix</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #f7f6f2; color: #1a1a2e; font-family: 'Inter', sans-serif; min-height: 100vh; }
-  a { color: #7b4fd4; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  .breadcrumb { padding: 18px 40px; font-size: 13px; color: #5a5a72; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .breadcrumb span { color: #c0bdb5; }
-
-  .hero { background: #fff; border-bottom: 1px solid #e2e0da; padding: 48px 40px 36px; }
-  .tag { display: inline-block; background: #ede8f9; color: #7b4fd4; font-size: 11px; font-weight: 600; letter-spacing:.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
-  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.4rem; line-height: 1.15; margin-bottom: 10px; }
-  .hero p { color: #5a5a72; font-size: 1.05rem; max-width: 640px; }
-
-  .content { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
-  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.35rem; margin-bottom: 12px; }
-  .prose p { color: #3a3a52; line-height: 1.75; margin-bottom: 14px; font-size: .97rem; }
-
-  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 28px 0; }
-  .fact-card { background: #fff; border: 1px solid #e2e0da; border-radius: 10px; padding: 18px; }
-  .fact-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.07em; color: #5a5a72; margin-bottom: 8px; }
-  .fact-card .value { font-family: 'JetBrains Mono', monospace; font-size: .95rem; color: #7b4fd4; font-weight: 600; }
-  .fact-card .sub { font-size: .8rem; color: #5a5a72; margin-top: 4px; }
-
-  .sim-box { background: #fff; border: 1px solid #e2e0da; border-radius: 12px; overflow: hidden; margin: 32px 0; }
-  .sim-header { padding: 14px 20px; border-bottom: 1px solid #e2e0da; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .sim-title { font-weight: 600; font-size: .97rem; margin-right: auto; }
-
-  .sim-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-  @media (max-width: 620px) { .sim-body { grid-template-columns: 1fr; } }
-  .canvas-panel { border-right: 1px solid #e2e0da; padding: 12px; }
-  canvas { display: block; width: 100%; background: #faf9f7; cursor: pointer; border-radius: 8px; }
-  .matrix-panel { padding: 18px 16px; overflow-x: auto; }
-  .matrix-panel h3 { font-size: .85rem; font-weight: 600; color: #5a5a72; margin-bottom: 12px; letter-spacing:.05em; }
-
-  .matrix-wrap table { border-collapse: collapse; }
-  .matrix-wrap td, .matrix-wrap th { width: 36px; height: 36px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: .82rem; border: 1px solid #e2e0da; transition: background .2s, color .2s; cursor: pointer; user-select: none; }
-  .matrix-wrap th { background: #f0eef8; color: #7b4fd4; font-weight: 700; font-size: .8rem; cursor: default; }
-  .matrix-wrap td { color: #1a1a2e; }
-  .matrix-wrap td.one { background: #7b4fd4; color: #fff; font-weight: 700; }
-  .matrix-wrap td:hover { background: #ede8f9; }
-  .matrix-wrap td.one:hover { background: #5c38a8; }
-  .matrix-wrap td.hl-row, .matrix-wrap td.hl-col { background: #f3effe; }
-  .matrix-wrap td.one.hl-row, .matrix-wrap td.one.hl-col { background: #9d6fe8; }
-  .row-header { background: #f0eef8 !important; color: #7b4fd4 !important; font-weight: 700; cursor: default !important; }
-
-  .formula { margin-top: 14px; background: #faf9f7; border: 1px solid #e2e0da; border-radius: 8px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: .82rem; color: #5a5a72; }
-  .formula b { color: #7b4fd4; }
-
-  .log-box { background: #1a1a2e; min-height: 80px; max-height: 120px; overflow-y: auto; padding: 12px 18px; }
-  .log-line { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #a8a4c8; margin-bottom: 4px; }
-  .log-line .ts { color: #5a5a72; margin-right: 8px; }
-  .log-line .hi { color: #b993ff; }
-
-  .back-link { display: inline-flex; align-items: center; gap: 6px; color: #7b4fd4; font-size: .9rem; font-weight: 500; margin-top: 20px; }
-  .info-strip { background: #ede8f9; border-left: 3px solid #7b4fd4; border-radius: 0 8px 8px 0; padding: 10px 16px; margin-bottom: 20px; font-size: .87rem; color: #3a2060; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+.mat-wrap{overflow-x:auto;margin:.5rem 0}
+table.am{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+table.am td,table.am th{border:1px solid var(--b);padding:.25rem .55rem;text-align:center;min-width:36px}
+table.am th{background:var(--bg);font-weight:700;color:var(--m)}
+table.am td.cur{background:#fff176}
+table.am td.edge{background:#c3b1e1}
+table.am td.noedge{color:#bbb}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;line-height:1.8}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
-
-<nav class="breadcrumb">
-  <a href="../../index.html">Home</a><span>/</span>
-  <a href="../index.html">Data Structures</a><span>/</span>
-  <strong>Adjacency Matrix</strong>
-</nav>
-
-<header class="hero">
-  <div style="max-width:900px;margin:0 auto;">
-    <div class="tag">Graph Representation</div>
-    <h1>Adjacency Matrix</h1>
-    <p>A V×V grid where cell [i][j] = 1 if an edge exists from vertex i to vertex j — instant edge lookup, quadratic space.</p>
+<div class="wrap">
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Adjacency Matrix</span></nav>
+  <span class="tag">Graph</span>
+  <h1>Adjacency Matrix</h1>
+  <p class="tagline">V×V matrix where M[i][j] = edge weight — O(1) edge lookup, O(V²) space.</p>
+  <div class="prose">
+    <p>An adjacency matrix is a V×V 2D array where M[u][v] holds the edge weight (or 1/0 for unweighted). Edge existence check is O(1). Finding all neighbors of a vertex is O(V) — must scan the entire row. Space is always O(V²) even for sparse graphs. Best for dense graphs or when frequent edge-existence queries are needed.</p>
+    <p>Yellow = currently querying cell. Purple = edge exists (non-zero). Gray = no edge (0). Steps show row-by-row neighbor scan.</p>
   </div>
-</header>
-
-<main class="content">
-  <section class="prose" style="margin-bottom:28px;">
-    <div class="section-title">How it Works</div>
-    <p>An adjacency matrix is a 2-D array of size V×V. If there is an edge from vertex <strong>i</strong> to vertex <strong>j</strong>, we set <code>A[i][j] = 1</code>. For undirected graphs the matrix is symmetric. Edge lookup is O(1) — just check one cell — but storing the matrix always costs O(V²) space, even for sparse graphs.</p>
-    <p>Think of a social network with a yes/no friendship grid: row = person A, column = person B, cell = are they friends? Great for dense graphs and algorithms like Floyd-Warshall; wasteful for sparse ones like road networks.</p>
-  </section>
-
-  <div class="facts-grid">
-    <div class="fact-card"><div class="label">Edge lookup</div><div class="value">O(1)</div><div class="sub">Check A[i][j]</div></div>
-    <div class="fact-card"><div class="label">Add/Remove Edge</div><div class="value">O(1)</div><div class="sub">Set cell to 1 or 0</div></div>
-    <div class="fact-card"><div class="label">Space</div><div class="value">O(V²)</div><div class="sub">Always V×V cells</div></div>
-    <div class="fact-card"><div class="label">Find Neighbours</div><div class="value">O(V)</div><div class="sub">Scan entire row</div></div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(V²)</div></div>
+    <div class="fact"><div class="flabel">Edge check</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Neighbors</div><div class="fval">O(V) scan</div></div>
+    <div class="fact"><div class="flabel">Best for</div><div class="fval">Dense graphs</div></div>
   </div>
-
-  <div class="info-strip">Click an <strong>edge in the graph</strong> or a <strong>cell in the matrix</strong> to toggle it. Click a node to highlight its row and column.</div>
-
-  <div class="sim-box">
-    <div class="sim-header">
-      <span class="sim-title">Graph ↔ Adjacency Matrix (5 nodes)</span>
-      <button style="padding:7px 14px;border-radius:7px;border:1.5px solid #7b4fd4;background:#fff;color:#7b4fd4;font-weight:600;cursor:pointer;font-size:.84rem;" id="btnReset">Reset</button>
-    </div>
+  <div class="sim-panel">
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <div class="canvas-panel">
-        <canvas id="gc" height="240"></canvas>
-      </div>
-      <div class="matrix-panel">
-        <h3>ADJACENCY MATRIX  A[i][j]</h3>
-        <div class="matrix-wrap" id="matWrap"></div>
-        <div class="formula"><b>A[i][j]</b> = 1 if edge i → j exists<br><b>A[i][j]</b> = 0 otherwise</div>
+      <div class="mat-wrap"><div id="matDiv"></div></div>
+      <div class="info-bar" id="infoBar">Simulation ready.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Scan neighbors of:</label>
+        <select id="vertSel"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option><option value="4">E</option></select>
+        <button class="btn btn-p" onclick="rebuild()">Scan Row</button>
       </div>
     </div>
-    <div class="log-box" id="logBox"></div>
   </div>
-
-  <a class="back-link" href="../index.html">&#8592; Back to Data Structures</a>
-</main>
-
+  <a class="back" href="../index.html">Back to Data Structures</a>
+</div>
 <script>
-const N = 5;
-const ACCENT = '#7b4fd4';
-const R = 20;
-let adj = Array.from({length:N}, () => new Array(N).fill(0));
-let selectedNode = null;
-
-const canvas = document.getElementById('gc');
-const ctx = canvas.getContext('2d');
-
-function resize() { canvas.width = canvas.parentElement.clientWidth; }
-resize();
-window.addEventListener('resize', () => { resize(); positionNodes(); drawGraph(); });
-
-let nodePos = [];
-function positionNodes() {
-  const cx = canvas.width / 2, cy = canvas.height / 2, rad = Math.min(canvas.width, canvas.height) * 0.36;
-  nodePos = Array.from({length:N}, (_, i) => {
-    const a = (i / N) * Math.PI * 2 - Math.PI / 2;
-    return { x: cx + rad * Math.cos(a), y: cy + rad * Math.sin(a) };
-  });
+var player=null;
+var LABELS=['A','B','C','D','E'];
+var N=5;
+var MAT=[[0,4,2,0,0],[4,0,1,5,0],[2,1,0,8,10],[0,5,8,0,2],[0,0,10,2,0]];
+function generateSteps(startV){
+  var steps=[], curR=-1, curC=-1;
+  function snap(r,c){return {mat:MAT,curR:r,curC:c,N:N};}
+  steps.push({title:'Adjacency Matrix: '+N+'×'+N,
+    what:'M[u][v]=edge weight (0=no edge). M['+LABELS[startV]+'][*] = neighbors of '+LABELS[startV]+'.',
+    why:'O(V²) space. Edge check M[u][v] is O(1). Neighbor scan is O(V).',
+    ...snap(-1,-1)});
+  for(var c=0;c<N;c++){
+    steps.push({title:'Check M['+LABELS[startV]+']['+LABELS[c]+'] = '+MAT[startV][c],
+      what:MAT[startV][c]>0?'Edge '+LABELS[startV]+'→'+LABELS[c]+' with weight '+MAT[startV][c]+'.':'No edge '+LABELS[startV]+'→'+LABELS[c]+'.',
+      why:'Must scan entire row O(V) to find all neighbors.',
+      ...snap(startV,c)});
+  }
+  var neighbors=[];
+  for(var c=0;c<N;c++) if(MAT[startV][c]>0) neighbors.push(LABELS[c]+'(w='+MAT[startV][c]+')');
+  steps.push({title:'Neighbors of '+LABELS[startV]+': ['+neighbors.join(', ')+']',
+    what:'Found '+neighbors.length+' neighbors by scanning '+N+' cells.',
+    why:'Adjacency matrix: O(V) to list all neighbors vs O(degree) for adj list.',
+    ...snap(-1,-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-positionNodes();
-
-function label(i) { return String.fromCharCode(65 + i); }
-
-// Initial edges
-[[0,1],[0,2],[1,3],[2,3],[3,4]].forEach(([a,b]) => { adj[a][b] = 1; adj[b][a] = 1; });
-
-function log(msg) {
-  const d = new Date();
-  const ts = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
-  const lb = document.getElementById('logBox');
-  const line = document.createElement('div'); line.className = 'log-line';
-  line.innerHTML = `<span class="ts">${ts}</span>${msg}`;
-  lb.appendChild(line); lb.scrollTop = lb.scrollHeight;
-}
-
-function drawGraph() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < N; i++) {
-    for (let j = i+1; j < N; j++) {
-      if (!adj[i][j]) continue;
-      ctx.beginPath();
-      const isSel = selectedNode !== null && (i === selectedNode || j === selectedNode);
-      ctx.strokeStyle = isSel ? ACCENT : '#b0a8d0';
-      ctx.lineWidth = isSel ? 2.5 : 1.8;
-      ctx.moveTo(nodePos[i].x, nodePos[i].y);
-      ctx.lineTo(nodePos[j].x, nodePos[j].y);
-      ctx.stroke();
+function renderStep(step){
+  var md=document.getElementById('matDiv'); if(!md) return;
+  var html='<table class="am"><tr><th></th>';
+  for(var c=0;c<step.N;c++) html+='<th>'+LABELS[c]+'</th>';
+  html+='</tr>';
+  for(var r=0;r<step.N;r++){
+    html+='<tr><th>'+LABELS[r]+'</th>';
+    for(var c=0;c<step.N;c++){
+      var isCur=r===step.curR&&c===step.curC;
+      var v=step.mat[r][c];
+      html+='<td class="'+(isCur?'cur':v>0?'edge':'noedge')+'">'+(v>0?v:'0')+'</td>';
     }
+    html+='</tr>';
   }
-  nodePos.forEach((p, i) => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, R, 0, Math.PI*2);
-    const isSel = i === selectedNode;
-    ctx.fillStyle = isSel ? ACCENT : '#fff';
-    ctx.fill();
-    ctx.strokeStyle = ACCENT; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.fillStyle = isSel ? '#fff' : ACCENT;
-    ctx.font = '700 13px Inter,sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(label(i), p.x, p.y);
-  });
+  html+='</table>'; md.innerHTML=html;
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Cell: M['+(step.curR>=0?LABELS[step.curR]:'?')+']['+(step.curC>=0?LABELS[step.curC]:'?')+']'+(step.curR>=0&&step.curC>=0?' = '+step.mat[step.curR][step.curC]:'');
 }
-
-function buildMatrix() {
-  const wrap = document.getElementById('matWrap');
-  const table = document.createElement('table');
-  // header row
-  const headRow = document.createElement('tr');
-  headRow.appendChild(Object.assign(document.createElement('th'), {textContent:''}));
-  for (let j=0;j<N;j++) headRow.appendChild(Object.assign(document.createElement('th'), {textContent: label(j)}));
-  table.appendChild(headRow);
-
-  for (let i=0;i<N;i++) {
-    const tr = document.createElement('tr');
-    const rh = document.createElement('td'); rh.textContent = label(i); rh.className = 'row-header'; tr.appendChild(rh);
-    for (let j=0;j<N;j++) {
-      const td = document.createElement('td');
-      td.dataset.i = i; td.dataset.j = j;
-      td.textContent = adj[i][j];
-      if (adj[i][j]) td.classList.add('one');
-      if (i === j) { td.style.background = '#f5f3fa'; td.style.cursor = 'default'; td.style.color = '#ccc'; }
-      else td.addEventListener('click', () => toggleEdge(i, j, true));
-      tr.appendChild(td);
-    }
-    table.appendChild(tr);
-  }
-  wrap.innerHTML = '';
-  wrap.appendChild(table);
-  highlightMatrix();
+function rebuild(){
+  var v=parseInt(document.getElementById('vertSel').value)||0;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(v),renderStep,'explanation','sim-bar');
 }
-
-function toggleEdge(i, j, fromMatrix) {
-  const was = adj[i][j];
-  adj[i][j] = was ? 0 : 1;
-  adj[j][i] = adj[i][j]; // undirected
-  const action = was ? 'removed' : 'added';
-  log(`Edge <span class="hi">${label(i)}↔${label(j)}</span> ${action} — matrix[${i}][${j}] = matrix[${j}][${i}] = <span class="hi">${adj[i][j]}</span>`);
-  buildMatrix();
-  drawGraph();
-}
-
-function highlightMatrix() {
-  if (selectedNode === null) return;
-  const tds = document.querySelectorAll('#matWrap td[data-i]');
-  tds.forEach(td => {
-    const i = +td.dataset.i, j = +td.dataset.j;
-    td.classList.toggle('hl-row', i === selectedNode);
-    td.classList.toggle('hl-col', j === selectedNode);
-  });
-}
-
-canvas.addEventListener('click', e => {
-  const r = canvas.getBoundingClientRect();
-  const x = (e.clientX - r.left) * (canvas.width / r.width);
-  const y = (e.clientY - r.top) * (canvas.height / r.height);
-
-  // Check node click
-  const ni = nodePos.findIndex(p => Math.hypot(p.x-x, p.y-y) <= R+4);
-  if (ni !== -1) {
-    selectedNode = (selectedNode === ni) ? null : ni;
-    log(`Selected node <span class="hi">${selectedNode !== null ? label(selectedNode) : 'none'}</span> — row/column highlighted`);
-    buildMatrix(); drawGraph(); return;
-  }
-
-  // Check edge click
-  for (let i=0;i<N;i++) {
-    for (let j=i+1;j<N;j++) {
-      const pi = nodePos[i], pj = nodePos[j];
-      const len = Math.hypot(pj.x-pi.x, pj.y-pi.y);
-      const t = ((x-pi.x)*(pj.x-pi.x)+(y-pi.y)*(pj.y-pi.y))/(len*len);
-      if (t<0||t>1) continue;
-      const dx = x-(pi.x+t*(pj.x-pi.x)), dy = y-(pi.y+t*(pj.y-pi.y));
-      if (Math.hypot(dx,dy) < 8) { toggleEdge(i,j,false); return; }
-    }
-  }
-});
-
-document.getElementById('btnReset').addEventListener('click', () => {
-  adj = Array.from({length:N}, () => new Array(N).fill(0));
-  [[0,1],[0,2],[1,3],[2,3],[3,4]].forEach(([a,b]) => { adj[a][b]=1; adj[b][a]=1; });
-  selectedNode = null;
-  log('Graph reset to default');
-  buildMatrix(); drawGraph();
-});
-
-buildMatrix();
-drawGraph();
-log('Starter graph loaded — click edges or matrix cells to toggle');
+rebuild();
 </script>
 </body>
 </html>
