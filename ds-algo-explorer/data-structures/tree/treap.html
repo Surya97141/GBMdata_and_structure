@@ -3,236 +3,137 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Treap – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Treap</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:100px;}
-.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
-.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
-.pri-badge{display:inline-block;padding:.18rem .5rem;background:#f3e8ff;border:1px solid #d1b3f5;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#6c3483;margin-top:.5rem;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    Treap
-  </nav>
-  <header class="hero">
-    <span class="tag">Tree</span>
-    <h1>Treap</h1>
-    <p>A randomized BST that stays balanced on average by combining BST key ordering with random heap priorities — no complex rebalancing needed.</p>
-  </header>
-  <section class="prose">
-    <p>A <strong>Treap</strong> (Tree + Heap) is a binary tree where each node carries two values: a <em>key</em> (following BST order — left keys smaller, right keys larger) and a <em>priority</em> (random number, following max-heap order — parent priority higher than children). Because priorities are random, the resulting tree shape has the same distribution as a random BST, which has expected height O(log n).</p>
-    <p>Think of a lottery-controlled filing system. Documents (keys) are filed in alphabetical order for fast lookup, but each document also has a randomly drawn lottery ticket (priority). Tickets determine the vertical arrangement — higher ticket always sits above lower tickets. This lottery ensures no one can consistently force a worst-case arrangement.</p>
-    <p>Insertions do a BST insert, then use rotations to restore the heap priority property. Deletions assign the node priority -∞, sift it down to a leaf using rotations, then remove it. The randomness eliminates the need for explicit balance tracking, making the code simpler than AVL or red-black trees.</p>
-  </section>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Treap</span></nav>
+  <span class="tag">Tree</span>
+  <h1>Treap</h1>
+  <p class="tagline">Randomized BST — BST by key, max-heap by priority. Expected O(log n) operations.</p>
+  <div class="prose">
+    <p>A treap maintains two properties simultaneously: BST order by key (left key &lt; right key) and max-heap order by random priority (parent priority &gt; child priority). The random priorities make the tree balanced in expectation — height O(log n) with high probability. Rotations maintain both properties after insert/delete.</p>
+    <p>Each node shows (key, priority). Yellow = current node being examined. Numbers inside show key/priority. Node size proportional to priority for intuition.</p>
+  </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Insert / Delete / Search</div><div class="fact-val">O(log n) expected</div></div>
-    <div class="fact"><div class="fact-label">Worst Case</div><div class="fact-val">O(n) — rare</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Randomized BSTs, order stats</div></div>
+    <div class="fact"><div class="flabel">Search expected</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Insert expected</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Height expected</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Properties</div><div class="fval">BST + max-heap</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-title">Treap Simulation — nodes show "key|priority"</div>
-    <canvas id="cv" height="320"></canvas>
-    <div style="margin-top:.5rem;">
-      <span style="font-size:.82rem;color:var(--m);">Last random priority assigned: </span>
-      <span class="pri-badge" id="priShow">—</span>
-    </div>
-    <div class="controls">
-      <input id="valIn" type="number" placeholder="key…" min="0" max="999"/>
-      <button class="btn btn-pri" onclick="doInsert()">Insert</button>
-      <button class="btn btn-dan" onclick="doDelete()">Delete</button>
-      <button class="btn btn-sec" onclick="doRandInsert()">Insert Random</button>
-      <button class="btn btn-sec" onclick="doClear()">Clear</button>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="240"></canvas>
+      <div class="info-bar" id="infoBar">Verifying BST and heap properties on treap.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Verify Both Properties</button>
+      </div>
     </div>
   </div>
-
-  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
-
 <script>
-class TNode {
-  constructor(k,p){ this.k=k; this.p=p; this.l=null; this.r=null; }
+var player=null;
+var TREAP={
+  nodes:{1:{k:35,p:95}, 2:{k:15,p:80}, 3:{k:60,p:70}, 4:{k:8,p:55}, 5:{k:25,p:60}, 6:{k:50,p:45}, 7:{k:80,p:30}},
+  ch:{1:[2,3], 2:[4,5], 3:[6,7]},
+  pos:{1:[320,40], 2:[160,120], 3:[480,120], 4:[80,200], 5:[240,200], 6:[400,200], 7:[560,200]}
+};
+function generateSteps(){
+  var steps=[], hl=-1, bst_ok=[], heap_ok=[];
+  function snap(v,b,h){return {nodes:TREAP.nodes,ch:TREAP.ch,pos:TREAP.pos,hl:v,bst:b.slice(),heap:h.slice()};}
+  steps.push({title:'Treap: BST by key + max-heap by priority',
+    what:'7 nodes. Root=(key='+TREAP.nodes[1].k+', pri='+TREAP.nodes[1].p+'). Verify both properties.',
+    why:'Treap combines BST ordering (for search) with heap ordering by random priority (for balance).',
+    ...snap(-1,[],[])});
+  Object.keys(TREAP.ch).forEach(function(p){
+    p=parseInt(p);
+    var ch=TREAP.ch[p]||[], pn=TREAP.nodes[p];
+    ch.forEach(function(c,side){
+      var cn=TREAP.nodes[c];
+      var bstOK=(side===0)?cn.k<pn.k:cn.k>pn.k;
+      var heapOK=pn.p>cn.p;
+      bst_ok.push(p); heap_ok.push(p);
+      steps.push({title:'Edge '+pn.k+'→'+cn.k+': BST '+(bstOK?'✓':'✗')+', Heap '+(heapOK?'✓':'✗'),
+        what:'BST: '+cn.k+(side===0?'<':'>') +pn.k+'='+bstOK+'. Heap: pri('+pn.k+')='+pn.p+' > pri('+cn.k+')='+cn.p+'='+heapOK+'.',
+        why:'Both must hold. BST enables O(log n) search; random priorities keep tree balanced.',
+        ...snap(p,bst_ok,heap_ok)});
+    });
+  });
+  steps.push({title:'All BST and heap properties verified!',
+    what:'BST property ensures search in O(h). Random priorities make E[h]=O(log n).',
+    why:'Expected balance without explicit rotations on each insertion (only when priority violated).',
+    ...snap(-1,bst_ok,heap_ok)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-let root=null;
-let rotCount=0;
-
-function rotR(n){
-  const l=n.l; n.l=l.r; l.r=n; rotCount++; return l;
-}
-function rotL(n){
-  const r=n.r; n.r=r.l; r.l=n; rotCount++; return r;
-}
-
-function insert(node,k,p){
-  if(!node) return new TNode(k,p);
-  if(k<node.k){
-    node.l=insert(node.l,k,p);
-    if(node.l.p>node.p) node=rotR(node);
-  } else if(k>node.k){
-    node.r=insert(node.r,k,p);
-    if(node.r.p>node.p) node=rotL(node);
-  }
-  return node;
-}
-
-function deleteNode(node,k){
-  if(!node) return null;
-  if(k<node.k){ node.l=deleteNode(node.l,k); }
-  else if(k>node.k){ node.r=deleteNode(node.r,k); }
-  else {
-    if(!node.l&&!node.r) return null;
-    if(!node.l){ node=rotL(node); node.l=deleteNode(node.l,k); }
-    else if(!node.r){ node=rotR(node); node.r=deleteNode(node.r,k); }
-    else if(node.l.p>node.r.p){ node=rotR(node); node.r=deleteNode(node.r,k); }
-    else { node=rotL(node); node.l=deleteNode(node.l,k); }
-  }
-  return node;
-}
-
-// Layout
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=320; canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr); render();
-}
-window.addEventListener('resize',resize);
-
-function assignPos(node,x,y,spread){
-  if(!node) return;
-  node._x=x; node._y=y;
-  assignPos(node.l,x-spread,y+72,spread/2);
-  assignPos(node.r,x+spread,y+72,spread/2);
-}
-
-function drawEdges(node){
-  if(!node) return;
-  if(node.l){ ctx.beginPath(); ctx.moveTo(node._x,node._y); ctx.lineTo(node.l._x,node.l._y); ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke(); }
-  if(node.r){ ctx.beginPath(); ctx.moveTo(node._x,node._y); ctx.lineTo(node.r._x,node.r._y); ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke(); }
-  drawEdges(node.l); drawEdges(node.r);
-}
-
-function drawNodes(node){
-  if(!node) return;
-  const isRoot=node===root;
-  ctx.beginPath(); ctx.arc(node._x,node._y,22,0,Math.PI*2);
-  ctx.fillStyle=isRoot?'#27a060':'#e8f5ee'; ctx.fill();
-  ctx.strokeStyle=isRoot?'#1a5c38':'#aaa'; ctx.lineWidth=1.5; ctx.stroke();
-  // key
-  ctx.fillStyle=isRoot?'#fff':'#1a1a2e';
-  ctx.font="bold 12px 'JetBrains Mono',monospace";
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(node.k,node._x,node._y-6);
-  // priority
-  ctx.fillStyle=isRoot?'rgba(255,255,255,.8)':'#8e44ad';
-  ctx.font="10px 'JetBrains Mono',monospace";
-  ctx.fillText(node.p,node._x,node._y+8);
-  drawNodes(node.l); drawNodes(node.r);
-}
-
-function render(){
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=240, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  if(!root){
-    ctx.fillStyle='#aaa'; ctx.font="14px 'Inter',sans-serif";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('Treap is empty — insert values to begin',W/2,H/2); return;
-  }
-  assignPos(root,W/2,36,Math.min(W/4,120));
-  drawEdges(root); drawNodes(root);
-  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.fillText('Each node: KEY (top) | priority (bottom, purple)  — BST on keys, max-heap on priorities',8,H-18);
+  Object.keys(step.ch).forEach(function(p){
+    var ch=step.ch[p]||[], pp=step.pos[p];
+    ch.forEach(function(c){if(!c) return; var cp=step.pos[c];
+      ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pp[0]*SCALE,pp[1]);ctx.lineTo(cp[0]*SCALE,cp[1]);ctx.stroke();});
+  });
+  Object.keys(step.nodes).forEach(function(v){
+    v=parseInt(v); if(!step.pos[v]) return;
+    var pos=step.pos[v], cx=pos[0]*SCALE, cy=pos[1];
+    var isHl=v===step.hl;
+    var node=step.nodes[v];
+    var r=14+Math.round(node.p/20);
+    ctx.fillStyle=isHl?'#fff176':'#c3b1e1';
+    ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(node.k,cx,cy-2);
+    ctx.font='8px JetBrains Mono,monospace';ctx.fillStyle='#5a5a72';
+    ctx.fillText('p='+node.p,cx,cy+9);
+  });
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Node: '+(step.hl>0?'(k='+step.nodes[step.hl].k+',p='+step.nodes[step.hl].p+')':'—')+'  |  BST+Heap verified: '+step.bst.length+'/'+Object.keys(step.ch).length+' edges';
 }
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-function randPri(){ return Math.floor(Math.random()*100)+1; }
-
-function doInsert(){
-  const k=parseInt(document.getElementById('valIn').value);
-  if(isNaN(k)){alert('Enter a key.');return;}
-  const p=randPri();
-  document.getElementById('priShow').textContent=p;
-  rotCount=0;
-  root=insert(root,k,p);
-  log(`Insert key=${k}, priority=${p} → ${rotCount} rotation(s) to restore heap order`);
-  render();
-}
-
-function doRandInsert(){
-  const k=Math.floor(Math.random()*90)+10;
-  const p=randPri();
-  document.getElementById('priShow').textContent=p;
-  document.getElementById('valIn').value=k;
-  rotCount=0;
-  root=insert(root,k,p);
-  log(`Insert key=${k}, priority=${p} → ${rotCount} rotation(s)`);
-  render();
-}
-
-function doDelete(){
-  const k=parseInt(document.getElementById('valIn').value);
-  if(isNaN(k)){alert('Enter a key.');return;}
-  rotCount=0;
-  root=deleteNode(root,k);
-  log(`Delete key=${k} → ${rotCount} rotation(s) to remove`);
-  render();
-}
-
-function doClear(){ root=null; render(); log('Treap cleared.'); }
-
-// Seed
-[[15,90],[8,70],[25,60],[5,40],[12,55],[20,80],[30,45]].forEach(([k,p])=>root=insert(root,k,p));
-resize();
-log('Seeded treap with 7 nodes. Root='+root.k+'|'+root.p+' (highest priority node).');
+rebuild();
 </script>
 </body>
 </html>

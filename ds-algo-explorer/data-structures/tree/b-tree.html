@@ -3,253 +3,167 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>B-Tree – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<title>B-Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
-.hero{padding:2rem 0 1.5rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
-h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
-.tagline{color:var(--m);font-size:1rem;}
-.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;}
-.flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.4rem;}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;}.fsub{font-size:.8rem;color:var(--m);margin-top:.2rem;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.sim-hdr{padding:.8rem 1.4rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block;}
-.sim-body{padding:1.4rem;}
-canvas{display:block;width:100%;border-radius:10px;background:var(--bg);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;}
-.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
-input[type=number]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:80px;}
-input:focus{border-color:var(--a);}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
-.le{border-bottom:1px solid var(--b);padding:1px 0;}.le:last-child{border:none;}
-.li{color:var(--m);}.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}
-.log-empty{color:var(--m);font-style:italic;}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.85rem;font-weight:600;margin:1.5rem 0;}
-.back:hover{color:var(--ink);}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:80px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    <span>B-Tree</span>
-  </nav>
-
-  <div class="hero">
-    <span class="tag">Tree</span>
-    <h1>B-Tree</h1>
-    <p class="tagline">A self-balancing search tree designed for disk storage, where nodes hold multiple keys.</p>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>B-Tree</span></nav>
+  <span class="tag">Tree</span>
+  <h1>B-Tree</h1>
+  <p class="tagline">Self-balancing multi-way search tree — minimizes disk I/O. Used in databases and file systems.</p>
+  <div class="prose">
+    <p>A B-tree of order m has nodes holding up to m-1 keys and m children. All leaves at the same depth. Nodes are at least half-full. Disk block = one node → minimizes page reads. Search, insert, delete all O(log n). Used in databases (PostgreSQL btree index) and file systems (NTFS, ext4).</p>
+    <p>Yellow = node currently being searched. Purple = key found / matching node. Steps trace a search through the B-tree of order 3 (2-3 tree).</p>
   </div>
-
-  <div class="explain">
-    <p>A B-Tree is like a filing cabinet with labelled dividers. Each drawer (node) can hold multiple dividers (keys), and the label on each divider tells you which sub-drawer to open next. Reading a whole drawer at once is much faster than reading one sheet at a time — exactly how disk pages work.</p>
-    <p>In a B-Tree of minimum degree t, every non-root node has between t-1 and 2t-1 keys. When a node fills up (reaches 2t-1 keys), it splits: the median key moves up to the parent, and the node becomes two half-full nodes. This splitting propagates upward, potentially growing the tree height at the root.</p>
-    <p>This simulation uses order 3 (t=2, so max 3 keys per node). B-Trees power every major database engine (PostgreSQL, MySQL InnoDB, SQLite) and file systems (NTFS, HFS+, ext4).</p>
-  </div>
-
   <div class="facts">
-    <div class="fact"><div class="flabel">Search / Insert</div><div class="fval">O(log n)</div><div class="fsub">Guaranteed all cases</div></div>
-    <div class="fact"><div class="flabel">Keys per Node</div><div class="fval">t-1 to 2t-1</div><div class="fsub">Minimises disk I/O</div></div>
-    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">Databases</div><div class="fsub">Filesystem indexes, storage engines</div></div>
+    <div class="fact"><div class="flabel">Search</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Insert</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Disk I/O</div><div class="fval">O(log_m n)</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">DB indexes, FS</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation — B-Tree order 3 (t=2)</div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <canvas id="cv" height="400"></canvas>
-      <div class="controls">
-        <input type="number" id="valIn" placeholder="Value" min="1" max="999"/>
-        <button class="btn btn-p" onclick="doInsert()">Insert</button>
-        <button class="btn btn-o" onclick="clearTree()">Clear</button>
-        <span style="font-size:.75rem;color:var(--m);">Nodes split when they reach 3 keys</span>
+      <canvas id="canvas" height="240"></canvas>
+      <div class="info-bar" id="infoBar">Enter a value and click Search.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Search for:</label>
+        <input type="number" id="searchVal" value="25"/>
+        <button class="btn btn-p" onclick="rebuild()">Search</button>
       </div>
     </div>
   </div>
-
-  <div class="log-panel">
-    <div class="log-hdr"><span>Split Log</span><button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem;" onclick="clearLog()">Clear</button></div>
-    <div class="log-body" id="log"><span class="log-empty">Insert nodes to see splits…</span></div>
-  </div>
-
-  <a class="back" href="../index.html">&#8592; Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
-
 <script>
-const cv = document.getElementById('cv');
-const ctx = cv.getContext('2d');
-cv.width = cv.offsetWidth || 900;
-
-const T = 2; // min degree; max keys = 2T-1 = 3
-
-class BNode {
-  constructor(leaf=true){ this.keys=[]; this.children=[]; this.leaf=leaf; }
-}
-
-let root = new BNode(true);
-
-function splitChild(parent, i, child){
-  const t=T;
-  const newNode = new BNode(child.leaf);
-  const midKey = child.keys[t-1];
-  addLog(`Split node [${child.keys.join(', ')}] — median ${midKey} moves up`, 'lw');
-  newNode.keys = child.keys.splice(t);
-  child.keys.pop(); // remove median
-  if(!child.leaf){
-    newNode.children = child.children.splice(t);
-  }
-  parent.keys.splice(i,0,midKey);
-  parent.children.splice(i+1,0,newNode);
-}
-
-function insertNonFull(node, v){
-  let i=node.keys.length-1;
-  if(node.leaf){
-    node.keys.push(0);
-    while(i>=0 && v < node.keys[i]){ node.keys[i+1]=node.keys[i]; i--; }
-    node.keys[i+1]=v;
-  } else {
-    while(i>=0 && v < node.keys[i]) i--;
-    i++;
-    if(node.children[i].keys.length === 2*T-1){
-      splitChild(node,i,node.children[i]);
-      if(v > node.keys[i]) i++;
+var player=null;
+var BTREE=[
+  {keys:[30],    children:[1,2],  pos:[320,30],  id:0},
+  {keys:[10,20], children:[3,4,5],pos:[130,110], id:1},
+  {keys:[40,50], children:[6,7,8],pos:[510,110], id:2},
+  {keys:[5,7],   children:[],     pos:[50,200],  id:3},
+  {keys:[15,17], children:[],     pos:[175,200], id:4},
+  {keys:[22,27], children:[],     pos:[290,200], id:5},
+  {keys:[32,35], children:[],     pos:[400,200], id:6},
+  {keys:[42,45], children:[],     pos:[510,200], id:7},
+  {keys:[52,60], children:[],     pos:[620,200], id:8}
+];
+function generateSteps(target){
+  var steps=[], path=[], hlNode=-1, hlKey=-1;
+  function snap(node,key){return {path:path.slice(),hlNode:node,hlKey:key};}
+  steps.push({title:'B-Tree (order 3): search for '+target,
+    what:'B-tree: up to 2 keys per node, 3 children. All leaves at same depth. 9 nodes.',
+    why:'Multi-way search minimizes disk reads. Each node fits in one disk block.',
+    ...snap(-1,-1)});
+  var cur=0;
+  while(cur<BTREE.length&&cur>=0){
+    var node=BTREE[cur];
+    path.push(cur);
+    steps.push({title:'Visit node ['+node.keys.join(',')+']',
+      what:'Read node. Keys: ['+node.keys.join(',')+'].',
+      why:'In database: one disk page read per node visited.',
+      ...snap(cur,-1)});
+    var found=false;
+    for(var i=0;i<node.keys.length;i++){
+      steps.push({title:'Compare '+target+' vs key '+node.keys[i],
+        what:target===node.keys[i]?'Match found!':target<node.keys[i]?target+' < '+node.keys[i]+' → go left child':target+' > '+node.keys[i]+' → continue right',
+        why:'Binary search within node.',
+        ...snap(cur,i)});
+      if(target===node.keys[i]){found=true;break;}
+      if(target<node.keys[i]){cur=node.children[i]!=null?node.children[i]:-1;break;}
+      if(i===node.keys.length-1){cur=node.children[i+1]!=null?node.children[i+1]:-1;}
     }
-    insertNonFull(node.children[i],v);
+    if(found){
+      steps.push({title:'Found '+target+' in node ['+node.keys.join(',')+']!',
+        what:'Key '+target+' found at depth '+(path.length-1)+'.',
+        why:'O(log_m n) disk reads: '+(path.length)+' nodes visited.',
+        ...snap(cur,hlKey)});
+      break;
+    }
+    if(node.children.length===0){
+      steps.push({title:target+' not found (leaf).',
+        what:'Reached leaf node without finding '+target+'.',
+        why:'Key absent from tree. Would insert here.',
+        ...snap(cur,-1)});
+      break;
+    }
   }
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function insert(v){
-  if(root.keys.length === 2*T-1){
-    const s = new BNode(false);
-    s.children.push(root);
-    splitChild(s,0,root);
-    root = s;
-    insertNonFull(s,v);
-  } else {
-    insertNonFull(root,v);
-  }
-}
-
-function doInsert(){
-  const v=parseInt(document.getElementById('valIn').value);
-  if(isNaN(v)) return;
-  insert(v);
-  addLog(`Inserted ${v}.`,'ld');
-  drawTree();
-  document.getElementById('valIn').value='';
-}
-
-function clearTree(){ root=new BNode(true); drawTree(); addLog('Tree cleared.','li'); }
-function clearLog(){ document.getElementById('log').innerHTML='<span class="log-empty">Insert nodes to see splits…</span>'; }
-
-function addLog(msg,cls='ls'){
-  const log=document.getElementById('log');
-  if(log.querySelector('.log-empty')) log.innerHTML='';
-  const d=document.createElement('div');
-  d.className=`le ${cls}`; d.textContent='> '+msg;
-  log.prepend(d);
-}
-
-// Layout: BFS to compute positions, draw rectangular multi-key nodes
-function assignPositions(root){
-  const positions=new Map();
-  const queue=[{node:root, depth:0, idx:0, siblings:1}];
-  const byDepth=[];
-  while(queue.length){
-    const {node,depth,idx,siblings}=queue.shift();
-    if(!byDepth[depth]) byDepth[depth]=[];
-    byDepth[depth].push({node,idx,siblings});
-    node.children.forEach((c,i)=>queue.push({node:c,depth:depth+1,idx:i,siblings:node.children.length}));
-  }
-  const W=cv.width;
-  byDepth.forEach((level,d)=>{
-    const count=level.length;
-    level.forEach((item,i)=>{
-      const x=(i+0.5)*(W/count);
-      const y=50+d*90;
-      positions.set(item.node,{x,y});
-    });
-  });
-  return positions;
-}
-
-function drawNode(node, x, y, pos){
-  const kw=36, kh=34, pad=4;
-  const n=node.keys.length;
-  const totalW=n*kw+(n-1)*pad;
-  const sx=x-totalW/2;
-
-  // draw children lines first
-  if(!node.leaf){
-    node.children.forEach((c,i)=>{
-      if(pos.has(c)){
-        const {x:cx,y:cy}=pos.get(c);
-        // attach point along bottom
-        const attachX=sx+i*(kw+pad)-pad/2;
-        const clampX=Math.max(sx-10,Math.min(x+totalW/2+10,attachX+pad/2));
-        ctx.beginPath();
-        ctx.moveTo(x+(i-n/2)*(kw+pad)+kw/2, y+kh/2);
-        ctx.lineTo(cx, cy-kh/2);
-        ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=1.5; ctx.stroke();
-      }
-    });
-  }
-
-  // draw key boxes
-  node.keys.forEach((k,i)=>{
-    const kx=sx+i*(kw+pad);
-    ctx.fillStyle='#fff';
-    ctx.strokeStyle='#27a060';
-    ctx.lineWidth=1.8;
-    ctx.beginPath();
-    ctx.roundRect(kx,y-kh/2,kw,kh,5);
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle='#1a1a2e';
-    ctx.font="bold 12px 'JetBrains Mono',monospace";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(k,kx+kw/2,y);
-  });
-}
-
-function drawTree(){
-  const W=cv.width, H=cv.height;
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||680, H=240, DPR=window.devicePixelRatio||1, SCALE=W/680;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  if(!root||root.keys.length===0){ ctx.fillStyle='#5a5a72'; ctx.font="14px 'Inter',sans-serif"; ctx.textAlign='center'; ctx.fillText('Tree is empty — insert a value.',W/2,H/2); return; }
-
-  const pos=assignPositions(root);
-
-  // Draw edges then nodes (BFS)
-  const q=[root];
-  while(q.length){
-    const node=q.shift();
-    const {x,y}=pos.get(node);
-    drawNode(node,x,y,pos);
-    node.children.forEach(c=>q.push(c));
-  }
-
-  ctx.fillStyle='#5a5a72'; ctx.font="11px 'Inter',sans-serif"; ctx.textAlign='left';
-  ctx.fillText('Each rectangle = one B-Tree node. Keys inside boxes; children below.',14,H-14);
+  BTREE.forEach(function(node){
+    node.children.forEach(function(cid){
+      if(cid<0||cid>=BTREE.length) return;
+      var c=BTREE[cid];
+      ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(node.pos[0]*SCALE,node.pos[1]+15);ctx.lineTo(c.pos[0]*SCALE,c.pos[1]-15);ctx.stroke();
+    });
+  });
+  BTREE.forEach(function(node){
+    var isHl=node.id===step.hlNode, isPath=step.path.indexOf(node.id)>=0;
+    var w=node.keys.length*34+8, h=26;
+    var x=node.pos[0]*SCALE-w/2, y=node.pos[1]-h/2;
+    ctx.fillStyle=isHl?'#fff176':isPath?'#c3b1e1':'#e5e7eb';
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=isHl?2.5:1.5;
+    ctx.beginPath();ctx.roundRect(x,y,w,h,5);ctx.fill();ctx.stroke();
+    node.keys.forEach(function(k,i){
+      if(i>0){ctx.strokeStyle='#ccc';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+i*34,y);ctx.lineTo(x+i*34,y+h);ctx.stroke();}
+      var ck=(node.id===step.hlNode&&i===step.hlKey);
+      ctx.fillStyle=ck?'#d97706':'#1a1a2e';
+      ctx.font='bold 11px JetBrains Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(k,x+i*34+17,y+h/2+4);
+    });
+  });
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Path depth: '+step.path.length+'  |  Node: '+(step.hlNode>=0?'['+BTREE[step.hlNode].keys.join(',')+']':'—');
 }
-
-window.addEventListener('resize',()=>{ cv.width=cv.offsetWidth; drawTree(); });
-drawTree();
+function rebuild(){
+  var val=parseInt(document.getElementById('searchVal').value)||25;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(val),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

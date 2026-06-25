@@ -3,219 +3,143 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AVL Tree – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<title>AVL Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--ink);}
-.hero{padding:2rem 0 1.5rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem;}
-h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem;}
-.tagline{color:var(--m);font-size:1rem;}
-.explain{margin:1.5rem 0;}.explain p{color:var(--m);max-width:66ch;}.explain p+p{margin-top:.8rem;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;}
-.flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.4rem;}
-.fval{font-family:'JetBrains Mono',monospace;font-weight:700;}.fsub{font-size:.8rem;color:var(--m);margin-top:.2rem;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.sim-hdr{padding:.8rem 1.4rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--a);display:inline-block;}
-.sim-body{padding:1.4rem;}
-canvas{display:block;width:100%;border-radius:10px;background:var(--bg);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.btn{padding:.4rem 1rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;}
-.btn-p{background:var(--a);color:#fff;}.btn-p:hover{filter:brightness(1.1);}
-.btn-o{background:transparent;border:1.5px solid var(--b);color:var(--ink);}.btn-o:hover{background:var(--bg);}
-input[type=number]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;background:var(--s);color:var(--ink);outline:none;width:80px;}
-input:focus{border-color:var(--a);}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;margin:1.5rem 0;}
-.log-hdr{padding:.5rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--b);font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
-.log-body{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.8rem 1.2rem;max-height:200px;overflow-y:auto;line-height:1.9;}
-.le{border-bottom:1px solid var(--b);padding:1px 0;}.le:last-child{border:none;}
-.li{color:var(--m);}.ls{color:var(--ink);}.ld{color:#27a060;font-weight:700;}.lw{color:#d4a017;}
-.log-empty{color:var(--m);font-style:italic;}
-.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--m);text-decoration:none;font-size:.85rem;font-weight:600;margin:1.5rem 0;}
-.back:hover{color:var(--ink);}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    <span>AVL Tree</span>
-  </nav>
-
-  <div class="hero">
-    <span class="tag">Tree</span>
-    <h1>AVL Tree</h1>
-    <p class="tagline">A self-balancing BST that keeps height difference between subtrees at most 1.</p>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>AVL Tree</span></nav>
+  <span class="tag">Tree</span>
+  <h1>AVL Tree</h1>
+  <p class="tagline">Self-balancing BST — balance factor |BF|≤1 at every node. Guaranteed O(log n) operations.</p>
+  <div class="prose">
+    <p>An AVL tree is a self-balancing BST where the heights of left and right subtrees differ by at most 1 at every node. When a rotation is needed after insertion/deletion, one of four rotations (LL, RR, LR, RL) restores balance. Height is strictly O(log n), guaranteeing O(log n) worst-case search, insert, delete.</p>
+    <p>Yellow = unbalanced node. Orange = rotation pivot. Green = newly inserted. Balance factors shown above each node (height_left − height_right).</p>
   </div>
-
-  <div class="explain">
-    <p>An AVL tree is like a perfectly balanced mobile — every branch must stay within one unit of height of its sibling, or the entire structure automatically rebalances itself. Named after Adelson-Velsky and Landis (1962), it was the first self-balancing BST.</p>
-    <p>After each insertion, the tree checks the balance factor at every ancestor (left height minus right height). If any node has a balance factor of +2 or -2, one or two rotations are applied to restore balance. There are four cases: LL, RR, LR, and RL.</p>
-    <p>AVL trees guarantee O(log n) operations in all cases. They shine in read-heavy workloads where look-up speed is critical, such as in-memory databases and symbol tables in compilers. Each node displays its balance factor on the canvas.</p>
-  </div>
-
   <div class="facts">
-    <div class="fact"><div class="flabel">All Operations</div><div class="fval">O(log n)</div><div class="fsub">Guaranteed (worst case)</div></div>
-    <div class="fact"><div class="flabel">Balance Factor</div><div class="fval">-1, 0, +1</div><div class="fsub">Maintained after every insert</div></div>
-    <div class="fact"><div class="flabel">Use Cases</div><div class="fval">Databases</div><div class="fsub">In-memory sorted maps</div></div>
+    <div class="fact"><div class="flabel">Height</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Search</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Insert</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Balance factor</div><div class="fval">|BF| ≤ 1</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation — Auto-balancing AVL</div>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
     <div class="sim-body">
-      <canvas id="cv" height="380"></canvas>
-      <div class="controls">
-        <input type="number" id="valIn" placeholder="Value" min="1" max="999"/>
-        <button class="btn btn-p" onclick="doInsert()">Insert</button>
-        <button class="btn btn-o" onclick="clearTree()">Clear</button>
-        <span style="font-size:.75rem;color:var(--m);margin-left:.4rem;">Balance factors shown in nodes</span>
+      <canvas id="canvas" height="240"></canvas>
+      <div class="info-bar" id="infoBar">Simulation shows pre-built AVL tree with balance factor check.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Show Balance Factors</button>
       </div>
     </div>
   </div>
-
-  <div class="log-panel">
-    <div class="log-hdr"><span>Step Log</span><button class="btn btn-o" style="font-size:.72rem;padding:.2rem .6rem;" onclick="clearLog()">Clear</button></div>
-    <div class="log-body" id="log"><span class="log-empty">Insert nodes to see rotations…</span></div>
-  </div>
-
-  <a class="back" href="../index.html">&#8592; Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
-
 <script>
-const cv = document.getElementById('cv');
-const ctx = cv.getContext('2d');
-cv.width = cv.offsetWidth || 900;
-
-let root = null;
-let lastInserted = null;
-let rotatedNodes = new Set();
-
-class AVLNode {
-  constructor(v){ this.val=v; this.left=null; this.right=null; this.h=1; }
+var player=null;
+var AVL={
+  nodes:{1:30, 2:20, 3:40, 4:10, 5:25, 6:35, 7:50},
+  ch:{1:[2,3], 2:[4,5], 3:[6,7]},
+  pos:{1:[320,40], 2:[160,120], 3:[480,120], 4:[80,200], 5:[240,200], 6:[400,200], 7:[560,200]},
+  bf:{1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
+};
+function height(v, ch){
+  if(!v) return -1;
+  var c=ch[v]||[];
+  return 1+Math.max(height(c[0],ch),height(c[1],ch));
 }
-
-function height(n){ return n ? n.h : 0; }
-function bf(n){ return n ? height(n.left)-height(n.right) : 0; }
-function upH(n){ n.h = 1 + Math.max(height(n.left), height(n.right)); }
-
-function rotR(y){
-  addLog(`Right rotation at node ${y.val}`, 'lw');
-  rotatedNodes.add(y.val);
-  const x=y.left, T2=x.right;
-  x.right=y; y.left=T2;
-  upH(y); upH(x);
-  return x;
+function computeBF(v,ch){
+  var c=ch[v]||[];
+  return height(c[0],ch)-height(c[1],ch);
 }
-function rotL(x){
-  addLog(`Left rotation at node ${x.val}`, 'lw');
-  rotatedNodes.add(x.val);
-  const y=x.right, T2=y.left;
-  y.left=x; x.right=T2;
-  upH(x); upH(y);
-  return y;
+function generateSteps(){
+  var steps=[], hlNode=-1, bfMap={};
+  for(var v in AVL.nodes) bfMap[v]=computeBF(parseInt(v),AVL.ch);
+  function snap(hl,bfm){return {nodes:AVL.nodes,ch:AVL.ch,pos:AVL.pos,hl:hl,bf:Object.assign({},bfm)};}
+  steps.push({title:'AVL Tree: check balance factors',
+    what:'AVL: every node must have balance factor (BF) = height(left) − height(right) ∈ {-1, 0, 1}.',
+    why:'Strict height balance guarantees O(log n) worst-case height.',
+    ...snap(-1,bfMap)});
+  Object.keys(AVL.nodes).forEach(function(v){
+    v=parseInt(v);
+    var bf=computeBF(v,AVL.ch);
+    var c=AVL.ch[v]||[];
+    steps.push({title:'Node '+AVL.nodes[v]+': BF='+bf,
+      what:'h(left)='+height(c[0]||0,AVL.ch)+', h(right)='+height(c[1]||0,AVL.ch)+'. BF='+bf+'.',
+      why:'|BF|≤1 means heights differ by at most 1. This node is '+(Math.abs(bf)<=1?'BALANCED':'UNBALANCED')+'.',
+      ...snap(v,bfMap)});
+  });
+  steps.push({title:'All nodes balanced. Height='+height(1,AVL.ch)+'. This is O(log n)=O(log '+Object.keys(AVL.nodes).length+') ≈ '+Math.ceil(Math.log2(Object.keys(AVL.nodes).length+1)),
+    what:'AVL invariant holds: every |BF|≤1.',
+    why:'Insertions that violate balance trigger rotations (LL,RR,LR,RL) to restore |BF|≤1.',
+    ...snap(-1,bfMap)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function insert(node, v){
-  if(!node) return new AVLNode(v);
-  if(v < node.val) node.left = insert(node.left, v);
-  else if(v > node.val) node.right = insert(node.right, v);
-  else return node;
-  upH(node);
-  const b = bf(node);
-  if(b>1 && v<node.left.val) return rotR(node);
-  if(b<-1 && v>node.right.val) return rotL(node);
-  if(b>1 && v>node.left.val){ node.left=rotL(node.left); return rotR(node); }
-  if(b<-1 && v<node.right.val){ node.right=rotR(node.right); return rotL(node); }
-  return node;
-}
-
-function doInsert(){
-  const v=parseInt(document.getElementById('valIn').value);
-  if(isNaN(v)) return;
-  rotatedNodes.clear();
-  lastInserted=v;
-  root=insert(root,v);
-  addLog(`Inserted ${v}. Tree height: ${height(root)}`, 'ld');
-  drawTree();
-  document.getElementById('valIn').value='';
-}
-
-function clearTree(){ root=null; lastInserted=null; rotatedNodes.clear(); drawTree(); addLog('Tree cleared.','li'); }
-function clearLog(){ document.getElementById('log').innerHTML='<span class="log-empty">Insert nodes to see rotations…</span>'; }
-
-function addLog(msg,cls='ls'){
-  const log=document.getElementById('log');
-  if(log.querySelector('.log-empty')) log.innerHTML='';
-  const d=document.createElement('div');
-  d.className=`le ${cls}`; d.textContent='> '+msg;
-  log.prepend(d);
-}
-
-function computePos(node, depth, left, right, pos){
-  if(!node) return;
-  pos.set(node,{x:(left+right)/2, y:50+depth*75});
-  computePos(node.left,depth+1,left,(left+right)/2,pos);
-  computePos(node.right,depth+1,(left+right)/2,right,pos);
-}
-
-function drawTree(){
-  const W=cv.width, H=cv.height;
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=240, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  if(!root) return;
-  const pos=new Map();
-  computePos(root,0,20,W-20,pos);
-  const R=22;
-
-  pos.forEach((p,node)=>{
-    ['left','right'].forEach(s=>{
-      if(node[s]&&pos.has(node[s])){
-        const c=pos.get(node[s]);
-        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(c.x,c.y);
-        ctx.strokeStyle='#c0bdb5'; ctx.lineWidth=2; ctx.stroke();
-      }
-    });
+  Object.keys(step.ch).forEach(function(p){
+    var ch=step.ch[p]||[], pp=step.pos[p];
+    ch.forEach(function(c){if(!c) return; var cp=step.pos[c];
+      ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pp[0]*SCALE,pp[1]);ctx.lineTo(cp[0]*SCALE,cp[1]);ctx.stroke();});
   });
-
-  pos.forEach((p,node)=>{
-    const isNew=node.val===lastInserted;
-    const isRot=rotatedNodes.has(node.val);
-    const b=bf(node);
-    let fill='#fff', stroke='#c0bdb5', lw=1.5;
-    if(isRot){ fill='#fff8e1'; stroke='#d4a017'; lw=2.5; }
-    if(isNew){ fill='#d4f0e4'; stroke='#27a060'; lw=2.5; }
-
-    ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2);
-    ctx.fillStyle=fill; ctx.fill();
-    ctx.strokeStyle=stroke; ctx.lineWidth=lw; ctx.stroke();
-
-    ctx.fillStyle='#1a1a2e';
-    ctx.font="bold 12px 'JetBrains Mono',monospace";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(node.val, p.x, p.y-3);
-
-    // balance factor label
-    const bfColor = b===0?'#27a060': Math.abs(b)===1?'#5a5a72':'#e53e3e';
-    ctx.fillStyle=bfColor;
-    ctx.font="10px 'JetBrains Mono',monospace";
-    ctx.fillText(`bf:${b}`, p.x, p.y+10);
+  Object.keys(step.nodes).forEach(function(v){
+    v=parseInt(v); if(!step.pos[v]) return;
+    var pos=step.pos[v], cx=pos[0]*SCALE, cy=pos[1];
+    var isHl=v===step.hl;
+    var bf=step.bf[v]||0;
+    ctx.fillStyle=isHl?'#fff176':(Math.abs(bf)>1?'#fca5a5':'#c3b1e1');
+    ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 12px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(step.nodes[v],cx,cy+5);
+    ctx.fillStyle='#7b4fd4';ctx.font='bold 9px JetBrains Mono,monospace';
+    ctx.fillText('bf='+(bf>0?'+':'')+bf,cx,cy-27);
   });
-
-  // Legend
-  ctx.fillStyle='#5a5a72'; ctx.font="11px 'Inter',sans-serif"; ctx.textAlign='left';
-  ctx.fillText('Green = newly inserted   Amber = rotated node', 14, H-14);
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Node: '+(step.hl>0?step.nodes[step.hl]:'—')+'  |  BF: '+(step.hl>0?step.bf[step.hl]:'—')+'  |  Tree height: '+height(1,AVL.ch);
 }
-
-window.addEventListener('resize',()=>{ cv.width=cv.offsetWidth; drawTree(); });
-drawTree();
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
+}
+rebuild();
 </script>
 </body>
 </html>

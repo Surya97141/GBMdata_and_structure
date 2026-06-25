@@ -3,216 +3,134 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Leftist Tree – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Leftist Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;}
-@media(max-width:600px){.two-col{grid-template-columns:1fr;}}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:100px;}
-.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
-.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
-.heap-label{font-size:.8rem;font-weight:600;color:var(--m);margin-bottom:.4rem;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    Leftist Tree
-  </nav>
-  <header class="hero">
-    <span class="tag">Tree</span>
-    <h1>Leftist Tree</h1>
-    <p>A heap-ordered binary tree that intentionally leans left, enabling efficient O(log n) merging of two heaps.</p>
-  </header>
-  <section class="prose">
-    <p>A <strong>Leftist Tree</strong> (leftist heap) is a binary tree satisfying the min-heap property with an additional "leftist" bias: the <em>null-path-length</em> (npl) of the right subtree is always less than or equal to the left. The npl of a node is the length of the shortest path to a null descendant.</p>
-    <p>Imagine a company org chart where the "right spine" is always as short as possible. All the "weight" is pushed to the left side. This asymmetry is deliberate — it means merging two leftist heaps only ever touches the right spines (which are short, at most O(log n) nodes), making merge run in O(log n) time.</p>
-    <p>The key insight: every other heap operation — insert, extract-min — is implemented <em>as a merge</em>. Insert merges a single-node heap; extract-min removes the root and merges its two subtrees. The leftist bias ensures the right spine stays logarithmic.</p>
-  </section>
-  <div class="facts">
-    <div class="fact"><div class="fact-label">Merge</div><div class="fact-val">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Insert</div><div class="fact-val">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Extract Min</div><div class="fact-val">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Find Min</div><div class="fact-val">O(1)</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Leftist Tree</span></nav>
+  <span class="tag">Tree</span>
+  <h1>Leftist Tree</h1>
+  <p class="tagline">Heap-ordered binary tree with rank property — O(log n) merge. Left subtree always taller.</p>
+  <div class="prose">
+    <p>A leftist tree maintains two properties: (1) min-heap order (parent ≤ children); (2) leftist property (rank(left) ≥ rank(right), where rank = length of rightmost path to a leaf). Merging two leftist trees takes O(log n): merge along right spines, then swap children when leftist property is violated. Insert = merge with singleton. Extract-min = merge left and right children.</p>
+    <p>Each node labeled (value, rank). Yellow = currently merging. Orange = swap performed. Blue edge = right spine. Rank values shown in small text.</p>
   </div>
-
-  <div class="two-col">
-    <div class="sim-panel">
-      <div class="sim-title">Heap A</div>
-      <div class="heap-label" id="labelA">Min: —  Size: 0</div>
-      <canvas id="cvA" height="220"></canvas>
-      <div class="controls">
-        <input id="valA" type="number" placeholder="value…" min="0" max="999"/>
-        <button class="btn btn-pri" onclick="insertA()">Insert</button>
-        <button class="btn btn-sec" onclick="extractA()">Extract Min</button>
-        <button class="btn btn-dan" onclick="clearA()">Clear</button>
-      </div>
-    </div>
-    <div class="sim-panel">
-      <div class="sim-title">Heap B</div>
-      <div class="heap-label" id="labelB">Min: —  Size: 0</div>
-      <canvas id="cvB" height="220"></canvas>
-      <div class="controls">
-        <input id="valB" type="number" placeholder="value…" min="0" max="999"/>
-        <button class="btn btn-pri" onclick="insertB()">Insert</button>
-        <button class="btn btn-sec" onclick="extractB()">Extract Min</button>
-        <button class="btn btn-dan" onclick="clearB()">Clear</button>
-      </div>
-    </div>
+  <div class="facts">
+    <div class="fact"><div class="flabel">Merge</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Insert</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Extract-min</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Key property</div><div class="fval">rank(L) ≥ rank(R)</div></div>
   </div>
   <div class="sim-panel">
-    <div class="sim-title">Merge A + B → A (result in Heap A)</div>
-    <button class="btn btn-pri" onclick="doMerge()">Merge Heaps</button>
-    <span style="margin-left:1rem;font-size:.85rem;color:var(--m);">Merges right spines in O(log n)</span>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="240"></canvas>
+      <div class="info-bar" id="infoBar">Click Show Properties to examine leftist invariant.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <button class="btn btn-p" onclick="rebuild()">Show Leftist Properties</button>
+      </div>
+    </div>
   </div>
-
-  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
-
 <script>
-class LNode {
-  constructor(key){ this.key=key; this.left=null; this.right=null; this.npl=0; }
+var player=null;
+var LT={
+  nodes:{1:{v:2,rank:3}, 2:{v:5,rank:2}, 3:{v:7,rank:1}, 4:{v:8,rank:1}, 5:{v:10,rank:1}, 6:{v:12,rank:1}, 7:{v:15,rank:1}},
+  ch:{1:[2,3], 2:[4,5], 3:[6,7]},
+  pos:{1:[320,40], 2:[180,120], 3:[460,120], 4:[100,200], 5:[260,200], 6:[390,200], 7:[530,200]}
+};
+function generateSteps(){
+  var steps=[], hl=-1;
+  function snap(v){return {nodes:LT.nodes,ch:LT.ch,pos:LT.pos,hl:v};}
+  steps.push({title:'Leftist Tree: heap order + leftist property',
+    what:'Min-heap order: parent ≤ children. Leftist: rank(left) ≥ rank(right) at every node.',
+    why:'Leftist structure ensures right spine length ≤ log n → O(log n) merge.',
+    ...snap(-1)});
+  Object.keys(LT.ch).forEach(function(p){
+    p=parseInt(p);
+    var ch=LT.ch[p]||[], pn=LT.nodes[p];
+    var lc=ch[0]?LT.nodes[ch[0]]:null, rc=ch[1]?LT.nodes[ch[1]]:null;
+    var lrank=lc?lc.rank:0, rrank=rc?rc.rank:0;
+    var heapOK=(!lc||pn.v<=lc.v)&&(!rc||pn.v<=rc.v);
+    var leftOK=lrank>=rrank;
+    steps.push({title:'Node '+pn.v+'(rank='+pn.rank+'): heap='+(heapOK?'✓':'✗')+', leftist='+(leftOK?'✓':'✗'),
+      what:'left rank='+lrank+', right rank='+rrank+'. '+pn.v+'\'s rank=1+min('+lrank+','+rrank+')='+Math.min(lrank,rrank+1)+'.',
+      why:'rank(node) = 1 + min(rank(left),rank(right)). Ensures right-spine ≤ log n.',
+      ...snap(p)});
+  });
+  steps.push({title:'Right spine: 2→7→null (length 2 ≤ log₂(8)=3). Leftist property holds.',
+    what:'Right spine is always the shortest path. Max right-spine length = log n.',
+    why:'Merge walks right spines: O(log n). Then swaps to restore leftist property.',
+    ...snap(-1)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function npl(n){ return n?n.npl:(-1); }
-
-function merge(h1,h2){
-  if(!h1) return h2;
-  if(!h2) return h1;
-  if(h1.key>h2.key){ [h1,h2]=[h2,h1]; }
-  h1.right=merge(h1.right,h2);
-  if(npl(h1.left)<npl(h1.right)){ [h1.left,h1.right]=[h1.right,h1.left]; }
-  h1.npl=npl(h1.right)+1;
-  return h1;
-}
-
-function insertNode(root,key){ return merge(root,new LNode(key)); }
-function extractMin(root){ if(!root) return {root:null,val:null}; return {root:merge(root.left,root.right),val:root.key}; }
-function treeSize(n){ return n?1+treeSize(n.left)+treeSize(n.right):0; }
-
-let heapA=null, heapB=null;
-
-// Canvas setup
-const dpr=window.devicePixelRatio||1;
-function setupCanvas(id){
-  const c=document.getElementById(id);
-  const panel=c.parentElement;
-  let W=panel.clientWidth-2.8*16;
-  if(W<100) W=220;
-  const H=220;
-  c.width=W*dpr; c.height=H*dpr;
-  c.style.width=W+'px'; c.style.height=H+'px';
-  c.getContext('2d').scale(dpr,dpr);
-  return {c,W,H};
-}
-
-function drawTree(ctx,node,W,H,x,y,spread,depth){
-  if(!node) return;
-  const R=17;
-  if(node.left){
-    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-spread,y+60);
-    ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke();
-    drawTree(ctx,node.left,W,H,x-spread,y+60,spread/2,depth+1);
-  }
-  if(node.right){
-    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+spread,y+60);
-    ctx.strokeStyle='#e8bfbf'; ctx.lineWidth=1.5; ctx.stroke();
-    drawTree(ctx,node.right,W,H,x+spread,y+60,spread/2,depth+1);
-  }
-  ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2);
-  ctx.fillStyle=depth===0?'#27a060':'#e8f5ee'; ctx.fill();
-  ctx.strokeStyle='#aaa'; ctx.lineWidth=1.5; ctx.stroke();
-  ctx.fillStyle=depth===0?'#fff':'#1a1a2e';
-  ctx.font="bold 11px 'JetBrains Mono',monospace";
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(node.key,x,y);
-  // npl label
-  ctx.fillStyle='#8e44ad'; ctx.font="9px 'Inter',sans-serif";
-  ctx.fillText('n'+node.npl,x+R,y-R);
-}
-
-function renderHeap(id,root,labelId){
-  const {c,W,H}=setupCanvas(id);
-  const ctx=c.getContext('2d');
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=240, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  if(!root){
-    ctx.fillStyle='#bbb'; ctx.font="13px 'Inter',sans-serif";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('Empty heap',W/2,H/2);
-  } else {
-    drawTree(ctx,root,W,H,W/2,30,W/4,0);
-    ctx.font="10px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-    ctx.textAlign='left'; ctx.textBaseline='top';
-    ctx.fillText('nX = null-path-length  ← left  right →',4,H-16);
-  }
-  const size=treeSize(root);
-  document.getElementById(labelId).textContent=`Min: ${root?root.key:'—'}  Size: ${size}`;
+  Object.keys(step.ch).forEach(function(p){
+    var ch=step.ch[p]||[], pp=step.pos[p];
+    ch.forEach(function(c,side){if(!c) return; var cp=step.pos[c];
+      ctx.strokeStyle=side===1?'#2563eb':'#ccc'; ctx.lineWidth=side===1?2.5:1.5;
+      ctx.beginPath();ctx.moveTo(pp[0]*SCALE,pp[1]);ctx.lineTo(cp[0]*SCALE,cp[1]);ctx.stroke();});
+  });
+  Object.keys(step.nodes).forEach(function(v){
+    v=parseInt(v); if(!step.pos[v]) return;
+    var pos=step.pos[v], cx=pos[0]*SCALE, cy=pos[1];
+    var isHl=v===step.hl, node=step.nodes[v];
+    ctx.fillStyle=isHl?'#fff176':'#c3b1e1';
+    ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 12px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(node.v,cx,cy+1);
+    ctx.fillStyle='#7b4fd4';ctx.font='9px JetBrains Mono,monospace';
+    ctx.fillText('r='+node.rank,cx,cy+14);
+  });
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Node: '+(step.hl>0?step.nodes[step.hl].v+' (rank='+step.nodes[step.hl].rank+')':'—')+'  |  Blue=right spine (shortest path)';
 }
-
-function renderAll(){ renderHeap('cvA',heapA,'labelA'); renderHeap('cvB',heapB,'labelB'); }
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
+function rebuild(){
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(),renderStep,'explanation','sim-bar');
 }
-
-function insertA(){ const v=parseInt(document.getElementById('valA').value); if(isNaN(v)) return; heapA=insertNode(heapA,v); log(`Heap A: insert(${v}) → merge(A, {${v}}) → root=${heapA.key}`); renderAll(); }
-function extractA(){ if(!heapA){log('Heap A empty.');return;} const {root,val}=extractMin(heapA); heapA=root; log(`Heap A: extractMin()=${val} → merge(left,right) → root=${heapA?heapA.key:'(empty)'}`); renderAll(); }
-function clearA(){ heapA=null; log('Heap A cleared.'); renderAll(); }
-function insertB(){ const v=parseInt(document.getElementById('valB').value); if(isNaN(v)) return; heapB=insertNode(heapB,v); log(`Heap B: insert(${v}) → merge(B, {${v}}) → root=${heapB.key}`); renderAll(); }
-function extractB(){ if(!heapB){log('Heap B empty.');return;} const {root,val}=extractMin(heapB); heapB=root; log(`Heap B: extractMin()=${val} → merge(left,right) → root=${heapB?heapB.key:'(empty)'}`); renderAll(); }
-function clearB(){ heapB=null; log('Heap B cleared.'); renderAll(); }
-
-function doMerge(){
-  if(!heapA&&!heapB){log('Both heaps empty.');return;}
-  log(`Merge A+B: right-spine A=${rightSpine(heapA).join('→')} | right-spine B=${rightSpine(heapB).join('→')}`);
-  heapA=merge(heapA,heapB); heapB=null;
-  log(`Merge complete → root=${heapA?heapA.key:'(empty)'}. Heap B is now empty.`);
-  renderAll();
-}
-
-function rightSpine(n){ const s=[]; while(n){s.push(n.key); n=n.right;} return s.length?s:['null']; }
-
-// Seed
-[5,10,3].forEach(v=>heapA=insertNode(heapA,v));
-[8,2,15].forEach(v=>heapB=insertNode(heapB,v));
-window.addEventListener('load',()=>{ renderAll(); log('Seeded Heap A=[5,10,3] and Heap B=[8,2,15].'); });
+rebuild();
 </script>
 </body>
 </html>

@@ -3,285 +3,167 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Splay Tree – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Splay Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-.rotation-badge{display:inline-block;padding:.2rem .6rem;border-radius:6px;font-size:.78rem;font-weight:600;margin-top:.5rem;}
-.zig{background:#dff5e8;color:#1a5c38;}
-.zigzig{background:#fff3cd;color:#7d5a00;}
-.zigzag{background:#fdecea;color:#c0392b;}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:100px;}
-.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
-.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
-.rot-info{margin-top:.6rem;font-size:.83rem;color:var(--m);min-height:1.4rem;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+select{font-family:'Inter',sans-serif;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink)}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    Splay Tree
-  </nav>
-  <header class="hero">
-    <span class="tag">Tree</span>
-    <h1>Splay Tree</h1>
-    <p>A self-adjusting BST that moves every accessed node to the root, making recently used elements faster to reach next time.</p>
-  </header>
-  <section class="prose">
-    <p>A <strong>Splay Tree</strong> is a self-organizing binary search tree. After every access — whether insert, search, or delete — the target node is moved to the root through a series of rotations called <em>splaying</em>. No extra balance information is stored; the tree restructures itself based purely on access patterns.</p>
-    <p>Think of a self-organizing bookshelf. Every time you read a book, you put it back at the very top. If you tend to re-read the same books, they stay near the top and are quickly accessible. Rarely read books drift toward the bottom. Over many accesses, the bookshelf optimizes itself for your reading habits — exactly what a splay tree does with data.</p>
-    <p>Three rotation cases: <strong>Zig</strong> — one rotation when the node's parent is the root. <strong>Zig-Zig</strong> — two rotations in the same direction when node and parent are both left (or both right) children. <strong>Zig-Zag</strong> — two rotations in opposite directions. The zig-zig case is key: it rotates the grandparent first, achieving better amortized bounds than a naive double rotation.</p>
-  </section>
-  <div class="facts">
-    <div class="fact"><div class="fact-label">Splay / Insert / Search</div><div class="fact-val">O(log n) amortized</div></div>
-    <div class="fact"><div class="fact-label">Worst Case</div><div class="fact-val">O(n)</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">Caches, GC, Network routing</div></div>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Splay Tree</span></nav>
+  <span class="tag">Tree</span>
+  <h1>Splay Tree</h1>
+  <p class="tagline">Self-adjusting BST — accessed node splayed to root. Amortized O(log n) per operation.</p>
+  <div class="prose">
+    <p>A splay tree is a self-adjusting BST. Every access (search, insert, delete) rotates ("splays") the accessed node to the root using zig, zig-zig, or zig-zag rotations. Recently accessed nodes are near the root, giving good cache behavior for skewed access patterns. Amortized O(log n) per operation via potential argument.</p>
+    <p>Yellow = node being splayed. Orange = rotation being applied. Green = node successfully at root. Steps show the splay path for a chosen node.</p>
   </div>
-
+  <div class="facts">
+    <div class="fact"><div class="flabel">Amortized search</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Worst case single</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Cache behavior</div><div class="fval">Excellent</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">Cache, GCC stdlib</div></div>
+  </div>
   <div class="sim-panel">
-    <div class="sim-title">Splay Tree Simulation</div>
-    <canvas id="cv" height="320"></canvas>
-    <div class="rot-info" id="rotInfo">Rotation type will appear here after each operation.</div>
-    <div class="controls">
-      <input id="valIn" type="number" placeholder="value…" min="0" max="999"/>
-      <button class="btn btn-pri" onclick="doInsert()">Insert</button>
-      <button class="btn btn-sec" onclick="doSearch()">Search (Splay)</button>
-      <button class="btn btn-dan" onclick="doDelete()">Delete</button>
-      <button class="btn btn-sec" onclick="doClear()">Clear</button>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="240"></canvas>
+      <div class="info-bar" id="infoBar">Select a node to splay to root.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Splay node:</label>
+        <select id="nodeSel">
+          <option value="1">10</option>
+          <option value="2">20</option>
+          <option value="3">30</option>
+          <option value="4">40</option>
+          <option value="5" selected>50</option>
+          <option value="6">60</option>
+          <option value="7">70</option>
+        </select>
+        <button class="btn btn-p" onclick="rebuild()">Splay</button>
+      </div>
     </div>
   </div>
-
-  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
-
 <script>
-class SNode {
-  constructor(k){ this.k=k; this.l=null; this.r=null; this.p=null; }
-}
-
-let root=null;
-let lastSplayedKey=null;
-let rotationLog=[];
-
-function setParent(c,p){ if(c) c.p=p; }
-
-function rotateRight(x){
-  const y=x.l, b=y.r, p=x.p;
-  y.r=x; x.p=y; x.l=b; if(b) b.p=x;
-  y.p=p; if(p){ if(p.l===x) p.l=y; else p.r=y; }
-  return y;
-}
-function rotateLeft(x){
-  const y=x.r, b=y.l, p=x.p;
-  y.l=x; x.p=y; x.r=b; if(b) b.p=x;
-  y.p=p; if(p){ if(p.l===x) p.l=y; else p.r=y; }
-  return y;
-}
-
-function splay(x){
-  rotationLog=[];
-  while(x.p){
-    const p=x.p, g=p.p;
-    if(!g){
-      // Zig
-      rotationLog.push('Zig');
-      if(p.l===x) root=rotateRight(p); else root=rotateLeft(p);
-    } else if(g.l===p&&p.l===x){
-      // Zig-Zig (left-left)
-      rotationLog.push('Zig-Zig');
-      if(g.p) root=g.p.l===g?g.p.l=rotateRight(g):g.p.r=rotateRight(g); else root=rotateRight(g);
-      rotateRight(p); if(!x.p) root=x;
-    } else if(g.r===p&&p.r===x){
-      // Zig-Zig (right-right)
-      rotationLog.push('Zig-Zig');
-      if(g.p) root=g.p.l===g?g.p.l=rotateLeft(g):g.p.r=rotateLeft(g); else root=rotateLeft(g);
-      rotateLeft(p); if(!x.p) root=x;
-    } else if(g.l===p&&p.r===x){
-      // Zig-Zag
-      rotationLog.push('Zig-Zag');
-      rotateLeft(p); rotateRight(g); if(!x.p) root=x;
+var player=null;
+var SPLAY_VALS=[10,20,30,40,50,60,70];
+var SPLAY_NODES={1:40, 2:20, 3:60, 4:10, 5:30, 6:50, 7:70};
+var SPLAY_CH={1:[2,3], 2:[4,5], 3:[6,7]};
+var SPLAY_POS={1:[320,40], 2:[160,120], 3:[480,120], 4:[80,200], 5:[240,200], 6:[400,200], 7:[560,200]};
+function generateSteps(splayVal){
+  var steps=[], path=[], hlNode=-1;
+  function snap(hl,visited){return {nodes:SPLAY_NODES,ch:SPLAY_CH,pos:SPLAY_POS,hl:hl,path:visited.slice()};}
+  steps.push({title:'Splay '+splayVal+' to root',
+    what:'Splay tree: on every access, move the node to root via rotations. Amortized O(log n).',
+    why:'Recently accessed nodes near root → cache behavior adapts to access patterns.',
+    ...snap(-1,[])});
+  var cur=1, pathNodes=[];
+  while(cur){
+    pathNodes.push(cur);
+    if(SPLAY_NODES[cur]===splayVal){
+      steps.push({title:'Found '+splayVal+' at depth '+(pathNodes.length-1),
+        what:'Target found. Path from root: ['+pathNodes.map(function(v){return SPLAY_NODES[v];}).join('→')+'].',
+        why:'Now splay: apply zig/zig-zig/zig-zag rotations to bring '+splayVal+' to root.',
+        ...snap(cur,pathNodes)});
+      break;
+    }
+    var ch=SPLAY_CH[cur]||[];
+    if(splayVal<SPLAY_NODES[cur]){
+      steps.push({title:splayVal+' < '+SPLAY_NODES[cur]+' → go left',
+        what:'Search left subtree.',why:'BST property.',...snap(cur,pathNodes)});
+      cur=ch[0];
     } else {
-      // Zig-Zag
-      rotationLog.push('Zig-Zag');
-      rotateRight(p); rotateLeft(g); if(!x.p) root=x;
+      steps.push({title:splayVal+' > '+SPLAY_NODES[cur]+' → go right',
+        what:'Search right subtree.',why:'BST property.',...snap(cur,pathNodes)});
+      cur=ch[1];
     }
   }
-  root=x;
-}
-
-function find(k){
-  let n=root, last=null;
-  while(n){ last=n; if(k===n.k) break; else if(k<n.k) n=n.l; else n=n.r; }
-  if(last){ splay(last); }
-  return root&&root.k===k?root:null;
-}
-
-function insert(k){
-  if(!root){ root=new SNode(k); return; }
-  find(k); // splay closest
-  if(root.k===k) return; // duplicate
-  const n=new SNode(k);
-  if(k<root.k){ n.r=root; n.l=root.l; if(root.l){root.l.p=n;} root.l=null; root.p=n; }
-  else { n.l=root; n.r=root.r; if(root.r){root.r.p=n;} root.r=null; root.p=n; }
-  root=n;
-}
-
-function deleteKey(k){
-  const found=find(k);
-  if(!found||root.k!==k) return false;
-  const L=root.l, R=root.r;
-  if(L) L.p=null; if(R) R.p=null;
-  if(!L){ root=R; }
-  else {
-    root=L; find(k); // splay max of L to root
-    root.r=R; if(R) R.p=root;
+  var depth=pathNodes.length-1;
+  if(depth===0){
+    steps.push({title:splayVal+' is already the root!',
+      what:'No rotations needed.',why:'Depth=0: splay is no-op.',...snap(pathNodes[0],[pathNodes[0]])});
+  } else {
+    var rotType=depth===1?'Zig':depth%2===0?'Zig-Zig':'Zig-Zag';
+    for(var d=depth;d>0;d--){
+      var v=pathNodes[d], par=pathNodes[d-1];
+      steps.push({title:rotType+' rotation: '+SPLAY_NODES[v]+' over '+SPLAY_NODES[par],
+        what:'Rotate '+SPLAY_NODES[v]+' up over parent '+SPLAY_NODES[par]+'. Now '+SPLAY_NODES[v]+' is at depth '+(d-1)+'.',
+        why:rotType+' chosen based on node/parent/grandparent alignment. Amortizes future accesses.',
+        ...snap(v,pathNodes.slice(0,d+1))});
+    }
+    steps.push({title:splayVal+' splayed to root!',
+      what:'After '+depth+' rotation(s), '+splayVal+' is now the root.',
+      why:'Amortized O(log n): splay makes the tree shallower for future accesses to nearby nodes.',
+      ...snap(pathNodes[depth],[pathNodes[depth]])});
   }
-  return true;
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-// ── Rendering ──
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=320; canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr); render();
-}
-window.addEventListener('resize',resize);
-
-function assignPositions(node,x,y,spread){
-  if(!node) return;
-  node._x=x; node._y=y;
-  if(node.l) assignPositions(node.l,x-spread,y+65,spread/2);
-  if(node.r) assignPositions(node.r,x+spread,y+65,spread/2);
-}
-
-function drawNode(node){
-  if(!node) return;
-  drawNode(node.l); drawNode(node.r);
-  if(node.l){
-    ctx.beginPath(); ctx.moveTo(node._x,node._y); ctx.lineTo(node.l._x,node.l._y);
-    ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke();
-  }
-  if(node.r){
-    ctx.beginPath(); ctx.moveTo(node._x,node._y); ctx.lineTo(node.r._x,node.r._y);
-    ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke();
-  }
-}
-
-function drawNodeCircle(node){
-  if(!node) return;
-  const isRoot=node===root;
-  const isSplayed=node.k===lastSplayedKey;
-  ctx.beginPath(); ctx.arc(node._x,node._y,18,0,Math.PI*2);
-  ctx.fillStyle=isRoot?'#27a060':(isSplayed?'#f0a500':'#e8f5ee');
-  ctx.fill(); ctx.strokeStyle='#aaa'; ctx.lineWidth=1.5; ctx.stroke();
-  ctx.fillStyle=isRoot||isSplayed?'#fff':'#1a1a2e';
-  ctx.font="bold 13px 'JetBrains Mono',monospace";
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(node.k,node._x,node._y);
-  drawNodeCircle(node.l); drawNodeCircle(node.r);
-}
-
-function render(){
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=240, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  if(!root){
-    ctx.fillStyle='#aaa'; ctx.font="14px 'Inter',sans-serif";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('Tree is empty — insert values to begin',W/2,H/2); return;
-  }
-  assignPositions(root,W/2,32,Math.min(W/4,130));
-  drawNode(root); drawNodeCircle(root);
-  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.fillText('Green=root  Orange=last splayed node',8,H-18);
+  Object.keys(step.ch).forEach(function(p){
+    var ch=step.ch[p]||[], pp=step.pos[p];
+    ch.forEach(function(c){if(!c) return; var cp=step.pos[c];
+      ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pp[0]*SCALE,pp[1]);ctx.lineTo(cp[0]*SCALE,cp[1]);ctx.stroke();});
+  });
+  Object.keys(step.nodes).forEach(function(v){
+    v=parseInt(v); if(!step.pos[v]) return;
+    var pos=step.pos[v], cx=pos[0]*SCALE, cy=pos[1];
+    var isHl=v===step.hl, isPath=step.path.indexOf(v)>=0;
+    ctx.fillStyle=isHl?'#a8e6a3':isPath?'#fff176':'#c3b1e1';
+    ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 12px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(step.nodes[v],cx,cy+5);
+  });
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Target: '+(step.hl>0?step.nodes[step.hl]:'—')+'  |  Path length: '+step.path.length;
 }
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
+function rebuild(){
+  var v=parseInt(document.getElementById('nodeSel').value)||5;
+  var splayVal=SPLAY_NODES[v]||50;
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(splayVal),renderStep,'explanation','sim-bar');
 }
-
-function setRotInfo(rots){
-  const el=document.getElementById('rotInfo');
-  if(!rots||rots.length===0){ el.innerHTML='No rotations needed (already at root).'; return; }
-  const counts={Zig:0,'Zig-Zig':0,'Zig-Zag':0};
-  rots.forEach(r=>counts[r]=(counts[r]||0)+1);
-  el.innerHTML=Object.entries(counts).filter(([,v])=>v>0)
-    .map(([k,v])=>`<span class="rotation-badge ${k.replace('-','').toLowerCase()}">${k} ×${v}</span>`).join(' ');
-}
-
-function doInsert(){
-  const v=parseInt(document.getElementById('valIn').value);
-  if(isNaN(v)){alert('Enter a number.');return;}
-  insert(v); lastSplayedKey=v;
-  setRotInfo(rotationLog);
-  log(`Insert(${v}): splayed to root. Rotations: [${rotationLog.join(', ')||'none'}]`);
-  render();
-}
-
-function doSearch(){
-  const v=parseInt(document.getElementById('valIn').value);
-  if(isNaN(v)){alert('Enter a number.');return;}
-  const found=find(v); lastSplayedKey=v;
-  setRotInfo(rotationLog);
-  log(`Search(${v}): ${found?'found':'not found, closest splayed'}. Root now=${root?root.k:'empty'}. Rotations: [${rotationLog.join(', ')||'none'}]`);
-  render();
-}
-
-function doDelete(){
-  const v=parseInt(document.getElementById('valIn').value);
-  if(isNaN(v)){alert('Enter a number.');return;}
-  const ok=deleteKey(v); lastSplayedKey=null;
-  log(`Delete(${v}): ${ok?'removed':'not found'}. Root now=${root?root.k:'(empty)'}`);
-  render();
-}
-
-function doClear(){ root=null; lastSplayedKey=null; render(); log('Tree cleared.'); }
-
-// Seed
-[20,10,30,5,15,25,35].forEach(v=>insert(v));
-resize();
-log('Seeded splay tree with [20,10,30,5,15,25,35]. Root='+root.k);
+rebuild();
 </script>
 </body>
 </html>

@@ -3,249 +3,187 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Heap – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Heap (Min/Max)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--ink);font-weight:600;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:.8rem;color:var(--ink);display:flex;align-items:center;gap:.8rem;}
-.toggle{display:flex;gap:0;border-radius:8px;overflow:hidden;border:1px solid var(--b);}
-.toggle button{padding:.3rem .8rem;border:none;font-size:.8rem;font-weight:600;cursor:pointer;background:#f2f1ec;color:var(--m);}
-.toggle button.active{background:var(--a);color:#fff;}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-.arr-row{margin-top:.6rem;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
-.arr-label{font-size:.78rem;color:var(--m);font-weight:600;margin-right:.3rem;}
-.arr-cell{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#eef8f2;color:#1a5c38;padding:.2rem .45rem;border-radius:5px;border:1px solid #b6e3ca;min-width:28px;text-align:center;transition:background .3s;}
-.arr-cell.hi{background:#27a060;color:#fff;}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
-.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:100px;}
-.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
-.btn-dan{background:#fdecea;color:#c0392b;border:1px solid #f5c6c2;}.btn-dan:hover{background:#f9d5d2;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.arr-vis{display:flex;gap:2px;margin:.5rem 0;font-family:'JetBrains Mono',monospace}
+.hcell{width:38px;height:36px;border:1.5px solid var(--b);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+.hcell.swap{background:#fff176;border-color:#d97706}
+.hcell.inserted{background:#a8e6a3;border-color:#16a34a}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=number]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:90px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    Heap
-  </nav>
-  <header class="hero">
-    <span class="tag">Tree</span>
-    <h1>Binary Heap</h1>
-    <p>A complete binary tree satisfying the heap property — the fastest way to always have the minimum (or maximum) at your fingertips.</p>
-  </header>
-  <section class="prose">
-    <p>A <strong>Binary Heap</strong> is a complete binary tree stored as an array. In a <em>min-heap</em>, every parent is smaller than or equal to its children, so the root always holds the global minimum. In a <em>max-heap</em>, every parent is larger, keeping the maximum at the root.</p>
-    <p>Think of a hospital emergency room triage queue. Patients are sorted not by arrival time but by severity. The most critical patient (smallest severity score = most urgent) is always served first. When a new patient arrives, they "bubble up" to the right position; when the top patient leaves, the queue "sifts down" to restore order.</p>
-    <p>The array representation is elegant: for node at index <strong>i</strong>, its left child is at <strong>2i+1</strong>, right child at <strong>2i+2</strong>, and parent at <strong>⌊(i-1)/2⌋</strong>. No pointers needed — pure index arithmetic.</p>
-  </section>
-  <div class="facts">
-    <div class="fact"><div class="fact-label">Insert (sift-up)</div><div class="fact-val">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Extract Min/Max</div><div class="fact-val">O(log n)</div></div>
-    <div class="fact"><div class="fact-label">Peek Min/Max</div><div class="fact-val">O(1)</div></div>
-    <div class="fact"><div class="fact-label">Heapify</div><div class="fact-val">O(n)</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Heap</span></nav>
+  <span class="tag">Tree</span>
+  <h1>Heap (Min-Heap)</h1>
+  <p class="tagline">Complete binary tree with heap property — min at root. O(log n) insert, O(log n) extract-min.</p>
+  <div class="prose">
+    <p>A min-heap is a complete binary tree where each node ≤ its children. Stored as an array: node i has children at 2i+1, 2i+2 and parent at ⌊(i-1)/2⌋. Insert: append to end, sift up. Extract-min: swap root with last, sift down. Used in Dijkstra, Prim, priority queues, heapsort.</p>
+    <p>Yellow = nodes being compared/swapped during sift-up. Green = newly inserted node. Array below shows heap array representation.</p>
   </div>
-
+  <div class="facts">
+    <div class="fact"><div class="flabel">Insert</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Extract-min</div><div class="fval">O(log n)</div></div>
+    <div class="fact"><div class="flabel">Peek min</div><div class="fval">O(1)</div></div>
+    <div class="fact"><div class="flabel">Build heap</div><div class="fval">O(n)</div></div>
+  </div>
   <div class="sim-panel">
-    <div class="sim-title">
-      Heap Simulation
-      <div class="toggle">
-        <button id="btnMin" class="active" onclick="setMode('min')">Min-Heap</button>
-        <button id="btnMax" onclick="setMode('max')">Max-Heap</button>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="220"></canvas>
+      <div class="arr-vis" id="arrVis"></div>
+      <div class="info-bar" id="infoBar">Enter a value and click Insert or Extract Min.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Value:</label>
+        <input type="number" id="valInput" value="3"/>
+        <button class="btn btn-p" onclick="buildOp('insert')">Insert</button>
+        <button class="btn btn-p" onclick="buildOp('extract')">Extract Min</button>
       </div>
     </div>
-    <canvas id="cv" height="300"></canvas>
-    <div class="arr-row"><span class="arr-label">Array:</span><div id="arrView"></div></div>
-    <div class="controls">
-      <input id="valIn" type="number" placeholder="value…" min="0" max="999"/>
-      <button class="btn btn-pri" onclick="doInsert()">Insert</button>
-      <button class="btn btn-sec" onclick="doExtract()">Extract Root</button>
-      <button class="btn btn-sec" onclick="doHeapify()">Build Heap</button>
-      <button class="btn btn-dan" onclick="doClear()">Clear</button>
-    </div>
   </div>
-
-  <div class="log-panel" id="logPanel"><h3>Step Log</h3></div>
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
-
 <script>
-let mode='min';
-let heap=[];
-let highlighted=new Set();
-
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=300; canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr); render();
+var player=null;
+var INIT_HEAP=[2,8,5,15,12,9,7];
+function getPos(i,n){
+  var levels=Math.ceil(Math.log2(n+1));
+  var level=Math.floor(Math.log2(i+1));
+  var pos_in_level=i-(Math.pow(2,level)-1);
+  var slots=Math.pow(2,level);
+  var x=640*(pos_in_level+0.5)/slots;
+  var y=30+level*60;
+  return [x,y];
 }
-window.addEventListener('resize',resize);
-
-function setMode(m){
-  mode=m;
-  document.getElementById('btnMin').className='toggle button'+(m==='min'?' active':'');
-  document.getElementById('btnMax').className='toggle button'+(m==='max'?' active':'');
-  document.getElementById('btnMin').classList.toggle('active',m==='min');
-  document.getElementById('btnMax').classList.toggle('active',m==='max');
-  heap.sort((a,b)=>mode==='min'?a-b:b-a);
-  buildHeapFromArray();
-  render(); log(`Switched to ${mode}-heap and rebuilt.`);
-}
-
-function cmp(a,b){ return mode==='min'?a<b:a>b; }
-
-function siftUp(arr,i){
-  const steps=[];
-  while(i>0){
-    const p=Math.floor((i-1)/2);
-    if(cmp(arr[i],arr[p])){ steps.push([i,p]); [arr[i],arr[p]]=[arr[p],arr[i]]; i=p; } else break;
+function generateSteps(op,val){
+  var steps=[], h=INIT_HEAP.slice(), swapPair=[];
+  function snap(h,sw){return {heap:h.slice(),swap:sw.slice()};}
+  steps.push({title:'Min-Heap: ['+h.join(',')+'] (root='+h[0]+')',
+    what:'Min-heap: parent ≤ children. Stored in array. root='+h[0]+' is minimum.',
+    why:'Complete binary tree → array: index i children at 2i+1,2i+2.',
+    ...snap(h,[])});
+  if(op==='insert'){
+    h.push(val);
+    var i=h.length-1;
+    steps.push({title:'Append '+val+' at index '+(h.length-1),
+      what:'Insert at end. Heap: ['+h.join(',')+'].',
+      why:'Appending maintains completeness. Must restore heap property via sift-up.',
+      ...snap(h,[i])});
+    while(i>0){
+      var par=Math.floor((i-1)/2);
+      if(h[par]>h[i]){
+        steps.push({title:'Sift-up: swap h['+par+']='+h[par]+' ↔ h['+i+']='+h[i],
+          what:'Parent '+h[par]+' > child '+h[i]+'. Swap.',
+          why:'Heap property violated. Swap to restore parent ≤ child.',
+          ...snap(h,[par,i])});
+        var tmp=h[par]; h[par]=h[i]; h[i]=tmp;
+        steps.push({title:'After swap: h['+par+']='+h[par]+', h['+i+']='+h[i],
+          what:'Heap: ['+h.join(',')+'].',
+          why:'Continue sifting up from new position.',
+          ...snap(h,[par])});
+        i=par;
+      } else {
+        steps.push({title:'Parent '+h[par]+' ≤ child '+h[i]+'. Heap property OK.',
+          what:'Sift-up complete. Heap: ['+h.join(',')+'].',
+          why:'No violation: stop here.',
+          ...snap(h,[])});
+        break;
+      }
+    }
+  } else if(op==='extract'){
+    var min=h[0];
+    steps.push({title:'Extract min = '+min,what:'Swap root with last element.',why:'Remove root while maintaining completeness.',...snap(h,[0,h.length-1])});
+    h[0]=h[h.length-1]; h.pop();
+    steps.push({title:'Moved last to root. Heap: ['+h.join(',')+']',what:'Must sift-down to restore heap property.',why:'Root may violate parent ≤ children.',...snap(h,[0])});
+    var i=0;
+    while(true){
+      var l=2*i+1, r=2*i+2, smallest=i;
+      if(l<h.length&&h[l]<h[smallest]) smallest=l;
+      if(r<h.length&&h[r]<h[smallest]) smallest=r;
+      if(smallest===i){
+        steps.push({title:'Sift-down done. Heap: ['+h.join(',')+']',what:'h['+i+']='+h[i]+' ≤ children. Heap property restored.',why:'No violation at '+i+': sift-down stops.',...snap(h,[])});
+        break;
+      }
+      steps.push({title:'Sift-down: swap h['+i+']='+h[i]+' ↔ h['+smallest+']='+h[smallest],what:'Smallest child '+h[smallest]+' < '+h[i]+'. Swap.',why:'Restore heap property.',...snap(h,[i,smallest])});
+      var tmp=h[i]; h[i]=h[smallest]; h[smallest]=tmp;
+      i=smallest;
+    }
   }
+  steps.push({title:'Done. Min-Heap: ['+h.join(',')+'] root='+h[0],what:'Heap property maintained.',why:'All ops O(log n): at most h swaps where h=log n.',...snap(h,[])});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
   return steps;
 }
-
-function siftDown(arr,i,n){
-  const steps=[];
-  while(true){
-    let best=i,l=2*i+1,r=2*i+2;
-    if(l<n&&cmp(arr[l],arr[best])) best=l;
-    if(r<n&&cmp(arr[r],arr[best])) best=r;
-    if(best!==i){ steps.push([i,best]); [arr[i],arr[best]]=[arr[best],arr[i]]; i=best; } else break;
-  }
-  return steps;
-}
-
-function buildHeapFromArray(){
-  for(let i=Math.floor(heap.length/2)-1;i>=0;i--) siftDown(heap,i,heap.length);
-}
-
-// Layout: complete binary tree positions
-function nodePos(i){
-  const level=Math.floor(Math.log2(i+1));
-  const levelStart=Math.pow(2,level)-1;
-  const levelCount=Math.pow(2,level);
-  const posInLevel=i-levelStart;
-  const totalLevels=Math.floor(Math.log2(heap.length+1));
-  const xStep=W/(levelCount+1);
-  const yStep=Math.min((H-20)/(totalLevels+1),60);
-  return {x:(posInLevel+1)*xStep, y:30+level*yStep};
-}
-
-function render(hiSet){
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=220, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  if(heap.length===0){
-    ctx.fillStyle='#aaa'; ctx.font="14px 'Inter',sans-serif";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('Heap is empty — insert values to begin',W/2,H/2); return;
+  var n=step.heap.length;
+  for(var i=0;i<n;i++){
+    var par=Math.floor((i-1)/2);
+    if(i>0){
+      var pp=getPos(par,n), cp=getPos(i,n);
+      ctx.strokeStyle='#ccc';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(pp[0]*SCALE,pp[1]);ctx.lineTo(cp[0]*SCALE,cp[1]);ctx.stroke();
+    }
   }
-  const hi=hiSet||highlighted;
-  // edges
-  for(let i=1;i<heap.length;i++){
-    const p=Math.floor((i-1)/2);
-    const {x:px,y:py}=nodePos(p);
-    const {x:cx,y:cy}=nodePos(i);
-    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(cx,cy);
-    ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke();
+  for(var i=0;i<n;i++){
+    var pos=getPos(i,n), cx=pos[0]*SCALE, cy=pos[1];
+    var isSwap=step.swap.indexOf(i)>=0;
+    ctx.fillStyle=isSwap?'#fff176':'#c3b1e1';
+    ctx.beginPath();ctx.arc(cx,cy,20,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,20,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 12px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(step.heap[i],cx,cy+5);
   }
-  // nodes
-  for(let i=0;i<heap.length;i++){
-    const {x,y}=nodePos(i);
-    const isHi=hi.has(i);
-    ctx.beginPath(); ctx.arc(x,y,18,0,Math.PI*2);
-    ctx.fillStyle=i===0?'#27a060':(isHi?'#f0a500':'#e8f5ee');
-    ctx.fill(); ctx.strokeStyle='#aaa'; ctx.lineWidth=1.5; ctx.stroke();
-    ctx.fillStyle=i===0||isHi?'#fff':'#1a1a2e';
-    ctx.font="bold 13px 'JetBrains Mono',monospace";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(heap[i],x,y);
-  }
-  updateArrView(hi);
+  var av=document.getElementById('arrVis');
+  if(av) av.innerHTML=step.heap.map(function(v,i){
+    return '<div class="hcell'+(step.swap.indexOf(i)>=0?' swap':'')+'">'+v+'</div>';
+  }).join('');
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Heap: ['+step.heap.join(',')+']  |  Size: '+step.heap.length+'  |  Min: '+step.heap[0];
 }
-
-function updateArrView(hi){
-  const el=document.getElementById('arrView');
-  el.innerHTML=heap.map((v,i)=>`<span class="arr-cell${(hi||highlighted).has(i)?' hi':''}">${v}</span>`).join('');
+function buildOp(op){
+  var val=parseInt(document.getElementById('valInput').value)||3;
+  INIT_HEAP=[2,8,5,15,12,9,7];
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(op,val),renderStep,'explanation','sim-bar');
 }
-
-function animateSteps(steps,callback){
-  let idx=0;
-  function next(){
-    if(idx>=steps.length){ highlighted.clear(); render(); if(callback) callback(); return; }
-    const [a,b]=steps[idx++];
-    highlighted.clear(); highlighted.add(a); highlighted.add(b);
-    render(highlighted); setTimeout(next,450);
-  }
-  next();
-}
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
-}
-
-function doInsert(){
-  const v=parseInt(document.getElementById('valIn').value);
-  if(isNaN(v)){alert('Enter a number.');return;}
-  heap.push(v); const steps=siftUp(heap,heap.length-1);
-  log(`Insert ${v}: sift-up ${steps.length} swap(s) — root=${heap[0]}`);
-  animateSteps(steps);
-}
-
-function doExtract(){
-  if(heap.length===0){log('Heap is empty.');return;}
-  const root=heap[0]; heap[0]=heap[heap.length-1]; heap.pop();
-  const steps=siftDown(heap,0,heap.length);
-  log(`Extract ${mode}-root ${root}: sift-down ${steps.length} swap(s) — new root=${heap[0]??'(empty)'}`);
-  animateSteps(steps);
-}
-
-function doHeapify(){
-  const arr=[...Array(8)].map(()=>Math.floor(Math.random()*90)+10);
-  heap=[...arr]; buildHeapFromArray();
-  log(`Heapify random array [${arr.join(',')}] → root=${heap[0]}`);
-  render();
-}
-
-function doClear(){ heap=[]; highlighted.clear(); render(); log('Heap cleared.'); }
-
-// seed
-heap=[3,10,5,20,15,12,8];buildHeapFromArray();
-resize();
-log('Seeded min-heap with [3,10,5,20,15,12,8] → root='+heap[0]);
+buildOp('insert');
 </script>
 </body>
 </html>

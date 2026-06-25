@@ -3,239 +3,189 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Suffix Tree – DS·Algo Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Suffix Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="../../assets/common.js"></script>
 <style>
-:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#27a060;--r:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem;}
-.bc{padding:1.2rem 0 0;font-size:.82rem;color:var(--m);}
-.bc a{color:var(--m);text-decoration:none;}.bc a:hover{color:var(--a);}
-.bc span{margin:0 .35rem;}
-.hero{padding:2.2rem 0 1.6rem;}
-.tag{display:inline-block;background:var(--a);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .7rem;border-radius:99px;margin-bottom:.9rem;}
-.hero h1{font-family:'DM Serif Display',serif;font-size:2.6rem;line-height:1.2;margin-bottom:.6rem;}
-.hero p{color:var(--m);font-size:1.05rem;max-width:620px;}
-.prose{margin-bottom:2rem;}
-.prose p{margin-bottom:1rem;color:#2e2e42;}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem 1.3rem;}
-.fact-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.3rem;}
-.fact-val{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:var(--ink);font-weight:600;}
-.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.4rem;margin-bottom:1.2rem;}
-.sim-title{font-weight:600;font-size:.95rem;margin-bottom:1rem;color:var(--ink);}
-canvas{display:block;width:100%;border-radius:10px;background:#f9f9f7;border:1px solid var(--b);}
-.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;align-items:center;}
-.controls input{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--b);border-radius:8px;background:#f9f8f5;color:var(--ink);width:160px;}
-.controls input:focus{outline:2px solid var(--a);border-color:var(--a);}
-.btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;}
-.btn-pri{background:var(--a);color:#fff;}.btn-pri:hover{opacity:.87;}
-.btn-sec{background:#eef8f2;color:var(--a);border:1px solid #b6e3ca;}.btn-sec:hover{background:#ddf2e8;}
-.suffix-list{margin-top:.8rem;display:flex;flex-wrap:wrap;gap:.4rem;}
-.suf-chip{font-family:'JetBrains Mono',monospace;font-size:.78rem;background:#eef8f2;color:#1a5c38;padding:.2rem .5rem;border-radius:6px;border:1px solid #b6e3ca;}
-.log-panel{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.3rem;max-height:180px;overflow-y:auto;}
-.log-panel h3{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--m);margin-bottom:.6rem;}
-.log-entry{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.25rem 0;border-bottom:1px solid #f0efe9;color:#2e2e42;}
-.log-entry:last-child{border-bottom:none;}
-.back{display:inline-flex;align-items:center;gap:.4rem;margin-top:2rem;color:var(--a);font-weight:600;text-decoration:none;font-size:.9rem;}
-.back:hover{text-decoration:underline;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+.tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
+.tagline{color:var(--m)}
+.prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
+.fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
+.sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
+.sim-body{padding:1.3rem}
+canvas{display:block;max-width:100%;border:1px solid var(--b);border-radius:8px;background:#f8f9fd}
+.info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+.input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
+.input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:100px}
+.btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
+.btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
+.back:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav class="bc">
-    <a href="../../index.html">Home</a><span>/</span>
-    <a href="../index.html">Data Structures</a><span>/</span>
-    Suffix Tree
-  </nav>
-
-  <header class="hero">
-    <span class="tag">Tree</span>
-    <h1>Suffix Tree</h1>
-    <p>A compressed trie of all suffixes of a string — the backbone of ultra-fast substring search and DNA analysis.</p>
-  </header>
-
-  <section class="prose">
-    <p>A <strong>Suffix Tree</strong> is a compressed trie that stores every possible suffix of a given string. For the word "banana", suffixes are: "banana", "anana", "nana", "ana", "na", "a" — all inserted into a single trie that shares common prefixes. Edges in the compressed form carry substrings rather than single characters, making the structure compact.</p>
-    <p>Imagine an index at the back of a book. Instead of listing every page a word appears on, a suffix tree answers "does this substring exist?" in <strong>O(m)</strong> time where <em>m</em> is only the query length — no matter how long the original text is. Bioinformatics uses suffix trees to search billions of DNA base pairs for genetic patterns in milliseconds.</p>
-    <p>Below we visualize a <strong>suffix trie</strong> (uncompressed version) built character-by-character from each suffix. Each suffix is added as a path from the root, with shared prefixes merged into common nodes. Dollar signs ($) mark suffix endings.</p>
-  </section>
-
+  <nav class="bc"><a href="../../index.html">Home</a><span>/</span><a href="../index.html">Data Structures</a><span>/</span><span>Suffix Tree</span></nav>
+  <span class="tag">Tree</span>
+  <h1>Suffix Tree</h1>
+  <p class="tagline">Compressed trie of all suffixes — O(n) build, O(m) pattern search. Used in bioinformatics.</p>
+  <div class="prose">
+    <p>A suffix tree for string S is a compressed trie containing all suffixes of S. Each edge is labeled with a substring (stored as index pointers). Build in O(n) with Ukkonen's algorithm. Pattern matching: traverse the tree reading the pattern — O(m) to find if pattern exists, where m = pattern length. Used in longest common substring, repeated substrings, bioinformatics (DNA search).</p>
+    <p>Steps show searching for a pattern through the suffix tree of "banana$". Yellow = currently traversing. Green = pattern found. Edge labels show the substrings.</p>
+  </div>
   <div class="facts">
-    <div class="fact"><div class="fact-label">Build Time</div><div class="fact-val">O(n) – Ukkonen's</div></div>
-    <div class="fact"><div class="fact-label">Space</div><div class="fact-val">O(n)</div></div>
-    <div class="fact"><div class="fact-label">Substring Search</div><div class="fact-val">O(m)</div></div>
-    <div class="fact"><div class="fact-label">Use Cases</div><div class="fact-val">DNA search, Text indexing, LCS</div></div>
+    <div class="fact"><div class="flabel">Build</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Pattern search</div><div class="fval">O(m)</div></div>
+    <div class="fact"><div class="flabel">Space</div><div class="fval">O(n)</div></div>
+    <div class="fact"><div class="flabel">Used in</div><div class="fval">DNA search, LCS</div></div>
   </div>
-
   <div class="sim-panel">
-    <div class="sim-title">Interactive Suffix Trie Visualization</div>
-    <canvas id="cv" height="340"></canvas>
-    <div class="controls">
-      <input id="strIn" type="text" placeholder="string (max 7)…" maxlength="7"/>
-      <button class="btn btn-pri" onclick="doBuild()">Build</button>
-      <button class="btn btn-sec" onclick="doReset()">Reset</button>
+    <div class="sim-hdr"><span class="dot"></span>Interactive Simulation</div>
+    <div class="sim-body">
+      <canvas id="canvas" height="260"></canvas>
+      <div class="info-bar" id="infoBar">Enter a pattern and click Search.</div>
+      <div id="explanation"></div>
+      <div id="sim-bar"></div>
+      <div class="input-row">
+        <label>Search in "banana$" for:</label>
+        <input type="text" id="patInput" value="ana"/>
+        <button class="btn btn-p" onclick="rebuild()">Search Pattern</button>
+      </div>
     </div>
-    <div class="suffix-list" id="sufList"></div>
   </div>
-
-  <div class="log-panel" id="logPanel">
-    <h3>Step Log</h3>
-  </div>
-
-  <a class="back" href="../index.html">← Back to Data Structures</a>
+  <a class="back" href="../index.html">Back to Data Structures</a>
 </div>
-
 <script>
-const canvas=document.getElementById('cv');
-const ctx=canvas.getContext('2d');
-const dpr=window.devicePixelRatio||1;
-let W,H;
-
-function resize(){
-  W=canvas.parentElement.clientWidth-2.8*16;
-  H=340;
-  canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  ctx.scale(dpr,dpr);
-  drawEmpty();
-}
-window.addEventListener('resize',()=>{resize(); if(lastStr) doBuild(true);});
-
-let lastStr='';
-let trieRoot=null;
-
-class SNode{
-  constructor(ch){ this.ch=ch; this.children={}; this.end=false; }
-}
-
-function buildSuffixTrie(s){
-  const root=new SNode('');
-  const suffixes=[];
-  for(let i=0;i<s.length;i++) suffixes.push(s.slice(i)+'$');
-  for(const suf of suffixes){
-    let node=root;
-    for(const c of suf){
-      if(!node.children[c]) node.children[c]=new SNode(c);
-      node=node.children[c];
+var player=null;
+var STREE={
+  nodes:[
+    {id:0,pos:[320,30],label:'',isLeaf:false},
+    {id:1,pos:[80,110],label:'banana$',isLeaf:true},
+    {id:2,pos:[200,110],label:'a',isLeaf:false},
+    {id:3,pos:[440,110],label:'na',isLeaf:false},
+    {id:4,pos:[570,110],label:'$',isLeaf:true},
+    {id:5,pos:[120,200],label:'na$',isLeaf:true},
+    {id:6,pos:[240,200],label:'na$',isLeaf:true},
+    {id:7,pos:[170,200],label:'$',isLeaf:true},
+    {id:8,pos:[360,200],label:'na$',isLeaf:true},
+    {id:9,pos:[520,200],label:'na$',isLeaf:true}
+  ],
+  edges:[
+    {from:0,to:1,lbl:'banana$'},
+    {from:0,to:2,lbl:'a'},
+    {from:0,to:3,lbl:'na'},
+    {from:0,to:4,lbl:'$'},
+    {from:2,to:5,lbl:'na$'},
+    {from:2,to:6,lbl:'$'},
+    {from:2,to:7,lbl:'na$'},
+    {from:3,to:8,lbl:'na$'},
+    {from:3,to:9,lbl:'$'}
+  ]
+};
+function generateSteps(pat){
+  var steps=[], pathNodes=[], pathEdges=[];
+  function snap(pn,pe){return {pathNodes:pn.slice(),pathEdges:pe.slice()};}
+  steps.push({title:'Suffix Tree of "banana$". Search for "'+pat+'"',
+    what:'Compressed trie: all 7 suffixes of "banana$". Internal nodes = repeated substrings.',
+    why:'O(m) search: walk tree edges matching pattern characters.',
+    ...snap([],[])});
+  var rem=pat, curNode=0, found=false;
+  pathNodes.push(0);
+  steps.push({title:'Start at root. Pattern remaining: "'+rem+'"',
+    what:'Root = empty string. Follow edge matching first char \''+rem[0]+'\'.',
+    why:'Each edge labeled with a string. Matching descends the tree.',
+    ...snap(pathNodes,pathEdges)});
+  if(rem[0]==='a'||rem[0]==='b'){
+    var edgeIdx=rem[0]==='a'?1:0;
+    var edge=STREE.edges[rem[0]==='a'?2:1];
+    pathEdges.push(edge.to);
+    var matchLen=Math.min(rem.length,edge.lbl.length);
+    var matched=edge.lbl.slice(0,matchLen);
+    rem=rem.slice(matchLen);
+    pathNodes.push(edge.to);
+    steps.push({title:'Follow edge "'+edge.lbl+'": match "'+matched+'"',
+      what:'Consume "'+matched+'" from pattern. Remaining: "'+(rem||'(done)') +'".',
+      why:'Edge characters matched one by one: O(m) total chars consumed.',
+      ...snap(pathNodes,pathEdges)});
+    if(rem.length===0){
+      found=true;
+      steps.push({title:'Pattern "'+pat+'" FOUND at node '+edge.to,
+        what:'"'+pat+'" exists as a substring of "banana". Occurs at all leaf positions reachable from node '+edge.to+'.',
+        why:'O(m) search: walk edges consuming pattern. Reached valid position.',
+        ...snap(pathNodes,pathEdges)});
+    } else if(rem[0]==='n'&&edge.to===2){
+      var e2=STREE.edges.find(function(e){return e.from===2&&e.lbl[0]==='n';});
+      if(e2){
+        pathEdges.push(e2.to); pathNodes.push(e2.to);
+        steps.push({title:'Follow edge "'+e2.lbl+'": match "'+rem.slice(0,e2.lbl.length)+'"',
+          what:'Consume more pattern chars. Remaining: "'+(rem.slice(e2.lbl.length)||'(done)')+'".',
+          why:'Continue descent.',
+          ...snap(pathNodes,pathEdges)});
+        found=true;
+        steps.push({title:'Pattern "'+pat+'" FOUND!',
+          what:'All pattern characters matched. "'+pat+'" is a substring of "banana$".',
+          why:'O(m) = O('+pat.length+') steps to confirm pattern.',
+          ...snap(pathNodes,pathEdges)});
+      }
     }
-    node.end=true;
+  } else {
+    steps.push({title:'No edge from root starting with "'+rem[0]+'"',
+      what:'"'+pat+'" is NOT a substring of "banana$".',
+      why:'O(m): failed at first mismatch.',
+      ...snap(pathNodes,pathEdges)});
   }
-  return {root,suffixes};
+  if(!found) steps.push({title:'Search complete. Pattern "'+pat+'" '+(found?'found':'not found')+'.',
+    what:'Result: '+(found?'exists':'absent')+' in "banana$".',
+    why:'O(m) suffix tree search — always O(m) regardless of text length.',
+    ...snap(pathNodes,pathEdges)});
+  steps.forEach(function(s,i){s.stepNumber=i+1;s.totalSteps=steps.length;});
+  return steps;
 }
-
-function layoutNodes(root){
-  const nm={};
-  const counter={x:0};
-  function assignX(node,key){
-    const cks=Object.keys(node.children);
-    if(cks.length===0){ node._x=counter.x++; return node._x; }
-    const xs=cks.map(c=>assignX(node.children[c],key+c));
-    node._x=(xs[0]+xs[xs.length-1])/2;
-    return node._x;
-  }
-  assignX(root,'');
-  const maxX=counter.x-1||1;
-  function collectDepths(node,d){
-    if(d>node._depth||node._depth===undefined) node._depth=d;
-    for(const c of Object.values(node.children)) collectDepths(c,d+1);
-  }
-  collectDepths(root,0);
-  let maxD=0;
-  function findMaxD(node){ maxD=Math.max(maxD,node._depth); for(const c of Object.values(node.children)) findMaxD(c); }
-  findMaxD(root);
-  const pad=30;
-  function assign(node){
-    node._px=pad+(node._x/Math.max(maxX,1))*(W-2*pad);
-    node._py=20+(node._depth/Math.max(maxD,1))*(H-50);
-    for(const c of Object.values(node.children)) assign(c);
-  }
-  assign(root);
-  return {root,maxD};
-}
-
-const palette=['#27a060','#2980b9','#8e44ad','#e67e22','#e74c3c','#16a085','#d35400'];
-
-function drawTrie(root,highlightSuf,sufColors){
+function renderStep(step){
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.offsetWidth||640, H=260, DPR=window.devicePixelRatio||1, SCALE=W/640;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
   ctx.clearRect(0,0,W,H);
-  function drawEdges(node){
-    for(const [c,child] of Object.entries(node.children)){
-      ctx.beginPath(); ctx.moveTo(node._px,node._py); ctx.lineTo(child._px,child._py);
-      ctx.strokeStyle='#c8c6be'; ctx.lineWidth=1.5; ctx.stroke();
-      drawEdges(child);
-    }
-  }
-  function drawNodes(node){
-    const r=node.ch===''?10:14;
-    ctx.beginPath(); ctx.arc(node._px,node._py,r,0,Math.PI*2);
-    ctx.fillStyle= node.ch===''?'#b6e3ca':'#e8f5ee';
-    if(node.end){ ctx.fillStyle='#27a060'; }
-    ctx.fill();
-    ctx.strokeStyle='#aaa'; ctx.lineWidth=1; ctx.stroke();
-    ctx.fillStyle= node.end?'#fff':'#1a1a2e';
-    ctx.font=node.ch===''?"bold 9px 'Inter',sans-serif":"bold 12px 'JetBrains Mono',monospace";
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(node.ch===''?'∅':node.ch,node._px,node._py);
-    for(const c of Object.values(node.children)) drawNodes(c);
-  }
-  drawEdges(root);
-  drawNodes(root);
-  ctx.font="11px 'Inter',sans-serif"; ctx.fillStyle='#5a5a72';
-  ctx.textAlign='left'; ctx.textBaseline='top';
-  ctx.fillText('Green filled = suffix end ($)',8,H-18);
+  STREE.edges.forEach(function(e){
+    var fn=STREE.nodes[e.from], tn=STREE.nodes[e.to];
+    var isPath=step.pathEdges.indexOf(e.to)>=0;
+    ctx.strokeStyle=isPath?'#fb923c':'#ccc'; ctx.lineWidth=isPath?2.5:1.5;
+    ctx.beginPath();ctx.moveTo(fn.pos[0]*SCALE,fn.pos[1]+12);ctx.lineTo(tn.pos[0]*SCALE,tn.pos[1]-12);ctx.stroke();
+    var mx=(fn.pos[0]+tn.pos[0])/2*SCALE, my=(fn.pos[1]+tn.pos[1])/2;
+    ctx.fillStyle=isPath?'#d97706':'#888';ctx.font='bold 9px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(e.lbl,mx,my-3);
+  });
+  STREE.nodes.forEach(function(n){
+    var isPath=step.pathNodes.indexOf(n.id)>=0;
+    ctx.fillStyle=isPath?'#fff176':n.isLeaf?'#a8e6a3':'#c3b1e1';
+    ctx.beginPath();ctx.arc(n.pos[0]*SCALE,n.pos[1],12,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#7b4fd4';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(n.pos[0]*SCALE,n.pos[1],12,0,2*Math.PI);ctx.stroke();
+  });
+  var ib=document.getElementById('infoBar');
+  if(ib) ib.textContent='Nodes on path: '+step.pathNodes.length+'  |  Text: "banana$"  |  Pattern length: '+document.getElementById('patInput').value.length;
 }
-
-function drawEmpty(){
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#b0ae a8'; ctx.font="14px 'Inter',sans-serif";
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillStyle='#aaa';
-  ctx.fillText('Enter a string (max 7 chars) and click Build',W/2,H/2);
+function rebuild(){
+  var pat=document.getElementById('patInput').value||'ana';
+  if(player) player.destroy();
+  player=new SimulationPlayer(generateSteps(pat),renderStep,'explanation','sim-bar');
 }
-
-function updateSufList(suffixes){
-  const el=document.getElementById('sufList');
-  el.innerHTML=suffixes.map((s,i)=>`<span class="suf-chip">${s}</span>`).join('');
-}
-
-function log(msg){
-  const p=document.getElementById('logPanel');
-  const d=document.createElement('div'); d.className='log-entry'; d.textContent=msg; p.appendChild(d);
-  p.scrollTop=p.scrollHeight;
-}
-
-function doBuild(silent){
-  const raw=document.getElementById('strIn').value.trim().toLowerCase()||lastStr;
-  if(!raw){alert('Enter a string.');return;}
-  const s=raw.slice(0,7);
-  lastStr=s;
-  document.getElementById('strIn').value=s;
-  const {root,suffixes}=buildSuffixTrie(s);
-  layoutNodes(root);
-  trieRoot=root;
-  drawTrie(root);
-  updateSufList(suffixes);
-  if(!silent){
-    log(`Building suffix trie for "${s}"`);
-    suffixes.forEach((sf,i)=>{ setTimeout(()=>log(`  Added suffix[${i}]: "${sf}"`),i*120); });
-    setTimeout(()=>log(`Done — ${suffixes.length} suffixes, trie has shared prefix nodes.`),suffixes.length*120+50);
-  }
-}
-
-function doReset(){
-  lastStr='';trieRoot=null;
-  document.getElementById('strIn').value='';
-  document.getElementById('sufList').innerHTML='';
-  drawEmpty();
-  log('Reset.');
-}
-
-resize();
-// Seed
-document.getElementById('strIn').value='banana';
-setTimeout(()=>doBuild(),100);
+rebuild();
 </script>
 </body>
 </html>
