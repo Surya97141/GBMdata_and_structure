@@ -37,6 +37,30 @@
     padding: .1rem .55rem; border-radius: 100px; display: inline-block; margin-bottom: .5rem;
   }
   .ds-card-desc { font-size: .8rem; color: var(--ink-muted); line-height: 1.5; }
+  .report-box {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-left: 4px solid #7b4fd4;
+    border-radius: var(--radius);
+    padding: 1.1rem 1.4rem;
+    margin: 0 0 2rem;
+  }
+  .report-box-title { font-size: .92rem; font-weight: 700; color: #1a1a2e; margin-bottom: .3rem; }
+  .report-box-sub { font-size: .78rem; color: var(--ink-muted); margin-bottom: .75rem; }
+  .report-textarea {
+    width: 100%; font-family: 'Inter', sans-serif; font-size: .84rem;
+    padding: .5rem .75rem; border: 1.5px solid var(--border); border-radius: 8px;
+    background: #f7f6f2; color: #1a1a2e; resize: vertical; min-height: 64px;
+    display: block; margin-bottom: .65rem;
+  }
+  .report-textarea:focus { outline: none; border-color: #7b4fd4; }
+  .report-row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+  .report-btn {
+    padding: .42rem 1.2rem; background: #7b4fd4; color: #fff;
+    font: 600 .82rem 'Inter', sans-serif; border: none; border-radius: 8px; cursor: pointer;
+  }
+  .report-btn:hover { filter: brightness(1.1); }
+  .report-status { font-size: .76rem; color: var(--ink-muted); }
 </style>
 </head>
 <body>
@@ -52,6 +76,28 @@
     <h1>Data Structures</h1>
     <p class="hero-tagline">From simple arrays to exotic persistent trees — pick any structure to explore its mechanics interactively.</p>
   </div>
+
+  <!-- REPORT BOX -->
+  <div class="report-box">
+    <div class="report-box-title">Found an issue? Report it</div>
+    <div class="report-box-sub">Broken simulation, wrong complexity, visual glitch, missing content — let us know and we'll fix it.</div>
+    <textarea class="report-textarea" id="reportText" placeholder="Describe the issue (e.g. 'Bloom Filter bit array not showing on mobile')…"></textarea>
+    <div class="report-row">
+      <button class="report-btn" onclick="submitReport()">Send Report</button>
+      <span class="report-status" id="reportStatus"></span>
+    </div>
+  </div>
+  <script>
+  function submitReport() {
+    var msg = document.getElementById('reportText').value.trim();
+    if (!msg) { document.getElementById('reportStatus').textContent = 'Please describe the issue first.'; return; }
+    var sub = encodeURIComponent('DS/Algo Explorer — Issue Report (Data Structures)');
+    var body = encodeURIComponent('Page: ' + window.location.href + '\n\n' + msg);
+    window.open('mailto:suraj757ab1@gmail.com?subject=' + sub + '&body=' + body);
+    document.getElementById('reportStatus').textContent = 'Thanks! Your email client should open.';
+    document.getElementById('reportText').value = '';
+  }
+  </script>
 
   <!-- LINEAR -->
   <div class="cat-section">

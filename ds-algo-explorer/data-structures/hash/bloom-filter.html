@@ -11,35 +11,42 @@
 :root{--bg:#f7f6f2;--s:#fff;--ink:#1a1a2e;--m:#5a5a72;--b:#e2e0da;--a:#7b4fd4}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
 .wrap{max-width:940px;margin:0 auto;padding:0 1.5rem 6rem}
-.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0}
+.bc{font-size:.82rem;color:var(--m);display:flex;gap:.4rem;align-items:center;padding:1rem 0;flex-wrap:wrap}
 .bc a{color:var(--m);text-decoration:none}.bc a:hover{color:var(--ink)}
-h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:.4rem}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,4vw,2.8rem);margin-bottom:.4rem}
 .tag{display:inline-block;background:var(--a);color:#fff;font-size:.7rem;font-weight:700;
   text-transform:uppercase;letter-spacing:.1em;padding:.2rem .7rem;border-radius:100px;margin-bottom:.8rem}
 .tagline{color:var(--m)}
 .prose{margin:1.5rem 0}.prose p{color:var(--m);max-width:68ch}.prose p+p{margin-top:.8rem}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
-.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;text-align:center}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin:1.5rem 0}
+.fact{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:.9rem;text-align:center}
 .flabel{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:.35rem}
 .fval{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--a)}
 .sim-panel{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden;margin:1.5rem 0}
 .sim-hdr{padding:.75rem 1.3rem;border-bottom:1px solid var(--b);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:.5rem}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--a)}
-.sim-body{padding:1.3rem}
-.bf-vis{display:flex;flex-wrap:wrap;gap:2px;margin:.5rem 0;font-family:'JetBrains Mono',monospace}
-.bit{width:26px;height:26px;border:1.5px solid var(--b);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;transition:background .15s}
+.sim-body{padding:1rem 1.3rem 1.3rem}
+.bf-vis{display:flex;flex-wrap:wrap;gap:3px;margin:.5rem 0;font-family:'JetBrains Mono',monospace}
+.bit{width:28px;height:28px;border:1.5px solid var(--b);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;transition:background .15s;flex-shrink:0}
 .bit.set{background:#c3b1e1;border-color:#7b4fd4}
 .bit.cur{background:#fff176;border-color:#d97706}
 .bit.fp{background:#fca5a5;border-color:#ef4444}
 .info-bar{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.5rem .8rem;
-  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px}
+  background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-top:.75rem;min-height:28px;word-break:break-word}
 .input-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;align-items:center}
 .input-row label{font-size:.85rem;font-weight:600;color:var(--m)}
-input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:100px}
+input[type=text]{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.38rem .7rem;border:1.5px solid var(--b);border-radius:8px;background:var(--bg);color:var(--ink);width:110px;min-width:0}
 .btn{padding:.4rem 1rem;border-radius:8px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;border:none}
 .btn-p{background:var(--a);color:#fff}.btn-p:hover{filter:brightness(1.1)}
 .back{display:inline-block;color:var(--m);text-decoration:none;font-size:.82rem;font-weight:600;margin:1.5rem 0}
 .back:hover{color:var(--ink)}
+@media(max-width:480px){
+  .bit{width:20px;height:20px;font-size:.6rem}
+  .facts{grid-template-columns:1fr 1fr}
+  .info-bar{font-size:.68rem}
+  input[type=text]{width:80px}
+  .sim-body{padding:.8rem}
+}
 </style>
 </head>
 <body>
@@ -126,7 +133,7 @@ function generateSteps(op,word){
       if(!isSet) return;
     });
     var definitelyAbsent=ADDED_WORDS.indexOf(word)<0&&allSet;
-    steps.push({title:allSet?'"'+word+'" PROBABLY in set ('+(ADDED_WORDS.indexOf(word)>=0?'true positive)':'FALSE POSITIVE!)')+'"'+word+'" definitely NOT in set',
+    steps.push({title:allSet?('"'+word+'" PROBABLY in set ('+(ADDED_WORDS.indexOf(word)>=0?'true positive':'FALSE POSITIVE!')+')'):'"'+word+'" definitely NOT in set',
       what:allSet?'All '+positions.length+' bits = 1. Probably present but could be false positive.':'At least one bit = 0. Definitely absent — no false negative.',
       why:allSet?'False positive rate ≈ (1-e^(-kn/m))^k. Use larger m or more k to reduce.':'Bloom filter guarantee: if any bit = 0, element was never inserted.',
       ...snap(positions)});
