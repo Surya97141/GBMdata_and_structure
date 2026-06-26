@@ -85,7 +85,7 @@
     <div style="font-size:.82rem;color:#5a5a72;margin-bottom:.9rem;font-family:Inter,sans-serif;">Broken simulation, wrong complexity, visual glitch, missing content — let us know and we'll fix it.</div>
     <textarea id="reportText" placeholder="Describe the issue…" style="display:block;width:100%;box-sizing:border-box;font-family:Inter,sans-serif;font-size:.85rem;padding:.6rem .85rem;border:2px solid #b39ddb;border-radius:8px;background:#fff;color:#1a1a2e;resize:vertical;min-height:72px;margin-bottom:.75rem;"></textarea>
     <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;">
-      <button onclick="submitReport()" style="padding:.5rem 1.4rem;background:#7b4fd4;color:#fff;font:600 .85rem Inter,sans-serif;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(123,79,212,.35);">Send Report</button>
+      <button id="reportBtn" onclick="submitReport()" style="padding:.5rem 1.4rem;background:#7b4fd4;color:#fff;font:600 .85rem Inter,sans-serif;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(123,79,212,.35);">Send Report</button>
       <span id="reportStatus" style="font-size:.8rem;font-family:Inter,sans-serif;"></span>
     </div>
   </div>
@@ -93,7 +93,7 @@
   async function submitReport() {
     var msg = document.getElementById('reportText').value.trim();
     var statusEl = document.getElementById('reportStatus');
-    var btn = document.querySelector('[onclick="submitReport()"]');
+    var btn = document.getElementById('reportBtn');
     if (!msg) {
       statusEl.style.color = '#c0392b';
       statusEl.textContent = 'Please describe the issue first.';
