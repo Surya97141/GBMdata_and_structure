@@ -98,7 +98,8 @@ const ctx=canvas.getContext('2d');
 let player=null,DPR=window.devicePixelRatio||1,SCALE=1;
 function setupCanvas(){
   DPR=window.devicePixelRatio||1; const w=canvas.parentElement.clientWidth-26; SCALE=w/640;
-  canvas.width=w*DPR; canvas.height=320*DPR; canvas.style.width=w+'px'; canvas.style.height='320px'; ctx.scale(DPR,DPR);
+  const h=Math.round(320*SCALE);
+  canvas.width=w*DPR; canvas.height=h*DPR; canvas.style.width=w+'px'; canvas.style.height=h+'px'; ctx.scale(DPR,DPR);
 }
 window.addEventListener('resize',()=>{ setupCanvas(); if(player) player.renderCurrentStep(); });
 
