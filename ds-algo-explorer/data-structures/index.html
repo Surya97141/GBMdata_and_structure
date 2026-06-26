@@ -92,7 +92,7 @@
   async function submitReport() {
     var msg = document.getElementById('reportText').value.trim();
     var statusEl = document.getElementById('reportStatus');
-    var btn = document.querySelector('.report-btn');
+    var btn = document.querySelector('[onclick="submitReport()"]');
     if (!msg) {
       statusEl.style.color = '#c0392b';
       statusEl.textContent = 'Please describe the issue first.';
@@ -102,22 +102,23 @@
     btn.textContent = 'Sending…';
     statusEl.textContent = '';
     try {
-      var res = await fetch('https://formsubmit.co/ajax/suraj757ab1@gmail.com', {
+      var res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
-          _subject: 'DS/Algo Explorer — Issue Report (Data Structures)',
+          access_key: 'df0e1eb9-2c3d-454d-868b-d3b40df5d23d',
+          subject: 'DS/Algo Explorer — Issue Report (Data Structures)',
+          from_name: 'DS/Algo Explorer',
           page: window.location.href,
-          message: msg,
-          _captcha: 'false'
+          message: msg
         })
       });
       var data = await res.json();
-      if (res.ok && data.success) {
+      if (data.success) {
         statusEl.style.color = '#27a060';
         statusEl.textContent = 'Report sent! Thank you.';
         document.getElementById('reportText').value = '';
-      } else { throw new Error(); }
+      } else { throw new Error(data.message); }
     } catch(e) {
       statusEl.style.color = '#c0392b';
       statusEl.textContent = 'Failed to send — please try again.';
