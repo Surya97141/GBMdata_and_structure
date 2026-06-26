@@ -89,42 +89,33 @@
     </div>
   </div>
   <script>
-  async function submitReport() {
+  function submitReport() {
     var msg = document.getElementById('reportText').value.trim();
-    var statusEl = document.getElementById('reportStatus');
-    var btn = document.getElementById('reportBtn');
-    if (!msg) {
-      statusEl.style.color = '#c0392b';
-      statusEl.textContent = 'Please describe the issue first.';
-      return;
-    }
-    btn.disabled = true;
-    btn.textContent = 'Sending…';
-    statusEl.textContent = '';
-    try {
-      var res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: 'df0e1eb9-2c3d-454d-868b-d3b40df5d23d',
-          subject: 'DS/Algo Explorer — Issue Report (Data Structures)',
-          from_name: 'DS/Algo Explorer',
-          page: window.location.href,
-          message: msg
-        })
-      });
-      var data = await res.json();
-      if (data.success) {
-        statusEl.style.color = '#27a060';
-        statusEl.textContent = 'Report sent! Thank you.';
-        document.getElementById('reportText').value = '';
-      } else { throw new Error(data.message); }
-    } catch(e) {
-      statusEl.style.color = '#c0392b';
-      statusEl.textContent = 'Failed to send — please try again.';
-    }
-    btn.disabled = false;
-    btn.textContent = 'Send Report';
+    var s = document.getElementById('reportStatus');
+    if (!msg) { s.style.color='#c0392b'; s.textContent='Please type your issue first.'; return; }
+    s.style.color='#5a5a72'; s.textContent='Sending…';
+    fetch('https://api.web3forms.com/submit', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({
+        access_key:'df0e1eb9-2c3d-454d-868b-d3b40df5d23d',
+        subject:'DS/Algo Explorer — Issue Report (Data Structures)',
+        message:msg,
+        page:window.location.href
+      })
+    })
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.success){
+        s.style.color='#27a060'; s.textContent='Report sent! Thank you.';
+        document.getElementById('reportText').value='';
+      } else {
+        s.style.color='#c0392b'; s.textContent='Error: '+d.message;
+      }
+    })
+    .catch(function(e){
+      s.style.color='#c0392b'; s.textContent='Error: '+e.message;
+    });
   }
   </script>
 
